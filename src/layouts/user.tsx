@@ -1,8 +1,9 @@
 import { Outlet } from 'react-router-dom';
 
-export default function Public() {
+export default function User() {
   return (
-    <div className="background-color color">
+    <div>
+      Layout User
       <Outlet />
     </div>
   );

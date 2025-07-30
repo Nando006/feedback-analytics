@@ -6,13 +6,15 @@ import Category from 'pages/user/feedbacks/category';
 import Feedback from 'pages/user/feedbacks/feedback';
 import QRCode from 'pages/user/feedbacks/QRCode';
 import Reports from 'pages/user/reports';
+import LayoutUser from 'layouts/user';
 import { Route } from 'react-router-dom';
 
 export function RouteUser() {
   return (
     <Route
       path="/user"
-      errorElement={<ErrorPage />}>
+      errorElement={<ErrorPage />}
+      element={<LayoutUser />}>
       <Route
         path="/user/dashboard"
         element={<Dashboard />}
