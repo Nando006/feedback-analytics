@@ -13,20 +13,20 @@
 
   color-scheme: light dark;
 
-  /* Cores principais */
-  --bg-primary: #161616;
-  --bg-secondary: #1a1a1a;
-  --bg-tertiary: #2d2d2d;
-  --bg-quartiary: rgb(31, 31, 31);
+  /* Cores principais - Dark Mode */
+  --bg-primary: #262626; /* bg-neutral-800 */
+  --bg-secondary: #404040; /* bg-neutral-700 */
+  --bg-tertiary: #525252; /* bg-neutral-600 */
+  --bg-quartiary: #737373; /* bg-neutral-500 */
 
-  /* Cores de texto */
-  --text-primary: #e0e0e0;
-  --text-secondary: #b0b0b0;
-  --text-muted: #808080;
+  /* Cores de texto - Dark Mode */
+  --text-primary: #f5f5f5; /* text-neutral-100 */
+  --text-secondary: #d4d4d8; /* text-neutral-300 */
+  --text-muted: #a1a1aa; /* text-neutral-400 */
 
-  /* Sombras */
-  --shadow-primary: 0 4px 20px rgba(38, 38, 41, 0.3);
-  --shadow-secondary: 0 2px 10px rgba(21, 22, 22, 0.2);
+  /* Sombras - Dark Mode */
+  --shadow-primary: 0 4px 20px rgba(23, 23, 23, 0.4); /* shadow com neutral-900 */
+  --shadow-secondary: 0 2px 10px rgba(38, 38, 38, 0.3); /* shadow com neutral-800 */
 
   color: var(--text-primary);
   background-color: var(--bg-primary);
@@ -34,16 +34,20 @@
 
 @media (prefers-color-scheme: light) {
   :root {
-    --bg-primary: #ffffff;
-    --bg-secondary: #f8f9fa;
-    --bg-tertiary: #e9ecef;
+    /* Cores principais - Light Mode */
+    --bg-primary: #ffffff; /* bg-white */
+    --bg-secondary: #f5f5f5; /* bg-neutral-100 */
+    --bg-tertiary: #e5e5e5; /* bg-neutral-200 */
+    --bg-quartiary: #d4d4d4; /* bg-neutral-300 */
 
-    --text-primary: #161616;
-    --text-secondary: #495057;
-    --text-muted: #6c757d;
+    /* Cores de texto - Light Mode */
+    --text-primary: #171717; /* text-neutral-900 */
+    --text-secondary: #525252; /* text-neutral-600 */
+    --text-muted: #737373; /* text-neutral-500 */
 
-    --shadow-primary: 0 4px 20px rgba(25, 24, 27, 0.2);
-    --shadow-secondary: 0 2px 10px rgba(24, 25, 26, 0.1);
+    /* Sombras - Light Mode */
+    --shadow-primary: 0 4px 20px rgba(115, 115, 115, 0.15); /* shadow com neutral-500 */
+    --shadow-secondary: 0 2px 10px rgba(163, 163, 163, 0.1); /* shadow com neutral-400 */
 
     color: var(--text-primary);
     background-color: var(--bg-primary);
