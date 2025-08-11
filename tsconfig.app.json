@@ -28,18 +28,10 @@
       "components/*": ["components/*"],
       "pages/*": ["src/pages/*"],
       "layouts/*": ["src/layouts/*"],
-      "lib": ["lib/*"],
+      "lib/*": ["lib/*"],
       "src/*": ["src/*"],
-      "server/*": ["server/*"]
+      "server/*": ["src/server/*"]
     }
   },
-  "include": [
-    "src",
-    "components",
-    "pages",
-    "layouts",
-    "lib",
-    "server",
-    "styles"
-  ]
+  "include": ["src", "components", "lib", "styles"]
 }

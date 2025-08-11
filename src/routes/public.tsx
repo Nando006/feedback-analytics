@@ -5,6 +5,7 @@ import Home from 'pages/public/home';
 import Login from 'pages/public/login';
 import Register from 'pages/public/register';
 import { Route } from 'react-router-dom';
+import { ActionLogin } from './actions/actionLogin';
 
 export function RoutePublic() {
   return (
@@ -17,15 +18,16 @@ export function RoutePublic() {
         element={<Home />}
       />
       <Route
-        path="/login"
+        path="login"
         element={<Login />}
+        action={ActionLogin}
       />
       <Route
-        path="/register"
+        path="register"
         element={<Register />}
       />
       <Route
-        path="/feedback/qrcode"
+        path="feedback/qrcode"
         element={<FeedbackQRCode />}
       />
     </Route>

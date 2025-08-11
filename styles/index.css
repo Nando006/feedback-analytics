@@ -53,3 +53,7 @@
     background-color: var(--bg-primary);
   }
 }
+
+.font-inter {
+  font-family: 'Inter', 'Roboto', 'Arial';
+}

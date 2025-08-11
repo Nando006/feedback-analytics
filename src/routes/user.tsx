@@ -8,39 +8,41 @@ import QRCode from 'pages/user/feedbacks/QRCode';
 import Reports from 'pages/user/reports';
 import LayoutUser from 'layouts/user';
 import { Route } from 'react-router-dom';
+import { LoaderUserProtected } from 'lib/loaders/loaderUserProtected';
 
 export function RouteUser() {
   return (
     <Route
       path="/user"
       errorElement={<ErrorPage />}
-      element={<LayoutUser />}>
+      element={<LayoutUser />}
+      loader={LoaderUserProtected}>
       <Route
-        path="/user/dashboard"
+        path="dashboard"
         element={<Dashboard />}
       />
       <Route
-        path="/user/reports"
+        path="reports"
         element={<Reports />}
       />
       <Route
-        path="/user/edit/customer"
+        path="edit/customer"
         element={<Customer />}
       />
       <Route
-        path="/user/edit/user"
+        path="edit/user"
         element={<User />}
       />
       <Route
-        path="/user/feedbacks/category"
+        path="feedbacks/category"
         element={<Category />}
       />
       <Route
-        path="/user/feedbacks/qrcode"
+        path="feedbacks/qrcode"
         element={<QRCode />}
       />
       <Route
-        path="/user/feedbacks/:id"
+        path="feedbacks/:id"
         element={<Feedback />}
       />
     </Route>
