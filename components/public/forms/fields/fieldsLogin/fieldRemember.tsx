@@ -1,11 +1,11 @@
-import type { PropsFieldRemember } from 'lib/interfaces/propsFieldRemember';
+import type { PropsField } from 'lib/interfaces/form/propsField';
 
 export default function FieldRemember({
   id,
   label,
   name,
   register,
-}: PropsFieldRemember) {
+}: PropsField) {
   return (
     <div className="flex items-center space-x-2">
       <input

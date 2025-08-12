@@ -1,4 +1,4 @@
-import type { PropsFieldPassword } from 'lib/interfaces/propsFieldPassword';
+import type { PropsField } from 'lib/interfaces/form/propsField';
 import { useMemo, useState } from 'react';
 
 export default function FieldPassword({
@@ -8,7 +8,7 @@ export default function FieldPassword({
   icon,
   register,
   error,
-}: PropsFieldPassword) {
+}: PropsField) {
   const [show, setShow] = useState(false);
   const [value, setValue] = useState('');
 
