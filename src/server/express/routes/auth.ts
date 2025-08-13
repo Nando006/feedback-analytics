@@ -65,10 +65,20 @@ export function RegisterAuthRoutes(app: express.Express) {
             terms_version: 'v1',
           };
 
-    // Monta URL absoluta para o callback
-    const proto = (req.headers['x-forwarded-proto'] as string) ?? req.protocol;
-    const host = (req.headers['x-forwarded-host'] as string) ?? req.get('host');
-    const emailRedirectTo = `${proto}://${host}/api/auth/callback`;
+    // 1) Preferir header Origin (presente em dev: http://localhost:5173)
+    const origin = req.get('origin');
+    // 2) Depois, tentar x-forwarded (prod atrás de proxy)
+    const xfProto = req.headers['x-forwarded-proto'] as string | undefined;
+    const xfHost = req.headers['x-forwarded-host'] as string | undefined;
+    // 3) Fallback final: host direto
+    const base =
+      process.env.PUBLIC_SITE_URL ?? // defina PUBLIC_SITE_URL=http://localhost:5173 em dev
+      origin ??
+      (xfProto && xfHost
+        ? `${xfProto}://${xfHost}`
+        : `${req.protocol}://${req.get('host')}`);
+
+    const emailRedirectTo = `${base}/api/auth/callback`;
 
     const supabase = createSupabaseServerClient(req, res);
     const { error } = await supabase.auth.signUp({
