@@ -9,7 +9,7 @@ export function RegisterAuthRoutes(app: express.Express) {
   app.get('/api/auth/callback', async (req, res) => {
     const supabase = createSupabaseServerClient(req, res);
     await supabase.auth.exchangeCodeForSession(req.url);
-    return res.redirect('/user/dashboard');
+    return res.redirect('/auth/success?next=/user/dashboard');
   });
 
   app.post('/api/auth/login', async (req, res) => {
@@ -66,9 +66,9 @@ export function RegisterAuthRoutes(app: express.Express) {
           };
 
     // Monta URL absoluta para o callback
-    const emailRedirectTo = `${req.protocol}://${req.get(
-      'host',
-    )}/api/auth/callback`;
+    const proto = (req.headers['x-forwarded-proto'] as string) ?? req.protocol;
+    const host = (req.headers['x-forwarded-host'] as string) ?? req.get('host');
+    const emailRedirectTo = `${proto}://${host}/api/auth/callback`;
 
     const supabase = createSupabaseServerClient(req, res);
     const { error } = await supabase.auth.signUp({

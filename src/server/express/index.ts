@@ -6,6 +6,8 @@ import { RegisterAuthRoutes } from './routes/auth';
 const app = express();
 app.use(express.json());
 
+app.set('trust proxy', 1);
+
 RegisterHealthRoutes(app);
 RegisterAuthRoutes(app);
 
