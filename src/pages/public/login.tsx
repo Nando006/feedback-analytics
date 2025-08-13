@@ -1,4 +1,4 @@
-import CardLogin from 'components/public/cards/cardLogin';
+import CardForm from 'components/public/cards/cardForm';
 import FormLogin from 'components/public/forms/formLogin';
 import Lock from 'components/public/svg/lock';
 
@@ -7,7 +7,7 @@ export default function Login() {
     <div className="min-h-screen bg-gradient-to-b from-neutral-900 to-neutral-800 flex items-center justify-center p-4">
       {/* Container principal */}
       <div className="w-full max-w-md">
-        <CardLogin
+        <CardForm
           title="Bem-vindo de volta"
           text="Entre na sua conta para continuar"
           linkRegister="/register"

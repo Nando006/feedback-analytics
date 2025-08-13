@@ -4,7 +4,7 @@ import type { UseFormRegisterReturn } from 'react-hook-form';
 export interface PropsField {
   id: string;
   name: string;
-  label: string;
+  label?: string;
   icon?: ReactNode;
   type?: 'text' | 'email' | 'password';
   placeholder?: string;
