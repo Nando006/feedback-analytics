@@ -41,17 +41,16 @@ export default function FieldPhoneRegister({
         inputMode="tel"
         aria-invalid={error ? true : undefined}
         className="h-12 w-full rounded-lg bg-neutral-800/60 border border-neutral-700/60 px-4 outline-none focus:border-purple-600 transition-colors"
+        {...register}
         value={display}
         onChange={(e) => {
           const raw = digitsOnly(e.target.value);
           const withCountry = raw.startsWith('55') ? raw : `55${raw}`;
           setDisplay(formatBR(withCountry));
-          const synthetic = {
+          register?.onChange?.({
             target: { name, value: `+${withCountry}` },
-          } as unknown as React.ChangeEvent<HTMLInputElement>;
-          register?.onChange?.(synthetic);
+          } as any);
         }}
-        onBlur={register?.onBlur}
       />
       {error && (
         <span

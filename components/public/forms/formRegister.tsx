@@ -3,7 +3,7 @@ import {
   type RegisterFormValues,
   registerSchema,
 } from 'lib/schemas/registerSchema';
-import { useForm } from 'react-hook-form';
+import { useForm, type SubmitHandler } from 'react-hook-form';
 import { useSubmit } from 'react-router-dom';
 import FieldAccountTypeRegister from './fields/fieldRegister/fieldAccountType';
 import FieldText from './fields/fieldRegister/fieldText';
@@ -26,12 +26,18 @@ export default function FormRegister() {
     defaultValues: {
       accountType: 'CPF',
       terms: false,
+      email: '',
+      phone: '',
+      password: '',
+      confirmPassword: '',
+      document: '',
+      fullName: '',
     },
   });
 
   const accountType = watch('accountType') ?? 'CPF';
 
-  const onSubmit = (data: RegisterFormValues) => {
+  const onSubmit: SubmitHandler<RegisterFormValues> = (data) => {
     const formData = new FormData();
     formData.set('accountType', data.accountType);
 

@@ -47,18 +47,15 @@ export default function FieldDocument({
         inputMode="numeric"
         aria-invalid={error ? true : undefined}
         className="h-12 w-full rounded-lg bg-neutral-800/60 border border-neutral-700/60 px-4 outline-none focus:border-purple-600 transition-colors"
+        {...register}
         value={display}
         onChange={(e) => {
           const raw = digitsOnly(e.target.value);
           const formatted =
             docType === 'CNPJ' ? formatCNPJ(raw) : formatCPF(raw);
           setDisplay(formatted);
-          const synthetic = {
-            target: { name, value: raw },
-          } as unknown as React.ChangeEvent<HTMLInputElement>;
-          register?.onChange?.(synthetic);
+          register?.onChange?.({ target: { name, value: raw } } as any);
         }}
-        onBlur={register?.onBlur}
       />
       {error && (
         <span
