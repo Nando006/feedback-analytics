@@ -103,4 +103,41 @@ export function RegisterAuthRoutes(app: express.Express) {
     const { data } = await supabase.auth.getUser();
     return res.json({ user: data.user });
   });
+
+  // -------------------------------- Dados ------------------------------- \\
+  app.get('/api/user/enterprise', requireAuth, async (req, res) => {
+    const supabase = createSupabaseServerClient(req, res);
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return res.status(401).json({ error: 'unauthorized' });
+    }
+
+    try {
+      // Busca dados da empresa pela tabela enterprise
+      const { data: enterprise, error } = await supabase
+        .from('enterprise')
+        .select('id, name, document, email, phone, created_at')
+        .eq('auth_user_id', user.id)
+        .single();
+
+      if (error) {
+        console.error('Erro ao buscar empresa:', error);
+        return res.status(404).json({ error: 'enterprise_not_found' });
+      }
+
+      return res.json({
+        enterprise,
+        user: {
+          id: user.id,
+          email: user.email,
+        },
+      });
+    } catch (err) {
+      console.error('Erro interno:', err);
+      return res.status(500).json({ error: 'internal_error' });
+    }
+  });
 }
