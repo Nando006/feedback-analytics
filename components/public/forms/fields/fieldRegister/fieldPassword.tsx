@@ -1,7 +1,7 @@
 import type { PropsField } from 'lib/interfaces/form/propsField';
 import { useMemo, useState } from 'react';
 
-export default function FieldPassword({
+export default function FieldPasswordRegister({
   id,
   name,
   label,
@@ -48,17 +48,18 @@ export default function FieldPassword({
     <div className="space-y-1 relative">
       <label
         htmlFor={name}
-        className="flex flex-row pl-2 space-x-2 cursor-pointer">
-        <span>{icon}</span>
-        <p className="text-sm">{label}</p>
+        className="flex items-center gap-2 pl-2 text-sm text-neutral-300">
+        {icon && <span>{icon}</span>}
+        <span>{label}</span>
       </label>
       <div className="relative">
         <input
-          type={show ? 'text' : 'password'}
           id={id}
           name={name}
+          type={show ? 'text' : 'password'}
           aria-invalid={error ? true : undefined}
-          className="h-12 w-full pl-5 pr-12 bg-neutral-700/50 rounded-lg border border-neutral-600/50 outline-none hover:border-neutral-500 focus:border-purple-600 duration-200"
+          autoComplete="new-password"
+          className="h-12 w-full rounded-lg bg-neutral-800/60 border border-neutral-700/60 pl-4 pr-12 outline-none focus:border-purple-600 transition-colors"
           {...register}
           onChange={(e) => {
             register?.onChange?.(e);
@@ -76,7 +77,7 @@ export default function FieldPassword({
               viewBox="0 0 24 24"
               fill="currentColor"
               className="w-5 h-5">
-              <path d="M3.53 2.47a.75.75 0 0 0-1.06 1.06l18 18a.75.75 0 0 0 1.06-1.06l-2.47-2.47a12.67 12.67 0 0 0 3.19-4.41.9.9 0 0 0 0-.78C20.93 8.06 17.1 5.25 12 5.25c-1.64 0-3.18.3-4.6.86L3.53 2.47ZM12 6.75c4.31 0 7.64 2.45 9.39 5.27-.67 1.19-1.67 2.47-2.99 3.54l-2.04-2.04c.12-.4.19-.82.19-1.25a4.5 4.5 0 0 0-6.2-4.17L8.79 7.9c1-.47 2.08-.73 3.21-.73Zm-6.86 1.3 1.75 1.75A4.47 4.47 0 0 0 7.5 12a4.5 4.5 0 0 0 6.5 4.02l1.1 1.1A6.97 6.97 0 0 1 12 18.75C6.9 18.75 3.07 15.94.81 12.75a.9.9 0 0 1 0-.78c1.2-2.01 3.35-3.97 6.03-4.92Z" />
+              <path d="M3.53 2.47a.75.75 0 0 0-1.06 1.06l18 18a.75.75 0 0 0 1.06-1.06l-2.47-2.47a12.67 12.67 0 0 0 3.19-4.41.9.9 0 0 0 0-.78C20.93 8.06 17.1 5.25 12 5.25c-1.64 0-3.18.3-4.6.86L3.53 2.47ZM12 6.75c4.31 0 7.64 2.45 9.39 5.27-.67 1.19-1.67 2.47-2.99 3.54l-2.04-2.04c.12-.4.19-.82.19-1.25a4.5 4.5 0 0 0-6.2-4.17L8.79 7.9c1-.47 2.08-.73 3.21-.73Zm-6.86 1.3 1.75 1.75A4.47 4.47 0 0 0 7.5 12a4.5 4.5 0 0 0 6.5 4.02l1.1 1.1A6.97 6.97 0 0 1 12 18.75C6.9 18.75 3.07 15.94.81 12.75a.9.9 0 0 1 0-.78C3.07 8.06 6.9 5.25 12 5.25Zm0 2.25c-3.03 0-5.61 1.55-7.41 3.75 1.8 2.2 4.38 3.75 7.41 3.75s5.61-1.55 7.41-3.75C17.61 9.05 15.03 7.5 12 7.5Zm0 1.5a3 3 0 1 1 0 6 3 3 0 0 1 0-6Z" />
             </svg>
           ) : (
             <svg
@@ -91,9 +92,9 @@ export default function FieldPassword({
       </div>
       {strength.showBar && (
         <div className="mt-2">
-          <div className="password-strength w-full h-2 rounded-full overflow-hidden bg-neutral-700/60">
+          <div className="w-full h-2 rounded-full overflow-hidden bg-neutral-700/60">
             <div
-              className={`password-strength__fill h-full ${strength.color}`}
+              className={`h-full ${strength.color}`}
               style={{ width: `${strength.percent}%` }}
             />
           </div>
@@ -106,7 +107,7 @@ export default function FieldPassword({
       {error && (
         <span
           role="alert"
-          className="absolute right-1 -bottom-5 text-red-400/60 text-sm font-semibold">
+          className="absolute -right-1 -bottom-5 text-red-400/70 text-sm font-medium">
           {error}
         </span>
       )}

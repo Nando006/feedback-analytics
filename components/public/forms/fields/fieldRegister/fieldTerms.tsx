@@ -1,13 +1,14 @@
 import type { PropsField } from 'lib/interfaces/form/propsField';
 
-export default function FieldRemember({
+export default function FieldTermsRegister({
   id,
-  label,
   name,
+  label,
   register,
+  error,
 }: PropsField) {
   return (
-    <div className="flex items-center space-x-2">
+    <div className="flex items-center gap-3">
       <input
         id={id}
         name={name}
@@ -20,6 +21,13 @@ export default function FieldRemember({
         className="text-sm text-neutral-400 cursor-pointer">
         {label}
       </label>
+      {error && (
+        <span
+          role="alert"
+          className="text-red-400/70 text-sm font-medium">
+          {error}
+        </span>
+      )}
     </div>
   );
 }

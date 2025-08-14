@@ -1,7 +1,7 @@
 // Bloquear acesso a rotas privadas quando não houver usuário autenticado (sessão via cookies httpOnly).
 
 import type { NextFunction, Request, Response } from 'express';
-import { createSupabaseServerClient } from './supabase';
+import { createSupabaseServerClient } from '../supabase';
 
 export async function requireAuth(
   req: Request,
