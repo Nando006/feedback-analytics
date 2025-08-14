@@ -65,14 +65,11 @@ export function RegisterAuthRoutes(app: express.Express) {
             terms_version: 'v1',
           };
 
-    // 1) Preferir header Origin (presente em dev: http://localhost:5173)
     const origin = req.get('origin');
-    // 2) Depois, tentar x-forwarded (prod atrás de proxy)
     const xfProto = req.headers['x-forwarded-proto'] as string | undefined;
     const xfHost = req.headers['x-forwarded-host'] as string | undefined;
-    // 3) Fallback final: host direto
     const base =
-      process.env.PUBLIC_SITE_URL ?? // defina PUBLIC_SITE_URL=http://localhost:5173 em dev
+      process.env.PUBLIC_SITE_URL ??
       origin ??
       (xfProto && xfHost
         ? `${xfProto}://${xfHost}`
