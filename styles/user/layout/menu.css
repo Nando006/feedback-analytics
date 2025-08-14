@@ -1,0 +1,122 @@
+/* Sidebar (modo push): permitir que o submenu extrapole a largura do aside somente quando aberto */
+aside.shrink-0.h-\[calc\(100vh-64px\)\].w-72 {
+  overflow: visible;
+}
+aside.shrink-0.h-\[calc\(100vh-64px\)\].w-0 {
+  overflow: hidden;
+}
+
+/* Transição harmoniosa do conteúdo no modo push (fade + slide) */
+aside.shrink-0.h-\[calc\(100vh-64px\)\] > * {
+  transition: opacity 180ms ease, transform 200ms ease;
+  will-change: opacity, transform;
+}
+aside.shrink-0.h-\[calc\(100vh-64px\)\].w-0 > * {
+  opacity: 0;
+  transform: translateX(-6px);
+}
+aside.shrink-0.h-\[calc\(100vh-64px\)\].w-72 > * {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Manter alinhamento com leve respiro entre pai e submenu */
+li.group > div + div {
+  margin-left: 8px;
+}
+
+/* Ponte invisível para evitar perda de hover ao atravessar da área do pai para o submenu */
+/* Aplica somente no segundo div (container do submenu) */
+li.group > div + div::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -8px; /* mesma ordem de grandeza do ml-2 (8px) */
+  width: 8px;
+  height: 100%;
+}
+
+/* Reforço visual do item pai quando submenu está aberto/hover */
+li.group:hover > div:first-child {
+  background-color: rgba(38, 38, 38, 0.7) !important; /* ~ bg-neutral-800/70 */
+  color: var(--text-primary) !important;
+  position: relative;
+}
+li.group:hover > div:first-child::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 6px;
+  bottom: 6px;
+  width: 3px;
+  border-radius: 9999px;
+  background-color: var(--text-secondary);
+}
+
+/* Indicador da página atual (bolinha roxa 3D luminosa) na ponta direita */
+aside nav a[aria-current='page'] {
+  color: var(--text-primary) !important;
+  background-color: rgba(38, 38, 38, 0.6) !important; /* ~ neutral-800/60 */
+  position: relative;
+}
+aside nav a[aria-current='page']::after {
+  content: '●';
+  position: absolute;
+  right: 8px;
+  top: 45%;
+  transform: translateY(-50%);
+  width: 12px;
+  height: 12px;
+  font-size: 12px;
+  color: #c084fc;
+  text-shadow: 0 0 8px rgba(147, 51, 234, 1), 0 0 16px rgba(147, 51, 234, 0.8),
+    0 0 24px rgba(147, 51, 234, 0.6);
+  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.4))
+    drop-shadow(0 0 12px rgba(192, 132, 252, 0.6));
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Realce do item pai quando algum filho estiver ativo */
+li.group:has(a[aria-current='page']) > div:first-child {
+  background-color: rgba(38, 38, 38, 0.7) !important;
+  color: var(--text-primary) !important;
+}
+li.group:has(a[aria-current='page']) > div:first-child svg {
+  color: #e9d5ff !important; /* violet-200 */
+}
+li.group:has(a[aria-current='page']) > div:first-child {
+  position: relative;
+}
+li.group:has(a[aria-current='page']) > div:first-child span::after {
+  content: '●';
+  position: absolute;
+  right: 32px;
+  top: 45%;
+  transform: translateY(-50%);
+  width: 12px;
+  height: 12px;
+  font-size: 12px;
+  color: #c084fc;
+  text-shadow: 0 0 8px rgba(147, 51, 234, 1), 0 0 16px rgba(147, 51, 234, 0.8),
+    0 0 24px rgba(147, 51, 234, 0.6);
+  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.4))
+    drop-shadow(0 0 12px rgba(192, 132, 252, 0.6));
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Animação de pulse do brilho da bolinha */
+@keyframes pulse-glow {
+  0%,
+  100% {
+    text-shadow: 0 0 8px rgba(147, 51, 234, 1), 0 0 16px rgba(147, 51, 234, 0.8),
+      0 0 24px rgba(147, 51, 234, 0.6);
+    filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.4))
+      drop-shadow(0 0 12px rgba(192, 132, 252, 0.6));
+  }
+  50% {
+    text-shadow: 0 0 12px rgba(147, 51, 234, 1),
+      0 0 24px rgba(147, 51, 234, 0.9), 0 0 36px rgba(147, 51, 234, 0.8);
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.6))
+      drop-shadow(0 0 20px rgba(192, 132, 252, 0.8));
+  }
+}
