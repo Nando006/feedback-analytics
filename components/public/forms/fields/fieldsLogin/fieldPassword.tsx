@@ -1,4 +1,4 @@
-import type { PropsField } from 'lib/interfaces/form/propsField';
+import type { PropsField } from 'lib/interfaces/public/form/propsField';
 import { useMemo, useState } from 'react';
 
 export default function FieldPassword({

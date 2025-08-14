@@ -1,4 +1,4 @@
-import type { PropsField } from 'lib/interfaces/form/propsField';
+import type { PropsField } from 'lib/interfaces/public/form/propsField';
 
 export default function FieldAccountTypeRegister({
   id,

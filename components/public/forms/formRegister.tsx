@@ -2,7 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import {
   type RegisterFormValues,
   registerSchema,
-} from 'lib/schemas/registerSchema';
+} from 'lib/schemas/public/registerSchema';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { Link, useActionData, useSubmit } from 'react-router-dom';
 import FieldAccountTypeRegister from './fields/fieldRegister/fieldAccountType';

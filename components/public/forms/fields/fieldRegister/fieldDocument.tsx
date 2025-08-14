@@ -1,4 +1,4 @@
-import type { PropsRegisterFieldDocument } from 'lib/interfaces/form/propsField';
+import type { PropsRegisterFieldDocument } from 'lib/interfaces/public/form/propsField';
 import { useEffect, useState } from 'react';
 
 function digitsOnly(value: string) {

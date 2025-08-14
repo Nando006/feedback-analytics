@@ -5,7 +5,10 @@ import FieldText from './fields/fieldsLogin/fieldText';
 import { FaEnvelope, FaLock } from 'react-icons/fa6';
 import FieldPassword from './fields/fieldsLogin/fieldPassword';
 import FieldRemember from './fields/fieldsLogin/fieldRemember';
-import { loginSchema, type LoginFormValues } from 'lib/schemas/loginSchema';
+import {
+  loginSchema,
+  type LoginFormValues,
+} from 'lib/schemas/public/loginSchema';
 
 export default function FormLogin() {
   const submit = useSubmit();

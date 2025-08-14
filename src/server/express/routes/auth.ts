@@ -1,7 +1,7 @@
 import express from 'express';
 import { createSupabaseServerClient } from '../supabase';
-import { loginSchema } from '../../../../lib/schemas/loginSchema';
-import { registerSchema } from '../../../../lib/schemas/registerSchema';
+import { loginSchema } from '../../../../lib/schemas/public/loginSchema';
+import { registerSchema } from '../../../../lib/schemas/public/registerSchema';
 import z from 'zod';
 import { requireAuth } from '../middleware/auth';
 

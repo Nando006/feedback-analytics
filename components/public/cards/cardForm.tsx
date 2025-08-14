@@ -1,4 +1,4 @@
-import type { PropsCardForm } from 'lib/interfaces/cards/propsCard';
+import type { PropsCardForm } from 'lib/interfaces/public/cards/propsCard';
 import { Link } from 'react-router-dom';
 
 export default function CardForm({
