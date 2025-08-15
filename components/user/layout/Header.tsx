@@ -1,6 +1,4 @@
 import type { PropsHeader } from 'lib/interfaces/user/propsHeader';
-import { formatDocument } from 'lib/utils/formatDocument';
-import { formatPhone } from 'lib/utils/formatPhone';
 import { FaBars, FaLayerGroup } from 'react-icons/fa6';
 
 export default function Header({
