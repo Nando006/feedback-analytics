@@ -9,7 +9,7 @@ export interface PropsEnterprise {
 
 export interface PropsApiEnterpriseResponse {
   enterprise: PropsEnterprise;
-  user: {
+  user?: {
     id: string;
     email: string | null;
   };

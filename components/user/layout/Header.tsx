@@ -7,7 +7,6 @@ export default function Header({
   onToggleSidebar,
   onSetOverlay,
   onSetPush,
-  enterprise,
 }: PropsHeader) {
   return (
     <div className="flex h-full items-center gap-8 px-4">
@@ -32,15 +31,6 @@ export default function Header({
           onClick={() => (isOverlayMode ? onSetPush() : onSetOverlay())}>
           <FaLayerGroup className="h-4 w-4" />
         </button>
-      </div>
-
-      {/* Dados da empresa no lado direito */}
-      <div className="ml-auto flex items-center gap-3">
-        <div className="text-right">
-          <h1 className="text-xl font-medium text-neutral-200">
-            {enterprise.name}
-          </h1>
-        </div>
       </div>
     </div>
   );

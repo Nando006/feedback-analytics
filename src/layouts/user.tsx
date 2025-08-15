@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Outlet, useLoaderData } from 'react-router-dom';
-import Header from 'components/user/layout/Header';
-import Sidebar from 'components/user/layout/Sidebar';
+import Header from 'components/user/layout/header';
+import Sidebar from 'components/user/layout/sidebar';
 import type { PropsEnterprise } from 'lib/interfaces/entities/enterprise';
 
 export default function User() {
@@ -20,7 +20,6 @@ export default function User() {
           onToggleSidebar={() => setIsSidebarOpen((v) => !v)}
           onSetOverlay={() => setIsOverlayMode(true)}
           onSetPush={() => setIsOverlayMode(false)}
-          enterprise={enterprise}
         />
       </header>
 
@@ -29,6 +28,7 @@ export default function User() {
           <Sidebar
             isOverlayMode={false}
             isOpen={isSidebarOpen}
+            enterprise={enterprise}
           />
         )}
 
@@ -43,6 +43,7 @@ export default function User() {
         <Sidebar
           isOverlayMode
           isOpen={isSidebarOpen}
+          enterprise={enterprise}
         />
       )}
     </div>

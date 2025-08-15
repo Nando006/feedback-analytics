@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { FaChevronRight } from 'react-icons/fa6';
+import { FaAlignLeft, FaBuffer, FaChevronRight } from 'react-icons/fa6';
 
 interface MenuItem {
   label: string;
@@ -35,7 +35,8 @@ function Item({ item }: { item: MenuItem }) {
         <NavLink
           to={item.to || '#'}
           className="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-neutral-200 transition-colors hover:bg-neutral-800/70 hover:text-neutral-100">
-          {item.label}
+          <FaBuffer className="h-3.5 w-3.5 text-neutral-500" />
+          <span>{item.label}</span>
         </NavLink>
       </li>
     );
@@ -44,7 +45,10 @@ function Item({ item }: { item: MenuItem }) {
   return (
     <li className="relative group">
       <div className="flex cursor-pointer items-center justify-between gap-3 rounded-md px-3 py-2 text-sm text-neutral-300 transition-colors hover:bg-neutral-800/70 hover:text-neutral-100">
-        <span>{item.label}</span>
+        <div className="flex items-center gap-2">
+          <FaAlignLeft className="h-3.5 w-3.5 text-neutral-500 group-hover:text-neutral-200" />
+          <span>{item.label}</span>
+        </div>
         <FaChevronRight className="h-3.5 w-3.5 text-neutral-500 transition-transform group-hover:translate-x-0.5 group-hover:text-neutral-200" />
       </div>
 
