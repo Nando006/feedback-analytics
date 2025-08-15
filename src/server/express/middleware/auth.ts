@@ -3,6 +3,15 @@
 import type { NextFunction, Request, Response } from 'express';
 import { createSupabaseServerClient } from '../supabase';
 
+declare global {
+  namespace Express {
+    interface Request {
+      user?: any;
+      supabase?: any;
+    }
+  }
+}
+
 export async function requireAuth(
   req: Request,
   res: Response,
@@ -14,6 +23,9 @@ export async function requireAuth(
   if (error || !data.user) {
     return res.status(401).json({ error: 'unauthorized' });
   }
+
+  req.user = data.user;
+  req.supabase = supabase;
 
   return next();
 }
