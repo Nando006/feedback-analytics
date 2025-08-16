@@ -2,7 +2,6 @@ import { logout } from 'lib/api/auth';
 import type { PropsApiEnterpriseResponse } from 'lib/interfaces/entities/enterprise';
 import { useTruncatedText } from 'lib/utils/truncateText';
 import { FaSignOutAlt } from 'react-icons/fa';
-import { FaClone, FaIdBadge } from 'react-icons/fa6';
 import { Link, useNavigate } from 'react-router-dom';
 
 export default function CardProfile({
