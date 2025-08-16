@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom';
 
-export default function Feedback() {
+export default function Feedbacks() {
   const { id } = useParams<{ id: string }>();
 
   return (

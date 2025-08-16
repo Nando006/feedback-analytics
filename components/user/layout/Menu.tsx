@@ -10,12 +10,36 @@ interface MenuItem {
 const menuData: MenuItem[] = [
   { label: 'Perfil', to: '/user/profile' },
   { label: 'Dashboard', to: '/user/dashboard' },
-  { label: 'Relatórios', to: '/user/reports' },
+  { label: 'QR Code', to: '/user/qrcode' },
   {
     label: 'Feedbacks',
     children: [
-      { label: 'Categorias', to: '/user/feedbacks/category' },
-      { label: 'QRCode', to: '/user/feedbacks/qrcode' },
+      { label: 'Enviados', to: '/user/feedbacks/all' },
+      {
+        label: 'Analisados',
+        children: [
+          {
+            label: 'Todos',
+            to: '/user/feedbacks/analytics/all',
+          },
+          {
+            label: 'Positivos',
+            to: '/user/feedbacks/analytics/positive',
+          },
+          {
+            label: 'Negativos',
+            to: '/user/feedbacks/analytics/negative',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    label: 'Insigths',
+    children: [
+      { label: 'Relatórios', to: '/user/insights/reports' },
+      { label: 'Emocional', to: '/user/insights/emotional' },
+      { label: 'Estatísticas', to: '/user/insights/statistics' },
     ],
   },
   {

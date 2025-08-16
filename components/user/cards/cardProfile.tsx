@@ -50,7 +50,7 @@ export default function CardProfile({
             title="Sair"
             aria-label="Sair"
             className="text-2xl cursor-pointer group">
-            <FaSignOutAlt className="text-red-300 group-hover:text-red-500 duration-200" />
+            <FaSignOutAlt className="text-red-400 group-hover:text-red-500 duration-200" />
           </button>
         </div>
       </div>
