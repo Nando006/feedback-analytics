@@ -7,12 +7,6 @@
   background-color: #191919;
 }
 
-.card-inner {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
 .profileimage {
   background-color: transparent;
   border: none;
@@ -36,39 +30,10 @@
   margin-top: 10px;
 }
 
-.socialbar {
-  background-color: #191919;
-  border-radius: 3em;
-  width: 90%;
-  padding: 14px;
-  margin-top: 15px;
-  color: white;
-  /* glow roxo na socialbar */
-  box-shadow: 0 0 12px rgba(145, 80, 206, 0.116),
-    0 0 20px rgba(146, 51, 234, 0.062);
-
-  /* ícones em linha */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 14px;
-  flex-wrap: nowrap;
-}
-
-.card a {
+.card {
   transition: 0.4s;
   color: white;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-}
-
-/* opcional: hover com roxo leve */
-#github:hover,
-#instagram:hover,
-#facebook:hover,
-#twitter:hover {
-  color: #c084fc; /* violet-400 */
-  text-shadow: 0 0 6px rgba(192, 132, 252, 0.7),
-    0 0 12px rgba(147, 51, 234, 0.5);
 }

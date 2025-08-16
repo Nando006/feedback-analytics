@@ -8,6 +8,7 @@ interface MenuItem {
 }
 
 const menuData: MenuItem[] = [
+  { label: 'Perfil', to: '/user/profile' },
   { label: 'Dashboard', to: '/user/dashboard' },
   { label: 'Relatórios', to: '/user/reports' },
   {
@@ -15,6 +16,15 @@ const menuData: MenuItem[] = [
     children: [
       { label: 'Categorias', to: '/user/feedbacks/category' },
       { label: 'QRCode', to: '/user/feedbacks/qrcode' },
+      {
+        label: 'Teste',
+        children: [
+          {
+            label: 'Teste 1',
+            to: '/user/feedbacks/category',
+          },
+        ],
+      },
     ],
   },
   {
@@ -53,7 +63,7 @@ function Item({ item }: { item: MenuItem }) {
       </div>
 
       <div className="pointer-events-none absolute left-full top-0 z-40 ml-2 origin-left scale-95 opacity-0 transition-all duration-150 ease-out group-hover:pointer-events-auto group-hover:scale-100 group-hover:opacity-100">
-        <ul className="min-w-48 max-h-[calc(100vh-64px-16px)] overflow-auto space-y-1 rounded-md border border-neutral-800/50 bg-neutral-900/80 p-2 shadow-[var(--shadow-primary)] ring-1 ring-neutral-800/50 backdrop-blur">
+        <ul className="min-w-48 max-h-[calc(100vh-64px-16px)] space-y-1 rounded-md border border-neutral-800/50 bg-neutral-900/80 p-2 shadow-[var(--shadow-primary)] ring-1 ring-neutral-800/50 backdrop-blur">
           {item.children!.map((child) => (
             <Item
               key={child.label}

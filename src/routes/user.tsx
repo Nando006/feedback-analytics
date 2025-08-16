@@ -9,6 +9,7 @@ import Reports from 'pages/user/reports';
 import LayoutUser from 'layouts/user';
 import { Route } from 'react-router-dom';
 import { LoaderUserProtected } from 'lib/loaders/loaderUserProtected';
+import Profile from 'pages/user/profile';
 
 export function RouteUser() {
   return (
@@ -24,6 +25,10 @@ export function RouteUser() {
       <Route
         path="reports"
         element={<Reports />}
+      />
+      <Route
+        path="profile"
+        element={<Profile />}
       />
       <Route
         path="edit/customer"
