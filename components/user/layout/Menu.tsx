@@ -16,15 +16,6 @@ const menuData: MenuItem[] = [
     children: [
       { label: 'Categorias', to: '/user/feedbacks/category' },
       { label: 'QRCode', to: '/user/feedbacks/qrcode' },
-      {
-        label: 'Teste',
-        children: [
-          {
-            label: 'Teste 1',
-            to: '/user/feedbacks/category',
-          },
-        ],
-      },
     ],
   },
   {
