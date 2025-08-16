@@ -76,6 +76,21 @@ aside nav a[aria-current='page']::after {
   animation: pulse-glow 2s ease-in-out infinite;
 }
 
+.menu-item:hover > .submenu {
+  pointer-events: auto;
+  opacity: 1;
+  transform: scale(1);
+}
+
+.menu-item > .submenu::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -8px;
+  width: 8px;
+  height: 100%;
+}
+
 /* Realce do item pai quando algum filho estiver ativo */
 li.group:has(a[aria-current='page']) > div:first-child {
   background-color: rgba(38, 38, 38, 0.7) !important;
