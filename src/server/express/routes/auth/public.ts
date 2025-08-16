@@ -90,4 +90,19 @@ export function registerPublicAuthRoutes(app: express.Express) {
 
     return res.json({ ok: true, message: 'confirmation_required' });
   });
+
+  // Logout (limpa cookies httpOnly da sessão)
+  app.post('/api/auth/logout', async (req, res) => {
+    try {
+      const supabase = createSupabaseServerClient(req, res);
+      // Revoga refresh token e limpa cookies httpOnly via SSR
+      await supabase.auth.signOut({ scope: 'global' });
+
+      // Evita qualquer cache e finaliza sem body
+      res.setHeader('Cache-Control', 'no-store');
+      return res.status(204).end();
+    } catch {
+      return res.status(500).json({ ok: false });
+    }
+  });
 }
