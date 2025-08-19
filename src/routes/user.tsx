@@ -1,10 +1,10 @@
 import ErrorPage from 'components/user/handling/errorPage';
 import Dashboard from 'pages/user/dashboard';
-import Customer from 'pages/user/edit/customer';
-import User from 'pages/user/edit/user';
+import EditCustomer from 'pages/user/edit/editCustomers';
+import EditUser from 'pages/user/edit/editProfile';
 import FeedbacksAll from 'pages/user/feedbacks/feedbacksAll';
 import Feedbacks from 'pages/user/feedbacks/feedbacks';
-import QRCode from 'pages/user/qrcode';
+import QRCodeEnterprise from 'pages/user/qrcodes/qrcodeEnterprise';
 import FeedbacksInsightsReport from 'pages/user/feedbacks/insights/feedbackInsightsReport';
 import LayoutUser from 'layouts/user';
 import { Route } from 'react-router-dom';
@@ -15,6 +15,7 @@ import FeedbacksInsightsStatistics from 'pages/user/feedbacks/insights/feedbacks
 import FeedbacksAnalyticsPositive from 'pages/user/feedbacks/analytics/feedbacksAnalyticsPositive';
 import FeedbacksAnalyticsNegative from 'pages/user/feedbacks/analytics/feedbacks.AnalyticsNegative';
 import FeedbacksAnalyticsAll from 'pages/user/feedbacks/analytics/feedbacksAnalyticsAll';
+import QRCodeProducts from 'pages/user/qrcodes/qrcodeProducts';
 
 export function RouteUser() {
   return (
@@ -32,8 +33,12 @@ export function RouteUser() {
         element={<Profile />}
       />
       <Route
-        path="qrcode"
-        element={<QRCode />}
+        path="qrcode/enterprise"
+        element={<QRCodeEnterprise />}
+      />
+      <Route
+        path="qrcode/products"
+        element={<QRCodeProducts />}
       />
       <Route
         path="feedbacks/all"
@@ -68,12 +73,12 @@ export function RouteUser() {
         element={<FeedbacksInsightsStatistics />}
       />
       <Route
-        path="edit/customer"
-        element={<Customer />}
+        path="edit/customers"
+        element={<EditCustomer />}
       />
       <Route
-        path="edit/user"
-        element={<User />}
+        path="edit/profile"
+        element={<EditUser />}
       />
     </Route>
   );

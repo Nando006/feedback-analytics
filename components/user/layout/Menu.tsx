@@ -10,7 +10,13 @@ interface MenuItem {
 const menuData: MenuItem[] = [
   { label: 'Perfil', to: '/user/profile' },
   { label: 'Dashboard', to: '/user/dashboard' },
-  { label: 'QR Code', to: '/user/qrcode' },
+  {
+    label: 'QR Codes',
+    children: [
+      { label: 'Empresa', to: '/user/qrcode/enterprise' },
+      { label: 'Produtos', to: '/user/qrcode/products' },
+    ],
+  },
   {
     label: 'Feedbacks',
     children: [
@@ -45,8 +51,8 @@ const menuData: MenuItem[] = [
   {
     label: 'Editar',
     children: [
-      { label: 'Perfil', to: '/user/edit/user' },
-      { label: 'Clientes', to: '/user/edit/customer' },
+      { label: 'Perfil', to: '/user/edit/profile' },
+      { label: 'Clientes', to: '/user/edit/customers' },
     ],
   },
 ];
