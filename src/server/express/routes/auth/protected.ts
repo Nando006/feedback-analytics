@@ -1,7 +1,7 @@
 import express from 'express';
 import { requireAuth } from '../../middleware/auth';
 import { profileUpdateSchema } from '../../../../../lib/schemas/user/profileUpdateSchema';
-import { enterpriseUpdateSchema } from 'lib/schemas/user/enterpriseUpdateSchema';
+import { enterpriseUpdateSchema } from '../../../../../lib/schemas/user/enterpriseUpdateSchema';
 
 export function registerProtectedAuthRoutes(app: express.Express) {
   // ========= Select
