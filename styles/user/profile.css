@@ -1,0 +1,177 @@
+/* Glass + gradient accents */
+.glass-card {
+  background: linear-gradient(
+    to bottom right,
+    rgba(38, 38, 38, 0.65),
+    rgba(23, 23, 23, 0.65)
+  );
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.gradient-banner {
+  position: absolute;
+  inset: -1px;
+  pointer-events: none;
+  background: radial-gradient(
+      1200px 400px at right -30% top -20%,
+      rgba(147, 51, 234, 0.15),
+      transparent 60%
+    ),
+    radial-gradient(
+      800px 300px at left -20% bottom -30%,
+      rgba(59, 130, 246, 0.15),
+      transparent 60%
+    );
+  mask: linear-gradient(black, black) content-box, linear-gradient(black, black);
+  padding: 1px; /* creates a 1px inner border illusion */
+  border-radius: 16px;
+}
+
+/* Avatar with gradient ring */
+.avatar-ring {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 9999px;
+  background: conic-gradient(from 180deg, #a855f7, #3b82f6, #10b981, #a855f7);
+  padding: 2px;
+}
+
+.avatar-ring.size-16 {
+  width: 64px;
+  height: 64px;
+}
+
+.avatar-placeholder {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(
+    180deg,
+    rgba(24, 24, 27, 0.9),
+    rgba(39, 39, 42, 0.9)
+  );
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+/* Badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 9999px;
+  padding: 6px 12px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  background: rgba(63, 63, 70, 0.3);
+  border: 1px solid rgba(82, 82, 91, 0.5);
+}
+
+/* Buttons */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: linear-gradient(180deg, #7c3aed, #6d28d9);
+  color: white;
+  font-weight: 600;
+  padding: 10px 14px;
+  border: 1px solid rgba(124, 58, 237, 0.6);
+  box-shadow: 0 10px 24px rgba(124, 58, 237, 0.25);
+  transition: transform 120ms ease, filter 120ms ease, box-shadow 120ms ease;
+}
+.btn-primary:hover {
+  filter: brightness(1.05);
+  transform: translateY(-1px);
+}
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-weight: 600;
+  padding: 10px 14px;
+  border: 1px solid rgba(82, 82, 91, 0.6);
+  transition: background-color 120ms ease, border-color 120ms ease;
+}
+.btn-ghost:hover {
+  background: rgba(63, 63, 70, 0.35);
+  border-color: rgba(113, 113, 122, 0.7);
+}
+
+/* Icon bubble */
+.icon-bubble {
+  display: inline-grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(
+    180deg,
+    rgba(63, 63, 70, 0.3),
+    rgba(39, 39, 42, 0.3)
+  );
+  border: 1px solid rgba(82, 82, 91, 0.5);
+  color: #e9d5ff;
+}
+
+/* Skeletons */
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  background: linear-gradient(
+    180deg,
+    rgba(63, 63, 70, 0.5),
+    rgba(39, 39, 42, 0.5)
+  );
+  border: 1px dashed rgba(82, 82, 91, 0.5);
+}
+.skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.08),
+    transparent
+  );
+  animation: shimmer 1.2s infinite;
+}
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Timeline */
+.timeline-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 9999px;
+  background: radial-gradient(circle at 50% 50%, #c084fc, #7c3aed);
+  box-shadow: 0 0 12px rgba(124, 58, 237, 0.6);
+}
+
+/* Form fields (placeholder look) */
+.form-field label {
+  display: block;
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
