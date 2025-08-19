@@ -1,61 +1,7 @@
 import { NavLink } from 'react-router-dom';
 import { FaAlignLeft, FaBuffer, FaChevronRight } from 'react-icons/fa6';
-
-interface MenuItem {
-  label: string;
-  to?: string;
-  children?: MenuItem[];
-}
-
-const menuData: MenuItem[] = [
-  { label: 'Perfil', to: '/user/profile' },
-  { label: 'Dashboard', to: '/user/dashboard' },
-  {
-    label: 'QR Codes',
-    children: [
-      { label: 'Empresa', to: '/user/qrcode/enterprise' },
-      { label: 'Produtos', to: '/user/qrcode/products' },
-    ],
-  },
-  {
-    label: 'Feedbacks',
-    children: [
-      { label: 'Enviados', to: '/user/feedbacks/all' },
-      {
-        label: 'Analisados',
-        children: [
-          {
-            label: 'Todos',
-            to: '/user/feedbacks/analytics/all',
-          },
-          {
-            label: 'Positivos',
-            to: '/user/feedbacks/analytics/positive',
-          },
-          {
-            label: 'Negativos',
-            to: '/user/feedbacks/analytics/negative',
-          },
-        ],
-      },
-    ],
-  },
-  {
-    label: 'Insigths',
-    children: [
-      { label: 'Relatórios', to: '/user/insights/reports' },
-      { label: 'Emocional', to: '/user/insights/emotional' },
-      { label: 'Estatísticas', to: '/user/insights/statistics' },
-    ],
-  },
-  {
-    label: 'Editar',
-    children: [
-      { label: 'Perfil', to: '/user/edit/profile' },
-      { label: 'Clientes', to: '/user/edit/customers' },
-    ],
-  },
-];
+import type { MenuItem } from 'lib/interfaces/user/propsMenu';
+import { menuData } from 'lib/data/menu';
 
 function Item({ item }: { item: MenuItem }) {
   const hasChildren = Array.isArray(item.children) && item.children.length > 0;
