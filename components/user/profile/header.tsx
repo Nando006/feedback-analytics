@@ -15,7 +15,7 @@ export default function Header() {
             Seu Nome
           </h1>
           <p className="mt-1 truncate text-sm text-[var(--text-muted)] md:text-base">
-            @username · Product Designer
+            Descrição
           </p>
           <div className="mt-4 flex flex-wrap gap-2">
             <span className="badge">Pro</span>

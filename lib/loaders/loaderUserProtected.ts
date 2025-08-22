@@ -12,12 +12,11 @@ export async function LoaderUserProtected(_args: LoaderFunctionArgs) {
 
     const enterprise = enterprisePayload?.enterprise ?? {
       name:
-        (user.user_metadata as any)?.company_name ||
         (user.user_metadata as any)?.full_name ||
         'Empresa',
-      document: (user.user_metadata as any)?.document || '',
+      document: '',
       email: user.email ?? '',
-      phone: (user.user_metadata as any)?.phone || '',
+      phone: user.phone ?? '',
     };
 
     return {

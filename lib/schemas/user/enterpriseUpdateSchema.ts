@@ -2,16 +2,16 @@ import z from 'zod';
 
 export const enterpriseUpdateSchema = z
   .object({
-    name: z.string().min(2).max(120).optional(),
     document: z.string().min(11).max(18).optional(),
-    email: z.string().email().optional(),
-    phone: z.string().min(8).max(20).optional(),
+    account_type: z.enum(['CPF', 'CNPJ']).optional(),
+    terms_version: z.string().min(1).max(32).optional(),
+    terms_accepted_at: z.iso.datetime().optional(),
   })
   .refine(
     (data) =>
-      typeof data.name !== 'undefined' ||
       typeof data.document !== 'undefined' ||
-      typeof data.email !== 'undefined' ||
-      typeof data.phone !== 'undefined',
+      typeof data.account_type !== 'undefined' ||
+      typeof data.terms_version !== 'undefined' ||
+      typeof data.terms_accepted_at !== 'undefined',
     { message: 'at_least_one_field' },
   );

@@ -7,10 +7,6 @@ export default function Information() {
           <label>Nome completo</label>
           <div className="skeleton h-10" />
         </div>
-        <div className="form-field">
-          <label>Username</label>
-          <div className="skeleton h-10" />
-        </div>
         <div className="form-field sm:col-span-2">
           <label>Sobre você</label>
           <div className="skeleton h-24" />

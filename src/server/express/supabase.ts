@@ -34,6 +34,9 @@ export function createSupabaseServerClient(
           }));
         },
         setAll(cookiesToSet) {
+          if (res.headersSent || res.writableEnded) {
+            return;
+          }
           const remember = opts?.remember === true;
           const base = {
             httpOnly: true,
@@ -46,6 +49,10 @@ export function createSupabaseServerClient(
             res.cookie(name, value, { ...base, ...(options ?? {}) });
           }
         },
+      },
+      auth: {
+        persistSession: false,
+        autoRefreshToken: false,
       },
     },
   );

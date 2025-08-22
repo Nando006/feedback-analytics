@@ -17,12 +17,20 @@ export function registerPublicAuthRoutes(app: express.Express) {
       return res.status(400).json({ error: 'invalid_payload' });
     }
 
-    const { email, password, remember } = parsed.data;
-    const supabase = createSupabaseServerClient(req, res, { remember });
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    const payload = parsed.data as any;
+    const supabase = createSupabaseServerClient(req, res, {
+      remember: payload.remember ?? false
+    })
+
+    const { data, error } = payload.email 
+      ? await supabase.auth.signInWithPassword({
+          email: payload.email,
+          password: payload.password,
+        })
+      : await supabase.auth.signInWithPassword({
+        phone: payload.phone,
+        password: payload.password
+      });
 
     if (error) {
       return res.status(401).json({ error: 'invalid_credentials' });
@@ -48,7 +56,7 @@ export function registerPublicAuthRoutes(app: express.Express) {
       data.accountType === 'CNPJ'
         ? {
             account_type: 'CNPJ',
-            company_name: data.companyName,
+            full_name: data.fullName,
             document: data.document,
             phone: data.phone,
             terms_accepted_at: new Date().toISOString(),

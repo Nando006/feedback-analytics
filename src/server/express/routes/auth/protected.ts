@@ -16,7 +16,9 @@ export function registerProtectedAuthRoutes(app: express.Express) {
 
     const { data: enterprise, error } = await supabase
       .from('enterprise')
-      .select('id, name, document, email, phone, created_at')
+      .select(
+        'id, document, account_type, terms_version, terms_accepted_at, created_at',
+      )
       .eq('auth_user_id', user.id)
       .single();
 
@@ -26,7 +28,11 @@ export function registerProtectedAuthRoutes(app: express.Express) {
 
     return res.json({
       enterprise,
-      user: { id: user.id, email: user.email },
+      user: {
+        id: user.id,
+        email: user.email ?? null,
+        phone: user.phone ?? null,
+      },
     });
   });
 
@@ -35,7 +41,7 @@ export function registerProtectedAuthRoutes(app: express.Express) {
   // Atualiza metadados do usuário (perfil)
   app.patch('/api/user/profile', requireAuth, async (req, res) => {
     const parsed = profileUpdateSchema.safeParse(req.body);
-    if (parsed.success) {
+    if (!parsed.success) {
       return res.status(400).json({
         error: 'invalid_payload',
       });
@@ -77,19 +83,62 @@ export function registerProtectedAuthRoutes(app: express.Express) {
       .from('enterprise')
       .update(parsed.data)
       .eq('auth_user_id', user.id)
-      .select('id, name, document, email, phone, created_at')
+      .select(
+        'id, document, account_type, terms_version, terms_accepted_at, created_at',
+      )
       .single();
 
     if (error) {
       return res.status(401).json({ error: 'Enterprise_not_found' });
     }
 
+    try {
+      await supabase.auth.updateUser({
+        data: {
+          phone: null,
+          document: null,
+          account_type: null,
+          terms_version: null,
+          terms_accepted_at: null,
+          email: null,
+          email_verified: null,
+          phone_verified: null,
+        },
+      });
+    } catch {}
+
     return res.json({
       enterprise,
       user: {
         id: user.id,
-        email: user.email,
+        email: user.email ?? null,
+        phone: user.phone ?? null,
       },
     });
+  });
+
+  // Inicia verificação de telefone (envia OTP via SMS)
+  app.post('/api/user/phone/start', requireAuth, async (req, res) => {
+    const phone = String(req.body?.phone ?? '');
+    if(!phone) return res.status(400).json({ error: 'invalid_payload' });
+
+    const supabase = req.supabase;
+    const { error } = await supabase.auth.updateUser({ phone });
+    if(error) return res.status(400).json({ error: 'update_failed' });
+    return res.json({ ok: true });
+  });
+
+  // Confirma verificação de telefone (confirma OTP) 
+  app.post('/api/user/phone/verify', requireAuth, async (req, res) => {
+    const token = String(req.body?.token ?? '');
+    if(!token) return res.status(400).json({ error: 'invalid_payload' });
+
+    const supabase = req.supabase;
+    const { error } = await supabase.auth.verifyOtp({
+      type: 'phone_change',
+      token
+    });
+    if(error) return res.status(400).json({ error: 'verify_failed' });
+    return res.json({ ok: true });
   });
 }

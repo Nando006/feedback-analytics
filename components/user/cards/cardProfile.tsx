@@ -6,10 +6,12 @@ import { Link, useNavigate } from 'react-router-dom';
 
 export default function CardProfile({
   enterprise,
+  user
 }: PropsApiEnterpriseResponse) {
   const navigate = useNavigate();
 
-  const { display, props: domProps } = useTruncatedText(enterprise.name, 15);
+  const full_name = (user as any)?.user_metadata?.full_name ?? enterprise.document;
+  const { display, props: domProps } = useTruncatedText(full_name, 15);
 
   async function handleSignOut() {
     await logout().catch(() => {});

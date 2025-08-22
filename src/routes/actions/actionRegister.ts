@@ -12,14 +12,13 @@ export async function ActionRegister({ request }: ActionFunctionArgs) {
 
   // Campos condicionais
   const fullName = String(form.get('fullName') ?? '');
-  const companyName = String(form.get('companyName') ?? '');
   const document = String(form.get('document') ?? '');
 
   const payload =
     accountType === 'CNPJ'
       ? {
           accountType,
-          companyName,
+          fullName,
           document,
           email,
           phone,
