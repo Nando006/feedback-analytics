@@ -37,7 +37,7 @@ export async function ActionRegister({ request }: ActionFunctionArgs) {
           terms,
         };
 
-  const res = await fetch('/api/auth/register', {
+  const res = await fetch('/api/public/auth/register', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),

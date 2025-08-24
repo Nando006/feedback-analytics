@@ -43,7 +43,57 @@ FOR EACH ROW
 EXECUTE FUNCTION public.update_updated_at_column();
 ```
 
-2. Tabela `public.customer`
+2. Tabela `public.collecting_data_enterprise`
+
+```sql
+BEGIN;
+
+CREATE TABLE IF NOT EXISTS public.collecting_data_enterprise (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  enterprise_id UUID NOT NULL REFERENCES public.enterprise(id) ON DELETE CASCADE,
+
+  -- Campos de coleta de contexto empresarial
+  company_objective TEXT,           -- "Qual é o objetivo da sua empresa?"
+  analytics_goal TEXT,              -- "O que você busca ao usar o Feedback Analytics?"
+  business_summary TEXT,            -- "Descreva seu negócio em poucas palavras."
+  main_products_or_services TEXT[], -- "Quais são seus principais produtos ou serviços? (lista)"
+
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+
+  CONSTRAINT collecting_data_enterprise_enterprise_unique UNIQUE (enterprise_id)
+);
+
+DROP TRIGGER IF EXISTS set_updated_at ON public.collecting_data_enterprise;
+CREATE TRIGGER set_updated_at
+BEFORE UPDATE ON public.collecting_data_enterprise
+FOR EACH ROW
+EXECUTE FUNCTION public.update_updated_at_column();
+
+ALTER TABLE public.collecting_data_enterprise ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Auth gerencia dados de coleta" ON public.collecting_data_enterprise;
+CREATE POLICY "Auth gerencia dados de coleta"
+ON public.collecting_data_enterprise
+FOR ALL TO authenticated
+USING (
+  enterprise_id IN (
+    SELECT id FROM public.enterprise WHERE auth_user_id = auth.uid()
+  )
+)
+WITH CHECK (
+  enterprise_id IN (
+    SELECT id FROM public.enterprise WHERE auth_user_id = auth.uid()
+  )
+);
+
+CREATE INDEX IF NOT EXISTS collecting_data_enterprise_enterprise_id_idx
+  ON public.collecting_data_enterprise(enterprise_id);
+
+COMMIT;
+```
+
+3. Tabela `public.customer`
 
 ```sql
 CREATE TABLE IF NOT EXISTS public.customer(
@@ -63,7 +113,7 @@ FOR EACH ROW
 EXECUTE FUNCTION public.update_updated_at_column();
 ```
 
-3. Tabela `public.tracked_devices`
+4. Tabela `public.tracked_devices`
 
 ```sql
 CREATE TABLE IF NOT EXISTS public.tracked_devices (
@@ -90,7 +140,7 @@ FOR EACH ROW
 EXECUTE FUNCTION public.update_updated_at_column();
 ```
 
-4. Tabela `public.collection_points`
+5. Tabela `public.collection_points`
 
 ```sql
 CREATE TABLE IF NOT EXISTS public.collection_points(
@@ -114,7 +164,7 @@ CREATE INDEX IF NOT EXISTS collection_points_enterprise_id_idx
   ON public.collection_points(enterprise_id);
 ```
 
-5. Tabela `public.feedback`
+6. Tabela `public.feedback`
 
 ```sql
 CREATE TABLE IF NOT EXISTS public.feedback(
@@ -135,7 +185,7 @@ FOR EACH ROW
 EXECUTE FUNCTION public.update_updated_at_column();
 ```
 
-6. Tabela `public.feedback_analysis`
+7. Tabela `public.feedback_analysis`
 
 ```sql
 CREATE TABLE IF NOT EXISTS public.feedback_analysis(
@@ -206,6 +256,59 @@ CREATE TRIGGER on_auth_user_created
 AFTER INSERT ON auth.users
 FOR EACH ROW
 EXECUTE FUNCTION public.create_enterprise_on_signup();
+```
+
+1.1. Limpeza de metadados em atualizações do usuário
+
+```sql
+CREATE OR REPLACE FUNCTION public.clean_user_metadata_before_change()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path TO 'public'
+AS $$
+BEGIN
+  -- Sobe phone do metadata para a coluna canônica, se necessário
+  NEW.phone := COALESCE(
+    NEW.phone,
+    NULLIF((COALESCE(NEW.raw_user_meta_data, '{}'::jsonb)->>'phone'), '')
+  );
+
+  -- Remove chaves não desejadas do metadata
+  NEW.raw_user_meta_data := COALESCE(NEW.raw_user_meta_data, '{}'::jsonb)
+    - 'phone' - 'document' - 'company_name'
+    - 'account_type' - 'terms_version' - 'terms_accepted_at'
+    - 'email' - 'email_verified' - 'phone_verified';
+
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS on_auth_user_metadata_before_update ON auth.users;
+CREATE TRIGGER on_auth_user_metadata_before_update
+BEFORE UPDATE OF raw_user_meta_data ON auth.users
+FOR EACH ROW
+EXECUTE FUNCTION public.clean_user_metadata_before_change();
+```
+
+Backfill opcional (execução única)
+
+```sql
+UPDATE auth.users
+SET
+  phone = COALESCE(
+    auth.users.phone,
+    NULLIF((COALESCE(raw_user_meta_data, '{}'::jsonb)->>'phone'), '')
+  ),
+  raw_user_meta_data = COALESCE(raw_user_meta_data, '{}'::jsonb)
+    - 'phone' - 'document' - 'company_name'
+    - 'account_type' - 'terms_version' - 'terms_accepted_at'
+    - 'email' - 'email_verified' - 'phone_verified'
+WHERE raw_user_meta_data ?| ARRAY[
+  'phone','document','company_name','account_type',
+  'terms_version','terms_accepted_at','email',
+  'email_verified','phone_verified'
+];
 ```
 
 2. Rastreamento de dispositivos

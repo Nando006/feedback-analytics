@@ -1,4 +1,4 @@
-export default function Lock() {
+export default function SVGLock() {
   return (
     <svg
       className="w-8 h-8 text-white"

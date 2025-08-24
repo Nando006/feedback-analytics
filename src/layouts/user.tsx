@@ -8,6 +8,7 @@ export default function User() {
   const { enterprise } = useLoaderData() as {
     enterprise: PropsEnterprise;
   };
+
   const [isOverlayMode, setIsOverlayMode] = useState(true);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isHoverActivator, setIsHoverActivator] = useState(false);

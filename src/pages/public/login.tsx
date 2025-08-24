@@ -1,6 +1,6 @@
 import CardForm from 'components/public/cards/cardForm';
 import FormLogin from 'components/public/forms/formLogin';
-import Lock from 'components/public/svg/lock';
+import SVGLock from 'components/svg/lock';
 
 export default function Login() {
   return (
@@ -11,7 +11,7 @@ export default function Login() {
           title="Bem-vindo de volta"
           text="Entre na sua conta para continuar"
           linkRegister="/register"
-          icon={<Lock />}
+          icon={<SVGLock />}
           form={<FormLogin />}
         />
 

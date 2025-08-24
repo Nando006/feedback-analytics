@@ -16,6 +16,8 @@ import FeedbacksAnalyticsPositive from 'pages/user/feedbacks/analytics/feedbacks
 import FeedbacksAnalyticsNegative from 'pages/user/feedbacks/analytics/feedbacks.AnalyticsNegative';
 import FeedbacksAnalyticsAll from 'pages/user/feedbacks/analytics/feedbacksAnalyticsAll';
 import QRCodeProducts from 'pages/user/qrcodes/qrcodeProducts';
+import { ActionCollectingData } from './actions/actionCollectingData';
+import EditCollectingData from 'pages/user/edit/editCollectingData';
 
 export function RouteUser() {
   return (
@@ -79,6 +81,11 @@ export function RouteUser() {
       <Route
         path="edit/profile"
         element={<EditUser />}
+      />
+      <Route
+        path="edit/collecting-data-enterprise"
+        element={<EditCollectingData />}
+        action={ActionCollectingData}
       />
     </Route>
   );

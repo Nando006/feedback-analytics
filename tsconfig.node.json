@@ -30,5 +30,11 @@
       "server/*": ["src/server/*"]
     }
   },
-  "include": ["vite.config.ts", "src", "components", "lib", "styles"]
+  "include": [
+    "vite.config.ts",
+    "src/server/**/*",
+    "src/server/**/*.ts",
+    "lib/**/*",
+    "lib/**/*.ts"
+  ]
 }

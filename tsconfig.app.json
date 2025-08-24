@@ -33,5 +33,5 @@
       "server/*": ["src/server/*"]
     }
   },
-  "include": ["src", "components", "lib", "styles"]
+  "include": ["src", "components", "lib", "styles", "docs"]
 }
