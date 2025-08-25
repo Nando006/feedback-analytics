@@ -1,15 +1,24 @@
 import { getAuthUser } from 'lib/api/authUser';
+import { getCollectingDataEnterprise } from 'lib/api/collectingDataEnterprise';
 import { getEnterprise } from 'lib/api/enterprise';
 import type { PropsAuthUser } from 'lib/interfaces/entities/authUser';
-import type { PropsApiEnterpriseResponse } from 'lib/interfaces/entities/enterprise';
+import type {
+  PropsApiEnterpriseResponse,
+  PropsCollectingDataEnterprise,
+} from 'lib/interfaces/entities/enterprise';
 import { redirect, type LoaderFunctionArgs } from 'react-router-dom';
 
 export async function LoaderUserProtected(_args: LoaderFunctionArgs) {
   try {
-    const [{ user }, enterprisePayload] = (await Promise.all([
+    const [{ user }, enterprisePayload, collecting] = (await Promise.all([
       getAuthUser(),
       getEnterprise().catch(() => null),
-    ])) as [PropsAuthUser, PropsApiEnterpriseResponse | null];
+      getCollectingDataEnterprise().catch(() => null),
+    ])) as [
+      PropsAuthUser,
+      PropsApiEnterpriseResponse | null,
+      PropsCollectingDataEnterprise | null,
+    ];
 
     const enterprise = enterprisePayload?.enterprise
       ? {
@@ -28,6 +37,7 @@ export async function LoaderUserProtected(_args: LoaderFunctionArgs) {
     return {
       user,
       enterprise,
+      collecting,
     };
   } catch (error) {
     throw redirect('/login');

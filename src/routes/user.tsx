@@ -22,6 +22,7 @@ import EditCollectingData from 'pages/user/edit/editCollectingData';
 export function RouteUser() {
   return (
     <Route
+      id="user"
       path="/user"
       errorElement={<ErrorPage />}
       element={<LayoutUser />}

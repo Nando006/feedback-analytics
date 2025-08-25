@@ -46,7 +46,7 @@ export const menuData: MenuItem[] = [
     children: [
       { label: 'Perfil', to: '/user/edit/profile' },
       {
-        label: 'Informações da Empresa',
+        label: 'Informações',
         to: '/user/edit/collecting-data-enterprise',
       },
       { label: 'Clientes', to: '/user/edit/customers' },
