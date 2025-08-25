@@ -11,7 +11,8 @@ export async function getCollectingDataEnterprise(): Promise<PropsCollectingData
     }>('/api/protected/user/collecting_data');
     return collecting ?? null;
   } catch (error: any) {
-    if ((error as any)?.status === 400) return null;
+    const status = (error as any)?.status;
+    if (status === 400 || status === 404) return null;
     throw error;
   }
 }

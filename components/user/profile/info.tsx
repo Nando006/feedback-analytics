@@ -2,6 +2,8 @@ import type {
   PropsCollectingDataEnterprise,
   PropsEnterprise,
 } from 'lib/interfaces/entities/enterprise';
+import { formatDocument } from 'lib/utils/formatDocument';
+import { formatPhone } from 'lib/utils/formatPhone';
 
 interface Props {
   enterprise: PropsEnterprise;
@@ -30,13 +32,20 @@ export default function Info({ enterprise, collecting }: Props) {
             </div>
             <div className="rounded-xl border border-neutral-800 bg-neutral-900/40 p-4">
               <p className="text-xs text-[var(--text-muted)]">Telefone</p>
-              <p className="mt-1 font-medium">{enterprise?.phone ?? ''}</p>
+              <p className="mt-1 font-medium">
+                {formatPhone(enterprise?.phone ?? '') ?? ''}
+              </p>
             </div>
             <div className="rounded-xl border border-neutral-800 bg-neutral-900/40 p-4">
               <p className="text-xs text-[var(--text-muted)]">
                 {enterprise?.account_type ?? 'Documento'}
               </p>
-              <p className="mt-1 font-medium">{enterprise?.document ?? ''}</p>
+              <p className="mt-1 font-medium">
+                {formatDocument(
+                  enterprise?.document,
+                  enterprise?.account_type,
+                ) ?? ''}
+              </p>
             </div>
             <div className="rounded-xl border border-neutral-800 bg-neutral-900/40 p-4">
               <p className="text-xs text-[var(--text-muted)]">
