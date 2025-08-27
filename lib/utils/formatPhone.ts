@@ -4,14 +4,14 @@ export const formatPhone = (input: string): string => {
   // Mantém apenas dígitos
   let digits = input.replace(/\D/g, '');
 
-  // Detecta e separa código do país +55 quando presente
+  // Detecta e separa código do país +55
   let cc = '';
   if (digits.startsWith('55')) {
     cc = '+55';
     digits = digits.slice(2);
   }
 
-  // Normaliza excesso: mantém no máximo 11 dígitos (DDI já removido acima)
+  // Normaliza excesso: mantém no máximo 11 dígitos
   if (digits.length > 11) {
     digits = digits.slice(-11);
   }
