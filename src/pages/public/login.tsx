@@ -1,4 +1,4 @@
-import CardForm from 'components/public/cards/cardForm';
+import CardForm from 'components/public/shared/cards/cardForm';
 import FormLogin from 'components/public/forms/formLogin';
 import SVGLock from 'components/svg/lock';
 

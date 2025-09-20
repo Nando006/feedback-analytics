@@ -1,4 +1,4 @@
-import ErrorPage from 'components/public/handling/errorPage';
+import ErrorPage from 'components/public/shared/handling/errorPage';
 import Public from 'layouts/public';
 import FeedbackQRCode from 'pages/public/feedbackQRCode';
 import Home from 'pages/public/home';

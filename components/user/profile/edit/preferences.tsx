@@ -7,10 +7,6 @@ export default function Preferences() {
           <label>Tema</label>
           <div className="skeleton h-10" />
         </div>
-        <div className="form-field">
-          <label>Idioma</label>
-          <div className="skeleton h-10" />
-        </div>
       </div>
     </section>
   );

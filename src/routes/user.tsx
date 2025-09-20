@@ -1,4 +1,4 @@
-import ErrorPage from 'components/user/handling/errorPage';
+import ErrorPage from 'components/user/shared/handling/errorPage';
 import Dashboard from 'pages/user/dashboard';
 import EditCustomer from 'pages/user/edit/editCustomers';
 import EditUser from 'pages/user/edit/editProfile';
@@ -8,7 +8,7 @@ import QRCodeEnterprise from 'pages/user/qrcodes/qrcodeEnterprise';
 import FeedbacksInsightsReport from 'pages/user/feedbacks/insights/feedbackInsightsReport';
 import LayoutUser from 'layouts/user';
 import { Route } from 'react-router-dom';
-import { LoaderUserProtected } from 'lib/loaders/loaderUserProtected';
+import { LoaderUserProtected } from 'src/routes/loaders/loaderUserProtected';
 import Profile from 'pages/user/profile';
 import FeedbacksInsightsEmotional from 'pages/user/feedbacks/insights/feedbacksInsightsEmotional';
 import FeedbacksInsightsStatistics from 'pages/user/feedbacks/insights/feedbacksInsightsStatistics';

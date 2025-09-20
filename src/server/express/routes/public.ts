@@ -6,8 +6,8 @@ import { Register } from './endpoints/public/register';
 
 export function PublicRoutes(app: express.Express) {
   Callback(app);
-
   Login(app);
+
   Logout(app);
   Register(app);
 }

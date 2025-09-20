@@ -1,4 +1,4 @@
-import CardForm from 'components/public/cards/cardForm';
+import CardForm from 'components/public/shared/cards/cardForm';
 import SVGLock from 'components/svg/lock';
 import { useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
