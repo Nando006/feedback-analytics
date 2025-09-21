@@ -33,6 +33,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  height: 50px;
   border-radius: 10px;
   background: linear-gradient(180deg, #7c3aed, #6d28d9);
   color: white;

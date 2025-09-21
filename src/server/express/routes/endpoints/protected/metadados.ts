@@ -3,6 +3,7 @@ import { metadadosUpdateSchema } from 'lib/schemas/user/metadadosUpdateSchema';
 import { requireAuth } from 'src/server/express/middleware/auth';
 
 export function Metadados(app: express.Express) {
+  // Atualiza os metadados do usuário.
   app.patch('/api/protected/user/metadados', requireAuth, async (req, res) => {
     const parsed = metadadosUpdateSchema.safeParse(req.body);
     if (!parsed.success) {

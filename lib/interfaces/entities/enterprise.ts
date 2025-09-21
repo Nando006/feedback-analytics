@@ -40,3 +40,8 @@ export type TypeUpdateCollectingDataPayload = Partial<
     | 'main_products_or_services'
   >
 >;
+
+export interface PropsEnterpriseAndCollectingDataEnterprise {
+  enterprise: PropsEnterprise;
+  collecting: PropsCollectingDataEnterprise | null;
+}

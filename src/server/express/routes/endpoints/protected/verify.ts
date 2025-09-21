@@ -2,6 +2,7 @@ import express from 'express';
 import { requireAuth } from '../../../middleware/auth';
 
 export function VerifyPhone(app: express.Express) {
+  // Inicia a verificação de telefone (envia OTP)
   app.post('/api/protected/user/phone/start', requireAuth, async (req, res) => {
     const phone = String(req.body?.phone ?? '');
     if (!phone) return res.status(400).json({ error: 'invalid_payload' });

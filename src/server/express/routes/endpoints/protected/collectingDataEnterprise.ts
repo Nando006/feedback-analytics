@@ -2,6 +2,7 @@ import express from 'express';
 import { requireAuth } from 'src/server/express/middleware/auth';
 
 export function CollectingDataEnterprise(app: express.Express) {
+  // Busca os dados de coleta de dados da empresa.
   app.get(
     '/api/protected/user/collecting_data',
     requireAuth,
@@ -35,6 +36,7 @@ export function CollectingDataEnterprise(app: express.Express) {
     },
   );
 
+  // Atualiza os dados de coleta de dados da empresa.
   app.patch(
     '/api/protected/user/collecting_data',
     requireAuth,
@@ -130,6 +132,7 @@ export function CollectingDataEnterprise(app: express.Express) {
     },
   );
 
+  // Insere ou atualiza os dados de coleta de dados da empresa.
   app.put(
     '/api/protected/user/collecting_data',
     requireAuth,

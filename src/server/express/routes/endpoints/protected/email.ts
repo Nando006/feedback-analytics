@@ -3,6 +3,7 @@ import { emailUpdateSchema } from 'lib/schemas/user/emailUpdateSchema';
 import { requireAuth } from 'src/server/express/middleware/auth';
 
 export function Email(app: express.Express) {
+  // Atualiza o email do usuário.
   app.patch('/api/protected/user/email', requireAuth, async (req, res) => {
     const parsed = emailUpdateSchema.safeParse(req.body);
     if (!parsed.success) {

@@ -17,13 +17,16 @@ export async function requireAuth(
   res: Response,
   next: NextFunction,
 ) {
+  // Criando o cliente Supabase.
   const supabase = createSupabaseServerClient(req, res);
   const { data, error } = await supabase.auth.getUser();
 
+  // Verificando se o usuário está autenticado. Se não estiver, retorna um erro.
   if (error || !data.user) {
     return res.status(401).json({ error: 'unauthorized' });
   }
 
+  // Adicionando o usuário e o cliente Supabase ao request.
   req.user = data.user;
   req.supabase = supabase;
 

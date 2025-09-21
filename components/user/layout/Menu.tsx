@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom';
 import { FaAlignLeft, FaBuffer, FaChevronRight } from 'react-icons/fa6';
 import type { MenuItem } from 'lib/interfaces/user/propsMenu';
-import { menuData } from 'lib/data/menu';
+import { menuData } from 'lib/mock/menu';
 
 function Item({ item }: { item: MenuItem }) {
   const hasChildren = Array.isArray(item.children) && item.children.length > 0;

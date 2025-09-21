@@ -3,6 +3,7 @@ import { enterpriseUpdateSchema } from 'lib/schemas/user/enterpriseUpdateSchema'
 import { requireAuth } from 'src/server/express/middleware/auth';
 
 export function Enterprise(app: express.Express) {
+  // Busca os dados da empresa.
   app.get('/api/protected/user/enterprise', requireAuth, async (req, res) => {
     const supabase = req.supabase;
     const user = req.user;
@@ -29,6 +30,7 @@ export function Enterprise(app: express.Express) {
     });
   });
 
+  // Atualiza os dados da empresa.
   app.patch('/api/protected/user/enterprise', requireAuth, async (req, res) => {
     const parsed = enterpriseUpdateSchema.safeParse(req.body);
     if (!parsed.success) {

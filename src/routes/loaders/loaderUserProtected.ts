@@ -1,6 +1,6 @@
-import { getAuthUser } from 'lib/api/authUser';
-import { getCollectingDataEnterprise } from 'lib/api/collectingDataEnterprise';
-import { getEnterprise } from 'lib/api/enterprise';
+import { getAuthUser } from 'lib/services/authUser';
+import { getCollectingDataEnterprise } from 'lib/services/collectingDataEnterprise';
+import { getEnterprise } from 'lib/services/enterprise';
 import type { PropsAuthUser } from 'lib/interfaces/entities/authUser';
 import type {
   PropsApiEnterpriseResponse,
@@ -10,6 +10,7 @@ import { redirect, type LoaderFunctionArgs } from 'react-router-dom';
 
 export async function LoaderUserProtected(_args: LoaderFunctionArgs) {
   try {
+    // Chamando as funções getAuthUser, getEnterprise e getCollectingDataEnterprise, lá de services.
     const [{ user }, enterprisePayload, collecting] = (await Promise.all([
       getAuthUser(),
       getEnterprise().catch(() => null),
@@ -20,6 +21,7 @@ export async function LoaderUserProtected(_args: LoaderFunctionArgs) {
       PropsCollectingDataEnterprise | null,
     ];
 
+    // Processando os dados da empresa. Se existir, adiciona o email e o telefone do usuário e o nome completo.
     const enterprise = enterprisePayload?.enterprise
       ? {
           ...enterprisePayload.enterprise,
@@ -34,6 +36,7 @@ export async function LoaderUserProtected(_args: LoaderFunctionArgs) {
           full_name: (user.user_metadata as any)?.full_name ?? null,
         };
 
+    // Retornando os dados da empresa.
     return {
       user,
       enterprise,
