@@ -6,9 +6,7 @@ export default function EditProfile() {
   return (
     <div className="font-inter space-y-6">
       <Header />
-
       <Info />
-
       <Preferences />
     </div>
   );

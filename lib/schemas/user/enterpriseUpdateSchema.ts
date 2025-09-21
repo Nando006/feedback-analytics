@@ -1,5 +1,6 @@
 import z from 'zod';
 
+// Atualizar os dados da empresa.
 export const enterpriseUpdateSchema = z
   .object({
     document: z.string().min(11).max(18).optional(),

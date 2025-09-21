@@ -1,3 +1,4 @@
+// Dados da empresa.
 export interface PropsEnterprise {
   id: string;
   document: string;
@@ -12,6 +13,7 @@ export interface PropsEnterprise {
   phone?: string | null;
 }
 
+// Dados da empresa e dos dados do usuário.
 export interface PropsApiEnterpriseResponse {
   enterprise: PropsEnterprise;
   user?: {
@@ -21,6 +23,7 @@ export interface PropsApiEnterpriseResponse {
   };
 }
 
+// Dados coletados da empresa.
 export interface PropsCollectingDataEnterprise {
   id: string;
   enterprise_id: string;
@@ -31,6 +34,8 @@ export interface PropsCollectingDataEnterprise {
   created_at: string;
   updated_at: string;
 }
+
+// Payload para atualizar os dados coletados da empresa.
 export type TypeUpdateCollectingDataPayload = Partial<
   Pick<
     PropsCollectingDataEnterprise,
@@ -41,6 +46,7 @@ export type TypeUpdateCollectingDataPayload = Partial<
   >
 >;
 
+// Dados da empresa e dos dados coletados.
 export interface PropsEnterpriseAndCollectingDataEnterprise {
   enterprise: PropsEnterprise;
   collecting: PropsCollectingDataEnterprise | null;

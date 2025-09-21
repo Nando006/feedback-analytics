@@ -1,5 +1,5 @@
 import SVGImageProfile from 'components/svg/imageProfile';
-import { logout } from 'lib/services/logout';
+import { logout } from 'src/services/logout';
 import type { PropsApiEnterpriseResponse } from 'lib/interfaces/entities/enterprise';
 import { useTruncatedText } from 'lib/utils/truncateText';
 import { FaSignOutAlt } from 'react-icons/fa';

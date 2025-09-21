@@ -1,5 +1,6 @@
 import z from 'zod';
 
+// Atualizar os metadados do usuário.
 export const metadadosUpdateSchema = z
   .object({
     full_name: z.string().min(2).max(120).optional(),
