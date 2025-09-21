@@ -18,6 +18,7 @@ import FeedbacksAnalyticsAll from 'pages/user/feedbacks/analytics/feedbacksAnaly
 import QRCodeProducts from 'pages/user/qrcodes/qrcodeProducts';
 import { ActionCollectingData } from './actions/actionCollectingData';
 import EditCollectingData from 'pages/user/edit/editCollectingData';
+import { ActionProfile } from './actions/actionProfile';
 
 export function RouteUser() {
   return (
@@ -34,6 +35,7 @@ export function RouteUser() {
       <Route
         path="profile"
         element={<Profile />}
+        action={ActionProfile}
       />
       <Route
         path="qrcode/enterprise"
