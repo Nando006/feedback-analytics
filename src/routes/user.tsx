@@ -35,7 +35,6 @@ export function RouteUser() {
       <Route
         path="profile"
         element={<Profile />}
-        action={ActionProfile}
       />
       <Route
         path="qrcode/enterprise"
@@ -84,6 +83,7 @@ export function RouteUser() {
       <Route
         path="edit/profile"
         element={<EditUser />}
+        action={ActionProfile}
       />
       <Route
         path="edit/collecting-data-enterprise"

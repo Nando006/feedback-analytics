@@ -51,7 +51,8 @@ export default function FormEmailUser({ defaultEmail = '' }: Props) {
           </p>
         )}
         <p className="mt-1 text-xs text-neutral-400">
-          Ao atualizar, um e-mail de confirmação será enviado.
+          Após atualizar, confirme a mudança no e-mail antigo e no novo para
+          concluir.
         </p>
       </div>
       <div>
