@@ -3,12 +3,17 @@
 import type { NextFunction, Request, Response } from 'express';
 import { createSupabaseServerClient } from '../supabase';
 
-declare global {
-  namespace Express {
-    interface Request {
-      user?: any;
-      supabase?: any;
-    }
+type SupabaseServerClient = ReturnType<typeof createSupabaseServerClient>;
+type RequestUser = {
+  id: string;
+  email?: string | null;
+  phone?: string | null;
+};
+
+declare module 'express-serve-static-core' {
+  interface Request {
+    user?: RequestUser;
+    supabase?: SupabaseServerClient;
   }
 }
 

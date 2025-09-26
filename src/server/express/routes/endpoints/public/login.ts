@@ -11,21 +11,22 @@ export function Login(app: express.Express) {
       return res.status(400).json({ error: 'invalid_payload' });
     }
 
-    const payload = parsed.data as any;
+    const payload = parsed.data;
     const supabase = createSupabaseServerClient(req, res, {
       remember: payload.remember ?? false,
     });
 
     // Faz o login com email ou telefone.
-    const { data, error } = payload.email
-      ? await supabase.auth.signInWithPassword({
-          email: payload.email,
-          password: payload.password,
-        })
-      : await supabase.auth.signInWithPassword({
-          phone: payload.phone,
-          password: payload.password,
-        });
+    const { data, error } =
+      'email' in payload
+        ? await supabase.auth.signInWithPassword({
+            email: payload.email,
+            password: payload.password,
+          })
+        : await supabase.auth.signInWithPassword({
+            phone: payload.phone,
+            password: payload.password,
+          });
 
     // Verifica se o login foi bem-sucedido. Se não foi, retorna um erro.
     if (error) {

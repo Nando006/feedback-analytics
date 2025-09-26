@@ -7,7 +7,7 @@ export async function getJson<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(path, { credentials: 'include', ...(init ?? {}) });
   if (!res.ok) {
     const error = new Error('Request failed');
-    (error as any).status = res.status;
+    (error as Error & { status?: number }).status = res.status;
     throw error;
   }
 
