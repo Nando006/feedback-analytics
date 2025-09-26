@@ -2,9 +2,9 @@ name: CI Pipeline - Feedback Analytics
 
 on:
   push:
-    branches: [main]
+    branches: [main, homolog]
   pull_request:
-    branches: [main]
+    branches: [main, homolog]
 
 jobs:
   build-and-test:
