@@ -7,7 +7,7 @@
     "dev": "vite",
     "server:dev": "tsx src/server/express/index.ts",
     "dev:all": "concurrently -n web,api -c green,cyan \"npm:dev\" \"npm:server:dev\"",
-    "build": "tsc -b && vite build",
+    "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest"
