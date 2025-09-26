@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useSubmit } from 'react-router-dom';
 import FieldText from './fields/fieldsLogin/fieldText';
@@ -12,6 +13,7 @@ import {
 
 export default function FormLogin() {
   const submit = useSubmit();
+  const [mode, setMode] = useState<'email' | 'phone'>('email');
   const {
     register,
     handleSubmit,
@@ -25,7 +27,11 @@ export default function FormLogin() {
 
   const onSubmit = (data: LoginFormValues) => {
     const formData = new FormData();
-    formData.set('email', data.email);
+    if ('email' in data) {
+      formData.set('email', data.email);
+    } else {
+      formData.set('phone', (data as any).phone);
+    }
     formData.set('password', data.password);
     formData.set('remember', data.remember ?? false ? 'true' : 'false');
 
@@ -42,14 +48,47 @@ export default function FormLogin() {
       className="space-y-6"
       noValidate>
       <div className="space-y-4 pb-2">
-        <FieldText
-          id="email"
-          name="email"
-          label="E-mail"
-          icon={<FaEnvelope />}
-          register={register('email')}
-          error={errors.email?.message as string | undefined}
-        />
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            className={`inline-flex h-9 items-center justify-center rounded-md border px-3 text-sm transition-colors ${
+              mode === 'email'
+                ? 'border-neutral-600 bg-neutral-800 text-neutral-100'
+                : 'border-neutral-800 bg-neutral-900 text-neutral-300 hover:bg-neutral-800'
+            }`}
+            onClick={() => setMode('email')}>
+            E-mail
+          </button>
+          <button
+            type="button"
+            className={`inline-flex h-9 items-center justify-center rounded-md border px-3 text-sm transition-colors ${
+              mode === 'phone'
+                ? 'border-neutral-600 bg-neutral-800 text-neutral-100'
+                : 'border-neutral-800 bg-neutral-900 text-neutral-300 hover:bg-neutral-800'
+            }`}
+            onClick={() => setMode('phone')}>
+            Telefone
+          </button>
+        </div>
+
+        {mode === 'email' ? (
+          <FieldText
+            id="email"
+            name="email"
+            label="E-mail"
+            icon={<FaEnvelope />}
+            register={register('email')}
+            error={(errors as any)?.email?.message as string | undefined}
+          />
+        ) : (
+          <FieldText
+            id="phone"
+            name="phone"
+            label="Telefone (+55DDXXXXXXXXX)"
+            register={register('phone')}
+            error={(errors as any)?.phone?.message as string | undefined}
+          />
+        )}
         <FieldPassword
           id="password"
           name="password"

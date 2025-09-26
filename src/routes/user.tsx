@@ -1,18 +1,29 @@
-import ErrorPage from 'components/user/handling/errorPage';
+import ErrorPage from 'components/user/shared/handling/errorPage';
 import Dashboard from 'pages/user/dashboard';
-import Customer from 'pages/user/edit/customer';
-import User from 'pages/user/edit/user';
-import Category from 'pages/user/feedbacks/category';
-import Feedback from 'pages/user/feedbacks/feedback';
-import QRCode from 'pages/user/feedbacks/QRCode';
-import Reports from 'pages/user/reports';
+import EditCustomer from 'pages/user/edit/editCustomers';
+import EditUser from 'pages/user/edit/editProfile';
+import FeedbacksAll from 'pages/user/feedbacks/feedbacksAll';
+import Feedbacks from 'pages/user/feedbacks/feedbacks';
+import QRCodeEnterprise from 'pages/user/qrcodes/qrcodeEnterprise';
+import FeedbacksInsightsReport from 'pages/user/feedbacks/insights/feedbackInsightsReport';
 import LayoutUser from 'layouts/user';
 import { Route } from 'react-router-dom';
-import { LoaderUserProtected } from 'lib/loaders/loaderUserProtected';
+import { LoaderUserProtected } from 'src/routes/loaders/loaderUserProtected';
+import Profile from 'pages/user/profile';
+import FeedbacksInsightsEmotional from 'pages/user/feedbacks/insights/feedbacksInsightsEmotional';
+import FeedbacksInsightsStatistics from 'pages/user/feedbacks/insights/feedbacksInsightsStatistics';
+import FeedbacksAnalyticsPositive from 'pages/user/feedbacks/analytics/feedbacksAnalyticsPositive';
+import FeedbacksAnalyticsNegative from 'pages/user/feedbacks/analytics/feedbacks.AnalyticsNegative';
+import FeedbacksAnalyticsAll from 'pages/user/feedbacks/analytics/feedbacksAnalyticsAll';
+import QRCodeProducts from 'pages/user/qrcodes/qrcodeProducts';
+import { ActionCollectingData } from './actions/actionCollectingData';
+import EditCollectingData from 'pages/user/edit/editCollectingData';
+import { ActionProfile } from './actions/actionProfile';
 
 export function RouteUser() {
   return (
     <Route
+      id="user"
       path="/user"
       errorElement={<ErrorPage />}
       element={<LayoutUser />}
@@ -22,28 +33,62 @@ export function RouteUser() {
         element={<Dashboard />}
       />
       <Route
-        path="reports"
-        element={<Reports />}
+        path="profile"
+        element={<Profile />}
       />
       <Route
-        path="edit/customer"
-        element={<Customer />}
+        path="qrcode/enterprise"
+        element={<QRCodeEnterprise />}
       />
       <Route
-        path="edit/user"
-        element={<User />}
+        path="qrcode/products"
+        element={<QRCodeProducts />}
       />
       <Route
-        path="feedbacks/category"
-        element={<Category />}
-      />
-      <Route
-        path="feedbacks/qrcode"
-        element={<QRCode />}
+        path="feedbacks/all"
+        element={<FeedbacksAll />}
       />
       <Route
         path="feedbacks/:id"
-        element={<Feedback />}
+        element={<Feedbacks />}
+      />
+      <Route
+        path="feedbacks/analytics/all"
+        element={<FeedbacksAnalyticsAll />}
+      />
+      <Route
+        path="feedbacks/analytics/positive"
+        element={<FeedbacksAnalyticsPositive />}
+      />
+      <Route
+        path="feedbacks/analytics/negative"
+        element={<FeedbacksAnalyticsNegative />}
+      />
+      <Route
+        path="insights/reports"
+        element={<FeedbacksInsightsReport />}
+      />
+      <Route
+        path="insights/emotional"
+        element={<FeedbacksInsightsEmotional />}
+      />
+      <Route
+        path="insights/statistics"
+        element={<FeedbacksInsightsStatistics />}
+      />
+      <Route
+        path="edit/customers"
+        element={<EditCustomer />}
+      />
+      <Route
+        path="edit/profile"
+        element={<EditUser />}
+        action={ActionProfile}
+      />
+      <Route
+        path="edit/collecting-data-enterprise"
+        element={<EditCollectingData />}
+        action={ActionCollectingData}
       />
     </Route>
   );

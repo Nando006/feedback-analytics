@@ -23,12 +23,23 @@
     "baseUrl": ".",
     "paths": {
       "components/*": ["components/*"],
-      "pages/*": ["src/pages/*"],
-      "layouts/*": ["src/layouts/*"],
+      "pages/*": ["pages/*"],
+      "layouts/*": ["layouts/*"],
       "lib/*": ["lib/*"],
       "src/*": ["src/*"],
       "server/*": ["src/server/*"]
     }
   },
-  "include": ["vite.config.ts", "src", "components", "lib", "styles"]
+  "include": [
+    "vite.config.ts",
+    "src/server/**/*",
+    "src/server/**/*.ts",
+    "lib/**/*",
+    "lib/**/*.ts",
+    "pages/**/*",
+    "pages/**/*.ts",
+    "layouts/**/*",
+    "layouts/**/*.ts",
+    "src/services"
+  ]
 }

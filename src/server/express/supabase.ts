@@ -1,6 +1,7 @@
 import { createServerClient } from '@supabase/ssr';
 import type { Request, Response } from 'express';
 
+// Função para parsear as cookies. Utilizada para obter os cookies do request.
 function parseCookies(header?: string): Record<string, string> {
   const out: Record<string, string> = {};
   if (!header) return out;
@@ -12,6 +13,7 @@ function parseCookies(header?: string): Record<string, string> {
   return out;
 }
 
+// Função para criar o cliente Supabase. Utilizada para autenticar o usuário.
 export function createSupabaseServerClient(
   req: Request,
   res: Response,
@@ -34,6 +36,9 @@ export function createSupabaseServerClient(
           }));
         },
         setAll(cookiesToSet) {
+          if (res.headersSent || res.writableEnded) {
+            return;
+          }
           const remember = opts?.remember === true;
           const base = {
             httpOnly: true,
@@ -46,6 +51,10 @@ export function createSupabaseServerClient(
             res.cookie(name, value, { ...base, ...(options ?? {}) });
           }
         },
+      },
+      auth: {
+        persistSession: false,
+        autoRefreshToken: false,
       },
     },
   );

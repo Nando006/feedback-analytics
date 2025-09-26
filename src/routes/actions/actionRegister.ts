@@ -3,6 +3,7 @@ import type { ActionFunctionArgs } from 'react-router-dom';
 export async function ActionRegister({ request }: ActionFunctionArgs) {
   const form = await request.formData();
 
+  // Extraindo os valores dos campos do formulário, convertendo-os para string.
   const accountType = String(form.get('accountType') ?? 'CPF');
   const email = String(form.get('email') ?? '');
   const phone = String(form.get('phone') ?? '');
@@ -12,14 +13,15 @@ export async function ActionRegister({ request }: ActionFunctionArgs) {
 
   // Campos condicionais
   const fullName = String(form.get('fullName') ?? '');
-  const companyName = String(form.get('companyName') ?? '');
   const document = String(form.get('document') ?? '');
 
+  // Enviando os valores para o servidor.
   const payload =
+    // Condição para CNPJ
     accountType === 'CNPJ'
       ? {
           accountType,
-          companyName,
+          fullName,
           document,
           email,
           phone,
@@ -38,13 +40,15 @@ export async function ActionRegister({ request }: ActionFunctionArgs) {
           terms,
         };
 
-  const res = await fetch('/api/auth/register', {
+  // Enviando os valores para o servidor.
+  const res = await fetch('/api/public/auth/register', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
   });
 
   if (res.ok) {
+    // Verificando se o registro foi bem-sucedido.
     // Opcional: redirecionar para /login após sucesso
     // return redirect('/login')
     return new Response(JSON.stringify({ ok: true }), {
@@ -53,6 +57,7 @@ export async function ActionRegister({ request }: ActionFunctionArgs) {
     });
   }
 
+  // Retornando o erro caso o registro falhe.
   const data = await res.json().catch(() => ({ error: 'register_failed' }));
   return new Response(JSON.stringify(data), {
     status: res.status,

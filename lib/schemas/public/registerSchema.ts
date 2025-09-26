@@ -31,7 +31,7 @@ const cpfSchema = z.object({
 
 const cnpjSchema = z.object({
   accountType: z.literal('CNPJ'),
-  companyName: z
+  fullName: z
     .string()
     .min(2, { message: 'Informe o nome da empresa' })
     .max(160, { message: 'Nome da empresa muito longo' }),

@@ -1,0 +1,69 @@
+/* Glass + gradient accents */
+.glass-card {
+  background: linear-gradient(
+    to bottom right,
+    rgba(38, 38, 38, 0.65),
+    rgba(23, 23, 23, 0.65)
+  );
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.gradient-banner {
+  position: absolute;
+  inset: -1px;
+  pointer-events: none;
+  background: radial-gradient(
+      1200px 400px at right -30% top -20%,
+      rgba(147, 51, 234, 0.15),
+      transparent 60%
+    ),
+    radial-gradient(
+      800px 300px at left -20% bottom -30%,
+      rgba(59, 130, 246, 0.15),
+      transparent 60%
+    );
+  mask: linear-gradient(black, black) content-box, linear-gradient(black, black);
+  padding: 1px; /* creates a 1px inner border illusion */
+  border-radius: 16px;
+}
+
+/* Buttons */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 50px;
+  border-radius: 10px;
+  background: linear-gradient(180deg, #7c3aed, #6d28d9);
+  color: white;
+  font-weight: 600;
+  padding: 10px 14px;
+  border: 1px solid rgba(124, 58, 237, 0.6);
+  box-shadow: 0 10px 24px rgba(124, 58, 237, 0.25);
+  transition: transform 120ms ease, filter 120ms ease, box-shadow 120ms ease;
+}
+.btn-primary:hover {
+  filter: brightness(1.05);
+  transform: translateY(-1px);
+}
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-weight: 600;
+  padding: 10px 14px;
+  border: 1px solid rgba(82, 82, 91, 0.6);
+  transition: background-color 120ms ease, border-color 120ms ease;
+}
+.btn-ghost:hover {
+  background: rgba(63, 63, 70, 0.35);
+  border-color: rgba(113, 113, 122, 0.7);
+}
