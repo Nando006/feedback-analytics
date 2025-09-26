@@ -51,7 +51,6 @@ export default function FormRegister() {
     formData.set('accountType', data.accountType);
 
     if (data.accountType === 'CPF') {
-   
       formData.set('document', data.document);
     } else {
       formData.set('document', data.document);
@@ -113,13 +112,13 @@ export default function FormRegister() {
           register={register('accountType')}
           error={errors.accountType?.message as string | undefined}
         />
-          <FieldText
-            id="fullName"
-            name="fullName"
-            label={accountType === 'CPF' ? "Nome Completo" : "Nome da Empresa"}
-            register={register('fullName' as any)}
-            error={(errors as any).fullName?.message as string | undefined}
-          />
+        <FieldText
+          id="fullName"
+          name="fullName"
+          label={accountType === 'CPF' ? 'Nome Completo' : 'Nome da Empresa'}
+          register={register('fullName')}
+          error={errors.fullName?.message as string | undefined}
+        />
         <FieldText
           id="email"
           name="email"

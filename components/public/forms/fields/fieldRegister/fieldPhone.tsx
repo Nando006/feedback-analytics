@@ -47,9 +47,7 @@ export default function FieldPhoneRegister({
           const raw = digitsOnly(e.target.value);
           const withCountry = raw.startsWith('55') ? raw : `55${raw}`;
           setDisplay(formatBR(withCountry));
-          register?.onChange?.({
-            target: { name, value: `+${withCountry}` },
-          } as any);
+          register?.onChange?.({ target: { name, value: `+${withCountry}` } });
         }}
       />
       {error && (

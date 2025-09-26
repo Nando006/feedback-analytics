@@ -45,10 +45,8 @@ export default function FormEmailUser({ defaultEmail = '' }: Props) {
           {...register('email')}
           placeholder="seu@email.com"
         />
-        {(errors as any)?.email?.message && (
-          <p className="mt-1 text-xs text-red-400">
-            {(errors as any).email?.message}
-          </p>
+        {errors.email?.message && (
+          <p className="mt-1 text-xs text-red-400">{errors.email.message}</p>
         )}
         <p className="mt-1 text-xs text-neutral-400">
           Após atualizar, confirme a mudança no e-mail antigo e no novo para
