@@ -5,8 +5,8 @@ import { requireAuth } from 'src/server/express/middleware/auth';
 export function Enterprise(app: express.Express) {
   // Busca os dados da empresa.
   app.get('/api/protected/user/enterprise', requireAuth, async (req, res) => {
-    const supabase = req.supabase;
-    const user = req.user;
+    const supabase = req.supabase!;
+    const user = req.user!;
 
     const { data: enterprise, error } = await supabase
       .from('enterprise')
@@ -39,8 +39,8 @@ export function Enterprise(app: express.Express) {
       });
     }
 
-    const supabase = req.supabase;
-    const user = req.user;
+    const supabase = req.supabase!;
+    const user = req.user!;
 
     const { data: enterprise, error } = await supabase
       .from('enterprise')
@@ -68,7 +68,9 @@ export function Enterprise(app: express.Express) {
           phone_verified: null,
         },
       });
-    } catch {}
+    } catch (_err) {
+      void _err;
+    }
 
     return res.json({
       enterprise,
