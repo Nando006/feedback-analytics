@@ -10,8 +10,8 @@ export async function getCollectingDataEnterprise(): Promise<PropsCollectingData
       collecting: PropsCollectingDataEnterprise;
     }>('/api/protected/user/collecting_data');
     return collecting ?? null;
-  } catch (error: any) {
-    const status = (error as any)?.status;
+  } catch (error) {
+    const status = (error as { status?: number } | undefined)?.status;
     if (status === 400 || status === 404) return null;
     throw error;
   }

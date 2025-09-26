@@ -9,6 +9,7 @@ import type {
 import { redirect, type LoaderFunctionArgs } from 'react-router-dom';
 
 export async function LoaderUserProtected(_args: LoaderFunctionArgs) {
+  void _args;
   try {
     // Chamando as funções getAuthUser, getEnterprise e getCollectingDataEnterprise, lá de services.
     const [{ user }, enterprisePayload, collecting] = (await Promise.all([
@@ -27,13 +28,13 @@ export async function LoaderUserProtected(_args: LoaderFunctionArgs) {
           ...enterprisePayload.enterprise,
           email: user.email ?? null,
           phone: user.phone ?? null,
-          full_name: (user.user_metadata as any)?.full_name ?? null,
+          full_name: user.user_metadata?.full_name ?? null,
         }
       : {
           document: '',
           email: user.email ?? null,
           phone: user.phone ?? null,
-          full_name: (user.user_metadata as any)?.full_name ?? null,
+          full_name: user.user_metadata?.full_name ?? null,
         };
 
     // Retornando os dados da empresa.
@@ -42,7 +43,7 @@ export async function LoaderUserProtected(_args: LoaderFunctionArgs) {
       enterprise,
       collecting,
     };
-  } catch (error) {
+  } catch {
     throw redirect('/login');
   }
 }

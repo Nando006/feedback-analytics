@@ -7,10 +7,10 @@ export function Callback(app: express.Express) {
   app.get('/api/public/auth/callback', async (req, res) => {
     const supabase = createSupabaseServerClient(req, res);
 
-    const q = req.query as any;
-    const type = String(q?.type ?? '');
-    const tokenHash = String(q?.token_hash ?? '') || String(q?.token ?? '');
-    const _next = String(q?.next ?? '/user/dashboard');
+    const q = req.query as Record<string, unknown>;
+    const type = String(q.type ?? '');
+    const tokenHash = String(q.token_hash ?? '') || String(q.token ?? '');
+    const _next = String(q.next ?? '/user/dashboard');
     const next = _next.startsWith('/') ? _next : '/user/dashboard';
 
     if (type === 'email_change' && tokenHash) {

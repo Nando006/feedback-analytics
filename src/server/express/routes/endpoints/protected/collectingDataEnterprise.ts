@@ -7,8 +7,8 @@ export function CollectingDataEnterprise(app: express.Express) {
     '/api/protected/user/collecting_data',
     requireAuth,
     async (req, res) => {
-      const supabase = req.supabase;
-      const user = req.user;
+      const supabase = req.supabase!;
+      const user = req.user!;
 
       const { data: enterpriseRow, error: eErr } = await supabase
         .from('enterprise')
@@ -41,8 +41,8 @@ export function CollectingDataEnterprise(app: express.Express) {
     '/api/protected/user/collecting_data',
     requireAuth,
     async (req, res) => {
-      const supabase = req.supabase;
-      const user = req.user;
+      const supabase = req.supabase!;
+      const user = req.user!;
 
       const payload = (req.body ?? {}) as {
         company_objective?: string | null;
@@ -61,7 +61,13 @@ export function CollectingDataEnterprise(app: express.Express) {
         return res.status(404).json({ error: 'enterprise_not_found' });
       }
 
-      const updateData: any = { updated_at: new Date().toISOString() };
+      const updateData: {
+        updated_at: string;
+        company_objective?: string | null;
+        analytics_goal?: string | null;
+        business_summary?: string | null;
+        main_products_or_services?: string[] | null;
+      } = { updated_at: new Date().toISOString() };
       if (Object.prototype.hasOwnProperty.call(payload, 'company_objective')) {
         updateData.company_objective = payload.company_objective;
       }
@@ -95,20 +101,27 @@ export function CollectingDataEnterprise(app: express.Express) {
         .single();
 
       if (updErr) {
-        const insertData: any = {
+        const insertData: {
+          enterprise_id: string;
+          company_objective?: string | null;
+          analytics_goal?: string | null;
+          business_summary?: string | null;
+          main_products_or_services?: string[] | null;
+        } = {
           enterprise_id: enterpriseRow.id,
           ...('company_objective' in payload
-            ? { company_objective: payload.company_objective }
+            ? { company_objective: payload.company_objective ?? null }
             : {}),
           ...('analytics_goal' in payload
-            ? { analytics_goal: payload.analytics_goal }
+            ? { analytics_goal: payload.analytics_goal ?? null }
             : {}),
           ...('business_summary' in payload
-            ? { business_summary: payload.business_summary }
+            ? { business_summary: payload.business_summary ?? null }
             : {}),
           ...('main_products_or_services' in payload
             ? {
-                main_products_or_services: payload.main_products_or_services,
+                main_products_or_services:
+                  payload.main_products_or_services ?? null,
               }
             : {}),
         };
@@ -137,8 +150,8 @@ export function CollectingDataEnterprise(app: express.Express) {
     '/api/protected/user/collecting_data',
     requireAuth,
     async (req, res) => {
-      const supabase = req.supabase;
-      const user = req.user;
+      const supabase = req.supabase!;
+      const user = req.user!;
 
       const payload = (req.body ?? {}) as {
         company_objective?: string | null;

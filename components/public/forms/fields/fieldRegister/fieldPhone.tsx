@@ -49,7 +49,7 @@ export default function FieldPhoneRegister({
           setDisplay(formatBR(withCountry));
           register?.onChange?.({
             target: { name, value: `+${withCountry}` },
-          } as any);
+          });
         }}
       />
       {error && (
