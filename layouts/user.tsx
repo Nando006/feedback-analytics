@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Outlet, useLoaderData } from 'react-router-dom';
-import Header from 'components/user/layout/header';
-import Sidebar from 'components/user/layout/sidebar';
+import Header from 'components/user/layout/Header';
+import Sidebar from 'components/user/layout/Sidebar';
 import type { PropsEnterprise } from 'lib/interfaces/entities/enterprise';
 
 export default function User() {
