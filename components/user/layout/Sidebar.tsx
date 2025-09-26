@@ -1,6 +1,7 @@
 import type { PropsApiEnterpriseResponse } from 'lib/interfaces/entities/enterprise';
 import CardProfile from '../shared/cards/cardProfile';
-import Menu from './menu';
+import Menu from './Menu';
+
 export interface PropsSidebar {
   isOverlayMode: boolean;
   isOpen: boolean;
