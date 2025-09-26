@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
-import { useForm, type FieldErrors } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { Link, useSubmit } from 'react-router-dom';
 import FieldText from './fields/fieldsLogin/fieldText';
 import { FaEnvelope, FaLock } from 'react-icons/fa6';
@@ -30,7 +30,7 @@ export default function FormLogin() {
     if ('email' in data) {
       formData.set('email', data.email);
     } else {
-      formData.set('phone', data.phone);
+      formData.set('phone', (data as any).phone);
     }
     formData.set('password', data.password);
     formData.set('remember', data.remember ?? false ? 'true' : 'false');
@@ -78,13 +78,7 @@ export default function FormLogin() {
             label="E-mail"
             icon={<FaEnvelope />}
             register={register('email')}
-            error={
-              (
-                errors as FieldErrors<
-                  Extract<LoginFormValues, { email: string }>
-                >
-              ).email?.message as string | undefined
-            }
+            error={(errors as any)?.email?.message as string | undefined}
           />
         ) : (
           <FieldText
@@ -92,13 +86,7 @@ export default function FormLogin() {
             name="phone"
             label="Telefone (+55DDXXXXXXXXX)"
             register={register('phone')}
-            error={
-              (
-                errors as FieldErrors<
-                  Extract<LoginFormValues, { phone: string }>
-                >
-              ).phone?.message as string | undefined
-            }
+            error={(errors as any)?.phone?.message as string | undefined}
           />
         )}
         <FieldPassword

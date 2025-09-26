@@ -9,7 +9,6 @@ import type {
 import { redirect, type LoaderFunctionArgs } from 'react-router-dom';
 
 export async function LoaderUserProtected(_args: LoaderFunctionArgs) {
-  void _args;
   try {
     // Chamando as funções getAuthUser, getEnterprise e getCollectingDataEnterprise, lá de services.
     const [{ user }, enterprisePayload, collecting] = (await Promise.all([

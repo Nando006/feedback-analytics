@@ -54,7 +54,7 @@ export default function FieldDocument({
           const formatted =
             docType === 'CNPJ' ? formatCNPJ(raw) : formatCPF(raw);
           setDisplay(formatted);
-          register?.onChange?.({ target: { name, value: raw } });
+          register?.onChange?.({ target: { name, value: raw } } as any);
         }}
       />
       {error && (
