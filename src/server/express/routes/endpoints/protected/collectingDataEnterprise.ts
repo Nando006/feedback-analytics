@@ -17,7 +17,7 @@ export function CollectingDataEnterprise(app: express.Express) {
         .single();
 
       if (eErr || !enterpriseRow) {
-        return res.status(404).json({ error: 'enterprise_not_found' });
+        return res.json({ collecting: null });
       }
 
       const { data: collecting, error: cErr } = await supabase
@@ -26,7 +26,7 @@ export function CollectingDataEnterprise(app: express.Express) {
           'id, enterprise_id, company_objective, analytics_goal, business_summary, main_products_or_services, created_at, updated_at',
         )
         .eq('enterprise_id', enterpriseRow.id)
-        .single();
+        .maybeSingle();
 
       if (cErr) {
         return res.status(404).json({ error: 'collecting_data_not_found' });
