@@ -8,7 +8,19 @@ vi.mock('components/svg/lock', () => ({
 }));
 
 vi.mock('components/public/shared/cards/cardForm', () => ({
-  default: ({ title, text, form, linkLogin, icon }: any) => (
+  default: ({
+    title,
+    text,
+    form,
+    linkLogin,
+    icon,
+  }: {
+    title: string;
+    text: string;
+    form: React.ReactNode;
+    linkLogin?: string;
+    icon: React.ReactNode;
+  }) => (
     <div data-testid="card-form">
       <div data-testid="card-title">{title}</div>
       <div data-testid="card-text">{text}</div>

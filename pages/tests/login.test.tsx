@@ -4,7 +4,19 @@ import Login from '../public/login';
 
 // Mock dos componentes filhos para focar no teste da página
 vi.mock('components/public/shared/cards/cardForm', () => ({
-  default: ({ title, text, linkRegister, icon, form }: any) => (
+  default: ({
+    title,
+    text,
+    linkRegister,
+    icon,
+    form,
+  }: {
+    title: string;
+    text: string;
+    linkRegister: string;
+    icon: React.ReactNode;
+    form: React.ReactNode;
+  }) => (
     <div data-testid="card-form">
       <div data-testid="card-title">{title}</div>
       <div data-testid="card-text">{text}</div>

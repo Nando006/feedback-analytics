@@ -5,7 +5,13 @@ import Profile from '../user/profile';
 
 // Mock dos componentes filhos
 vi.mock('components/user/profile/info', () => ({
-  default: ({ enterprise, collecting }: any) => (
+  default: ({
+    enterprise,
+    collecting,
+  }: {
+    enterprise?: { name?: string };
+    collecting?: { id?: string } | null;
+  }) => (
     <div data-testid="profile-info">
       <div data-testid="enterprise-name">{enterprise?.name}</div>
       <div data-testid="collecting-data">
@@ -16,7 +22,13 @@ vi.mock('components/user/profile/info', () => ({
 }));
 
 vi.mock('components/user/profile/header', () => ({
-  default: ({ enterprise, user }: any) => (
+  default: ({
+    enterprise,
+    user,
+  }: {
+    enterprise?: { name?: string };
+    user?: { name?: string };
+  }) => (
     <div data-testid="profile-header">
       <div data-testid="user-name">{user?.name}</div>
       <div data-testid="enterprise-header">{enterprise?.name}</div>
