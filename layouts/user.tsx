@@ -31,7 +31,7 @@ export default function User() {
     }, 120);
   };
 
-  // Restaura preferências salvas no cookie ao montar
+  // Restaura preferências salvas no cookie ao montar!
   useEffect(() => {
     const layoutSaved = getCookie('sidebarLayout');
     const modeSaved = getCookie('sidebarMode');
