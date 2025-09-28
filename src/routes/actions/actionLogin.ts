@@ -5,6 +5,7 @@ export async function ActionLogin({ request }: ActionFunctionArgs) {
 
   // Extraindo os valores dos campos do formulário, convertendo-os para string.
   const email = String(form.get('email') ?? '');
+  const phone = String(form.get('phone') ?? '');
   const password = String(form.get('password') ?? '');
   const remember = String(form.get('remember') ?? 'false') === 'true';
 
@@ -12,7 +13,9 @@ export async function ActionLogin({ request }: ActionFunctionArgs) {
   const res = await fetch('/api/public/auth/login', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password, remember }),
+    body: JSON.stringify(
+      email ? { email, password, remember } : { phone, password, remember },
+    ),
   });
 
   // Verificando se o login foi bem-sucedido.
