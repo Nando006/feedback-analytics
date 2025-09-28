@@ -3,14 +3,15 @@ import { Outlet, useLoaderData } from 'react-router-dom';
 import Header from 'components/user/layout/Header';
 import Sidebar from 'components/user/layout/Sidebar';
 import type { PropsEnterprise } from 'lib/interfaces/entities/enterprise';
+import { getCookie, setCookie } from 'lib/utils/cookies';
 
 export default function User() {
   const { enterprise } = useLoaderData() as {
     enterprise: PropsEnterprise;
   };
 
-  const [isOverlayMode, setIsOverlayMode] = useState(true);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isOverlayMode, setIsOverlayMode] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isHoverActivator, setIsHoverActivator] = useState(false);
   const closeTimerRef = useRef<number | null>(null);
 
@@ -30,10 +31,30 @@ export default function User() {
     }, 120);
   };
 
-  // Mantém o overlay sempre oculto por padrão, e o push aberto
+  // Restaura preferências salvas no cookie ao montar!
   useEffect(() => {
-    setIsSidebarOpen(!isOverlayMode);
-  }, [isOverlayMode]);
+    const layoutSaved = getCookie('sidebarLayout');
+    const modeSaved = getCookie('sidebarMode');
+
+    if (layoutSaved === 'overlay') {
+      setIsOverlayMode(true);
+      // No overlay, inicia sempre oculto
+      setIsSidebarOpen(false);
+      return;
+    }
+
+    if (layoutSaved === 'push') {
+      setIsOverlayMode(false);
+      if (modeSaved === 'collapsed') setIsSidebarOpen(false);
+      else if (modeSaved === 'expanded') setIsSidebarOpen(true);
+      else setIsSidebarOpen(true);
+      return;
+    }
+
+    // Fallback padrão: push + aberto
+    setIsOverlayMode(false);
+    setIsSidebarOpen(true);
+  }, []);
 
   return (
     <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)]">
@@ -41,9 +62,21 @@ export default function User() {
         <Header
           isOverlayMode={isOverlayMode}
           isSidebarOpen={isSidebarOpen}
-          onToggleSidebar={() => setIsSidebarOpen((v) => !v)}
-          onSetOverlay={() => setIsOverlayMode(true)}
-          onSetPush={() => setIsOverlayMode(false)}
+          onToggleSidebar={() =>
+            setIsSidebarOpen((v) => {
+              const next = !v;
+              setCookie('sidebarMode', next ? 'expanded' : 'collapsed');
+              return next;
+            })
+          }
+          onSetOverlay={() => {
+            setIsOverlayMode(true);
+            setCookie('sidebarLayout', 'overlay');
+          }}
+          onSetPush={() => {
+            setIsOverlayMode(false);
+            setCookie('sidebarLayout', 'push');
+          }}
         />
       </header>
 
