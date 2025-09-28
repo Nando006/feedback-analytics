@@ -1,9 +1,9 @@
 import ErrorPage from 'components/public/shared/handling/errorPage';
 import Public from 'layouts/public';
-import FeedbackQRCode from 'pages/public/feedbackQRCode';
 import Home from 'pages/public/home';
 import Login from 'pages/public/login';
 import Register from 'pages/public/register';
+import FeedbackQRCodeEnterprise from 'pages/public/qrcode/enterprise';
 import { Route } from 'react-router-dom';
 import { ActionLogin } from './actions/actionLogin';
 import { ActionRegister } from './actions/actionRegister';
@@ -31,7 +31,7 @@ export function RoutePublic() {
       />
       <Route
         path="feedback/qrcode"
-        element={<FeedbackQRCode />}
+        element={<FeedbackQRCodeEnterprise />}
       />
       <Route
         path="auth/success"
