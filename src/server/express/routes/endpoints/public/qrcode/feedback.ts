@@ -45,13 +45,15 @@ export function QrcodeFeedback(app: express.Express) {
     console.log('Fingerprint gerado:', deviceFingerprint);
 
     // 1. Buscar ou criar collection_point do tipo QR_CODE para a empresa
-    let { data: collectionPoint, error: cpErr } = await supabase
+    const { data: initialCollectionPoint, error: cpErr } = await supabase
       .from('collection_points')
       .select('id')
       .eq('enterprise_id', payload.enterprise_id)
       .eq('type', 'QR_CODE')
       .eq('status', 'ACTIVE')
       .maybeSingle();
+
+    let collectionPoint = initialCollectionPoint;
 
     if (cpErr) {
       console.error('Erro ao buscar collection_point:', cpErr);
@@ -84,12 +86,14 @@ export function QrcodeFeedback(app: express.Express) {
     }
 
     // 2. Buscar ou criar dispositivo rastreado PRIMEIRO
-    let { data: trackedDevice, error: deviceErr } = await supabase
+    const { data: initialTrackedDevice, error: deviceErr } = await supabase
       .from('tracked_devices')
       .select('id, last_feedback_at, is_blocked, feedback_count, customer_id')
       .eq('enterprise_id', payload.enterprise_id)
       .eq('device_fingerprint', deviceFingerprint)
       .maybeSingle();
+
+    let trackedDevice = initialTrackedDevice;
 
     if (deviceErr) {
       console.error('Erro ao verificar dispositivo:', deviceErr);

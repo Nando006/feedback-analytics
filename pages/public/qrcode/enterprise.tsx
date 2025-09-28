@@ -57,7 +57,7 @@ export default function FeedbackQRCodeEnterprise() {
         setFormData((prev) => ({ ...prev, enterprise_id: enterpriseId }));
         setEnterpriseName(enterprise.name || 'Empresa');
         setIsValidatingEnterprise(false);
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error('Erro ao validar empresa:', err);
         setError('Empresa não encontrada. Verifique se o QR Code é válido.');
         setIsValidatingEnterprise(false);
@@ -73,7 +73,7 @@ export default function FeedbackQRCodeEnterprise() {
 
   const handleCustomerDataChange = (
     field: keyof CustomerData,
-    value: string,
+    value: string | undefined,
   ) => {
     setCustomerData((prev) => ({ ...prev, [field]: value }));
   };
@@ -110,16 +110,25 @@ export default function FeedbackQRCodeEnterprise() {
       });
 
       setIsSubmitted(true);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Erro ao enviar feedback:', err);
 
       // Tratar erro específico de dispositivo já submetido
-      if (err.status === 409) {
+      if (
+        err &&
+        typeof err === 'object' &&
+        'status' in err &&
+        err.status === 409
+      ) {
         setHasAlreadySubmitted(true);
         return;
       }
 
-      setError(err.message || 'Erro ao enviar feedback. Tente novamente.');
+      const errorMessage =
+        err && typeof err === 'object' && 'message' in err
+          ? String(err.message)
+          : 'Erro ao enviar feedback. Tente novamente.';
+      setError(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
@@ -512,7 +521,7 @@ export default function FeedbackQRCodeEnterprise() {
                     onChange={(e) =>
                       handleCustomerDataChange(
                         'customer_gender',
-                        e.target.value as any,
+                        e.target.value as CustomerData['customer_gender'],
                       )
                     }
                     className="w-full px-4 py-3 border border-neutral-700 rounded-lg bg-neutral-800 text-neutral-100 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all">
