@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import CardForm from 'components/public/shared/cards/cardForm';
 import SVGImageProfile from 'components/svg/imageProfile';
+import { getEnterprisePublic } from 'src/services/enterprisePublic';
+import { submitQrcodeFeedback } from 'src/services/qrcode/feedback';
 
 interface FeedbackData {
   message: string;
@@ -49,22 +51,15 @@ export default function FeedbackQRCodeEnterprise() {
       }
 
       try {
-        // Verificar se a empresa existe (usando endpoint público)
-        const response = await fetch(`/api/public/enterprise/${enterpriseId}`);
+        // Verificar se a empresa existe usando service
+        const enterprise = await getEnterprisePublic(enterpriseId);
 
-        if (!response.ok) {
-          setError('Empresa não encontrada. Verifique se o QR Code é válido.');
-          setIsValidatingEnterprise(false);
-          return;
-        }
-
-        const enterprise = await response.json();
         setFormData((prev) => ({ ...prev, enterprise_id: enterpriseId }));
         setEnterpriseName(enterprise.name || 'Empresa');
         setIsValidatingEnterprise(false);
       } catch (err: any) {
         console.error('Erro ao validar empresa:', err);
-        setError('Erro ao validar empresa. Tente novamente mais tarde.');
+        setError('Empresa não encontrada. Verifique se o QR Code é válido.');
         setIsValidatingEnterprise(false);
       }
     };
@@ -105,33 +100,25 @@ export default function FeedbackQRCodeEnterprise() {
     setError('');
 
     try {
-      const response = await fetch('/api/public/feedback', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          message: formData.message.trim(),
-          rating: formData.rating,
-          channel: 'QRCODE',
-          enterprise_id: formData.enterprise_id,
-          ...customerData,
-        }),
+      // Usar service para enviar feedback
+      await submitQrcodeFeedback({
+        message: formData.message.trim(),
+        rating: formData.rating,
+        channel: 'QRCODE',
+        enterprise_id: formData.enterprise_id,
+        ...customerData,
       });
-
-      const responseData = await response.json();
-
-      if (!response.ok) {
-        if (responseData.error === 'DEVICE_ALREADY_SUBMITTED') {
-          setHasAlreadySubmitted(true);
-          return;
-        }
-        throw new Error(responseData.error || 'Erro ao enviar feedback');
-      }
 
       setIsSubmitted(true);
     } catch (err: any) {
       console.error('Erro ao enviar feedback:', err);
+
+      // Tratar erro específico de dispositivo já submetido
+      if (err.status === 409) {
+        setHasAlreadySubmitted(true);
+        return;
+      }
+
       setError(err.message || 'Erro ao enviar feedback. Tente novamente.');
     } finally {
       setIsSubmitting(false);

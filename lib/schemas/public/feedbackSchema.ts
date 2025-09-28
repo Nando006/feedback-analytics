@@ -1,10 +1,10 @@
 import z from 'zod';
 
-export const feedbackPublicSchema = z.object({
+// Schema base genérico para todos os canais de feedback
+export const feedbackBaseSchema = z.object({
   enterprise_id: z.uuidv4(),
   rating: z.number().int().min(1).max(5),
   message: z.string().min(3).max(5000),
-  channel: z.literal('QRCODE'),
 
   // opcionais
   customer_name: z.string().min(1).max(120).optional(),
@@ -19,4 +19,11 @@ export const feedbackPublicSchema = z.object({
   customer_country: z.string().max(80).optional(),
 });
 
-export type FeedbackPublicPayload = z.infer<typeof feedbackPublicSchema>;
+// Schema específico para QR Code
+export const qrcodeFeedbackSchema = feedbackBaseSchema.extend({
+  channel: z.literal('QRCODE'),
+});
+
+// Types exportados
+export type FeedbackBasePayload = z.infer<typeof feedbackBaseSchema>;
+export type QrcodeFeedbackPayload = z.infer<typeof qrcodeFeedbackSchema>;
