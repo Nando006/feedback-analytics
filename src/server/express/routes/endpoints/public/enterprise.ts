@@ -15,8 +15,8 @@ export function EnterprisePublic(app: express.Express) {
     try {
       // Buscar dados básicos da empresa usando a view pública
       const { data: enterprise, error } = await supabase
-        .from('enterprise_public_ids')
-        .select('id, document, account_type')
+        .from('enterprise_public')
+        .select('id, name')
         .eq('id', id)
         .single();
 
@@ -24,25 +24,9 @@ export function EnterprisePublic(app: express.Express) {
         return res.status(404).json({ error: 'enterprise_not_found' });
       }
 
-      // Gerar nome baseado nos dados disponíveis
-      let enterpriseName = 'Empresa';
-
-      if (enterprise.document) {
-        // Usar documento formatado como nome
-        const doc = enterprise.document;
-        if (enterprise.account_type === 'CNPJ' && doc.length === 14) {
-          enterpriseName = `Empresa ${doc.slice(0, 2)}.${doc.slice(
-            2,
-            5,
-          )}.${doc.slice(5, 8)}`;
-        } else {
-          enterpriseName = `Empresa ${doc.slice(0, 3)}***`;
-        }
-      }
-
       return res.json({
         id: enterprise.id,
-        name: enterpriseName,
+        name: enterprise.name || 'Empresa',
       });
     } catch (err) {
       console.error('Erro ao buscar empresa:', err);

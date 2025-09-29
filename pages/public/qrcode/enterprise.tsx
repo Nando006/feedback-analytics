@@ -14,12 +14,7 @@ interface FeedbackData {
 interface CustomerData {
   customer_name?: string;
   customer_email?: string;
-  customer_phone?: string;
-  customer_birth_date?: string;
   customer_gender?: 'masculino' | 'feminino' | 'outro' | 'prefiro_nao_informar';
-  customer_city?: string;
-  customer_state?: string;
-  customer_country?: string;
 }
 
 export default function FeedbackQRCodeEnterprise() {
@@ -29,9 +24,7 @@ export default function FeedbackQRCodeEnterprise() {
     rating: 0,
     enterprise_id: '',
   });
-  const [customerData, setCustomerData] = useState<CustomerData>({
-    customer_country: 'Brasil',
-  });
+  const [customerData, setCustomerData] = useState<CustomerData>({});
   const [showOptionalFields, setShowOptionalFields] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -420,8 +413,6 @@ export default function FeedbackQRCodeEnterprise() {
                     Informações Pessoais
                   </h3>
                 </div>
-
-                {/* Nome e Email */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label
@@ -464,51 +455,6 @@ export default function FeedbackQRCodeEnterprise() {
                     />
                   </div>
                 </div>
-
-                {/* Telefone e Data de Nascimento */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label
-                      htmlFor="customer_phone"
-                      className="block text-sm font-medium text-neutral-200 mb-2">
-                      Telefone
-                    </label>
-                    <input
-                      type="tel"
-                      id="customer_phone"
-                      value={customerData.customer_phone || ''}
-                      onChange={(e) =>
-                        handleCustomerDataChange(
-                          'customer_phone',
-                          e.target.value,
-                        )
-                      }
-                      placeholder="(11) 99999-9999"
-                      className="w-full px-4 py-3 border border-neutral-700 rounded-lg bg-neutral-800 text-neutral-100 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="customer_birth_date"
-                      className="block text-sm font-medium text-neutral-200 mb-2">
-                      Data de Nascimento
-                    </label>
-                    <input
-                      type="date"
-                      id="customer_birth_date"
-                      value={customerData.customer_birth_date || ''}
-                      onChange={(e) =>
-                        handleCustomerDataChange(
-                          'customer_birth_date',
-                          e.target.value,
-                        )
-                      }
-                      className="w-full px-4 py-3 border border-neutral-700 rounded-lg bg-neutral-800 text-neutral-100 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-                    />
-                  </div>
-                </div>
-
-                {/* Gênero */}
                 <div>
                   <label
                     htmlFor="customer_gender"
@@ -533,50 +479,6 @@ export default function FeedbackQRCodeEnterprise() {
                       Prefiro não informar
                     </option>
                   </select>
-                </div>
-
-                {/* Cidade e Estado */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label
-                      htmlFor="customer_city"
-                      className="block text-sm font-medium text-neutral-200 mb-2">
-                      Cidade
-                    </label>
-                    <input
-                      type="text"
-                      id="customer_city"
-                      value={customerData.customer_city || ''}
-                      onChange={(e) =>
-                        handleCustomerDataChange(
-                          'customer_city',
-                          e.target.value,
-                        )
-                      }
-                      placeholder="Sua cidade"
-                      className="w-full px-4 py-3 border border-neutral-700 rounded-lg bg-neutral-800 text-neutral-100 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="customer_state"
-                      className="block text-sm font-medium text-neutral-200 mb-2">
-                      Estado
-                    </label>
-                    <input
-                      type="text"
-                      id="customer_state"
-                      value={customerData.customer_state || ''}
-                      onChange={(e) =>
-                        handleCustomerDataChange(
-                          'customer_state',
-                          e.target.value,
-                        )
-                      }
-                      placeholder="Seu estado"
-                      className="w-full px-4 py-3 border border-neutral-700 rounded-lg bg-neutral-800 text-neutral-100 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-                    />
-                  </div>
                 </div>
               </div>
             )}
