@@ -2,9 +2,10 @@ import type { Feedback } from 'lib/interfaces/user/feedback';
 
 interface FeedbackCardProps {
   feedback: Feedback;
+  onClick?: () => void;
 }
 
-export default function FeedbackCard({ feedback }: FeedbackCardProps) {
+export default function FeedbackCard({ feedback, onClick }: FeedbackCardProps) {
   // Função para renderizar estrelas
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }, (_, index) => (
@@ -50,7 +51,15 @@ export default function FeedbackCard({ feedback }: FeedbackCardProps) {
   };
 
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900/50 p-6 glass-card">
+    <div
+      className={`relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900/50 p-6 glass-card ${
+        onClick
+          ? 'cursor-pointer hover:border-neutral-700 transition-colors'
+          : ''
+      }`}
+      onClick={onClick}
+      role={onClick ? 'button' : undefined}
+      tabIndex={onClick ? 0 : undefined}>
       {/* Header com rating e data */}
       <div className="flex justify-between items-start mb-4">
         <div className="flex items-center gap-3">
