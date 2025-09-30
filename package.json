@@ -20,6 +20,8 @@
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
     "path": "^0.12.7",
+    "primeicons": "^7.0.0",
+    "primereact": "^10.9.7",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-hook-form": "^7.61.1",
