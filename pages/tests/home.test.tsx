@@ -1,6 +1,12 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import Home from '../public/home';
+
+// Simulando o react-router-dom para renderização de links
+vi.mock('react-router-dom', () => ({
+  ...vi.importActual('react-router-dom'),
+  useNavigate: () => vi.fn(),
+}));
 
 describe('Home Page', () => {
   it('deve renderizar o conteúdo da página home', () => {
