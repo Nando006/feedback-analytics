@@ -3,10 +3,12 @@ import { render, screen } from '@testing-library/react';
 import Home from '../public/home';
 
 // Simulando o react-router-dom para renderização de links
-vi.mock('react-router-dom', () => ({
-  ...vi.importActual('react-router-dom'),
-  useNavigate: () => vi.fn(),
-}));
+vi.mock('react-router-dom', async () => {
+  const actual = await import('react-router-dom');
+  return {
+    ...actual,
+  };
+});
 
 describe('Home Page', () => {
   it('deve renderizar o conteúdo da página home', () => {

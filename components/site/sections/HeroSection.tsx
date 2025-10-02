@@ -29,7 +29,7 @@ export default function HeroSection() {
             className="text-3xl md:text-5xl font-extrabold leading-tight"
           >
             Transforme Feedbacks em{' '}
-            <span className="text-[var(--color-primary-light)]">Ações</span> com IA
+            <span className="text-[var(--color-primary-darker)]">Ações</span> com IA
           </h2>
 
           <div className="space-y-4">
