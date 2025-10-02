@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 export default function HeroSection() {
   const supportLink =
-    'https://wa.me/5562992846807?text=Olá%2C%20gostaria%20de%20saber%20mais%20sobre%20a%20plataforma%20de%20Feedback%20IA.';
+    'https://wa.me/5562996831370?text=Olá%2C%20gostaria%20de%20saber%20mais%20sobre%20a%20plataforma%20de%20Feedback%20IA.';
 
   return (
     <section className="relative min-h-[500px] overflow-hidden rounded-2xl">
@@ -66,7 +66,7 @@ export default function HeroSection() {
               />
             </a>
 
-            <Link to="/register">
+            <Link to="#">
               <Button
                 label="Começar Agora"
                 icon="pi pi-arrow-right"
