@@ -2,7 +2,7 @@ import type { ICarrousselCard } from 'lib/interfaces/site/card';
 
 export default function CardCarrossel({ title, description }: ICarrousselCard) {
   return (
-    <div className="min-w-96 w-96 h-48 bg-[var(--color-surface)] rounded-xl overflow-hidden shadow-lg border border-[var(--color-border)] hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+    <div className="min-w-86 w-86 h-48 bg-[var(--color-surface)] rounded-xl overflow-hidden shadow-lg border border-[var(--color-border)] hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
       <div className="h-1 w-full bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-primary-hover)]"></div>
 
       <h4
