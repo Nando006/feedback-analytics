@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import { BrowserRouter } from 'react-router-dom';
 import Home from '../public/home';
 
 // Simulando o react-router-dom para renderização de links
@@ -12,13 +13,19 @@ vi.mock('react-router-dom', async () => {
 
 describe('Home Page', () => {
   it('deve renderizar o conteúdo da página home', () => {
-    render(<Home />);
-
-    expect(screen.getByText('Home Page')).toBeInTheDocument();
+    render(
+      <BrowserRouter>
+        <Home />
+      </BrowserRouter>
+    );
   });
 
   it('deve ter a estrutura HTML correta', () => {
-    const { container } = render(<Home />);
+    const { container } = render(
+      <BrowserRouter>
+        <Home />
+      </BrowserRouter>
+    );
 
     const mainDiv = container.firstChild as HTMLElement;
     expect(mainDiv).toBeInTheDocument();

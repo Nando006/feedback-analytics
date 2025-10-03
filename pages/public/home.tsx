@@ -2,7 +2,6 @@ import HeroSection from "components/site/sections/HeroSection";
 import FeatureSection from "components/site/sections/FeatureSection";
 
 export default function Home() {
-  // 💡 1. Renomeado para 'featuresData' para refletir que é um objeto
   type FeatureKey = 'simpleCard_1' | 'simpleCard_2' | 'simpleCard_3' | 'simpleCard_4';
 
   const featuresData: Record<FeatureKey, { title: string; description: string }> = {
@@ -24,9 +23,8 @@ export default function Home() {
     },
   };
 
-  // 💡 2. Transformação correta: cria o array com 'id', 'title' e 'description'
   const featuresWithId = (Object.keys(featuresData) as FeatureKey[]).map((key) => ({
-    id: key, // Usa a chave do objeto como 'id' (ex: "simpleCard_1")
+    id: key, 
     title: featuresData[key].title,
     description: featuresData[key].description,
   }));
@@ -34,7 +32,6 @@ export default function Home() {
   return (
     <div className="px-12 py-10 gap-10 flex flex-col">
       <HeroSection />
-      {/* 💡 3. Passa o array formatado corretamente */}
       <FeatureSection features={featuresWithId} />
     </div>
   );
