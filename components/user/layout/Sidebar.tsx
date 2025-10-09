@@ -1,4 +1,4 @@
-import type { PropsApiEnterpriseResponse } from 'lib/interfaces/entities/enterprise';
+import type { PropsApiEnterpriseResponse, PropsCollectingDataEnterprise } from 'lib/interfaces/entities/enterprise';
 import CardProfile from '../shared/cards/cardProfile';
 import Menu from './Menu';
 
@@ -15,7 +15,10 @@ export default function Sidebar({
   onOpen,
   onClose,
   enterprise,
-}: PropsSidebar & PropsApiEnterpriseResponse) {
+  collecting,
+}: PropsSidebar & PropsApiEnterpriseResponse & {
+  collecting: PropsCollectingDataEnterprise | null
+}) {
   if (isOverlayMode) {
     return (
       <aside
@@ -28,7 +31,7 @@ export default function Sidebar({
         }`}>
         <div className="flex h-full flex-col">
           <div className="flex-1">
-            <Menu />
+            <Menu usesCompanyProducts={Boolean(collecting?.uses_company_products)} />
           </div>
           <div className="mt-2 border-t border-neutral-800/40">
             <div className="flex justify-end">
@@ -47,7 +50,7 @@ export default function Sidebar({
       }`}>
       <div className="flex h-full flex-col">
         <div className="flex-1">
-          <Menu />
+          <Menu usesCompanyProducts={Boolean(collecting?.uses_company_products)} />
         </div>
         <div className="mt-2 border-t border-neutral-800/40">
           <div className="flex justify-end">

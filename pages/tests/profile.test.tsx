@@ -53,8 +53,7 @@ describe('Profile Page', () => {
     },
     collecting: {
       id: '1',
-      isActive: true,
-      settings: {},
+      uses_company_products: true,
     },
   };
 

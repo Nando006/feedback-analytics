@@ -19,6 +19,10 @@ export default function Info({
               {collecting?.business_summary ?? 'Conte sobre sua empresa...'}
             </p>
           </div>
+          <p className="text-sm text-[var(--text-muted)]">
+            Usa produtos próprios?{' '}
+            {collecting?.uses_company_products ? 'Sim' : 'Não informado'}
+          </p>
         </CardSimple>
 
         <CardSimple>

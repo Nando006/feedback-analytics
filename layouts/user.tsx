@@ -2,12 +2,13 @@ import { useEffect, useRef, useState } from 'react';
 import { Outlet, useLoaderData } from 'react-router-dom';
 import Header from 'components/user/layout/Header';
 import Sidebar from 'components/user/layout/Sidebar';
-import type { PropsEnterprise } from 'lib/interfaces/entities/enterprise';
+import type { PropsCollectingDataEnterprise, PropsEnterprise } from 'lib/interfaces/entities/enterprise';
 import { getCookie, setCookie } from 'lib/utils/cookies';
 
 export default function User() {
-  const { enterprise } = useLoaderData() as {
+  const { enterprise, collecting } = useLoaderData() as {
     enterprise: PropsEnterprise;
+    collecting: PropsCollectingDataEnterprise | null;
   };
 
   const [isOverlayMode, setIsOverlayMode] = useState(false);
@@ -100,6 +101,7 @@ export default function User() {
             isOverlayMode={false}
             isOpen={isSidebarOpen}
             enterprise={enterprise}
+            collecting={collecting}
           />
         )}
 
@@ -125,6 +127,7 @@ export default function User() {
             scheduleClose();
           }}
           enterprise={enterprise}
+          collecting={collecting}
         />
       )}
     </div>
