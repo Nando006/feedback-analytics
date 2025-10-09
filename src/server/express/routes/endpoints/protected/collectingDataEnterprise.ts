@@ -23,7 +23,7 @@ export function CollectingDataEnterprise(app: express.Express) {
       const { data: collecting, error: cErr } = await supabase
         .from('collecting_data_enterprise')
         .select(
-          'id, enterprise_id, company_objective, analytics_goal, business_summary, main_products_or_services, created_at, updated_at',
+          'id, enterprise_id, company_objective, analytics_goal, business_summary, main_products_or_services, uses_company_products, created_at, updated_at',
         )
         .eq('enterprise_id', enterpriseRow.id)
         .maybeSingle();
@@ -49,6 +49,7 @@ export function CollectingDataEnterprise(app: express.Express) {
         analytics_goal?: string | null;
         business_summary?: string | null;
         main_products_or_services?: string[] | null;
+        uses_company_products?: boolean;
       };
 
       const { data: enterpriseRow, error: eErr } = await supabase
@@ -67,6 +68,7 @@ export function CollectingDataEnterprise(app: express.Express) {
         analytics_goal?: string | null;
         business_summary?: string | null;
         main_products_or_services?: string[] | null;
+        uses_company_products?: boolean;
       } = { updated_at: new Date().toISOString() };
       if (Object.prototype.hasOwnProperty.call(payload, 'company_objective')) {
         updateData.company_objective = payload.company_objective;
@@ -86,6 +88,15 @@ export function CollectingDataEnterprise(app: express.Express) {
         updateData.main_products_or_services =
           payload.main_products_or_services;
       }
+      if (
+        Object.prototype.hasOwnProperty.call(payload, 'uses_company_products')
+      ) {
+        updateData.uses_company_products =
+          payload.uses_company_products ?? false;
+        if (payload.uses_company_products === false) {
+          updateData.main_products_or_services = null;
+        }
+      }
 
       if (Object.keys(updateData).length === 1) {
         return res.status(400).json({ error: 'empty_payload' });
@@ -96,7 +107,7 @@ export function CollectingDataEnterprise(app: express.Express) {
         .update(updateData)
         .eq('enterprise_id', enterpriseRow.id)
         .select(
-          'id, enterprise_id, company_objective, analytics_goal, business_summary, main_products_or_services, created_at, updated_at',
+          'id, enterprise_id, company_objective, analytics_goal, business_summary, main_products_or_services, uses_company_products, created_at, updated_at',
         )
         .single();
 
@@ -107,6 +118,7 @@ export function CollectingDataEnterprise(app: express.Express) {
           analytics_goal?: string | null;
           business_summary?: string | null;
           main_products_or_services?: string[] | null;
+          uses_company_products?: boolean;
         } = {
           enterprise_id: enterpriseRow.id,
           ...('company_objective' in payload
@@ -121,8 +133,13 @@ export function CollectingDataEnterprise(app: express.Express) {
           ...('main_products_or_services' in payload
             ? {
                 main_products_or_services:
-                  payload.main_products_or_services ?? null,
+                  payload.uses_company_products === false
+                    ? null
+                    : payload.main_products_or_services ?? null,
               }
+            : {}),
+          ...('uses_company_products' in payload
+            ? { uses_company_products: payload.uses_company_products ?? false }
             : {}),
         };
 
@@ -130,7 +147,7 @@ export function CollectingDataEnterprise(app: express.Express) {
           .from('collecting_data_enterprise')
           .insert(insertData)
           .select(
-            'id, enterprise_id, company_objective, analytics_goal, business_summary, main_products_or_services, created_at, updated_at',
+            'id, enterprise_id, company_objective, analytics_goal, business_summary, main_products_or_services, uses_company_products, created_at, updated_at',
           )
           .single();
 
@@ -158,6 +175,7 @@ export function CollectingDataEnterprise(app: express.Express) {
         analytics_goal?: string | null;
         business_summary?: string | null;
         main_products_or_services?: string[] | null;
+        uses_company_products?: boolean;
       };
 
       const { data: enterpriseRow, error: eErr } = await supabase
@@ -175,7 +193,11 @@ export function CollectingDataEnterprise(app: express.Express) {
         company_objective: payload.company_objective ?? null,
         analytics_goal: payload.analytics_goal ?? null,
         business_summary: payload.business_summary ?? null,
-        main_products_or_services: payload.main_products_or_services ?? null,
+        main_products_or_services:
+          payload.uses_company_products === false
+            ? null
+            : payload.main_products_or_services ?? null,
+        uses_company_products: payload.uses_company_products ?? false,
         updated_at: new Date().toISOString(),
       };
 
@@ -183,7 +205,7 @@ export function CollectingDataEnterprise(app: express.Express) {
         .from('collecting_data_enterprise')
         .upsert(upsertData, { onConflict: 'enterprise_id' })
         .select(
-          'id, enterprise_id, company_objective, analytics_goal, business_summary, main_products_or_services, created_at, updated_at',
+          'id, enterprise_id, company_objective, analytics_goal, business_summary, main_products_or_services, uses_company_products, created_at, updated_at',
         )
         .single();
 

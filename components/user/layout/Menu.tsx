@@ -3,6 +3,31 @@ import { FaAlignLeft, FaBuffer, FaChevronRight } from 'react-icons/fa6';
 import type { MenuItem } from 'lib/interfaces/user/propsMenu';
 import { menuData } from 'lib/mock/menu';
 
+function filterMenu(items: MenuItem[], allowProducts: boolean): MenuItem[] {
+  return items
+    .map((item) => {
+      if (!allowProducts && item.to === '/user/qrcode/products') {
+        return null;
+      }
+
+      if (Array.isArray(item.children) && item.children.length > 0) {
+        const children = filterMenu(item.children, allowProducts);
+        const filteredItem: MenuItem = { ...item };
+
+        if (children.length > 0) {
+          filteredItem.children = children;
+        } else {
+          delete filteredItem.children;
+        }
+
+        return filteredItem;
+      }
+
+      return { ...item };
+    })
+    .filter((item): item is MenuItem => item !== null);
+}
+
 function Item({ item }: { item: MenuItem }) {
   const hasChildren = Array.isArray(item.children) && item.children.length > 0;
 
@@ -43,11 +68,17 @@ function Item({ item }: { item: MenuItem }) {
   );
 }
 
-export default function Menu() {
+export default function Menu({
+  usesCompanyProducts,
+}: {
+  usesCompanyProducts: boolean;
+}) {
+  const items = filterMenu(menuData, usesCompanyProducts);
+
   return (
     <nav>
       <ul className="space-y-1 p-2">
-        {menuData.map((item) => (
+        {items.map((item) => (
           <Item
             key={item.label}
             item={item}

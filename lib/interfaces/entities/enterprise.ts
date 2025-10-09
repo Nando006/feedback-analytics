@@ -31,6 +31,7 @@ export interface PropsCollectingDataEnterprise {
   analytics_goal: string | null;
   business_summary: string | null;
   main_products_or_services: string[] | null;
+  uses_company_products: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -43,6 +44,7 @@ export type TypeUpdateCollectingDataPayload = Partial<
     | 'analytics_goal'
     | 'business_summary'
     | 'main_products_or_services'
+    | 'uses_company_products'
   >
 >;
 
