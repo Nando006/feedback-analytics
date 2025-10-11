@@ -5,12 +5,12 @@ import {
 } from 'lib/schemas/public/registerSchema';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { Link, useActionData, useSubmit } from 'react-router-dom';
-import FieldAccountTypeRegister from './fields/fieldRegister/fieldAccountType';
-import FieldText from './fields/fieldRegister/fieldText';
-import FieldDocument from './fields/fieldRegister/fieldDocument';
-import FieldPhoneRegister from './fields/fieldRegister/fieldPhone';
-import FieldPasswordRegister from './fields/fieldRegister/fieldPassword';
-import FieldTermsRegister from './fields/fieldRegister/fieldTerms';
+import FieldAccountTypeRegister from './fields/fieldsRegister/fieldAccountType';
+import FieldText from './fields/fieldsRegister/fieldText';
+import FieldDocument from './fields/fieldsRegister/fieldDocument';
+import FieldPhoneRegister from './fields/fieldsRegister/fieldPhone';
+import FieldPasswordRegister from './fields/fieldsRegister/fieldPassword';
+import FieldTermsRegister from './fields/fieldsRegister/fieldTerms';
 
 export default function FormRegister() {
   const submit = useSubmit();
