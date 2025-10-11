@@ -1,5 +1,5 @@
 import express from 'express';
-import { enterpriseUpdateSchema } from 'lib/schemas/user/enterpriseUpdateSchema';
+import { enterpriseUpdateSchema } from '../../../../../../lib/schemas/user/enterpriseUpdateSchema';
 import { requireAuth } from '../../../middleware/auth.js';
 
 export function Enterprise(app: express.Express) {
