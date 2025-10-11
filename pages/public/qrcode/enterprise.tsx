@@ -4,18 +4,11 @@ import CardForm from 'components/public/shared/cards/cardForm';
 import SVGImageProfile from 'components/svg/imageProfile';
 import { getEnterprisePublic } from 'src/services/enterprisePublic';
 import { submitQrcodeFeedback } from 'src/services/qrcode/feedback';
-
-interface FeedbackData {
-  message: string;
-  rating: number;
-  enterprise_id: string;
-}
-
-interface CustomerData {
-  customer_name?: string;
-  customer_email?: string;
-  customer_gender?: 'masculino' | 'feminino' | 'outro' | 'prefiro_nao_informar';
-}
+import type { CustomerData, FeedbackData } from 'lib/interfaces/public/qrcode/qrcode';
+import StateSentPreviousFeedback from 'components/public/qrcode/enterprise/stateSentPreviousFeedback';
+import StateLoading from 'components/public/qrcode/enterprise/stateLoading';
+import StateError from 'components/public/qrcode/enterprise/stateError';
+import StateSubmitted from 'components/public/qrcode/enterprise/stateSubmitted';
 
 export default function FeedbackQRCodeEnterprise() {
   const [searchParams] = useSearchParams();
@@ -129,168 +122,21 @@ export default function FeedbackQRCodeEnterprise() {
 
   // Loading state durante validação da empresa
   if (isValidatingEnterprise) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-neutral-900 to-neutral-800 flex items-center justify-center p-4">
-        <CardForm
-          title="Validando..."
-          text="Verificando informações da empresa"
-          icon={<SVGImageProfile />}
-          form={
-            <div className="text-center">
-              <div className="w-16 h-16 bg-blue-600/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg
-                  className="w-8 h-8 text-blue-400 animate-spin"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                  />
-                </svg>
-              </div>
-              <p className="text-neutral-400">
-                Aguarde enquanto validamos as informações...
-              </p>
-            </div>
-          }
-        />
-      </div>
-    );
+    return <StateLoading />
   }
 
   // Estado quando já enviou feedback anteriormente
   if (hasAlreadySubmitted) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-neutral-900 to-neutral-800 flex items-center justify-center p-4">
-        <CardForm
-          title="Feedback Já Enviado"
-          text="Este dispositivo já enviou feedback para esta empresa hoje"
-          icon={<SVGImageProfile />}
-          form={
-            <div className="text-center">
-              <div className="w-16 h-16 bg-orange-600/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg
-                  className="w-8 h-8 text-orange-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
-                  />
-                </svg>
-              </div>
-              <p className="text-neutral-400 mb-6">
-                Obrigado! Este dispositivo já enviou feedback para esta empresa
-                hoje. Você poderá enviar um novo feedback amanhã.
-              </p>
-              {enterpriseName && (
-                <p className="text-sm text-neutral-500 mb-6">
-                  <span className="font-medium">Empresa:</span> {enterpriseName}
-                </p>
-              )}
-              <div className="bg-blue-600/10 border border-blue-600/20 rounded-lg p-4">
-                <p className="text-blue-300 text-sm">
-                  <strong>Por que não posso enviar outro feedback?</strong>
-                  <br />
-                  Para evitar spam e garantir a qualidade dos feedbacks,
-                  permitimos apenas um feedback por dispositivo por empresa por
-                  dia.
-                </p>
-              </div>
-            </div>
-          }
-        />
-      </div>
-    );
+    return <StateSentPreviousFeedback enterpriseName={enterpriseName} />
   }
 
   // Error state
   if (error && !formData.enterprise_id) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-neutral-900 to-neutral-800 flex items-center justify-center p-4">
-        <CardForm
-          title="Erro"
-          text="Não foi possível carregar o formulário"
-          icon={<SVGImageProfile />}
-          form={
-            <div className="text-center">
-              <div className="w-16 h-16 bg-red-600/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg
-                  className="w-8 h-8 text-red-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-              </div>
-              <p className="text-red-400 mb-6">{error}</p>
-              <button
-                onClick={() => window.location.reload()}
-                className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors">
-                Tentar Novamente
-              </button>
-            </div>
-          }
-        />
-      </div>
-    );
+    return <StateError error={error} />
   }
 
   if (isSubmitted) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-neutral-900 to-neutral-800 flex items-center justify-center p-4">
-        <CardForm
-          title="Feedback Enviado!"
-          text="Obrigado por compartilhar sua experiência conosco"
-          icon={<SVGImageProfile />}
-          form={
-            <div className="text-center">
-              <div className="w-16 h-16 bg-green-600/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg
-                  className="w-8 h-8 text-green-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-              </div>
-              <p className="text-neutral-400 mb-6">
-                Seu feedback foi recebido com sucesso e será analisado pela
-                nossa equipe.
-              </p>
-              {enterpriseName && (
-                <p className="text-sm text-neutral-500 mb-6">
-                  <span className="font-medium">Empresa:</span> {enterpriseName}
-                </p>
-              )}
-              <div className="bg-blue-600/10 border border-blue-600/20 rounded-lg p-4">
-                <p className="text-blue-300 text-sm">
-                  <strong>Feedback registrado!</strong>
-                  <br />
-                  Este dispositivo poderá enviar um novo feedback amanhã.
-                </p>
-              </div>
-            </div>
-          }
-        />
-      </div>
-    );
+    return <StateSubmitted enterpriseName={enterpriseName} />
   }
 
   return (
