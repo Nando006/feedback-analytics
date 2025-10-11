@@ -1,5 +1,5 @@
 import express from 'express';
-import { requireAuth } from 'src/server/express/middleware/auth';
+import { requireAuth } from '../../../middleware/auth.js';
 
 export function Feedbacks(app: express.Express) {
   // Busca feedbacks da empresa com paginação

@@ -1,5 +1,5 @@
-import type { PropsEnterprise } from 'lib/interfaces/entities/enterprise';
-import type { PropsAuthUser } from 'lib/interfaces/entities/authUser';
+import type { PropsEnterprise } from './enterprise.ts';
+import type { PropsAuthUser } from './authUser.ts';
 
 // Dados da empresa e do usuário.
 export interface PropsEnterpriseAndUser {

@@ -1,11 +1,11 @@
 import express from 'express';
-import { User } from './endpoints/protected/user';
-import { VerifyPhone } from './endpoints/protected/verify';
-import { Enterprise } from './endpoints/protected/enterprise';
-import { Metadados } from './endpoints/protected/metadados';
-import { CollectingDataEnterprise } from './endpoints/protected/collectingDataEnterprise';
-import { Email } from './endpoints/protected/email';
-import { Feedbacks } from './endpoints/protected/feedbacks';
+import { User } from './endpoints/protected/user.js';
+import { VerifyPhone } from './endpoints/protected/verify.js';
+import { Enterprise } from './endpoints/protected/enterprise.js';
+import { Metadados } from './endpoints/protected/metadados.js';
+import { CollectingDataEnterprise } from './endpoints/protected/collectingDataEnterprise.js';
+import { Email } from './endpoints/protected/email.js';
+import { Feedbacks } from './endpoints/protected/feedbacks.js';
 
 export function ProtectedRoutes(app: express.Express) {
   // Endpoints perfil do cliente (empresa)

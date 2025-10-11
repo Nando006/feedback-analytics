@@ -2,4 +2,4 @@
 export {
   qrcodeFeedbackSchema,
   type QrcodeFeedbackPayload,
-} from '../feedbackSchema';
+} from '../feedbackSchema.js';

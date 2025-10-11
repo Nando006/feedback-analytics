@@ -1,6 +1,6 @@
 import express from 'express';
 import { emailUpdateSchema } from 'lib/schemas/user/emailUpdateSchema';
-import { requireAuth } from 'src/server/express/middleware/auth';
+import { requireAuth } from '../../../middleware/auth.js';
 
 export function Email(app: express.Express) {
   // Atualiza o email do usuário.
@@ -10,7 +10,7 @@ export function Email(app: express.Express) {
       return res.status(400).json({ error: 'invalid_payload' });
     }
 
-    const supabase = req.supabase;
+  const supabase = req.supabase!;
 
     const origin = req.get('origin');
     const xfProto = req.headers['x-forwarded-proto'] as string | undefined;

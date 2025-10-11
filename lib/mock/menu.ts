@@ -1,4 +1,4 @@
-import type { MenuItem } from 'lib/interfaces/user/propsMenu';
+import type { MenuItem } from '../interfaces/user/propsMenu';
 
 export const menuData: MenuItem[] = [
   { label: 'Perfil', to: '/user/profile' },

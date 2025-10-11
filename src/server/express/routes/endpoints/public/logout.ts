@@ -1,5 +1,5 @@
 import express from 'express';
-import { createSupabaseServerClient } from 'src/server/express/supabase';
+import { createSupabaseServerClient } from '../../../supabase.js';
 
 export function Logout(app: express.Express) {
   // Logout (limpa cookies httpOnly da sessão)
