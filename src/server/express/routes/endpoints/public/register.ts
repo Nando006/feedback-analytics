@@ -1,5 +1,5 @@
 import express from 'express';
-import { registerSchema } from 'lib/schemas/public/registerSchema';
+import { registerSchema } from '../../../../../../lib/schemas/public/registerSchema';
 import { createSupabaseServerClient } from '../../../supabase.js';
 import z from 'zod';
 

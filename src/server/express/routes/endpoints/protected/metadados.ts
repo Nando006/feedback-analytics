@@ -1,5 +1,5 @@
 import express from 'express';
-import { metadadosUpdateSchema } from 'lib/schemas/user/metadadosUpdateSchema';
+import { metadadosUpdateSchema } from '../../../../../../lib/schemas/user/metadadosUpdateSchema';
 import { requireAuth } from '../../../middleware/auth.js';
 
 export function Metadados(app: express.Express) {
