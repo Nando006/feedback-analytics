@@ -11,6 +11,7 @@ import StateError from 'components/public/qrcode/enterprise/stateError';
 import StateSubmitted from 'components/public/qrcode/enterprise/stateSubmitted';
 
 export default function FeedbackQRCodeEnterprise() {
+  const sanitizeUuid = (value: string) => value.toLowerCase().replace(/[^a-z0-9-]/g, '');
   const [searchParams] = useSearchParams();
   const [formData, setFormData] = useState<FeedbackData>({
     message: '',
@@ -28,7 +29,7 @@ export default function FeedbackQRCodeEnterprise() {
 
   useEffect(() => {
     const validateEnterprise = async () => {
-      const enterpriseId = searchParams.get('enterprise');
+      const enterpriseId = sanitizeUuid((searchParams.get('enterprise') || '').trim());
 
       if (!enterpriseId) {
         setError('ID da empresa não encontrado na URL. Verifique o QR Code.');
@@ -38,9 +39,9 @@ export default function FeedbackQRCodeEnterprise() {
 
       try {
         // Verificar se a empresa existe usando service
-        const enterprise = await getEnterprisePublic(enterpriseId);
+  const enterprise = await getEnterprisePublic(enterpriseId);
 
-        setFormData((prev) => ({ ...prev, enterprise_id: enterpriseId }));
+  setFormData((prev) => ({ ...prev, enterprise_id: enterpriseId }));
         setEnterpriseName(enterprise.name || 'Empresa');
         setIsValidatingEnterprise(false);
       } catch (err: unknown) {
@@ -91,7 +92,7 @@ export default function FeedbackQRCodeEnterprise() {
         message: formData.message.trim(),
         rating: formData.rating,
         channel: 'QRCODE',
-        enterprise_id: formData.enterprise_id,
+        enterprise_id: formData.enterprise_id.trim(),
         ...customerData,
       });
 

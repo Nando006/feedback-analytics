@@ -14,9 +14,9 @@ export function QrcodeFeedback(app: express.Express) {
     const payload = parsed.data;
     const supabase = createSupabaseServerClient(req, res);
 
-    // Verifica se a enterprise existe
+    // Verifica se a enterprise existe (usar a mesma view pública da validação GET)
     const { data: enterpriseRow, error: enterpriseErr } = await supabase
-      .from('enterprise')
+      .from('enterprise_public')
       .select('id')
       .eq('id', payload.enterprise_id)
       .single();
