@@ -1,5 +1,5 @@
 import express from 'express';
-import { createSupabaseServerClient } from 'src/server/express/supabase';
+import { createSupabaseServerClient } from '../../../supabase.js';
 
 export function EnterprisePublic(app: express.Express) {
   // Busca informações públicas de uma empresa para validação

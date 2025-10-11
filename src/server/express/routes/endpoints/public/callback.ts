@@ -1,5 +1,5 @@
 import express from 'express';
-import { createSupabaseServerClient } from 'src/server/express/supabase';
+import { createSupabaseServerClient } from '../../../supabase.js';
 
 // Função para trocar o código de verificação para uma sessão.
 export function Callback(app: express.Express) {

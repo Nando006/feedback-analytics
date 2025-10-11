@@ -1,6 +1,6 @@
 import express from 'express';
 import { registerSchema } from 'lib/schemas/public/registerSchema';
-import { createSupabaseServerClient } from 'src/server/express/supabase';
+import { createSupabaseServerClient } from '../../../supabase.js';
 import z from 'zod';
 
 // Função para fazer o registro.

@@ -1,8 +1,8 @@
 import express from 'express';
 import 'dotenv/config';
-import { HealthRoutes } from './routes/health';
-import { PublicRoutes } from './routes/public';
-import { ProtectedRoutes } from './routes/protected';
+import { HealthRoutes } from './routes/health.js';
+import { PublicRoutes } from './routes/public.js';
+import { ProtectedRoutes } from './routes/protected.js';
 
 // Criando o servidor.
 const app = express();

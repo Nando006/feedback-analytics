@@ -1,6 +1,6 @@
 import express from 'express';
 import { qrcodeFeedbackSchema } from 'lib/schemas/public/feedbackSchema';
-import { createSupabaseServerClient } from 'src/server/express/supabase';
+import { createSupabaseServerClient } from '../../../../supabase.js';
 import crypto from 'node:crypto';
 
 export function QrcodeFeedback(app: express.Express) {

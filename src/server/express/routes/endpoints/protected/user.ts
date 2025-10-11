@@ -1,5 +1,5 @@
 import express from 'express';
-import { requireAuth } from '../../../middleware/auth';
+import { requireAuth } from '../../../middleware/auth.js';
 
 export function User(app: express.Express) {
   // Busca os dados do usuário.

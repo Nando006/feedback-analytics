@@ -1,6 +1,6 @@
 import express from 'express';
 import { enterpriseUpdateSchema } from 'lib/schemas/user/enterpriseUpdateSchema';
-import { requireAuth } from 'src/server/express/middleware/auth';
+import { requireAuth } from '../../../middleware/auth.js';
 
 export function Enterprise(app: express.Express) {
   // Busca os dados da empresa.

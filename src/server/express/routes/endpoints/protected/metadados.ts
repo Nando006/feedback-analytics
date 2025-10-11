@@ -1,6 +1,6 @@
 import express from 'express';
 import { metadadosUpdateSchema } from 'lib/schemas/user/metadadosUpdateSchema';
-import { requireAuth } from 'src/server/express/middleware/auth';
+import { requireAuth } from '../../../middleware/auth.js';
 
 export function Metadados(app: express.Express) {
   // Atualiza os metadados do usuário.
@@ -12,7 +12,7 @@ export function Metadados(app: express.Express) {
       });
     }
 
-    const supabase = req.supabase;
+  const supabase = req.supabase!;
     const { data, error } = await supabase.auth.updateUser({
       data: parsed.data,
     });

@@ -1,6 +1,6 @@
 import express from 'express';
 import { loginSchema } from 'lib/schemas/public/loginSchema';
-import { createSupabaseServerClient } from 'src/server/express/supabase';
+import { createSupabaseServerClient } from '../../../supabase.js';
 
 // Função para fazer o login.
 export function Login(app: express.Express) {
