@@ -77,7 +77,13 @@ function formatDateTime(value: string) {
 }
 
 export default function Dashboard() {
-  const { user, enterprise, collecting } = useRouteLoaderData('user') as LoaderData;
+  const loaderData = useRouteLoaderData('user') as LoaderData | undefined;
+
+  if (!loaderData) {
+    return null;
+  }
+
+  const { user, enterprise, collecting } = loaderData;
   const [stats, setStats] = useState<FeedbackStats | null>(null);
   const [latestFeedbacks, setLatestFeedbacks] = useState<Feedback[]>([]);
   const [loading, setLoading] = useState(true);
