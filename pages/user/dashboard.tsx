@@ -78,12 +78,9 @@ function formatDateTime(value: string) {
 
 export default function Dashboard() {
   const loaderData = useRouteLoaderData('user') as LoaderData | undefined;
-
-  if (!loaderData) {
-    return null;
-  }
-
-  const { user, enterprise, collecting } = loaderData;
+  const user = loaderData?.user;
+  const enterprise = loaderData?.enterprise;
+  const collecting = loaderData?.collecting ?? null;
   const [stats, setStats] = useState<FeedbackStats | null>(null);
   const [latestFeedbacks, setLatestFeedbacks] = useState<Feedback[]>([]);
   const [loading, setLoading] = useState(true);
@@ -134,7 +131,7 @@ export default function Dashboard() {
   }, [stats]);
 
   const displayName =
-    user.user_metadata?.full_name || enterprise.full_name || user.email || 'Dashboard';
+    user?.user_metadata?.full_name || enterprise?.full_name || user?.email || 'Dashboard';
 
   const totalFeedbacks = stats?.totalFeedbacks ?? 0;
   const averageRating = stats?.averageRating ?? 0;
