@@ -6,7 +6,7 @@ describe('Home Page', () => {
   it('deve renderizar o conteúdo da página home', () => {
     render(<Home />);
 
-    expect(screen.getByText('Home Page')).toBeInTheDocument();
+    expect(screen.getByText('Homes Page')).toBeInTheDocument();
   });
 
   it('deve ter a estrutura HTML correta', () => {
