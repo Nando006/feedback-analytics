@@ -1,5 +1,5 @@
 import express from 'express';
-import { loginSchema } from '../../../../../../lib/schemas/public/loginSchema';
+import { loginSchema } from '../../../../../../lib/schemas/public/loginSchema.js';
 import { createSupabaseServerClient } from '../../../supabase.js';
 
 // Função para fazer o login.
