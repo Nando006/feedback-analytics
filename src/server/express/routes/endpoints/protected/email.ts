@@ -1,5 +1,5 @@
 import express from 'express';
-import { emailUpdateSchema } from '../../../../../../lib/schemas/user/emailUpdateSchema';
+import { emailUpdateSchema } from '../../../../../../lib/schemas/user/emailUpdateSchema.js';
 import { requireAuth } from '../../../middleware/auth.js';
 
 export function Email(app: express.Express) {

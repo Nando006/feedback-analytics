@@ -1,5 +1,5 @@
 import express from 'express';
-import { qrcodeFeedbackSchema } from '../../../../../../../lib/schemas/public/feedbackSchema';
+import { qrcodeFeedbackSchema } from '../../../../../../../lib/schemas/public/feedbackSchema.js';
 import { createSupabaseServerClient } from '../../../../supabase.js';
 import crypto from 'node:crypto';
 
