@@ -187,8 +187,8 @@ export function QrcodeFeedback(app: express.Express) {
         .eq('id', trackedDevice.id);
     }
 
-    // 3. Inserir feedback na tabela COM tracked_device_id
-    const { data: insertedFeedback, error: feedbackErr } = await supabase
+    // 3. Inserir feedback na tabela COM tracked_device_id (sem RETURNING para evitar RLS no SELECT)
+    const { error: feedbackErr } = await supabase
       .from('feedback')
       .insert({
         enterprise_id: payload.enterprise_id,
@@ -196,11 +196,9 @@ export function QrcodeFeedback(app: express.Express) {
         tracked_device_id: trackedDevice!.id, // RELAÇÃO CORRETA!
         message: payload.message,
         rating: payload.rating,
-      })
-      .select('id')
-      .single();
+      });
 
-    if (feedbackErr || !insertedFeedback) {
+    if (feedbackErr) {
       console.error('Erro ao inserir feedback:', feedbackErr);
       return res.status(500).json({ error: 'feedback_insert_failed' });
     }
@@ -221,7 +219,7 @@ export function QrcodeFeedback(app: express.Express) {
       // Não falha o feedback por isso, mas loga o erro
     }
 
-    console.log('Feedback inserido com sucesso:', insertedFeedback.id);
-    return res.json({ ok: true, id: insertedFeedback.id });
+  console.log('Feedback inserido com sucesso');
+  return res.json({ ok: true });
   });
 }
