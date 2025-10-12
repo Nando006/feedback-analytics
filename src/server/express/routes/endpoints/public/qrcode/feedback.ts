@@ -16,7 +16,7 @@ export function QrcodeFeedback(app: express.Express) {
 
     // Verifica se a enterprise existe
     const { data: enterpriseRow, error: enterpriseErr } = await supabase
-      .from('enterprise')
+      .from('enterprise_public')
       .select('id')
       .eq('id', payload.enterprise_id)
       .single();
@@ -44,8 +44,8 @@ export function QrcodeFeedback(app: express.Express) {
 
     console.log('Fingerprint gerado:', deviceFingerprint);
 
-    // 1. Buscar ou criar collection_point do tipo QR_CODE para a empresa
-    const { data: initialCollectionPoint, error: cpErr } = await supabase
+    // 1. Buscar collection_point do tipo QR_CODE para a empresa (não criar no fluxo público)
+    const { data: collectionPoint, error: cpErr } = await supabase
       .from('collection_points')
       .select('id')
       .eq('enterprise_id', payload.enterprise_id)
@@ -53,36 +53,13 @@ export function QrcodeFeedback(app: express.Express) {
       .eq('status', 'ACTIVE')
       .maybeSingle();
 
-    let collectionPoint = initialCollectionPoint;
-
     if (cpErr) {
       console.error('Erro ao buscar collection_point:', cpErr);
       return res.status(500).json({ error: 'collection_point_error' });
     }
 
-    // Se não existe, criar um collection_point padrão para QR Code
     if (!collectionPoint) {
-      console.log('Criando collection_point QR_CODE para empresa');
-      const { data: newCP, error: createCPErr } = await supabase
-        .from('collection_points')
-        .insert({
-          enterprise_id: payload.enterprise_id,
-          name: 'QR Code Feedback',
-          type: 'QR_CODE',
-          identifier: 'qrcode-default',
-          status: 'ACTIVE',
-        })
-        .select('id')
-        .single();
-
-      if (createCPErr || !newCP) {
-        console.error('Erro ao criar collection_point:', createCPErr);
-        return res
-          .status(500)
-          .json({ error: 'collection_point_creation_failed' });
-      }
-
-      collectionPoint = newCP;
+      return res.status(404).json({ error: 'collection_point_not_found' });
     }
 
     // 2. Buscar ou criar dispositivo rastreado PRIMEIRO
