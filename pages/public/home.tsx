@@ -24,7 +24,6 @@ export default function Home() {
   };
 
   const featuresWithId = (Object.keys(featuresData) as FeatureKey[]).map((key) => ({
-    id: key, 
     title: featuresData[key].title,
     description: featuresData[key].description,
   }));

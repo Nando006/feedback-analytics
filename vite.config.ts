@@ -24,7 +24,7 @@ export default defineConfig({
         quality: 80,
         lossless: true,
       },
-      cache: false,
+      cache: true,
       cacheLocation: path.resolve(__dirname, 'node_modules/.cache/vite-plugin-image-optimizer'),
     }),
   ],

@@ -6,6 +6,12 @@ import type { IFeatureSectionProps } from 'lib/interfaces/site/section';
 
 // Componente para exibir os recursos da plataforma
 export default function FeatureSection({ features }: IFeatureSectionProps) {
+  // Garantir que cada item tenha um `id` antes de passar para o carrossel
+  const carouselData = features.map((item, idx) => ({
+    id: (item as any).id ?? idx,
+    title: item.title,
+    description: item.description,
+  }));
   return (
     <section className="relative py-16 overflow-hidden bg-gradient-to-b from-[var(--color-surface)] to-transparent rounded-2xl">
       {/* Elementos decorativos */}
@@ -20,7 +26,7 @@ export default function FeatureSection({ features }: IFeatureSectionProps) {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           <div className="order-2 md:order-1">
-            <MotionCarrossel data={features} />
+            <MotionCarrossel data={carouselData} />
           </div>
 
           <div className="order-1 md:order-2 relative">

@@ -21,8 +21,15 @@ export interface IStatItemProps {
 }
 
 // Sections
+export interface IFeatureItem {
+  id?: string | number;
+  title: string;
+  description: string;
+}
+
 export interface IFeatureSectionProps {
-  features: Record<string, { title: string; description: string }>;
+  // Agora aceita um array de features. Cada item pode ter um `id` opcional
+  features: IFeatureItem[];
 }
 
 export interface IWelcomeSectionProps {
