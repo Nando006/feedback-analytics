@@ -5,6 +5,8 @@ import CardSimple from 'components/user/shared/cards/cardSimple';
 import type { PropsEnterprise } from 'lib/interfaces/entities/enterprise';
 import type { PropsAuthUser } from 'lib/interfaces/entities/authUser';
 import { FaDownload, FaShare, FaCopy, FaLightbulb } from 'react-icons/fa';
+import { useEffect } from 'react';
+import { getQrStatus, enableQr, disableQr } from 'src/services/collectionPoints';
 
 export default function QRCodeEnterprise() {
   const { enterprise } = useRouteLoaderData('user') as {
@@ -13,6 +15,9 @@ export default function QRCodeEnterprise() {
   };
 
   const [showCopied, setShowCopied] = useState(false);
+  const [qrActive, setQrActive] = useState<boolean>(false);
+  const [qrLoading, setQrLoading] = useState<boolean>(true);
+  const [qrError, setQrError] = useState<string | null>(null);
 
   // Gera URL para formulário de feedback da empresa
   const generateFeedbackUrl = () => {
@@ -25,6 +30,28 @@ export default function QRCodeEnterprise() {
     size: 300,
     format: 'png',
   });
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      setQrLoading(true);
+      setQrError(null);
+      try {
+        const status = await getQrStatus();
+        if (!mounted) return;
+        setQrActive(status.active);
+      } catch (err) {
+        console.error('Erro ao consultar status do QR:', err);
+        if (!mounted) return;
+        setQrError('Não foi possível carregar o status do QR.');
+      } finally {
+        if (mounted) setQrLoading(false);
+      }
+    })();
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const handleDownload = async () => {
     try {
@@ -73,6 +100,25 @@ export default function QRCodeEnterprise() {
     }
   };
 
+  const handleToggleQr = async () => {
+    setQrError(null);
+    setQrLoading(true);
+    try {
+      if (qrActive) {
+        await disableQr();
+        setQrActive(false);
+      } else {
+        await enableQr();
+        setQrActive(true);
+      }
+    } catch (err) {
+      console.error('Erro ao alternar QR Code:', err);
+      setQrError('Falha ao atualizar o QR Code. Tente novamente.');
+    } finally {
+      setQrLoading(false);
+    }
+  };
+
   return (
     <div className="font-inter space-y-8">
       {/* Header */}
@@ -88,6 +134,29 @@ export default function QRCodeEnterprise() {
           <div className="mt-2 text-sm text-neutral-400">
             <span className="font-medium">Empresa:</span>{' '}
             {enterprise.full_name || 'Sua Empresa'}
+          </div>
+
+          {/* Toggle QR */}
+          <div className="mt-4 flex items-center gap-3">
+            <button
+              type="button"
+              onClick={handleToggleQr}
+              disabled={qrLoading}
+              className={`inline-flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-semibold transition-colors ${
+                qrActive
+                  ? 'border-red-600/40 bg-red-600/10 text-red-300 hover:bg-red-600/20'
+                  : 'border-green-600/40 bg-green-600/10 text-green-300 hover:bg-green-600/20'
+              } disabled:opacity-60`}
+            >
+              {qrLoading ? 'Atualizando…' : qrActive ? 'Desabilitar QR Code' : 'Habilitar QR Code'}
+            </button>
+            {qrError ? (
+              <span className="text-xs text-red-400">{qrError}</span>
+            ) : (
+              <span className="text-xs text-neutral-400">
+                Status: {qrLoading ? 'Carregando…' : qrActive ? 'Ativo' : 'Inativo'}
+              </span>
+            )}
           </div>
         </div>
       </CardSimple>

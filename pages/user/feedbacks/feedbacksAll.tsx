@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { getFeedbacks, getFeedbackStats } from 'src/services/feedbacks';
 import type {
   Feedback,
@@ -31,8 +31,8 @@ export default function FeedbacksAll() {
     FeedbacksResponse['pagination'] | null
   >(null);
 
-  // Função para buscar feedbacks
-  const fetchFeedbacks = async () => {
+  // Função para buscar feedbacks (memoizada para respeitar react-hooks/exhaustive-deps)
+  const fetchFeedbacks = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -46,23 +46,23 @@ export default function FeedbacksAll() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filters]);
 
-  // Função para buscar estatísticas
-  const fetchStats = async () => {
+  // Função para buscar estatísticas (memoizada)
+  const fetchStats = useCallback(async () => {
     try {
       const response = await getFeedbackStats();
       setStats(response);
     } catch (err) {
       console.error('Erro ao buscar estatísticas:', err);
     }
-  };
+  }, []);
 
   // Carregar dados iniciais
   useEffect(() => {
     fetchFeedbacks();
     fetchStats();
-  }, [filters]);
+  }, [fetchFeedbacks, fetchStats]);
 
   // Handlers
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
