@@ -14,11 +14,19 @@ export default function Header() {
             serão adicionados posteriormente.
           </p>
         </div>
-        <Link
-          to="/user/profile"
-          className="btn-primary">
-          Perfil
-        </Link>
+        <div className="space-x-4">
+          <Link
+            to="/user/profile"
+            className="btn-primary">
+            Perfil
+          </Link>
+          <Link
+            to="/user/edit/collecting-data-enterprise"
+            className="btn-primary"
+          >
+            Informações da Empresa
+          </Link>
+        </div>
       </div>
     </CardSimple>
   );

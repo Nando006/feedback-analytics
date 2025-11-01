@@ -1,4 +1,3 @@
-import Header from 'components/user/profile/edit/header';
 import CardSimple from 'components/user/shared/cards/cardSimple';
 import type { PropsCollectingDataEnterprise } from 'lib/interfaces/entities/enterprise';
 import {
@@ -6,6 +5,7 @@ import {
   useRouteLoaderData,
 } from 'react-router-dom';
 import { useEffect, useState, type ChangeEvent } from 'react';
+import Header from 'components/user/profile/editCollectingData/header';
 
 export default function EditCollectingData() {
   const { collecting } = useRouteLoaderData('user') as {

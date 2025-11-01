@@ -1,6 +1,6 @@
-import Header from 'components/user/profile/edit/header';
-import Info from 'components/user/profile/edit/information';
-import Preferences from 'components/user/profile/edit/preferences';
+import Header from 'components/user/profile/editUser/header';
+import Info from 'components/user/profile/editUser/information';
+import Preferences from 'components/user/profile/editUser/preferences';
 
 export default function EditProfile() {
   return (
