@@ -4,7 +4,7 @@ import CardForm from 'components/public/shared/cards/cardForm';
 import SVGImageProfile from 'components/svg/imageProfile';
 import { getEnterprisePublic } from 'src/services/enterprisePublic';
 import { submitQrcodeFeedback } from 'src/services/qrcode/feedback';
-import type { CustomerData, FeedbackData } from 'lib/interfaces/public/qrcode/qrcode';
+import type { PropsCustomerData, PropsFeedbackData } from 'lib/interfaces/public/propsQRcode';
 import StateSentPreviousFeedback from 'components/public/qrcode/enterprise/stateSentPreviousFeedback';
 import StateLoading from 'components/public/qrcode/enterprise/stateLoading';
 import StateError from 'components/public/qrcode/enterprise/stateError';
@@ -13,12 +13,12 @@ import FormQRCodeFeedback from 'components/public/forms/formQRCodeFeedback';
 
 export default function FeedbackQRCodeEnterprise() {
   const [searchParams] = useSearchParams();
-  const [formData, setFormData] = useState<FeedbackData>({
+  const [formData, setFormData] = useState<PropsFeedbackData>({
     message: '',
     rating: 0,
     enterprise_id: '',
   });
-  const [customerData, setCustomerData] = useState<CustomerData>({});
+  const [customerData, setCustomerData] = useState<PropsCustomerData>({});
   const [showOptionalFields, setShowOptionalFields] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -54,12 +54,12 @@ export default function FeedbackQRCodeEnterprise() {
     validateEnterprise();
   }, [searchParams]);
 
-  const handleFormDataChange = (data: Partial<FeedbackData>) => {
+  const handleFormDataChange = (data: Partial<PropsFeedbackData>) => {
     setFormData((prev) => ({ ...prev, ...data }));
   };
 
   const handleCustomerDataChange = (
-    field: keyof CustomerData,
+    field: keyof PropsCustomerData,
     value: string | undefined,
   ) => {
     setCustomerData((prev) => ({ ...prev, [field]: value }));

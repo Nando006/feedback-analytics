@@ -1,4 +1,4 @@
-import type { PropsField } from 'lib/interfaces/public/form/propsField';
+import type { PropsFieldForm } from 'lib/interfaces/public/propsFieldForm';
 import { useState } from 'react';
 
 function digitsOnly(value: string) {
@@ -25,7 +25,7 @@ export default function FieldPhoneRegister({
   label,
   register,
   error,
-}: PropsField) {
+}: PropsFieldForm) {
   const [display, setDisplay] = useState('');
 
   return (

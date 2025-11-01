@@ -1,9 +1,7 @@
-interface FieldMessageProps {
-  message: string;
-  onMessageChange: (message: string) => void;
-}
+import type { PropsFieldMessage } from "lib/interfaces/public/propsQRcode";
 
-export default function FieldMessage({ message, onMessageChange }: FieldMessageProps) {
+
+export default function FieldMessage({ message, onMessageChange }: PropsFieldMessage) {
   return (
     <div>
       <label

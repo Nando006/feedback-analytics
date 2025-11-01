@@ -1,9 +1,6 @@
-interface FieldRatingProps {
-  rating: number;
-  onRatingChange: (rating: number) => void;
-}
+import type { PropsFieldRating } from "lib/interfaces/public/propsQRcode";
 
-export default function FieldRating({ rating, onRatingChange }: FieldRatingProps) {
+export default function FieldRating({ rating, onRatingChange }: PropsFieldRating) {
   const ratingLabels = {
     1: 'Muito insatisfeito',
     2: 'Insatisfeito',

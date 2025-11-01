@@ -1,21 +1,9 @@
-import type { CustomerData, FeedbackData } from 'lib/interfaces/public/qrcode/qrcode';
 import FieldRating from './fields/fieldsQRCode/fieldRating';
 import FieldMessage from './fields/fieldsQRCode/fieldMessage';
 import FieldCustomerName from './fields/fieldsQRCode/fieldCustomerName';
 import FieldCustomerEmail from './fields/fieldsQRCode/fieldCustomerEmail';
 import FieldCustomerGender from './fields/fieldsQRCode/fieldCustomerGender';
-
-interface FormQRCodeFeedbackProps {
-  formData: FeedbackData;
-  customerData: CustomerData;
-  showOptionalFields: boolean;
-  error: string;
-  isSubmitting: boolean;
-  onFormDataChange: (data: Partial<FeedbackData>) => void;
-  onCustomerDataChange: (field: keyof CustomerData, value: string | undefined) => void;
-  onToggleOptionalFields: () => void;
-  onSubmit: (e: React.FormEvent) => void;
-}
+import type { PropsFormQRCodeFeedback } from 'lib/interfaces/public/propsQRcode';
 
 export default function FormQRCodeFeedback({
   formData,
@@ -27,7 +15,7 @@ export default function FormQRCodeFeedback({
   onCustomerDataChange,
   onToggleOptionalFields,
   onSubmit,
-}: FormQRCodeFeedbackProps) {
+}: PropsFormQRCodeFeedback) {
   return (
     <form onSubmit={onSubmit} className="space-y-6">
       <FieldRating

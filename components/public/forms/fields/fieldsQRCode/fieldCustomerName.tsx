@@ -1,9 +1,7 @@
-interface FieldCustomerNameProps {
-  name: string;
-  onNameChange: (name: string) => void;
-}
+import type { PropsFieldCustomerName } from "lib/interfaces/public/propsQRcode";
 
-export default function FieldCustomerName({ name, onNameChange }: FieldCustomerNameProps) {
+
+export default function FieldCustomerName({ name, onNameChange }: PropsFieldCustomerName) {
   return (
     <div>
       <label
