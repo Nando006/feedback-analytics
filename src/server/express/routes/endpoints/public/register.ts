@@ -75,7 +75,7 @@ export function Register(app: express.Express) {
       if (docExists === true) {
         return res.status(409).json({ error: 'document_taken', message: 'Documento já cadastrado.' });
       }
-    } catch (e) {
+    } catch {
       // Falha nas validações não deve impedir o fluxo; segue para o signup e tratamos lá.
     }
 
