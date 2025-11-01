@@ -6,6 +6,7 @@ import { Metadados } from './endpoints/protected/metadados.js';
 import { CollectingDataEnterprise } from './endpoints/protected/collectingDataEnterprise.js';
 import { Email } from './endpoints/protected/email.js';
 import { Feedbacks } from './endpoints/protected/feedbacks.js';
+import { CollectionPointsQr } from './endpoints/protected/collectionPointsQr.js';
 
 export function ProtectedRoutes(app: express.Express) {
   // Endpoints perfil do cliente (empresa)
@@ -15,6 +16,7 @@ export function ProtectedRoutes(app: express.Express) {
   Email(app);
   CollectingDataEnterprise(app);
   Feedbacks(app);
+  CollectionPointsQr(app);
 
   // Endpoints de verificações
   VerifyPhone(app);
