@@ -28,7 +28,7 @@ it('deve renderizar o conteúdo da página', () => {
 
 ```typescript
 // Mock de componentes filhos para focar no teste da página
-vi.mock('components/public/shared/cards/card', () => ({
+vi.mock('components/public/shared/card', () => ({
   default: ({ title, text }: any) => (
     <div data-testid="card-form">
       <div data-testid="card-title">{title}</div>

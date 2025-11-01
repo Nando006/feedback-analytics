@@ -1,5 +1,5 @@
 import SVGLock from 'components/svg/lock';
-import Card from 'components/public/shared/cards/card';
+import Card from 'components/public/shared/card';
 import FormRegister from 'components/public/forms/formRegister';
 
 export default function Register() {

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import Card from 'components/public/shared/cards/card';
+import Card from 'components/public/shared/card';
 import SVGImageProfile from 'components/svg/imageProfile';
 import { getEnterprisePublic } from 'src/services/enterprisePublic';
 import { submitQrcodeFeedback } from 'src/services/qrcode/feedback';

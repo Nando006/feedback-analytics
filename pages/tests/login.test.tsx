@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react';
 import Login from '../public/login';
 
 // Mock dos componentes filhos para focar no teste da página
-vi.mock('components/public/shared/cards/card', () => ({
+vi.mock('components/public/shared/card', () => ({
   default: ({
     title,
     text,

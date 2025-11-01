@@ -1,4 +1,4 @@
-import Card from 'components/public/shared/cards/card';
+import Card from 'components/public/shared/card';
 import SVGImageProfile from 'components/svg/imageProfile';
 
 export default function StateLoading() {

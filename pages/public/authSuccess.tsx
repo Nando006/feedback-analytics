@@ -1,4 +1,4 @@
-import Card from 'components/public/shared/cards/card';
+import Card from 'components/public/shared/card';
 import SVGLock from 'components/svg/lock';
 import { useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';

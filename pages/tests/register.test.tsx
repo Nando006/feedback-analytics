@@ -7,7 +7,7 @@ vi.mock('components/svg/lock', () => ({
   default: () => <div data-testid="svg-lock">Lock Icon</div>,
 }));
 
-vi.mock('components/public/shared/cards/card', () => ({
+vi.mock('components/public/shared/card', () => ({
   default: ({
     title,
     text,
