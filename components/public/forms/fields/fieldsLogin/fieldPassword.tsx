@@ -91,9 +91,9 @@ export default function FieldPassword({
       </div>
       {strength.showBar && (
         <div className="mt-2">
-          <div className="password-strength w-full h-2 rounded-full overflow-hidden bg-neutral-700/60">
+          <div className="w-full h-2 rounded-full overflow-hidden bg-neutral-700/60">
             <div
-              className={`password-strength__fill h-full ${strength.color}`}
+              className={`h-full transition-[width] duration-200 ease-in-out ${strength.color}`}
               style={{ width: `${strength.percent}%` }}
             />
           </div>
