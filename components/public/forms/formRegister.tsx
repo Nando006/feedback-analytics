@@ -11,6 +11,7 @@ import FieldDocument from './fields/fieldsRegister/fieldDocument';
 import FieldPhoneRegister from './fields/fieldsRegister/fieldPhone';
 import FieldPasswordRegister from './fields/fieldsRegister/fieldPassword';
 import FieldTermsRegister from './fields/fieldsRegister/fieldTerms';
+import type { ActionData } from 'lib/interfaces/public/propsFieldForm';
 
 export default function FormRegister() {
   const submit = useSubmit();
@@ -36,13 +37,6 @@ export default function FormRegister() {
   });
 
   const accountType = watch('accountType') ?? 'CPF';
-
-  type ActionData = {
-    ok?: boolean;
-    error?: string;
-    message?: string;
-    issues?: unknown;
-  };
   const actionData = useActionData() as ActionData | undefined;
   const isSuccess = actionData?.ok === true;
 

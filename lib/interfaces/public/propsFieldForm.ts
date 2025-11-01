@@ -23,4 +23,11 @@ export interface PropsFieldCustomerEmail {
   onEmailChange: (email: string) => void;
 }
 
+export type ActionData = {
+  ok?: boolean;
+  error?: string;
+  message?: string;
+  issues?: unknown;
+};
+
 
