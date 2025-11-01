@@ -55,19 +55,73 @@ export function Register(app: express.Express) {
 
     const emailRedirectTo = `${base}/api/public/auth/callback`; // URL de redirecionamento do email.
 
-    // Cria o cliente Supabase.
+    // Cria o cliente Supabase (será usado para validações e para o signup).
     const supabase = createSupabaseServerClient(req, res);
+
+    // Pré-validações: evitar erro genérico do supabase e retornar mensagens claras.
+    try {
+      // verifica telefone existente (usa RPC phone_exists)
+      const { data: phoneExists } = await supabase.rpc('phone_exists', {
+        p_phone: data.phone,
+      });
+      if (phoneExists === true) {
+        return res.status(409).json({ error: 'phone_taken', message: 'Telefone já cadastrado.' });
+      }
+
+      // verifica documento existente (usa RPC document_exists)
+      const { data: docExists } = await supabase.rpc('document_exists', {
+        p_document: data.document,
+      });
+      if (docExists === true) {
+        return res.status(409).json({ error: 'document_taken', message: 'Documento já cadastrado.' });
+      }
+    } catch (e) {
+      // Falha nas validações não deve impedir o fluxo; segue para o signup e tratamos lá.
+    }
+
+    // Signup no Supabase Auth
     const { error } = await supabase.auth.signUp({
       email,
       password,
       options: { data: meta, emailRedirectTo },
     });
 
-    // Verifica se o registro foi bem-sucedido. Se não foi, retorna um erro.
+    // Verifica se o registro foi bem-sucedido. Se não foi, retorna um erro com mensagem amigável.
     if (error) {
-      return res
-        .status(400)
-        .json({ error: 'signup_failed', message: error.message });
+      const msg = (error.message ?? '').toLowerCase();
+
+      // valores padrão
+      let http = 400 as 400 | 409;
+      let code = 'signup_failed';
+      let message = 'Não foi possível criar sua conta.';
+
+      // e-mail já cadastrado (mensagens comuns do Supabase Auth)
+      if (msg.includes('user already registered') || msg.includes('user already exists')) {
+        http = 409;
+        code = 'email_taken';
+        message = 'E-mail já cadastrado.';
+      }
+      // mensagens explicitadas pela função do banco (migração adicionada)
+      else if (msg.includes('phone_already_exists')) {
+        http = 409;
+        code = 'phone_taken';
+        message = 'Telefone já cadastrado.';
+      } else if (msg.includes('document_already_exists')) {
+        http = 409;
+        code = 'document_taken';
+        message = 'Documento já cadastrado.';
+      } else if (msg.includes('document is required')) {
+        http = 400;
+        code = 'document_required';
+        message = 'Documento é obrigatório.';
+      } else if (msg.includes('database error saving new user')) {
+        // fallback para erro genérico do Supabase
+        http = 400;
+        code = 'database_error';
+        message = 'Erro ao salvar novo usuário.';
+      }
+
+      return res.status(http).json({ error: code, message });
     }
 
     // Retorna o usuário registrado. Se não foi, retorna um erro.
