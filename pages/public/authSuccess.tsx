@@ -23,7 +23,7 @@ export default function AuthSuccess() {
             <div className="mt-6">
               <Link
                 to={params.get('next') ?? '/user/dashboard'}
-                className="btn-register h-12 w-full rounded-lg font-medium shadow-md flex items-center justify-center">
+                className="h-12 w-full rounded-lg font-medium shadow-md bg-gradient-to-r from-purple-600 to-purple-700 border border-purple-300/60 text-neutral-50 transition-all duration-150 hover:brightness-105 active:translate-y-px flex items-center justify-center">
                 Ir agora
               </Link>
             </div>
