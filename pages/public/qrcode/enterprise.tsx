@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import CardForm from 'components/public/shared/cards/cardForm';
+import Card from 'components/public/shared/cards/card';
 import SVGImageProfile from 'components/svg/imageProfile';
 import { getEnterprisePublic } from 'src/services/enterprisePublic';
 import { submitQrcodeFeedback } from 'src/services/qrcode/feedback';
@@ -146,7 +146,7 @@ export default function FeedbackQRCodeEnterprise() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-neutral-900 to-neutral-800 flex items-center justify-center p-4">
-      <CardForm
+      <Card
         title="Compartilhe sua Experiência"
         text={
           enterpriseName
@@ -154,7 +154,7 @@ export default function FeedbackQRCodeEnterprise() {
             : 'Seu feedback é muito importante para nós'
         }
         icon={<SVGImageProfile />}
-        form={
+        children={
           <FormQRCodeFeedback
             formData={formData}
             customerData={customerData}

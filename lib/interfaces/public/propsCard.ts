@@ -1,10 +1,10 @@
 import type { ReactNode } from 'react';
 
-export interface PropsCardForm {
+export interface PropsCard {
   icon?: ReactNode;
   title: string;
   text: string;
-  form: ReactNode;
+  children: ReactNode;
   linkRegister?: string;
   linkLogin?: string;
 }

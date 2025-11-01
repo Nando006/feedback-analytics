@@ -1,14 +1,14 @@
-import type { PropsCardForm } from 'lib/interfaces/public/propsCard';
+import type { PropsCard } from 'lib/interfaces/public/propsCard';
 import { Link } from 'react-router-dom';
 
-export default function CardForm({
+export default function Card({
   icon,
   title,
   text,
-  form,
+  children,
   linkRegister,
   linkLogin,
-}: PropsCardForm) {
+}: PropsCard) {
   return (
     <div className="bg-neutral-800/60 backdrop-blur-lg border border-neutral-700/50 rounded-2xl shadow-2xl p-8">
       <div className="text-center mb-8">
@@ -22,7 +22,7 @@ export default function CardForm({
         <p className="text-neutral-400">{text}</p>
       </div>
 
-      {form}
+      {children}
 
       {linkRegister && (
         <div className="mt-8 text-center">
