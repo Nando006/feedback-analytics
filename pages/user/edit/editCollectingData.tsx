@@ -4,7 +4,6 @@ import FormCollectingDataEnterprise from 'components/user/profile/editCollecting
 
 export default function EditCollectingData() {
 
-
   return (
     <div className="font-inter space-y-6 pb-8">
       <Header />
