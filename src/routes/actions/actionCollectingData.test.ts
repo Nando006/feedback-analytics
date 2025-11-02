@@ -1,6 +1,6 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { ActionCollectingData } from './actionCollectingData';
-import { updateCollectingDataEnterprise } from 'src/services/collectingDataEnterprise';
+import { updateCollectingDataEnterprise } from 'src/services/serviceCollectingDataEnterprise';
 import type { ActionFunctionArgs } from 'react-router-dom';
 
 vi.mock('src/services/collectingDataEnterprise', () => ({

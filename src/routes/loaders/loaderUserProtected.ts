@@ -1,6 +1,6 @@
-import { getAuthUser } from 'src/services/authUser';
-import { getCollectingDataEnterprise } from 'src/services/collectingDataEnterprise';
-import { getEnterprise } from 'src/services/enterprise';
+import { getAuthUser } from 'src/services/serviceUser';
+import { getCollectingDataEnterprise } from 'src/services/serviceCollectingDataEnterprise';
+import { getEnterprise } from 'src/services/serviceEnterprise';
 import type { PropsAuthUser } from 'lib/interfaces/entities/authUser';
 import type {
   PropsApiEnterpriseResponse,

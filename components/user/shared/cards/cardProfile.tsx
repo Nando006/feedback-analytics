@@ -1,9 +1,9 @@
 import SVGImageProfile from 'components/svg/imageProfile';
-import { logout } from 'src/services/logout';
 import type { PropsApiEnterpriseResponse } from 'lib/interfaces/entities/enterprise';
 import { useTruncatedText } from 'lib/utils/truncateText';
 import { FaSignOutAlt } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
+import { ServiceLogout } from 'src/services/ServiceAuth';
 
 export default function CardProfile({
   enterprise,
@@ -14,7 +14,7 @@ export default function CardProfile({
   const { display, props: domProps } = useTruncatedText(full_name, 15);
 
   async function handleSignOut() {
-    await logout().catch(() => {});
+    await ServiceLogout().catch(() => {});
     navigate('/login', { replace: true });
   }
 

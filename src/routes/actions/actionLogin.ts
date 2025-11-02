@@ -1,5 +1,5 @@
 import { redirect, type ActionFunctionArgs } from 'react-router-dom';
-import { login } from 'src/services/auth';
+import { ServiceLogin } from 'src/services/ServiceAuth';
 
 export async function ActionLogin({ request }: ActionFunctionArgs) {
   const form = await request.formData();
@@ -9,7 +9,7 @@ export async function ActionLogin({ request }: ActionFunctionArgs) {
   const password = String(form.get('password') ?? '');
   const remember = String(form.get('remember') ?? 'false') === 'true';
 
-  const result = await login(
+  const result = await ServiceLogin(
     email ? { email, password, remember } : { phone, password, remember },
   );
 

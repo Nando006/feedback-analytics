@@ -1,17 +1,12 @@
+import { supabase } from 'src/supabase/supabaseClient';
+
 export type LoginPayload =
   | { email: string; password: string; remember: boolean }
   | { phone: string; password: string; remember: boolean };
 
-/**
- * Realiza login na API pública.
- * Retorna ok=true em sucesso; caso contrário, retorna status e payload do erro.
- */
-export async function login(
+export async function ServiceLogin(
   payload: LoginPayload,
-): Promise<
-  | { ok: true }
-  | { ok: false; status: number; payload: unknown }
-> {
+): Promise<{ ok: true } | { ok: false; status: number; payload: unknown }> {
   const res = await fetch('/api/public/auth/login', {
     method: 'POST',
     credentials: 'include',
@@ -23,4 +18,13 @@ export async function login(
 
   const json = await res.json().catch(() => ({ error: 'login_failed' }));
   return { ok: false, status: res.status, payload: json } as const;
+}
+
+export async function ServiceLogout(): Promise<boolean> {
+  await supabase.auth.signOut().catch(() => {});
+  const res = await fetch('/api/public/auth/logout', {
+    method: 'POST',
+    credentials: 'include',
+  });
+  return res.ok;
 }

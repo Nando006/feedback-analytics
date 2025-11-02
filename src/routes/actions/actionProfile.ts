@@ -4,7 +4,7 @@ import {
   updateEmail,
   updateMetadados,
   verifyPhone,
-} from 'src/services/profile';
+} from 'src/services/serviceProfile';
 
 export async function ActionProfile({ request }: ActionFunctionArgs) {
   const form = await request.formData();

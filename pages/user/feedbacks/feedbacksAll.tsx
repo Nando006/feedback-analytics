@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { getFeedbacks, getFeedbackStats } from 'src/services/feedbacks';
+import { getFeedbacks, getFeedbackStats } from 'src/services/serviceFeedbacks';
 import type {
   Feedback,
   FeedbacksResponse,
