@@ -29,8 +29,6 @@ export function QrcodeFeedback(app: express.Express) {
     const userAgent = req.get('user-agent') || '';
     const clientIP = req.ip || req.connection.remoteAddress || '127.0.0.1';
 
-    console.log('Gerando fingerprint local:', { userAgent, clientIP });
-
     // Gerar fingerprint localmente (mesmo algoritmo da função RPC)
     const today = new Date();
     today.setHours(0, 0, 0, 0); // Início do dia
@@ -41,8 +39,6 @@ export function QrcodeFeedback(app: express.Express) {
       .createHash('md5')
       .update(fingerprintData)
       .digest('hex');
-
-    console.log('Fingerprint gerado:', deviceFingerprint);
 
     // 1. Buscar collection_point do tipo QR_CODE para a empresa (não criar no fluxo público)
     const { data: collectionPoint, error: cpErr } = await supabase
@@ -99,7 +95,6 @@ export function QrcodeFeedback(app: express.Express) {
     let customerId: string | null = null;
 
     if (payload.customer_name || payload.customer_email) {
-      console.log('Processando dados do cliente');
 
       // Verificar se customer já existe por email (se fornecido)
       let existingCustomer = null;
@@ -219,7 +214,6 @@ export function QrcodeFeedback(app: express.Express) {
       // Não falha o feedback por isso, mas loga o erro
     }
 
-  console.log('Feedback inserido com sucesso');
   return res.json({ ok: true });
   });
 }
