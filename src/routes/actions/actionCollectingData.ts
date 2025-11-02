@@ -1,4 +1,4 @@
-import { ServiceUpdateCollectingDataEnterprise } from 'src/services/ServiceEnterprise';
+import { ServiceUpdateCollectingDataEnterprise } from 'src/services/serviceEnterprise';
 import type { ActionFunctionArgs } from 'react-router-dom';
 
 export async function ActionCollectingData({ request }: ActionFunctionArgs) {

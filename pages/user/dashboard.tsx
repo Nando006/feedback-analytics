@@ -8,7 +8,7 @@ import type {
 } from 'lib/interfaces/entities/enterprise';
 import type { PropsAuthUser } from 'lib/interfaces/entities/authUser';
 import type { Feedback, FeedbackStats } from 'lib/interfaces/user/feedback';
-import { ServiceGetFeedbacks, ServiceGetFeedbackStats } from 'src/services/ServiceFeedbacks';
+import { ServiceGetFeedbacks, ServiceGetFeedbackStats } from 'src/services/serviceFeedbacks';
 import {
   FaArrowRight,
   FaChartLine,

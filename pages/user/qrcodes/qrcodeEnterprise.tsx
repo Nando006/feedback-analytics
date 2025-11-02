@@ -6,7 +6,7 @@ import type { PropsEnterprise } from 'lib/interfaces/entities/enterprise';
 import type { PropsAuthUser } from 'lib/interfaces/entities/authUser';
 import { FaDownload, FaShare, FaCopy, FaLightbulb } from 'react-icons/fa';
 import { useEffect } from 'react';
-import { ServiceGetQrStatus, ServiceEnableQr, ServiceDisableQr } from 'src/services/ServiceCollectionPoints';
+import { ServiceGetQrStatus, ServiceEnableQr, ServiceDisableQr } from 'src/services/serviceCollectionPoints';
 
 export default function QRCodeEnterprise() {
   const { enterprise } = useRouteLoaderData('user') as {

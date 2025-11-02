@@ -3,7 +3,7 @@ import type { PropsApiEnterpriseResponse } from 'lib/interfaces/entities/enterpr
 import { useTruncatedText } from 'lib/utils/truncateText';
 import { FaSignOutAlt } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
-import { ServiceLogout } from 'src/services/ServiceAuth';
+import { ServiceLogout } from 'src/services/serviceAuth';
 
 export default function CardProfile({
   enterprise,

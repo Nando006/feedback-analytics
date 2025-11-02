@@ -4,7 +4,7 @@ import {
   ServiceUpdateEmail,
   ServiceUpdateMetadados,
   ServiceVerifyPhone,
-} from 'src/services/ServiceUser';
+} from 'src/services/serviceUser';
 
 export async function ActionProfile({ request }: ActionFunctionArgs) {
   const form = await request.formData();
