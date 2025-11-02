@@ -3,7 +3,7 @@ import type {
   FeedbackStats,
   FeedbackFilters,
 } from 'lib/interfaces/user/feedback';
-import { getJson } from './http';
+import { getJson } from '../../lib/utils/http';
 
 export function ServiceGetFeedbacks(filters: FeedbackFilters = {}) {
   const params = new URLSearchParams();

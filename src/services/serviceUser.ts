@@ -1,5 +1,5 @@
 import type { PropsAuthUser } from 'lib/interfaces/entities/authUser';
-import { getJson } from './http';
+import { getJson } from '../../lib/utils/http';
 
 type MetadadosResponse = {
   user: {

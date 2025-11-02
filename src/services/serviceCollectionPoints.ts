@@ -1,4 +1,4 @@
-import { getJson, postJson } from './http';
+import { getJson, postJson } from '../../lib/utils/http';
 
 export type QrStatusResponse = { active: boolean; id: string | null };
 export type QrEnableResponse = { id: string; active: true };

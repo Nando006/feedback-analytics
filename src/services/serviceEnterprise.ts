@@ -4,7 +4,7 @@ import type {
   PropsCollectingDataEnterprise,
   TypeUpdateCollectingDataPayload,
 } from 'lib/interfaces/entities/enterprise';
-import { getJson, patchJson } from './http';
+import { getJson, patchJson } from '../../lib/utils/http';
 
 export function ServiceGetEnterprise() {
   return getJson<PropsApiEnterpriseResponse>('/api/protected/user/enterprise');
