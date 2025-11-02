@@ -1,7 +1,7 @@
-import FormEmailUser from 'components/user/forms/formEmailUser';
-import FormNameUser from 'components/user/forms/formNameUser';
-import FormPhoneStartUser from 'components/user/forms/formPhoneStartUser';
-import FormPhoneVerifyUser from 'components/user/forms/formPhoneVerifyUser';
+import FormEmailUser from 'components/user/profile/editUser/forms/formEmailUser';
+import FormNameUser from 'components/user/profile/editUser/forms/formNameUser';
+import FormPhoneStartUser from 'components/user/profile/editUser/forms/formPhoneStartUser';
+import FormPhoneVerifyUser from 'components/user/profile/editUser/forms/formPhoneVerifyUser';
 import CardSimple from 'components/user/shared/cards/cardSimple';
 
 type Props = {
