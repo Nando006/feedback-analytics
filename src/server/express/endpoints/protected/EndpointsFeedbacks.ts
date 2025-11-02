@@ -1,7 +1,7 @@
 import express from 'express';
-import { requireAuth } from '../../../middleware/auth.js';
+import { requireAuth } from '../../middleware/auth.js';
 
-export function Feedbacks(app: express.Express) {
+export function EndpointsFeedbacks(app: express.Express) {
   // Busca feedbacks da empresa com paginação
   app.get('/api/protected/user/feedbacks', requireAuth, async (req, res) => {
     const supabase = req.supabase!;

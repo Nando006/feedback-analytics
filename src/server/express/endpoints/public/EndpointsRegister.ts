@@ -1,9 +1,9 @@
 import express from 'express';
-import { registerSchema } from '../../../../../../lib/schemas/public/registerSchema.js';
-import { createSupabaseServerClient } from '../../../supabase.js';
+import { registerSchema } from '../../../../../lib/schemas/public/registerSchema.js';
+import { createSupabaseServerClient } from '../../supabase.js';
 import z from 'zod';
 
-export function EndpointPostRegister(app: express.Express) {
+export function EndpointsRegister(app: express.Express) {
   app.post('/api/public/auth/register', async (req, res) => {
     // Extrai os dados do payload.
     const parsed = registerSchema.safeParse(req.body);

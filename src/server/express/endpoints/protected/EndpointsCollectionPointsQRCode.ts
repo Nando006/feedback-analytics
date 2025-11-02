@@ -1,7 +1,7 @@
 import express from 'express';
-import { requireAuth } from '../../../middleware/auth.js';
+import { requireAuth } from '../../middleware/auth.js';
 
-export function CollectionPointsQr(app: express.Express) {
+export function EndpointsCollectionPointsQRCode(app: express.Express) {
   // Status do QR (se há CP ativo)
   app.get(
     '/api/protected/user/collection-points/qr/status',

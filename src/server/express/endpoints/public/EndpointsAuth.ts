@@ -1,8 +1,8 @@
 import express from 'express';
-import { loginSchema } from '../../../../../../lib/schemas/public/loginSchema.js';
-import { createSupabaseServerClient } from '../../../supabase.js';
+import { loginSchema } from '../../../../../lib/schemas/public/loginSchema.js';
+import { createSupabaseServerClient } from '../../supabase.js';
 
-export function EndpointPostLogin(app: express.Express) {
+export function EndpointsAuth(app: express.Express) {
   app.post('/api/public/auth/login', async (req, res) => {
     const parsed = loginSchema.safeParse(req.body);
     if (!parsed.success) {
@@ -31,10 +31,7 @@ export function EndpointPostLogin(app: express.Express) {
 
     return res.json({ ok: true, user: data.user ?? null });
   });
-}
 
-
-export function EndpointPostLogout(app: express.Express) {
   // Logout (limpa cookies httpOnly da sessão)
   app.post('/api/public/auth/logout', async (req, res) => {
     try {
