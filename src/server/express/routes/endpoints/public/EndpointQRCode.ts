@@ -1,9 +1,9 @@
 import express from 'express';
-import { qrcodeFeedbackSchema } from '../../../../../../../lib/schemas/public/feedbackSchema.js';
-import { createSupabaseServerClient } from '../../../../supabase.js';
+import { qrcodeFeedbackSchema } from '../../../../../../lib/schemas/public/feedbackSchema.js';
+import { createSupabaseServerClient } from '../../../supabase.js';
 import crypto from 'node:crypto';
 
-export function QrcodeFeedback(app: express.Express) {
+export function EndpointPostQRCodeFeedback(app: express.Express) {
   // Recebe feedback público via QR Code
   app.post('/api/public/qrcode/feedback', async (req, res) => {
     const parsed = qrcodeFeedbackSchema.safeParse(req.body);

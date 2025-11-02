@@ -3,8 +3,7 @@ import { registerSchema } from '../../../../../../lib/schemas/public/registerSch
 import { createSupabaseServerClient } from '../../../supabase.js';
 import z from 'zod';
 
-// Função para fazer o registro.
-export function Register(app: express.Express) {
+export function EndpointPostRegister(app: express.Express) {
   app.post('/api/public/auth/register', async (req, res) => {
     // Extrai os dados do payload.
     const parsed = registerSchema.safeParse(req.body);

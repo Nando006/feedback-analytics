@@ -1,16 +1,16 @@
 import express from 'express';
-import { Callback } from './endpoints/public/callback.js';
-import { Login } from './endpoints/public/login.js';
-import { Logout } from './endpoints/public/logout.js';
-import { Register } from './endpoints/public/register.js';
-import { QrcodeFeedback } from './endpoints/public/qrcode/feedback.js';
-import { EnterprisePublic } from './endpoints/public/enterprise.js';
+import { EndpointGetCallback } from './endpoints/public/EndpointCallback.js';
+import { EndpointPostRegister } from './endpoints/public/EndpointRegister.js';
+import { EndpointPostQRCodeFeedback } from './endpoints/public/EndpointQRCode.js';
+import { EndpointGetEnterprisePublic } from './endpoints/public/EndpointEnterprise.js';
+import { EndpointPostLogin, EndpointPostLogout } from './endpoints/public/EndpointAuth.js';
 
 export function PublicRoutes(app: express.Express) {
-  Callback(app);
-  Login(app);
-  Logout(app);
-  Register(app);
-  QrcodeFeedback(app);
-  EnterprisePublic(app);
+  EndpointGetCallback(app);
+  EndpointGetEnterprisePublic(app);
+
+  EndpointPostLogin(app);
+  EndpointPostLogout(app);
+  EndpointPostRegister(app);
+  EndpointPostQRCodeFeedback(app);
 }

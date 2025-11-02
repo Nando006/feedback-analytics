@@ -1,7 +1,7 @@
 import express from 'express';
 import { createSupabaseServerClient } from '../../../supabase.js';
 
-export function EnterprisePublic(app: express.Express) {
+export function EndpointGetEnterprisePublic(app: express.Express) {
   // Busca informações públicas de uma empresa para validação
   app.get('/api/public/enterprise/:id', async (req, res) => {
     const { id } = req.params;

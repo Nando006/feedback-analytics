@@ -2,7 +2,7 @@ import express from 'express';
 import { createSupabaseServerClient } from '../../../supabase.js';
 
 // Função para trocar o código de verificação para uma sessão.
-export function Callback(app: express.Express) {
+export function EndpointGetCallback(app: express.Express) {
   // Callback (troca o código de verificação para uma sessão).
   app.get('/api/public/auth/callback', async (req, res) => {
     const supabase = createSupabaseServerClient(req, res);

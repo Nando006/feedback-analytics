@@ -2,8 +2,7 @@ import express from 'express';
 import { loginSchema } from '../../../../../../lib/schemas/public/loginSchema.js';
 import { createSupabaseServerClient } from '../../../supabase.js';
 
-// Função para fazer o login.
-export function Login(app: express.Express) {
+export function EndpointPostLogin(app: express.Express) {
   app.post('/api/public/auth/login', async (req, res) => {
     const parsed = loginSchema.safeParse(req.body);
     if (!parsed.success) {
@@ -33,3 +32,22 @@ export function Login(app: express.Express) {
     return res.json({ ok: true, user: data.user ?? null });
   });
 }
+
+
+export function EndpointPostLogout(app: express.Express) {
+  // Logout (limpa cookies httpOnly da sessão)
+  app.post('/api/public/auth/logout', async (req, res) => {
+    try {
+      const supabase = createSupabaseServerClient(req, res);
+      // Revoga refresh token e limpa cookies httpOnly via SSR
+      await supabase.auth.signOut({ scope: 'global' });
+
+      // Evita qualquer cache e finaliza sem body
+      res.setHeader('Cache-Control', 'no-store');
+      return res.status(204).end();
+    } catch {
+      return res.status(500).json({ ok: false });
+    }
+  });
+}
+
