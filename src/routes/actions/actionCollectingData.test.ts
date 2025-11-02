@@ -3,7 +3,7 @@ import { ActionCollectingData } from './actionCollectingData';
 import { ServiceUpdateCollectingDataEnterprise } from 'src/services/serviceEnterprise';
 import type { ActionFunctionArgs } from 'react-router-dom';
 
-vi.mock('src/services/ServiceEnterprise', () => ({
+vi.mock('src/services/serviceEnterprise', () => ({
   ServiceUpdateCollectingDataEnterprise: vi.fn(),
 }));
 

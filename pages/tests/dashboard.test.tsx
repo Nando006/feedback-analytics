@@ -18,7 +18,7 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
-vi.mock('src/services/ServiceFeedbacks', () => ({
+vi.mock('src/services/serviceFeedbacks', () => ({
   ServiceGetFeedbacks: mocks.ServiceGetFeedbacks,
   ServiceGetFeedbackStats: mocks.ServiceGetFeedbackStats,
 }));
