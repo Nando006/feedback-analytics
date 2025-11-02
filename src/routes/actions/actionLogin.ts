@@ -1,4 +1,5 @@
 import { redirect, type ActionFunctionArgs } from 'react-router-dom';
+import { login } from 'src/services/auth';
 
 export async function ActionLogin({ request }: ActionFunctionArgs) {
   const form = await request.formData();
@@ -8,21 +9,14 @@ export async function ActionLogin({ request }: ActionFunctionArgs) {
   const password = String(form.get('password') ?? '');
   const remember = String(form.get('remember') ?? 'false') === 'true';
 
-  const res = await fetch('/api/public/auth/login', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(
-      email ? { email, password, remember } : { phone, password, remember },
-    ),
-  });
+  const result = await login(
+    email ? { email, password, remember } : { phone, password, remember },
+  );
 
-  if (res.ok) return redirect('/user/dashboard');
-  const payload = await res.json().catch(() => ({
-    error: 'login_failed',
-  }));
+  if (result.ok) return redirect('/user/dashboard');
 
-  return new Response(JSON.stringify(payload), {
-    status: res.status,
+  return new Response(JSON.stringify(result.payload), {
+    status: result.status,
     headers: { 'Content-Type': 'application/json' },
   });
 }

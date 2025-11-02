@@ -2,7 +2,7 @@ import type {
   PropsCollectingDataEnterprise,
   TypeUpdateCollectingDataPayload,
 } from 'lib/interfaces/entities/enterprise';
-import { getJson } from './http';
+import { getJson, patchJson } from './http';
 
 export async function getCollectingDataEnterprise(): Promise<PropsCollectingDataEnterprise | null> {
   try {
@@ -20,15 +20,11 @@ export async function getCollectingDataEnterprise(): Promise<PropsCollectingData
 export async function updateCollectingDataEnterprise(
   payload: TypeUpdateCollectingDataPayload,
 ): Promise<PropsCollectingDataEnterprise> {
-  const res = await fetch('/api/protected/user/collecting_data', {
-    method: 'PATCH',
-    credentials: 'include',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
-  });
-  if (!res.ok) throw new Error('Request failed');
-  const json = (await res.json()) as {
+  const { collecting } = await patchJson<{
     collecting: PropsCollectingDataEnterprise;
-  };
-  return json.collecting;
+  }>(
+    '/api/protected/user/collecting_data',
+    payload,
+  );
+  return collecting;
 }
