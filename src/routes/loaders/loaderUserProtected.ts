@@ -1,5 +1,5 @@
 import { ServiceGetUser } from 'src/services/ServiceUser';
-import { ServiceGetCollectingDataEnterprise } from 'src/services/ServiceCollectingDataEnterprise';
+import { ServiceGetCollectingDataEnterprise } from 'src/services/ServiceEnterprise';
 import { ServiceGetEnterprise } from 'src/services/ServiceEnterprise';
 import type { PropsAuthUser } from 'lib/interfaces/entities/authUser';
 import type {

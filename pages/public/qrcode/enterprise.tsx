@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import Card from 'components/public/shared/card';
 import SVGImageProfile from 'components/svg/imageProfile';
-import { ServiceGetEnterprisePublic } from 'src/services/ServiceEnterprisePublic';
+import { ServiceGetEnterprisePublic } from 'src/services/ServiceEnterprise';
 import { ServiceSubmitQrcodeFeedback } from 'src/services/qrcode/ServiceFeedbackQRCode';
 import type { PropsCustomerData, PropsFeedbackData } from 'lib/interfaces/public/propsQRcode';
 import StateSentPreviousFeedback from 'components/public/qrcode/enterprise/stateSentPreviousFeedback';
