@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import Card from 'components/public/shared/card';
 import SVGImageProfile from 'components/svg/imageProfile';
-import { getEnterprisePublic } from 'src/services/serviceEnterprisePublic';
-import { submitQrcodeFeedback } from 'src/services/qrcode/serviceFeedbackQRCode';
+import { ServiceGetEnterprisePublic } from 'src/services/ServiceEnterprisePublic';
+import { ServiceSubmitQrcodeFeedback } from 'src/services/qrcode/ServiceFeedbackQRCode';
 import type { PropsCustomerData, PropsFeedbackData } from 'lib/interfaces/public/propsQRcode';
 import StateSentPreviousFeedback from 'components/public/qrcode/enterprise/stateSentPreviousFeedback';
 import StateLoading from 'components/public/qrcode/enterprise/stateLoading';
@@ -39,7 +39,7 @@ export default function FeedbackQRCodeEnterprise() {
 
       try {
         // Verificar se a empresa existe usando service
-        const enterprise = await getEnterprisePublic(enterpriseId);
+        const enterprise = await ServiceGetEnterprisePublic(enterpriseId);
 
         setFormData((prev) => ({ ...prev, enterprise_id: enterpriseId }));
         setEnterpriseName(enterprise.name || 'Empresa');
@@ -92,7 +92,7 @@ export default function FeedbackQRCodeEnterprise() {
 
     try {
       // Usar service para enviar feedback
-      await submitQrcodeFeedback({
+      await ServiceSubmitQrcodeFeedback({
         message: formData.message.trim(),
         rating: formData.rating,
         channel: 'QRCODE',

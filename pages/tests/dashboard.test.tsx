@@ -4,8 +4,8 @@ import { MemoryRouter } from 'react-router-dom';
 
 const mocks = vi.hoisted(() => ({
   useRouteLoaderData: vi.fn(),
-  getFeedbacks: vi.fn(),
-  getFeedbackStats: vi.fn(),
+  ServiceGetFeedbacks: vi.fn(),
+  ServiceGetFeedbackStats: vi.fn(),
 }));
 
 vi.mock('react-router-dom', async () => {
@@ -19,8 +19,8 @@ vi.mock('react-router-dom', async () => {
 });
 
 vi.mock('src/services/feedbacks', () => ({
-  getFeedbacks: mocks.getFeedbacks,
-  getFeedbackStats: mocks.getFeedbackStats,
+  ServiceGetFeedbacks: mocks.ServiceGetFeedbacks,
+  ServiceGetFeedbackStats: mocks.ServiceGetFeedbackStats,
 }));
 
 import { useRouteLoaderData } from 'react-router-dom';
@@ -118,8 +118,8 @@ describe('Dashboard Page', () => {
     vi.mocked(useRouteLoaderData).mockReturnValue(
       loaderData as ReturnType<typeof useRouteLoaderData>,
     );
-    mocks.getFeedbackStats.mockResolvedValue(feedbackStats);
-    mocks.getFeedbacks.mockResolvedValue(feedbacksResponse);
+    mocks.ServiceGetFeedbackStats.mockResolvedValue(feedbackStats);
+    mocks.ServiceGetFeedbacks.mockResolvedValue(feedbacksResponse);
   });
 
   afterEach(() => {
@@ -184,7 +184,7 @@ describe('Dashboard Page', () => {
     expect(
       screen.getByText((_, node) => node?.textContent === 'Cliente: Cliente XPTO'),
     ).toBeInTheDocument();
-    expect(mocks.getFeedbacks).toHaveBeenCalledWith({ limit: 5, page: 1 });
-    expect(mocks.getFeedbackStats).toHaveBeenCalledTimes(1);
+    expect(mocks.ServiceGetFeedbacks).toHaveBeenCalledWith({ limit: 5, page: 1 });
+    expect(mocks.ServiceGetFeedbackStats).toHaveBeenCalledTimes(1);
   });
 });

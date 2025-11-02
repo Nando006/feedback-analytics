@@ -4,7 +4,7 @@ import type {
 } from 'lib/interfaces/entities/enterprise';
 import { getJson, patchJson } from './http';
 
-export async function getCollectingDataEnterprise(): Promise<PropsCollectingDataEnterprise | null> {
+export async function ServiceGetCollectingDataEnterprise(): Promise<PropsCollectingDataEnterprise | null> {
   try {
     const { collecting } = await getJson<{
       collecting: PropsCollectingDataEnterprise;
@@ -17,7 +17,7 @@ export async function getCollectingDataEnterprise(): Promise<PropsCollectingData
   }
 }
 
-export async function updateCollectingDataEnterprise(
+export async function ServiceUpdateCollectingDataEnterprise(
   payload: TypeUpdateCollectingDataPayload,
 ): Promise<PropsCollectingDataEnterprise> {
   const { collecting } = await patchJson<{

@@ -4,14 +4,14 @@ export type QrStatusResponse = { active: boolean; id: string | null };
 export type QrEnableResponse = { id: string; active: true };
 export type QrDisableResponse = { active: false };
 
-export function getQrStatus() {
+export function ServiceGetQrStatus() {
   return getJson<QrStatusResponse>('/api/protected/user/collection-points/qr/status');
 }
 
-export function enableQr() {
+export function ServiceEnableQr() {
   return postJson<QrEnableResponse>('/api/protected/user/collection-points/qr/enable', {});
 }
 
-export function disableQr() {
+export function ServiceDisableQr() {
   return postJson<QrDisableResponse>('/api/protected/user/collection-points/qr/disable', {});
 }

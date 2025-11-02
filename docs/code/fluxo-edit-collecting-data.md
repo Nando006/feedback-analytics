@@ -62,7 +62,7 @@ Este documento descreve o fluxo completo da tela de Edição de Coleta de Dados:
 ## Services do cliente
 
 - Arquivo: `src/services/collectingDataEnterprise.ts`
-  - `getCollectingDataEnterprise()` → `GET /api/protected/user/collecting_data` → `{ collecting } | null` (trata 400/404 como null)
+  - `ServicegetCollectingDataEnterprise()` → `GET /api/protected/user/collecting_data` → `{ collecting } | null` (trata 400/404 como null)
   - `updateCollectingDataEnterprise(payload)` → `PATCH /api/protected/user/collecting_data`
     - Body JSON com os campos parciais; retorna `{ collecting }`.
 

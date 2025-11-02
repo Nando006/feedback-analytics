@@ -1,10 +1,10 @@
 import type { ActionFunctionArgs } from 'react-router-dom';
 import {
-  startPhoneVerification,
-  updateEmail,
-  updateMetadados,
-  verifyPhone,
-} from 'src/services/serviceProfile';
+  ServiceStartPhoneVerification,
+  ServiceUpdateEmail,
+  ServiceUpdateMetadados,
+  ServiceVerifyPhone,
+} from 'src/services/ServiceProfile';
 
 export async function ActionProfile({ request }: ActionFunctionArgs) {
   const form = await request.formData();
@@ -19,7 +19,7 @@ export async function ActionProfile({ request }: ActionFunctionArgs) {
         headers: { 'Content-Type': 'application/json' },
       });
     }
-    await updateMetadados(full_name);
+    await ServiceUpdateMetadados(full_name);
     return new Response(JSON.stringify({ ok: true }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
@@ -35,7 +35,7 @@ export async function ActionProfile({ request }: ActionFunctionArgs) {
         headers: { 'Content-Type': 'application/json' },
       });
     }
-    await updateEmail(email);
+    await ServiceUpdateEmail(email);
     return new Response(JSON.stringify({ ok: true }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
@@ -51,7 +51,7 @@ export async function ActionProfile({ request }: ActionFunctionArgs) {
         headers: { 'Content-Type': 'application/json' },
       });
     }
-    await startPhoneVerification(phone);
+    await ServiceStartPhoneVerification(phone);
     return new Response(JSON.stringify({ ok: true }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
@@ -67,7 +67,7 @@ export async function ActionProfile({ request }: ActionFunctionArgs) {
         headers: { 'Content-Type': 'application/json' },
       });
     }
-    await verifyPhone(token);
+    await ServiceVerifyPhone(token);
     return new Response(JSON.stringify({ ok: true }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },

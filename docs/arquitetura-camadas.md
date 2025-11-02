@@ -95,8 +95,8 @@ Como se encaixam:
 	- Autenticação (dados do usuário): `src/services/authUser.ts` → `getAuthUser()`
 	- Empresa: `src/services/enterprise.ts` → `getEnterprise()`
 	- Coleta: `src/services/collectingDataEnterprise.ts`
-		- `getCollectingDataEnterprise()` (trata 400/404 como `null`)
-		- `updateCollectingDataEnterprise(payload)` via `PATCH`
+		- `ServiceGetCollectingDataEnterprise()` (trata 400/404 como `null`)
+		- `ServiceUpdateCollectingDataEnterprise(payload)` via `PATCH`
 	- Perfil: `src/services/profile.ts`
 		- `updateMetadados(full_name)`
 		- `updateEmail(email)`

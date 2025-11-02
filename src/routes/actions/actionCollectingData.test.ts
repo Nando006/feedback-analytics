@@ -1,13 +1,13 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { ActionCollectingData } from './actionCollectingData';
-import { updateCollectingDataEnterprise } from 'src/services/serviceCollectingDataEnterprise';
+import { ServiceUpdateCollectingDataEnterprise } from 'src/services/ServiceCollectingDataEnterprise';
 import type { ActionFunctionArgs } from 'react-router-dom';
 
 vi.mock('src/services/collectingDataEnterprise', () => ({
-  updateCollectingDataEnterprise: vi.fn(),
+  ServiceUpdateCollectingDataEnterprise: vi.fn(),
 }));
 
-const mockUpdateCollectingDataEnterprise = vi.mocked(updateCollectingDataEnterprise);
+const mockUpdateCollectingDataEnterprise = vi.mocked(ServiceUpdateCollectingDataEnterprise);
 
 function createRequest(body: Record<string, string | undefined>) {
   const formData = new FormData();

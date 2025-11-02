@@ -5,7 +5,7 @@ import type {
 } from 'lib/interfaces/user/feedback';
 import { getJson } from './http';
 
-export function getFeedbacks(filters: FeedbackFilters = {}) {
+export function ServiceGetFeedbacks(filters: FeedbackFilters = {}) {
   const params = new URLSearchParams();
 
   if (filters.page) params.append('page', filters.page.toString());
@@ -21,6 +21,6 @@ export function getFeedbacks(filters: FeedbackFilters = {}) {
   return getJson<FeedbacksResponse>(url);
 }
 
-export function getFeedbackStats() {
+export function ServiceGetFeedbackStats() {
   return getJson<FeedbackStats>('/api/protected/user/feedbacks/stats');
 }

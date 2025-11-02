@@ -12,7 +12,7 @@ type EmailUpdateResponse = {
 };
 type OkResponse = { ok: boolean };
 
-export function updateMetadados(full_name: string) {
+export function ServiceUpdateMetadados(full_name: string) {
   return getJson<MetadadosResponse>('/api/protected/user/metadados', {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
@@ -20,7 +20,7 @@ export function updateMetadados(full_name: string) {
   });
 }
 
-export function updateEmail(email: string) {
+export function ServiceUpdateEmail(email: string) {
   return getJson<EmailUpdateResponse>('/api/protected/user/email', {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
@@ -28,7 +28,7 @@ export function updateEmail(email: string) {
   });
 }
 
-export function startPhoneVerification(phone: string) {
+export function ServiceStartPhoneVerification(phone: string) {
   return getJson<OkResponse>('/api/protected/user/phone/start', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -36,7 +36,7 @@ export function startPhoneVerification(phone: string) {
   });
 }
 
-export function verifyPhone(token: string) {
+export function ServiceVerifyPhone(token: string) {
   return getJson<OkResponse>('/api/protected/user/phone/verify', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
