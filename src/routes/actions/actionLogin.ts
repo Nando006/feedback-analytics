@@ -1,5 +1,5 @@
 import { redirect, type ActionFunctionArgs } from 'react-router-dom';
-import { ServiceLogin } from 'src/services/serviceAuth';
+import { ServiceLogin } from 'src/services/serviceAuth.ts';
 
 export async function ActionLogin({ request }: ActionFunctionArgs) {
   const form = await request.formData();
