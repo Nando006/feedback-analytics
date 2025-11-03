@@ -19,6 +19,12 @@ export default function Header({ enterprise, user }: PropsEnterpriseAndUser) {
         className="btn-primary">
         Editar perfil
       </Link>
+      <Link
+        to="/user/edit/collecting-data-enterprise"
+        className="btn-primary"
+      >
+        Informações da Empresa
+      </Link>
     </CardSimple>
   );
 }

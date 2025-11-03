@@ -1,4 +1,4 @@
-import CardForm from 'components/public/shared/cards/cardForm';
+import Card from 'components/public/shared/card';
 import SVGImageProfile from 'components/svg/imageProfile';
 
 export default function StateSentPreviousFeedback({
@@ -8,11 +8,11 @@ export default function StateSentPreviousFeedback({
 }) {
   return (
     <div className="min-h-screen bg-gradient-to-b from-neutral-900 to-neutral-800 flex items-center justify-center p-4">
-      <CardForm
+      <Card
         title="Feedback Já Enviado"
         text="Este dispositivo já enviou feedback para esta empresa hoje"
         icon={<SVGImageProfile />}
-        form={
+        children={
           <div className="text-center">
             <div className="w-16 h-16 bg-orange-600/20 rounded-full flex items-center justify-center mx-auto mb-4">
               <svg

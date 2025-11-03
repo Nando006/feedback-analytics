@@ -6,7 +6,7 @@ import type { PropsEnterprise } from 'lib/interfaces/entities/enterprise';
 import type { PropsAuthUser } from 'lib/interfaces/entities/authUser';
 import { FaDownload, FaShare, FaCopy, FaLightbulb } from 'react-icons/fa';
 import { useEffect } from 'react';
-import { getQrStatus, enableQr, disableQr } from 'src/services/collectionPoints';
+import { ServiceGetQrStatus, ServiceEnableQr, ServiceDisableQr } from 'src/services/serviceCollectionPoints';
 
 export default function QRCodeEnterprise() {
   const { enterprise } = useRouteLoaderData('user') as {
@@ -37,7 +37,7 @@ export default function QRCodeEnterprise() {
       setQrLoading(true);
       setQrError(null);
       try {
-        const status = await getQrStatus();
+        const status = await ServiceGetQrStatus();
         if (!mounted) return;
         setQrActive(status.active);
       } catch (err) {
@@ -105,10 +105,10 @@ export default function QRCodeEnterprise() {
     setQrLoading(true);
     try {
       if (qrActive) {
-        await disableQr();
+        await ServiceDisableQr();
         setQrActive(false);
       } else {
-        await enableQr();
+        await ServiceEnableQr();
         setQrActive(true);
       }
     } catch (err) {

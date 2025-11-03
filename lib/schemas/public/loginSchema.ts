@@ -16,7 +16,7 @@ export const loginSchema = z.union([
     password: z.string().min(6, { error: 'Senha deve ter ao menos 6 caracteres' }),
     remember: z.boolean().default(false),
   })
-])
+]);
 
 
 export type LoginSchema = typeof loginSchema;

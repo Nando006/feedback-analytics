@@ -7,17 +7,17 @@ vi.mock('components/svg/lock', () => ({
   default: () => <div data-testid="svg-lock">Lock Icon</div>,
 }));
 
-vi.mock('components/public/shared/cards/cardForm', () => ({
+vi.mock('components/public/shared/card', () => ({
   default: ({
     title,
     text,
-    form,
+    children,
     linkLogin,
     icon,
   }: {
     title: string;
     text: string;
-    form: React.ReactNode;
+    children: React.ReactNode;
     linkLogin?: string;
     icon: React.ReactNode;
   }) => (
@@ -25,7 +25,7 @@ vi.mock('components/public/shared/cards/cardForm', () => ({
       <div data-testid="card-title">{title}</div>
       <div data-testid="card-text">{text}</div>
       <div data-testid="card-icon">{icon}</div>
-      <div data-testid="card-form-content">{form}</div>
+      <div data-testid="card-form-content">{children}</div>
       {linkLogin && (
         <a
           href={linkLogin}
