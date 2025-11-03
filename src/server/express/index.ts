@@ -17,7 +17,7 @@ const app = express();
 
 // Configurando o express para usar JSON.
 app.use(express.json());
-
+// Suporte a application/x-www-form-urlencoded (formularios)
 app.use(express.urlencoded({ extended: true }));
 
 // Configurando o proxy.
