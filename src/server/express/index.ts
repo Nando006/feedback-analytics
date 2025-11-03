@@ -18,6 +18,8 @@ const app = express();
 // Configurando o express para usar JSON.
 app.use(express.json());
 
+app.use(express.urlencoded({ extended: true }));
+
 // Configurando o proxy.
 app.set('trust proxy', 1);
 
