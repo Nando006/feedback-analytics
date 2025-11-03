@@ -1,7 +1,6 @@
 import express from 'express';
 import { registerSchema } from '../../../../../lib/schemas/public/registerSchema.js';
 import { createSupabaseServerClient } from '../../supabase.js';
-import z from 'zod';
 
 export function EndpointsRegister(app: express.Express) {
   app.post('/api/public/auth/register', async (req, res) => {
@@ -12,7 +11,7 @@ export function EndpointsRegister(app: express.Express) {
     if (!parsed.success) {
       return res.status(400).json({
         error: 'invalid_payload',
-        issues: z.treeifyError(parsed.error),
+        issues: parsed.error.issues,
       });
     }
 
