@@ -1,16 +1,16 @@
 import SVGLock from 'components/svg/lock';
-import CardForm from 'components/public/shared/cards/cardForm';
+import Card from 'components/public/shared/card';
 import FormRegister from 'components/public/forms/formRegister';
 
 export default function Register() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-neutral-900 to-neutral-800 flex items-center justify-center p-4 relative">
       <div className="w-full max-w-2xl">
-        <CardForm
+        <Card
           icon={<SVGLock />}
           title="Crie sua conta"
           text="Leve, moderno e intuitivo - comece em minutos"
-          form={<FormRegister />}
+          children={<FormRegister />}
           linkLogin="/login"
         />
       </div>

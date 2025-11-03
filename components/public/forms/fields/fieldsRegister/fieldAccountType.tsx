@@ -1,11 +1,11 @@
-import type { PropsField } from 'lib/interfaces/public/form/propsField';
+import type { PropsFieldForm } from 'lib/interfaces/public/propsFieldForm';
 
 export default function FieldAccountTypeRegister({
   id,
   value,
   register,
   error,
-}: PropsField) {
+}: PropsFieldForm) {
   return (
     <div className="space-y-2 relative">
       <span className="pl-2 text-sm text-neutral-300">Tipo de conta</span>

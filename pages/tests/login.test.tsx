@@ -3,25 +3,25 @@ import { render, screen } from '@testing-library/react';
 import Login from '../public/login';
 
 // Mock dos componentes filhos para focar no teste da página
-vi.mock('components/public/shared/cards/cardForm', () => ({
+vi.mock('components/public/shared/card', () => ({
   default: ({
     title,
     text,
     linkRegister,
     icon,
-    form,
+    children,
   }: {
     title: string;
     text: string;
     linkRegister: string;
     icon: React.ReactNode;
-    form: React.ReactNode;
+    children: React.ReactNode;
   }) => (
     <div data-testid="card-form">
       <div data-testid="card-title">{title}</div>
       <div data-testid="card-text">{text}</div>
       <div data-testid="card-icon">{icon}</div>
-      <div data-testid="card-form-content">{form}</div>
+      <div data-testid="card-form-content">{children}</div>
       <a
         href={linkRegister}
         data-testid="register-link">

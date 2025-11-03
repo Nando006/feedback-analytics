@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { getFeedbacks, getFeedbackStats } from 'src/services/feedbacks';
+import { ServiceGetFeedbacks, ServiceGetFeedbackStats } from 'src/services/serviceFeedbacks';
 import type {
   Feedback,
   FeedbacksResponse,
@@ -37,7 +37,7 @@ export default function FeedbacksAll() {
       setLoading(true);
       setError(null);
 
-      const response = await getFeedbacks(filters);
+      const response = await ServiceGetFeedbacks(filters);
       setFeedbacks(response.feedbacks);
       setPagination(response.pagination);
     } catch (err) {
@@ -51,7 +51,7 @@ export default function FeedbacksAll() {
   // Função para buscar estatísticas (memoizada)
   const fetchStats = useCallback(async () => {
     try {
-      const response = await getFeedbackStats();
+      const response = await ServiceGetFeedbackStats();
       setStats(response);
     } catch (err) {
       console.error('Erro ao buscar estatísticas:', err);

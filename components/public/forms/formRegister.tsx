@@ -11,6 +11,7 @@ import FieldDocument from './fields/fieldsRegister/fieldDocument';
 import FieldPhoneRegister from './fields/fieldsRegister/fieldPhone';
 import FieldPasswordRegister from './fields/fieldsRegister/fieldPassword';
 import FieldTermsRegister from './fields/fieldsRegister/fieldTerms';
+import type { ActionData } from 'lib/interfaces/public/propsFieldForm';
 
 export default function FormRegister() {
   const submit = useSubmit();
@@ -36,13 +37,6 @@ export default function FormRegister() {
   });
 
   const accountType = watch('accountType') ?? 'CPF';
-
-  type ActionData = {
-    ok?: boolean;
-    error?: string;
-    message?: string;
-    issues?: unknown;
-  };
   const actionData = useActionData() as ActionData | undefined;
   const isSuccess = actionData?.ok === true;
 
@@ -179,7 +173,7 @@ export default function FormRegister() {
           error={errors.terms?.message as string | undefined}
         />
         <button
-          className="btn-register h-12 w-full rounded-lg font-medium shadow-md disabled:opacity-60 disabled:cursor-not-allowed"
+          className="h-12 w-full rounded-lg font-medium shadow-md bg-gradient-to-r from-purple-600 to-purple-700 border border-purple-300/60 text-neutral-50 transition-all duration-150 hover:brightness-105 active:translate-y-px disabled:opacity-60 disabled:cursor-not-allowed"
           disabled={isSubmitting}
           aria-busy={isSubmitting}>
           {isSubmitting ? 'Criando...' : 'Criar conta'}

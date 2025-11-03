@@ -1,4 +1,4 @@
-import type { PropsField } from 'lib/interfaces/public/form/propsField';
+import type { PropsFieldForm } from 'lib/interfaces/public/propsFieldForm';
 
 export default function FieldText({
   id,
@@ -9,7 +9,7 @@ export default function FieldText({
   placeholder,
   error,
   register,
-}: PropsField) {
+}: PropsFieldForm) {
   return (
     <div className="space-y-1 relative">
       <label

@@ -8,7 +8,7 @@ import type {
 } from 'lib/interfaces/entities/enterprise';
 import type { PropsAuthUser } from 'lib/interfaces/entities/authUser';
 import type { Feedback, FeedbackStats } from 'lib/interfaces/user/feedback';
-import { getFeedbacks, getFeedbackStats } from 'src/services/feedbacks';
+import { ServiceGetFeedbacks, ServiceGetFeedbackStats } from 'src/services/serviceFeedbacks';
 import {
   FaArrowRight,
   FaChartLine,
@@ -94,8 +94,8 @@ export default function Dashboard() {
       setError(null);
       try {
         const [statsResponse, feedbackResponse] = await Promise.all([
-          getFeedbackStats(),
-          getFeedbacks({ limit: LATEST_LIMIT, page: 1 }),
+          ServiceGetFeedbackStats(),
+          ServiceGetFeedbacks({ limit: LATEST_LIMIT, page: 1 }),
         ]);
         if (!active) return;
         setStats(statsResponse);

@@ -1,4 +1,4 @@
-import Header from 'components/public/header/header';
+import Header from 'components/public/layout/header';
 import { Outlet } from 'react-router-dom';
 
 export default function Public() {

@@ -1,4 +1,4 @@
-import { updateCollectingDataEnterprise } from 'src/services/collectingDataEnterprise';
+import { ServiceUpdateCollectingDataEnterprise } from 'src/services/serviceEnterprise';
 import type { ActionFunctionArgs } from 'react-router-dom';
 
 export async function ActionCollectingData({ request }: ActionFunctionArgs) {
@@ -28,8 +28,8 @@ export async function ActionCollectingData({ request }: ActionFunctionArgs) {
     : [];
 
   try {
-    // Chamando a função updateCollectingDataEnterprise para atualizar os dados do formulário.
-    const collecting = await updateCollectingDataEnterprise({
+    // Chamando a função ServiceUpdateCollectingDataEnterprise para atualizar os dados do formulário.
+    const collecting = await ServiceUpdateCollectingDataEnterprise({
       company_objective: company_objective || null,
       analytics_goal: analytics_goal || null,
       business_summary: business_summary || null,

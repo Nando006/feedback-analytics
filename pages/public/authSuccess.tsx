@@ -1,4 +1,4 @@
-import CardForm from 'components/public/shared/cards/cardForm';
+import Card from 'components/public/shared/card';
 import SVGLock from 'components/svg/lock';
 import { useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
@@ -15,15 +15,15 @@ export default function AuthSuccess() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-neutral-900 to-neutral-800 flex items-center justify-center p-4 relative">
       <div className="w-full max-w-2xl">
-        <CardForm
+        <Card
           icon={<SVGLock />}
           title="Conta verificada"
           text="Sua conta foi confirmada com sucesso. Redirecionando para o dashboard..."
-          form={
+          children={
             <div className="mt-6">
               <Link
                 to={params.get('next') ?? '/user/dashboard'}
-                className="btn-register h-12 w-full rounded-lg font-medium shadow-md flex items-center justify-center">
+                className="h-12 w-full rounded-lg font-medium shadow-md bg-gradient-to-r from-purple-600 to-purple-700 border border-purple-300/60 text-neutral-50 transition-all duration-150 hover:brightness-105 active:translate-y-px flex items-center justify-center">
                 Ir agora
               </Link>
             </div>

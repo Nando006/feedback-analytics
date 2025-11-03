@@ -1,4 +1,4 @@
-import ErrorPage from 'components/public/shared/handling/errorPage';
+
 import Public from 'layouts/public';
 import Home from 'pages/public/home';
 import Login from 'pages/public/login';
@@ -8,6 +8,7 @@ import { Route } from 'react-router-dom';
 import { ActionLogin } from './actions/actionLogin';
 import { ActionRegister } from './actions/actionRegister';
 import AuthSuccess from 'pages/public/authSuccess';
+import ErrorPage from 'components/globals/handling/errorPage';
 
 export function RoutePublic() {
   return (

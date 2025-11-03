@@ -1,6 +1,6 @@
-import { getAuthUser } from 'src/services/authUser';
-import { getCollectingDataEnterprise } from 'src/services/collectingDataEnterprise';
-import { getEnterprise } from 'src/services/enterprise';
+import { ServiceGetUser } from 'src/services/serviceUser';
+import { ServiceGetCollectingDataEnterprise } from 'src/services/serviceEnterprise';
+import { ServiceGetEnterprise } from 'src/services/serviceEnterprise';
 import type { PropsAuthUser } from 'lib/interfaces/entities/authUser';
 import type {
   PropsApiEnterpriseResponse,
@@ -13,13 +13,13 @@ export async function LoaderUserProtected(_args: LoaderFunctionArgs) {
   try {
     // Carrega usuário e empresa; busca coleta somente se houver empresa para evitar 404 no console.
     const [auth, enterprisePayload] = (await Promise.all([
-      getAuthUser(),
-      getEnterprise().catch(() => null),
+      ServiceGetUser(),
+      ServiceGetEnterprise().catch(() => null),
     ])) as [PropsAuthUser, PropsApiEnterpriseResponse | null];
 
     const user = auth.user;
     const collecting = enterprisePayload
-      ? ((await getCollectingDataEnterprise().catch(
+      ? ((await ServiceGetCollectingDataEnterprise().catch(
           () => null,
         )) as PropsCollectingDataEnterprise | null)
       : null;
