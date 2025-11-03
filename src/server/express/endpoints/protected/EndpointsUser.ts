@@ -1,10 +1,9 @@
 import express from 'express';
 import { requireAuth } from '../../middleware/auth.js';
-import { emailUpdateSchema } from 'lib/schemas/user/emailUpdateSchema.js';
-import { metadadosUpdateSchema } from 'lib/schemas/user/metadadosUpdateSchema.js';
+import { emailUpdateSchema } from '../../../../../lib/schemas/user/emailUpdateSchema.js';
+import { metadadosUpdateSchema } from '../../../../../lib/schemas/user/metadadosUpdateSchema.js';
 
 export function EndpointsUser(app: express.Express) {
-  // Ler dados do usuário
   app.get('/api/protected/user/auth_user', requireAuth, async (req, res) => {
     return res.json({ user: req.user });
   });
