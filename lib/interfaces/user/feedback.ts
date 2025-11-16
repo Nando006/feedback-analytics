@@ -74,3 +74,32 @@ export interface FeedbackFilters {
   rating?: number;
   search?: string;
 }
+
+export type FeedbackSentiment = 'positive' | 'neutral' | 'negative';
+
+export interface FeedbackAnalysisItem {
+  id: string;
+  message: string;
+  rating: number | null;
+  created_at: string;
+  sentiment: FeedbackSentiment;
+  categories: string[];
+  keywords: string[];
+}
+
+export interface TopTerm {
+  name: string;
+  count: number;
+}
+
+export interface FeedbackAnalysisSummary {
+  totalAnalyzed: number;
+  sentiments: SentimentBreakdown;
+  topCategories: TopTerm[];
+  topKeywords: TopTerm[];
+}
+
+export interface FeedbackAnalysisResponse {
+  items: FeedbackAnalysisItem[];
+  summary: FeedbackAnalysisSummary;
+}

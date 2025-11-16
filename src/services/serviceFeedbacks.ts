@@ -2,6 +2,8 @@ import type {
   FeedbacksResponse,
   FeedbackStats,
   FeedbackFilters,
+  FeedbackAnalysisResponse,
+  FeedbackSentiment,
 } from 'lib/interfaces/user/feedback';
 import { getJson } from '../../lib/utils/http';
 
@@ -23,4 +25,21 @@ export function ServiceGetFeedbacks(filters: FeedbackFilters = {}) {
 
 export function ServiceGetFeedbackStats() {
   return getJson<FeedbackStats>('/api/protected/user/feedbacks/stats');
+}
+
+export function ServiceGetFeedbackAnalysis(params?: {
+  sentiment?: FeedbackSentiment;
+}) {
+  const searchParams = new URLSearchParams();
+
+  if (params?.sentiment) {
+    searchParams.append('sentiment', params.sentiment);
+  }
+
+  const queryString = searchParams.toString();
+  const url = `/api/protected/user/feedbacks/analysis${
+    queryString ? `?${queryString}` : ''
+  }`;
+
+  return getJson<FeedbackAnalysisResponse>(url);
 }
