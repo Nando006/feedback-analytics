@@ -303,10 +303,13 @@ export async function analyzeFeedbacksForEnterprise(params: {
     contents: prompt,
   });
 
+  type AiResponseShape = {
+    text?: string | (() => string);
+  };
+
+  const maybeText = (aiResponse as AiResponseShape).text;
   const rawText =
-    (aiResponse as { text?: string }).text ??
-    ((aiResponse as any).text?.() as string | undefined) ??
-    '';
+    (typeof maybeText === 'function' ? maybeText() : maybeText) ?? '';
 
   let parsed:
     | {
@@ -321,7 +324,7 @@ export async function analyzeFeedbacksForEnterprise(params: {
       feedbacks?: IaFeedbackAnalysisItem[];
       global_insights?: IaGlobalInsights;
     };
-  } catch (_err) {
+  } catch {
     // Log detalhado fica por conta de quem chama
     throw new IaStudioServiceError(
       'Invalid AI response JSON',
@@ -393,10 +396,9 @@ export async function analyzeFeedbacksForEnterprise(params: {
           },
           { onConflict: 'enterprise_id' },
         );
-    } catch (_err) {
+    } catch {
       // Não deve quebrar o fluxo principal se o relatório falhar
-      // eslint-disable-next-line no-console
-      console.error('Falha ao salvar feedback_insights_report:', _err);
+      console.error('Falha ao salvar feedback_insights_report');
     }
   }
 

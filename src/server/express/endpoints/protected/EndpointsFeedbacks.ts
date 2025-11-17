@@ -295,9 +295,7 @@ export function EndpointsFeedbacks(app: express.Express) {
             .json({ error: 'failed_to_fetch_feedback_analysis' });
         }
 
-        const itemsRaw = (data ?? []).filter(
-          (row: any) => row.feedback_analysis,
-        ) as {
+        type FeedbackWithAnalysisRow = {
           id: string;
           message: string;
           rating: number | null;
@@ -306,8 +304,14 @@ export function EndpointsFeedbacks(app: express.Express) {
             sentiment: 'positive' | 'neutral' | 'negative';
             categories: string[] | null;
             keywords: string[] | null;
-          };
-        }[];
+          } | null;
+        };
+
+        const typedData = (data ?? []) as FeedbackWithAnalysisRow[];
+
+        const itemsRaw = typedData.filter(
+          (row) => row.feedback_analysis,
+        ) as FeedbackWithAnalysisRow[];
 
         if (itemsRaw.length === 0) {
           return res.json({
