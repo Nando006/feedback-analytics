@@ -49,6 +49,7 @@
     --shadow-primary: 0 4px 20px rgba(115, 115, 115, 0.15); /* shadow com neutral-500 */
     --shadow-secondary: 0 2px 10px rgba(163, 163, 163, 0.1); /* shadow com neutral-400 */
 
+    /* Cores do sistema - Light Mode */
     color: var(--text-primary);
     background-color: var(--bg-primary);
   }
