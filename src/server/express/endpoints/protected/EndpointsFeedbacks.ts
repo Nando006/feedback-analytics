@@ -183,6 +183,60 @@ export function EndpointsFeedbacks(app: express.Express) {
     },
   );
 
+  // Relatório global de insights (resumo + recomendações) gerado pela IA
+  app.get(
+    '/api/protected/user/feedbacks/insights/report',
+    requireAuth,
+    async (req, res) => {
+      const supabase = req.supabase!;
+      const user = req.user!;
+
+      try {
+        // Buscar a empresa do usuário
+        const { data: enterprise, error: enterpriseError } = await supabase
+          .from('enterprise')
+          .select('id')
+          .eq('auth_user_id', user.id)
+          .single();
+
+        if (enterpriseError || !enterprise) {
+          return res.status(404).json({ error: 'enterprise_not_found' });
+        }
+
+        const { data: report, error } = await supabase
+          .from('feedback_insights_report')
+          .select('summary, recommendations, updated_at')
+          .eq('enterprise_id', enterprise.id)
+          .maybeSingle();
+
+        if (error) {
+          console.error('Erro ao buscar feedback_insights_report:', error);
+          return res
+            .status(500)
+            .json({ error: 'failed_to_fetch_feedback_insights_report' });
+        }
+
+        if (!report) {
+          return res.json({
+            summary: null,
+            recommendations: [],
+            updatedAt: null,
+          });
+        }
+
+        return res.json({
+          summary: (report.summary as string | null) ?? null,
+          recommendations: ((report.recommendations ??
+            []) as string[]).filter((rec) => !!rec && rec.trim().length > 0),
+          updatedAt: (report.updated_at as string | null) ?? null,
+        });
+      } catch (error) {
+        console.error('Erro ao buscar relatório de insights (IA):', error);
+        return res.status(500).json({ error: 'internal_server_error' });
+      }
+    },
+  );
+
   // Busca análises de feedbacks geradas pela IA (feedback_analysis)
   app.get(
     '/api/protected/user/feedbacks/analysis',

@@ -54,6 +54,33 @@ export class IaStudioServiceError extends Error {
   }
 }
 
+function extractJsonFromText(raw: string): string {
+  let text = raw.trim();
+
+  // Remove cercas de código ```json ... ``` ou ``` ... ``` se existirem
+  if (text.startsWith('```')) {
+    const firstLineEnd = text.indexOf('\n');
+    if (firstLineEnd !== -1) {
+      // Ignora a linha inicial ``` ou ```json
+      text = text.slice(firstLineEnd + 1);
+      const lastFenceIndex = text.lastIndexOf('```');
+      if (lastFenceIndex !== -1) {
+        text = text.slice(0, lastFenceIndex);
+      }
+      text = text.trim();
+    }
+  }
+
+  // Se ainda tiver texto extra, tenta pegar apenas o primeiro bloco JSON
+  const firstBrace = text.indexOf('{');
+  const lastBrace = text.lastIndexOf('}');
+  if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+    return text.slice(firstBrace, lastBrace + 1).trim();
+  }
+
+  return text;
+}
+
 function buildIaPrompt(params: {
   enterpriseName: string | null;
   companyObjective: string | null;
@@ -154,6 +181,8 @@ export async function analyzeFeedbacksForEnterprise(params: {
     );
   }
 
+  const enterpriseId = enterpriseRow.id as string;
+
   // 2) Buscar dados de contexto da empresa (collecting_data_enterprise)
   const { data: collecting, error: collectingError } = await supabase
     .from('collecting_data_enterprise')
@@ -186,7 +215,7 @@ export async function analyzeFeedbacksForEnterprise(params: {
   const { data: feedbacks, error: feedbackError } = await supabase
     .from('feedback')
     .select('id, message, rating, created_at')
-    .eq('enterprise_id', enterpriseRow.id)
+    .eq('enterprise_id', enterpriseId)
     .order('created_at', { ascending: false })
     .limit(limit);
 
@@ -274,7 +303,10 @@ export async function analyzeFeedbacksForEnterprise(params: {
     contents: prompt,
   });
 
-  const rawText = (aiResponse as { text?: string }).text ?? '';
+  const rawText =
+    (aiResponse as { text?: string }).text ??
+    ((aiResponse as any).text?.() as string | undefined) ??
+    '';
 
   let parsed:
     | {
@@ -284,7 +316,8 @@ export async function analyzeFeedbacksForEnterprise(params: {
     | null = null;
 
   try {
-    parsed = JSON.parse(rawText) as {
+    const jsonString = extractJsonFromText(rawText);
+    parsed = JSON.parse(jsonString) as {
       feedbacks?: IaFeedbackAnalysisItem[];
       global_insights?: IaGlobalInsights;
     };
@@ -322,11 +355,12 @@ export async function analyzeFeedbacksForEnterprise(params: {
     }));
 
   if (rowsToInsert.length === 0) {
-    throw new IaStudioServiceError(
-      'Empty AI analysis result',
-      502,
-      'empty_ai_analysis_result',
-    );
+    // IA respondeu sem itens válidos; não é erro fatal, apenas não há novos dados para salvar
+    return {
+      analyzedCount: 0,
+      feedbacksAnalyzed: [],
+      globalInsights: parsed?.global_insights ?? null,
+    };
   }
 
   const { data: inserted, error: insertError } = await supabase
@@ -340,6 +374,30 @@ export async function analyzeFeedbacksForEnterprise(params: {
       500,
       'failed_to_save_feedback_analysis',
     );
+  }
+
+  // 7) Persistir relatório global de insights (summary + recommendations) por empresa
+  if (parsed?.global_insights) {
+    const summary = parsed.global_insights.summary ?? null;
+    const recommendations = parsed.global_insights.recommendations ?? null;
+
+    try {
+      await supabase
+        .from('feedback_insights_report')
+        .upsert(
+          {
+            enterprise_id: enterpriseId,
+            summary,
+            recommendations,
+            updated_at: new Date().toISOString(),
+          },
+          { onConflict: 'enterprise_id' },
+        );
+    } catch (_err) {
+      // Não deve quebrar o fluxo principal se o relatório falhar
+      // eslint-disable-next-line no-console
+      console.error('Falha ao salvar feedback_insights_report:', _err);
+    }
   }
 
   return {

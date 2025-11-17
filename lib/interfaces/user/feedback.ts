@@ -103,3 +103,9 @@ export interface FeedbackAnalysisResponse {
   items: FeedbackAnalysisItem[];
   summary: FeedbackAnalysisSummary;
 }
+
+export interface FeedbackInsightsReport {
+  summary: string | null;
+  recommendations: string[];
+  updatedAt: string | null;
+}
