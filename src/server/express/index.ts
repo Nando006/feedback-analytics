@@ -10,6 +10,7 @@ import { EndpointsEnterprise as EndpointsEnterpriseProtected } from './endpoints
 import { EndpointsCollectionPointsQRCode } from './endpoints/protected/EndpointsCollectionPointsQRCode.js';
 import { EndpointsFeedbacks } from './endpoints/protected/EndpointsFeedbacks.js';
 import { EndpointsUser } from './endpoints/protected/EndpointsUser.js';
+import { EndpointsIAStudio } from './endpoints/protected/EndpoitsIAStudio.js';
 
 
 // Criando o servidor.
@@ -36,6 +37,7 @@ EndpointsCollectionPointsQRCode(app);
 EndpointsEnterpriseProtected(app);
 EndpointsFeedbacks(app);
 EndpointsUser(app);
+EndpointsIAStudio(app);
 
 // Iniciando o servidor.
 const port = Number(process.env.PORT ?? 3000);

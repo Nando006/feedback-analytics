@@ -2,8 +2,11 @@ import type {
   FeedbacksResponse,
   FeedbackStats,
   FeedbackFilters,
+  FeedbackAnalysisResponse,
+  FeedbackSentiment,
+  FeedbackInsightsReport,
 } from 'lib/interfaces/user/feedback';
-import { getJson } from '../../lib/utils/http';
+import { getJson, postJson } from '../../lib/utils/http';
 
 export function ServiceGetFeedbacks(filters: FeedbackFilters = {}) {
   const params = new URLSearchParams();
@@ -23,4 +26,42 @@ export function ServiceGetFeedbacks(filters: FeedbackFilters = {}) {
 
 export function ServiceGetFeedbackStats() {
   return getJson<FeedbackStats>('/api/protected/user/feedbacks/stats');
+}
+
+export function ServiceGetFeedbackAnalysis(params?: {
+  sentiment?: FeedbackSentiment;
+}) {
+  const searchParams = new URLSearchParams();
+
+  if (params?.sentiment) {
+    searchParams.append('sentiment', params.sentiment);
+  }
+
+  const queryString = searchParams.toString();
+  const url = `/api/protected/user/feedbacks/analysis${
+    queryString ? `?${queryString}` : ''
+  }`;
+
+  return getJson<FeedbackAnalysisResponse>(url);
+}
+
+export function ServiceGetFeedbackInsightsReport() {
+  return getJson<FeedbackInsightsReport>(
+    '/api/protected/user/feedbacks/insights/report',
+  );
+}
+
+export interface FeedbackIaRunResult {
+  analyzedCount: number;
+  globalInsights: {
+    summary?: string;
+    recommendations?: string[];
+  } | null;
+}
+
+export function ServiceRunFeedbackIAAnalysis(options?: { limit?: number }) {
+  return postJson<FeedbackIaRunResult>(
+    '/api/protected/ia-studio/send-message',
+    options ?? {},
+  );
 }

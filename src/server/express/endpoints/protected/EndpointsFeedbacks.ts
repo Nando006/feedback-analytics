@@ -182,4 +182,212 @@ export function EndpointsFeedbacks(app: express.Express) {
       }
     },
   );
+
+  // Relatório global de insights (resumo + recomendações) gerado pela IA
+  app.get(
+    '/api/protected/user/feedbacks/insights/report',
+    requireAuth,
+    async (req, res) => {
+      const supabase = req.supabase!;
+      const user = req.user!;
+
+      try {
+        // Buscar a empresa do usuário
+        const { data: enterprise, error: enterpriseError } = await supabase
+          .from('enterprise')
+          .select('id')
+          .eq('auth_user_id', user.id)
+          .single();
+
+        if (enterpriseError || !enterprise) {
+          return res.status(404).json({ error: 'enterprise_not_found' });
+        }
+
+        const { data: report, error } = await supabase
+          .from('feedback_insights_report')
+          .select('summary, recommendations, updated_at')
+          .eq('enterprise_id', enterprise.id)
+          .maybeSingle();
+
+        if (error) {
+          console.error('Erro ao buscar feedback_insights_report:', error);
+          return res
+            .status(500)
+            .json({ error: 'failed_to_fetch_feedback_insights_report' });
+        }
+
+        if (!report) {
+          return res.json({
+            summary: null,
+            recommendations: [],
+            updatedAt: null,
+          });
+        }
+
+        return res.json({
+          summary: (report.summary as string | null) ?? null,
+          recommendations: ((report.recommendations ??
+            []) as string[]).filter((rec) => !!rec && rec.trim().length > 0),
+          updatedAt: (report.updated_at as string | null) ?? null,
+        });
+      } catch (error) {
+        console.error('Erro ao buscar relatório de insights (IA):', error);
+        return res.status(500).json({ error: 'internal_server_error' });
+      }
+    },
+  );
+
+  // Busca análises de feedbacks geradas pela IA (feedback_analysis)
+  app.get(
+    '/api/protected/user/feedbacks/analysis',
+    requireAuth,
+    async (req, res) => {
+      const supabase = req.supabase!;
+      const user = req.user!;
+
+      // Filtro opcional por sentimento: positive | neutral | negative
+      const sentimentFilter = (req.query.sentiment as
+        | 'positive'
+        | 'neutral'
+        | 'negative'
+        | undefined) ?? undefined;
+
+      try {
+        // Buscar a empresa do usuário
+        const { data: enterprise, error: enterpriseError } = await supabase
+          .from('enterprise')
+          .select('id')
+          .eq('auth_user_id', user.id)
+          .single();
+
+        if (enterpriseError || !enterprise) {
+          return res.status(404).json({ error: 'enterprise_not_found' });
+        }
+
+        // Buscar feedbacks com análise associada
+        let query = supabase
+          .from('feedback')
+          .select(
+            `
+            id,
+            message,
+            rating,
+            created_at,
+            feedback_analysis:feedback_analysis (
+              sentiment,
+              categories,
+              keywords
+            )
+          `,
+          )
+          .eq('enterprise_id', enterprise.id);
+
+        if (sentimentFilter) {
+          query = query.eq('feedback_analysis.sentiment', sentimentFilter);
+        }
+
+        const { data, error } = await query;
+
+        if (error) {
+          console.error('Erro ao buscar análises de feedbacks:', error);
+          return res
+            .status(500)
+            .json({ error: 'failed_to_fetch_feedback_analysis' });
+        }
+
+        type FeedbackWithAnalysisRow = {
+          id: string;
+          message: string;
+          rating: number | null;
+          created_at: string;
+          feedback_analysis: {
+            sentiment: 'positive' | 'neutral' | 'negative';
+            categories: string[] | null;
+            keywords: string[] | null;
+          } | null;
+        };
+
+        const typedData = (data ?? []) as FeedbackWithAnalysisRow[];
+
+        const itemsRaw = typedData.filter(
+          (row) => row.feedback_analysis,
+        ) as FeedbackWithAnalysisRow[];
+
+        if (itemsRaw.length === 0) {
+          return res.json({
+            items: [],
+            summary: {
+              totalAnalyzed: 0,
+              sentiments: {
+                positive: 0,
+                neutral: 0,
+                negative: 0,
+              },
+              topCategories: [],
+              topKeywords: [],
+            },
+          });
+        }
+
+        const items = itemsRaw.map((row) => ({
+          id: row.id,
+          message: row.message,
+          rating: row.rating,
+          created_at: row.created_at,
+          sentiment: row.feedback_analysis.sentiment,
+          categories: (row.feedback_analysis.categories ?? []) as string[],
+          keywords: (row.feedback_analysis.keywords ?? []) as string[],
+        }));
+
+        // Agregações em memória
+        const sentiments = {
+          positive: 0,
+          neutral: 0,
+          negative: 0,
+        };
+
+        const categoryCounts: Record<string, number> = {};
+        const keywordCounts: Record<string, number> = {};
+
+        for (const item of items) {
+          sentiments[item.sentiment]++;
+
+          for (const category of item.categories) {
+            const key = category.trim().toLowerCase();
+            if (!key) continue;
+            categoryCounts[key] = (categoryCounts[key] ?? 0) + 1;
+          }
+
+          for (const keyword of item.keywords) {
+            const key = keyword.trim().toLowerCase();
+            if (!key) continue;
+            keywordCounts[key] = (keywordCounts[key] ?? 0) + 1;
+          }
+        }
+
+        const topCategories = Object.entries(categoryCounts)
+          .map(([name, count]) => ({ name, count }))
+          .sort((a, b) => b.count - a.count)
+          .slice(0, 10);
+
+        const topKeywords = Object.entries(keywordCounts)
+          .map(([name, count]) => ({ name, count }))
+          .sort((a, b) => b.count - a.count)
+          .slice(0, 10);
+
+        return res.json({
+          items,
+          summary: {
+            totalAnalyzed: items.length,
+            sentiments,
+            topCategories,
+            topKeywords,
+          },
+        });
+      } catch (error) {
+        console.error('Erro ao buscar análises de feedbacks (IA):', error);
+        return res.status(500).json({ error: 'internal_server_error' });
+      }
+    },
+  );
 }
