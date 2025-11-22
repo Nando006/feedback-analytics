@@ -1,22 +1,72 @@
 import { useEffect, useState } from 'react';
 import {
+  ServiceGetFeedbackAnalysis,
   ServiceGetFeedbackInsightsReport,
   ServiceRunFeedbackIAAnalysis,
 } from 'src/services/serviceFeedbacks';
-import type { FeedbackInsightsReport } from 'lib/interfaces/user/feedback';
+import type {
+  FeedbackAnalysisSummary,
+  FeedbackInsightsReport,
+} from 'lib/interfaces/user/feedback';
+
+function getMoodFromSummary(summary: FeedbackAnalysisSummary | null) {
+  if (!summary || summary.totalAnalyzed === 0) {
+    return {
+      label: 'Sem dados suficientes',
+      tone: 'neutral' as const,
+      description:
+        'Ainda não há feedbacks suficientes analisados pela IA para determinar o clima emocional.',
+    };
+  }
+
+  const { positive, neutral, negative } = summary.sentiments;
+  const max = Math.max(positive, neutral, negative);
+
+  if (max === positive) {
+    return {
+      label: 'Clima Positivo',
+      tone: 'positive' as const,
+      description:
+        'A maioria dos feedbacks recentes está positiva, indicando satisfação geral com a experiência.',
+    };
+  }
+
+  if (max === negative) {
+    return {
+      label: 'Clima de Atenção',
+      tone: 'negative' as const,
+      description:
+        'Há concentração de feedbacks negativos, sugerindo pontos críticos que precisam de ação imediata.',
+    };
+  }
+
+  return {
+    label: 'Clima Neutro',
+    tone: 'neutral' as const,
+    description:
+      'Os feedbacks estão balanceados entre elogios e reclamações, apontando espaço claro para melhoria.',
+  };
+}
 
 export default function FeedbacksInsightsReport() {
   const [report, setReport] = useState<FeedbackInsightsReport | null>(null);
+  const [summary, setSummary] = useState<FeedbackAnalysisSummary | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
 
-  const loadReport = async () => {
+  const loadData = async () => {
     try {
       setLoading(true);
       setError(null);
-      const data = await ServiceGetFeedbackInsightsReport();
-      setReport(data);
+
+      const [reportData, analysisData] = await Promise.all([
+        ServiceGetFeedbackInsightsReport(),
+        ServiceGetFeedbackAnalysis(),
+      ]);
+
+      setReport(reportData);
+      setSummary(analysisData.summary);
     } catch (err) {
       console.error('Erro ao carregar relatório de insights (IA):', err);
       setError('Erro ao carregar relatório de insights');
@@ -26,7 +76,7 @@ export default function FeedbacksInsightsReport() {
   };
 
   useEffect(() => {
-    void loadReport();
+    void loadData();
   }, []);
 
   const handleRefreshClick = async () => {
@@ -38,7 +88,7 @@ export default function FeedbacksInsightsReport() {
       await ServiceRunFeedbackIAAnalysis();
 
       // Recarrega o relatório após a atualização
-      await loadReport();
+      await loadData();
     } catch (err) {
       console.error('Erro ao atualizar insights com IA:', err);
       setError('Erro ao atualizar insights com IA');
@@ -110,9 +160,45 @@ export default function FeedbacksInsightsReport() {
       ? new Date(report.updatedAt).toLocaleString('pt-BR')
       : null;
 
+  const mood = getMoodFromSummary(summary);
+
+  const total = summary?.totalAnalyzed ?? 0;
+  const positivePct =
+    total > 0 ? Math.round((summary!.sentiments.positive / total) * 100) : 0;
+  const neutralPct =
+    total > 0 ? Math.round((summary!.sentiments.neutral / total) * 100) : 0;
+  const negativePct =
+    total > 0 ? Math.round((summary!.sentiments.negative / total) * 100) : 0;
+
+  const toneColors: Record<
+    'positive' | 'neutral' | 'negative',
+    { border: string; bg: string; text: string }
+  > = {
+    positive: {
+      border: 'border-emerald-500/60',
+      bg: 'bg-emerald-500/10',
+      text: 'text-emerald-300',
+    },
+    neutral: {
+      border: 'border-amber-500/60',
+      bg: 'bg-amber-500/10',
+      text: 'text-amber-300',
+    },
+    negative: {
+      border: 'border-rose-500/60',
+      bg: 'bg-rose-500/10',
+      text: 'text-rose-300',
+    },
+  };
+
+  const toneKey = mood.tone === 'positive' || mood.tone === 'negative'
+    ? mood.tone
+    : 'neutral';
+  const tone = toneColors[toneKey];
+
   return (
     <div className="font-inter space-y-6">
-      <div className="relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900/60 p-6 glass-card">
+      <div className="relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900/60 p-6 glass-card space-y-6">
         <div className="flex justify-between items-start gap-4 mb-4">
           <div>
             <h2 className="text-lg font-semibold text-[var(--text-primary)] mb-1">
@@ -139,6 +225,45 @@ export default function FeedbacksInsightsReport() {
               {refreshing ? 'Atualizando...' : 'Atualizar insights com IA'}
             </button>
           </div>
+        </div>
+
+        {/* Clima emocional geral */}
+        <div
+          className={`rounded-2xl border ${tone.border} ${tone.bg} p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4`}>
+          <div className="space-y-1">
+            <div className={`text-xs uppercase tracking-wide ${tone.text}`}>
+              Clima emocional geral
+            </div>
+            <div className={`text-xl font-semibold ${tone.text}`}>
+              {mood.label}
+            </div>
+            <p className="text-xs text-[var(--text-muted)] max-w-xl">
+              {mood.description}
+            </p>
+          </div>
+          {summary && summary.totalAnalyzed > 0 && (
+            <div className="w-full md:w-1/2 space-y-2">
+              <div className="w-full h-2 rounded-full bg-neutral-900 overflow-hidden flex">
+                <div
+                  style={{ width: `${positivePct}%` }}
+                  className="h-full bg-emerald-500/70"
+                />
+                <div
+                  style={{ width: `${neutralPct}%` }}
+                  className="h-full bg-amber-500/70"
+                />
+                <div
+                  style={{ width: `${negativePct}%` }}
+                  className="h-full bg-rose-500/70"
+                />
+              </div>
+              <div className="flex justify-between text-[10px] text-[var(--text-muted)]">
+                <span>Positivos: {positivePct}%</span>
+                <span>Neutros: {neutralPct}%</span>
+                <span>Negativos: {negativePct}%</span>
+              </div>
+            </div>
+          )}
         </div>
 
         {report?.summary && report.summary.trim().length > 0 && (
