@@ -1,5 +1,22 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
+
+// Mock de react-router-dom para evitar erros de export no ambiente de testes do CI
+vi.mock('react-router-dom', async (importOriginal) => {
+  const actual = await importOriginal();
+  return {
+    ...actual,
+    MemoryRouter:
+      actual.MemoryRouter ??
+      (({ children }: { children: React.ReactNode }) => <>{children}</>),
+    Link:
+      actual.Link ??
+      (({ to, children }: { to: string; children: React.ReactNode }) => (
+        <a href={to}>{children}</a>
+      )),
+  };
+});
+
 import { MemoryRouter } from 'react-router-dom';
 import Home from '../public/home';
 
