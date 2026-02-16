@@ -30,6 +30,7 @@ import { ActionFeedbackInsightsReport } from './actions/actionFeedbackInsightsRe
 import EditCollectingData from 'pages/user/edit/editCollectingData';
 import { ActionProfile } from './actions/actionProfile';
 import { ActionQrCodeEnterprise } from './actions/actionQrCodeEnterprise';
+import { ActionLogout } from './actions/actionLogout';
 
 export function RouteUser() {
   return (
@@ -38,7 +39,8 @@ export function RouteUser() {
       path="/user"
       errorElement={<ErrorPage />}
       element={<LayoutUser />}
-      loader={LoaderUserProtected}>
+      loader={LoaderUserProtected}
+      action={ActionLogout}>
       <Route
         path="dashboard"
         loader={LoaderUserDashboard}

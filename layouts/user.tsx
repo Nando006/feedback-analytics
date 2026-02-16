@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
-import { Outlet, useLoaderData, useNavigate } from 'react-router-dom';
+import { Outlet, useFetcher, useLoaderData } from 'react-router-dom';
 import Header from 'components/user/layout/Header';
 import Sidebar from 'components/user/layout/Sidebar';
 import type { PropsCollectingDataEnterprise, PropsEnterprise } from 'lib/interfaces/entities/enterprise';
 import { getCookie, setCookie } from 'lib/utils/cookies';
-import { ServiceLogout } from 'src/services/serviceAuth';
+import { INTENT_LOGOUT } from 'src/routes/constants/intents';
 
 export default function User() {
-  const navigate = useNavigate();
+  const logoutFetcher = useFetcher();
   const { enterprise, collecting } = useLoaderData() as {
     enterprise: PropsEnterprise;
     collecting: PropsCollectingDataEnterprise | null;
@@ -16,15 +16,16 @@ export default function User() {
   const [isOverlayMode, setIsOverlayMode] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isHoverActivator, setIsHoverActivator] = useState(false);
-  const [isSigningOut, setIsSigningOut] = useState(false);
   const closeTimerRef = useRef<number | null>(null);
+  const isSigningOut = logoutFetcher.state !== 'idle';
 
-  async function handleSignOut() {
+  function handleSignOut() {
     if (isSigningOut) return;
 
-    setIsSigningOut(true);
-    await ServiceLogout().catch(() => {});
-    navigate('/login', { replace: true });
+    logoutFetcher.submit(
+      { intent: INTENT_LOGOUT },
+      { method: 'post', action: '/user' },
+    );
   }
 
   const cancelClose = () => {
@@ -111,7 +112,7 @@ export default function User() {
           <Sidebar
             isOverlayMode={false}
             isOpen={isSidebarOpen}
-            enterpriseName={enterprise.full_name}
+            enterpriseName={enterprise.full_name ?? undefined}
             onSignOut={handleSignOut}
             isSigningOut={isSigningOut}
             collecting={collecting}
@@ -139,7 +140,7 @@ export default function User() {
           onClose={() => {
             scheduleClose();
           }}
-          enterpriseName={enterprise.full_name}
+          enterpriseName={enterprise.full_name ?? undefined}
           onSignOut={handleSignOut}
           isSigningOut={isSigningOut}
           collecting={collecting}
