@@ -3,9 +3,8 @@ import { render, screen, waitFor, cleanup, within } from '@testing-library/react
 import { MemoryRouter } from 'react-router-dom';
 
 const mocks = vi.hoisted(() => ({
+  useLoaderData: vi.fn(),
   useRouteLoaderData: vi.fn(),
-  ServiceGetFeedbacks: vi.fn(),
-  ServiceGetFeedbackStats: vi.fn(),
 }));
 
 vi.mock('react-router-dom', async () => {
@@ -14,16 +13,12 @@ vi.mock('react-router-dom', async () => {
   );
   return {
     ...actual,
+    useLoaderData: mocks.useLoaderData,
     useRouteLoaderData: mocks.useRouteLoaderData,
   };
 });
 
-vi.mock('src/services/serviceFeedbacks', () => ({
-  ServiceGetFeedbacks: mocks.ServiceGetFeedbacks,
-  ServiceGetFeedbackStats: mocks.ServiceGetFeedbackStats,
-}));
-
-import { useRouteLoaderData } from 'react-router-dom';
+import { useLoaderData, useRouteLoaderData } from 'react-router-dom';
 import Dashboard from '../user/dashboard';
 
 const loaderData = {
@@ -72,8 +67,9 @@ const feedbackStats = {
   },
 };
 
-const feedbacksResponse = {
-  feedbacks: [
+const dashboardLoaderData = {
+  stats: feedbackStats,
+  latestFeedbacks: [
     {
       id: 'fb-1',
       message: 'Excelente atendimento e produto!',
@@ -103,23 +99,17 @@ const feedbacksResponse = {
       },
     },
   ],
-  pagination: {
-    currentPage: 1,
-    totalPages: 1,
-    totalItems: 1,
-    itemsPerPage: 5,
-    hasNextPage: false,
-    hasPreviousPage: false,
-  },
+  dashboardError: null,
 };
 
 describe('Dashboard Page', () => {
   beforeEach(() => {
+    vi.mocked(useLoaderData).mockReturnValue(
+      dashboardLoaderData as ReturnType<typeof useLoaderData>,
+    );
     vi.mocked(useRouteLoaderData).mockReturnValue(
       loaderData as ReturnType<typeof useRouteLoaderData>,
     );
-    mocks.ServiceGetFeedbackStats.mockResolvedValue(feedbackStats);
-    mocks.ServiceGetFeedbacks.mockResolvedValue(feedbacksResponse);
   });
 
   afterEach(() => {
@@ -184,7 +174,5 @@ describe('Dashboard Page', () => {
     expect(
       screen.getByText((_, node) => node?.textContent === 'Cliente: Cliente XPTO'),
     ).toBeInTheDocument();
-    expect(mocks.ServiceGetFeedbacks).toHaveBeenCalledWith({ limit: 5, page: 1 });
-    expect(mocks.ServiceGetFeedbackStats).toHaveBeenCalledTimes(1);
   });
 });

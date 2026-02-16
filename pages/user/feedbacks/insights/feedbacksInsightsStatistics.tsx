@@ -1,48 +1,9 @@
-import { useEffect, useState } from 'react';
-import { ServiceGetFeedbackAnalysis } from 'src/services/serviceFeedbacks';
-import type { FeedbackAnalysisSummary } from 'lib/interfaces/user/feedback';
+import { useLoaderData } from 'react-router-dom';
+import type { LoaderFeedbacksInsightsStatistics } from 'src/routes/loaders/loaderFeedbacksInsightsStatistics';
 
 export default function FeedbacksInsightsStatistics() {
-  const [summary, setSummary] = useState<FeedbackAnalysisSummary | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    let mounted = true;
-
-    (async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const response = await ServiceGetFeedbackAnalysis();
-        if (!mounted) return;
-        setSummary(response.summary);
-      } catch (err) {
-        console.error(
-          'Erro ao carregar estatísticas de insights de feedbacks (IA):',
-          err,
-        );
-        if (!mounted) return;
-        setError('Erro ao carregar estatísticas de insights');
-      } finally {
-        if (mounted) setLoading(false);
-      }
-    })();
-
-    return () => {
-      mounted = false;
-    };
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-lg text-[var(--text-primary)]">
-          Carregando estatísticas de insights...
-        </div>
-      </div>
-    );
-  }
+  const { summary, error } =
+    useLoaderData<Awaited<ReturnType<typeof LoaderFeedbacksInsightsStatistics>>>();
 
   if (error) {
     return (

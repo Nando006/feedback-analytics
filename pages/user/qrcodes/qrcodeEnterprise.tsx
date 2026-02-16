@@ -1,23 +1,25 @@
 import { useState } from 'react';
-import { useRouteLoaderData } from 'react-router-dom';
+import { useLoaderData, useRouteLoaderData } from 'react-router-dom';
 import { getQrCodeUrl } from 'lib/utils/qrcode';
 import CardSimple from 'components/user/shared/cards/cardSimple';
 import type { PropsEnterprise } from 'lib/interfaces/entities/enterprise';
 import type { PropsAuthUser } from 'lib/interfaces/entities/authUser';
 import { FaDownload, FaShare, FaCopy, FaLightbulb } from 'react-icons/fa';
-import { useEffect } from 'react';
-import { ServiceGetQrStatus, ServiceEnableQr, ServiceDisableQr } from 'src/services/serviceCollectionPoints';
+import { ServiceEnableQr, ServiceDisableQr } from 'src/services/serviceCollectionPoints';
+import type { LoaderQrCodeEnterprise } from 'src/routes/loaders/loaderQrCodeEnterprise';
 
 export default function QRCodeEnterprise() {
   const { enterprise } = useRouteLoaderData('user') as {
     enterprise: PropsEnterprise;
     user: PropsAuthUser['user'];
   };
+  const qrLoaderData =
+    useLoaderData<Awaited<ReturnType<typeof LoaderQrCodeEnterprise>>>();
 
   const [showCopied, setShowCopied] = useState(false);
-  const [qrActive, setQrActive] = useState<boolean>(false);
-  const [qrLoading, setQrLoading] = useState<boolean>(true);
-  const [qrError, setQrError] = useState<string | null>(null);
+  const [qrActive, setQrActive] = useState<boolean>(qrLoaderData?.qrActive ?? false);
+  const [qrLoading, setQrLoading] = useState<boolean>(false);
+  const [qrError, setQrError] = useState<string | null>(qrLoaderData?.qrError ?? null);
 
   // Gera URL para formulário de feedback da empresa
   const generateFeedbackUrl = () => {
@@ -30,28 +32,6 @@ export default function QRCodeEnterprise() {
     size: 300,
     format: 'png',
   });
-
-  useEffect(() => {
-    let mounted = true;
-    (async () => {
-      setQrLoading(true);
-      setQrError(null);
-      try {
-        const status = await ServiceGetQrStatus();
-        if (!mounted) return;
-        setQrActive(status.active);
-      } catch (err) {
-        console.error('Erro ao consultar status do QR:', err);
-        if (!mounted) return;
-        setQrError('Não foi possível carregar o status do QR.');
-      } finally {
-        if (mounted) setQrLoading(false);
-      }
-    })();
-    return () => {
-      mounted = false;
-    };
-  }, []);
 
   const handleDownload = async () => {
     try {

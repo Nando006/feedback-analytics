@@ -1,13 +1,14 @@
-import { useEffect, useState } from 'react';
-import {
-  ServiceGetFeedbackAnalysis,
-  ServiceGetFeedbackInsightsReport,
-  ServiceRunFeedbackIAAnalysis,
-} from 'src/services/serviceFeedbacks';
+import { useEffect } from 'react';
+import { useFetcher, useLoaderData, useRevalidator } from 'react-router-dom';
 import type {
   FeedbackAnalysisSummary,
-  FeedbackInsightsReport,
 } from 'lib/interfaces/user/feedback';
+import type { LoaderFeedbacksInsightsReport } from 'src/routes/loaders/loaderFeedbacksInsightsReport';
+
+type ActionData = {
+  ok?: boolean;
+  error?: string;
+};
 
 function getMoodFromSummary(summary: FeedbackAnalysisSummary | null) {
   if (!summary || summary.totalAnalyzed === 0) {
@@ -49,55 +50,28 @@ function getMoodFromSummary(summary: FeedbackAnalysisSummary | null) {
 }
 
 export default function FeedbacksInsightsReport() {
-  const [report, setReport] = useState<FeedbackInsightsReport | null>(null);
-  const [summary, setSummary] = useState<FeedbackAnalysisSummary | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [refreshing, setRefreshing] = useState(false);
+  const { report, summary, error: loaderError } =
+    useLoaderData<Awaited<ReturnType<typeof LoaderFeedbacksInsightsReport>>>();
+  const revalidator = useRevalidator();
+  const fetcher = useFetcher<ActionData>();
 
-  const loadData = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      const [reportData, analysisData] = await Promise.all([
-        ServiceGetFeedbackInsightsReport(),
-        ServiceGetFeedbackAnalysis(),
-      ]);
-
-      setReport(reportData);
-      setSummary(analysisData.summary);
-    } catch (err) {
-      console.error('Erro ao carregar relatório de insights (IA):', err);
-      setError('Erro ao carregar relatório de insights');
-    } finally {
-      setLoading(false);
-    }
-  };
+  const refreshing =
+    fetcher.state !== 'idle' || revalidator.state === 'loading';
+  const error = fetcher.data?.error ?? loaderError;
 
   useEffect(() => {
-    void loadData();
-  }, []);
-
-  const handleRefreshClick = async () => {
-    try {
-      setRefreshing(true);
-      setError(null);
-
-      // Dispara reprocessamento de feedbacks pela IA
-      await ServiceRunFeedbackIAAnalysis();
-
-      // Recarrega o relatório após a atualização
-      await loadData();
-    } catch (err) {
-      console.error('Erro ao atualizar insights com IA:', err);
-      setError('Erro ao atualizar insights com IA');
-    } finally {
-      setRefreshing(false);
+    if (fetcher.state === 'idle' && fetcher.data?.ok) {
+      revalidator.revalidate();
     }
+  }, [fetcher.state, fetcher.data, revalidator]);
+
+  const handleRefreshClick = () => {
+    const form = new FormData();
+    form.set('intent', 'run_feedback_ia');
+    fetcher.submit(form, { method: 'post' });
   };
 
-  if (loading) {
+  if (refreshing && !report && !summary && !loaderError) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="text-lg text-[var(--text-primary)]">

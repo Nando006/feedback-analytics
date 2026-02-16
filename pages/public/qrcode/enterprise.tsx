@@ -1,58 +1,34 @@
-import { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useState } from 'react';
+import { useLoaderData } from 'react-router-dom';
 import Card from 'components/public/shared/card';
 import SVGImageProfile from 'components/svg/imageProfile';
-import { ServiceGetEnterprisePublic } from 'src/services/serviceEnterprise';
 import { ServiceSubmitQrcodeFeedback } from 'src/services/serviceFeedbackQRCode';
 import type { PropsCustomerData, PropsFeedbackData } from 'lib/interfaces/public/propsQRcode';
 import StateSentPreviousFeedback from 'components/public/qrcode/enterprise/stateSentPreviousFeedback';
-import StateLoading from 'components/public/qrcode/enterprise/stateLoading';
 import StateError from 'components/public/qrcode/enterprise/stateError';
 import StateSubmitted from 'components/public/qrcode/enterprise/stateSubmitted';
 import FormQRCodeFeedback from 'components/public/forms/formQRCodeFeedback';
+import type { LoaderPublicQrCodeEnterprise } from 'src/routes/loaders/loaderPublicQrCodeEnterprise';
 
 export default function FeedbackQRCodeEnterprise() {
-  const [searchParams] = useSearchParams();
+  const loaderData =
+    useLoaderData<Awaited<ReturnType<typeof LoaderPublicQrCodeEnterprise>>>();
+
+  const enterpriseId = loaderData?.enterpriseId ?? '';
+  const initialError = loaderData?.error ?? '';
+  const enterpriseName = loaderData?.enterpriseName ?? '';
+
   const [formData, setFormData] = useState<PropsFeedbackData>({
     message: '',
     rating: 0,
-    enterprise_id: '',
+    enterprise_id: enterpriseId,
   });
   const [customerData, setCustomerData] = useState<PropsCustomerData>({});
   const [showOptionalFields, setShowOptionalFields] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [error, setError] = useState('');
-  const [isValidatingEnterprise, setIsValidatingEnterprise] = useState(true);
-  const [enterpriseName, setEnterpriseName] = useState('');
+  const [error, setError] = useState(initialError);
   const [hasAlreadySubmitted, setHasAlreadySubmitted] = useState(false);
-
-  useEffect(() => {
-    const validateEnterprise = async () => {
-      const enterpriseId = searchParams.get('enterprise');
-
-      if (!enterpriseId) {
-        setError('ID da empresa não encontrado na URL. Verifique o QR Code.');
-        setIsValidatingEnterprise(false);
-        return;
-      }
-
-      try {
-        // Verificar se a empresa existe usando service
-        const enterprise = await ServiceGetEnterprisePublic(enterpriseId);
-
-        setFormData((prev) => ({ ...prev, enterprise_id: enterpriseId }));
-        setEnterpriseName(enterprise.name || 'Empresa');
-        setIsValidatingEnterprise(false);
-      } catch (err: unknown) {
-        console.error('Erro ao validar empresa:', err);
-        setError('Empresa não encontrada. Verifique se o QR Code é válido.');
-        setIsValidatingEnterprise(false);
-      }
-    };
-
-    validateEnterprise();
-  }, [searchParams]);
 
   const handleFormDataChange = (data: Partial<PropsFeedbackData>) => {
     setFormData((prev) => ({ ...prev, ...data }));
@@ -124,11 +100,6 @@ export default function FeedbackQRCodeEnterprise() {
       setIsSubmitting(false);
     }
   };
-
-  // Loading state durante validação da empresa
-  if (isValidatingEnterprise) {
-    return <StateLoading />
-  }
 
   // Estado quando já enviou feedback anteriormente
   if (hasAlreadySubmitted) {
