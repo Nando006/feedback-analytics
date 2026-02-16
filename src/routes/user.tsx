@@ -29,6 +29,7 @@ import { ActionCollectingData } from './actions/actionCollectingData';
 import { ActionFeedbackInsightsReport } from './actions/actionFeedbackInsightsReport';
 import EditCollectingData from 'pages/user/edit/editCollectingData';
 import { ActionProfile } from './actions/actionProfile';
+import { ActionQrCodeEnterprise } from './actions/actionQrCodeEnterprise';
 
 export function RouteUser() {
   return (
@@ -50,6 +51,7 @@ export function RouteUser() {
       <Route
         path="qrcode/enterprise"
         loader={LoaderQrCodeEnterprise}
+        action={ActionQrCodeEnterprise}
         element={<QRCodeEnterprise />}
       />
       <Route
