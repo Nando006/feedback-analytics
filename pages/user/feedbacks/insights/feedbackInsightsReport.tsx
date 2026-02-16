@@ -1,12 +1,14 @@
-import { useState } from 'react';
-import { useLoaderData, useRevalidator } from 'react-router-dom';
-import {
-  ServiceRunFeedbackIAAnalysis,
-} from 'src/services/serviceFeedbacks';
+import { useEffect } from 'react';
+import { useFetcher, useLoaderData, useRevalidator } from 'react-router-dom';
 import type {
   FeedbackAnalysisSummary,
 } from 'lib/interfaces/user/feedback';
 import type { LoaderFeedbacksInsightsReport } from 'src/routes/loaders/loaderFeedbacksInsightsReport';
+
+type ActionData = {
+  ok?: boolean;
+  error?: string;
+};
 
 function getMoodFromSummary(summary: FeedbackAnalysisSummary | null) {
   if (!summary || summary.totalAnalyzed === 0) {
@@ -51,24 +53,22 @@ export default function FeedbacksInsightsReport() {
   const { report, summary, error: loaderError } =
     useLoaderData<Awaited<ReturnType<typeof LoaderFeedbacksInsightsReport>>>();
   const revalidator = useRevalidator();
-  const [actionError, setActionError] = useState<string | null>(null);
+  const fetcher = useFetcher<ActionData>();
 
-  const refreshing = revalidator.state === 'loading';
-  const error = actionError ?? loaderError;
+  const refreshing =
+    fetcher.state !== 'idle' || revalidator.state === 'loading';
+  const error = fetcher.data?.error ?? loaderError;
 
-  const handleRefreshClick = async () => {
-    try {
-      setActionError(null);
-
-      // Dispara reprocessamento de feedbacks pela IA
-      await ServiceRunFeedbackIAAnalysis();
-
-      // Recarrega o relatório após a atualização
+  useEffect(() => {
+    if (fetcher.state === 'idle' && fetcher.data?.ok) {
       revalidator.revalidate();
-    } catch (err) {
-      console.error('Erro ao atualizar insights com IA:', err);
-      setActionError('Erro ao atualizar insights com IA');
     }
+  }, [fetcher.state, fetcher.data, revalidator]);
+
+  const handleRefreshClick = () => {
+    const form = new FormData();
+    form.set('intent', 'run_feedback_ia');
+    fetcher.submit(form, { method: 'post' });
   };
 
   if (refreshing && !report && !summary && !loaderError) {

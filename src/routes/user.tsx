@@ -25,6 +25,7 @@ import FeedbacksAnalyticsNegative from 'pages/user/feedbacks/analytics/feedbacks
 import FeedbacksAnalyticsAll from 'pages/user/feedbacks/analytics/feedbacksAnalyticsAll';
 import QRCodeProducts from 'pages/user/qrcodes/qrcodeProducts';
 import { ActionCollectingData } from './actions/actionCollectingData';
+import { ActionFeedbackInsightsReport } from './actions/actionFeedbackInsightsReport';
 import EditCollectingData from 'pages/user/edit/editCollectingData';
 import { ActionProfile } from './actions/actionProfile';
 
@@ -80,6 +81,7 @@ export function RouteUser() {
       <Route
         path="insights/reports"
         loader={LoaderFeedbacksInsightsReport}
+        action={ActionFeedbackInsightsReport}
         element={<FeedbacksInsightsReport />}
       />
       <Route
