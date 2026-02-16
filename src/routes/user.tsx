@@ -11,6 +11,7 @@ import { Route } from 'react-router-dom';
 import { LoaderUserProtected } from 'src/routes/loaders/loaderUserProtected';
 import { LoaderUserDashboard } from 'src/routes/loaders/loaderUserDashboard';
 import { LoaderFeedbacksAll } from 'src/routes/loaders/loaderFeedbacksAll';
+import { LoaderFeedbacksAnalyticsAll } from 'src/routes/loaders/loaderFeedbacksAnalyticsAll';
 import Profile from 'pages/user/profile';
 import FeedbacksInsightsEmotional from 'pages/user/feedbacks/insights/feedbacksInsightsEmotional';
 import FeedbacksInsightsStatistics from 'pages/user/feedbacks/insights/feedbacksInsightsStatistics';
@@ -58,6 +59,7 @@ export function RouteUser() {
       />
       <Route
         path="feedbacks/analytics/all"
+        loader={LoaderFeedbacksAnalyticsAll}
         element={<FeedbacksAnalyticsAll />}
       />
       <Route
