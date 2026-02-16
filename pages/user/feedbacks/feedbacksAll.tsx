@@ -1,84 +1,85 @@
-import { useState, useEffect, useCallback } from 'react';
-import { ServiceGetFeedbacks, ServiceGetFeedbackStats } from 'src/services/serviceFeedbacks';
+import { useState, type ChangeEvent } from 'react';
+import { useLoaderData, useNavigation, useSearchParams } from 'react-router-dom';
 import type {
   Feedback,
-  FeedbacksResponse,
+  FeedbackPagination as FeedbackPaginationType,
   FeedbackStats,
-  FeedbackFilters,
 } from 'lib/interfaces/user/feedback';
+import type { LoaderFeedbacksAll } from 'src/routes/loaders/loaderFeedbacksAll';
 import FeedbackHeader from 'components/user/feedbacks/feedbackHeader';
 import FeedbackFiltersComponent from 'components/user/feedbacks/feedbackFilters';
 import FeedbackCard from 'components/user/feedbacks/feedbackCard';
 import FeedbackPagination from 'components/user/feedbacks/feedbackPagination';
 
 export default function FeedbacksAll() {
-  const [feedbacks, setFeedbacks] = useState<Feedback[]>([]);
-  const [stats, setStats] = useState<FeedbackStats | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [selectedFeedback, setSelectedFeedback] = useState<Feedback | null>(
-    null,
-  );
+  const [searchParams, setSearchParams] = useSearchParams();
+  const navigation = useNavigation();
+  const loaderData = useLoaderData<Awaited<ReturnType<typeof LoaderFeedbacksAll>>>();
 
-  // Estados de filtros e paginação
-  const [filters, setFilters] = useState<FeedbackFilters>({
+  const feedbacks: Feedback[] = loaderData?.feedbacks ?? [];
+  const stats: FeedbackStats | null = loaderData?.stats ?? null;
+  const pagination: FeedbackPaginationType | null = loaderData?.pagination ?? null;
+  const filters = loaderData?.filters ?? {
     page: 1,
     limit: 10,
     rating: undefined,
     search: '',
-  });
-  const [pagination, setPagination] = useState<
-    FeedbacksResponse['pagination'] | null
-  >(null);
+  };
+  const error = loaderData?.error ?? null;
+  const loading =
+    navigation.state === 'loading' &&
+    navigation.location?.pathname === '/user/feedbacks/all';
 
-  // Função para buscar feedbacks (memoizada para respeitar react-hooks/exhaustive-deps)
-  const fetchFeedbacks = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
+  const [selectedFeedback, setSelectedFeedback] = useState<Feedback | null>(
+    null,
+  );
 
-      const response = await ServiceGetFeedbacks(filters);
-      setFeedbacks(response.feedbacks);
-      setPagination(response.pagination);
-    } catch (err) {
-      setError('Erro ao carregar feedbacks');
-      console.error('Erro ao buscar feedbacks:', err);
-    } finally {
-      setLoading(false);
+  const updateSearchParams = (next: {
+    page?: number;
+    limit?: number;
+    rating?: number;
+    search?: string;
+  }) => {
+    const params = new URLSearchParams(searchParams);
+
+    const page = next.page ?? filters.page;
+    const limit = next.limit ?? filters.limit;
+    const rating = next.rating ?? filters.rating;
+    const search = next.search ?? filters.search;
+
+    params.set('page', String(page));
+    params.set('limit', String(limit));
+
+    if (rating) {
+      params.set('rating', String(rating));
+    } else {
+      params.delete('rating');
     }
-  }, [filters]);
 
-  // Função para buscar estatísticas (memoizada)
-  const fetchStats = useCallback(async () => {
-    try {
-      const response = await ServiceGetFeedbackStats();
-      setStats(response);
-    } catch (err) {
-      console.error('Erro ao buscar estatísticas:', err);
+    if (search.trim()) {
+      params.set('search', search);
+    } else {
+      params.delete('search');
     }
-  }, []);
 
-  // Carregar dados iniciais
-  useEffect(() => {
-    fetchFeedbacks();
-    fetchStats();
-  }, [fetchFeedbacks, fetchStats]);
+    setSearchParams(params);
+  };
 
   // Handlers
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFilters((prev) => ({ ...prev, search: e.target.value, page: 1 }));
+  const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
+    updateSearchParams({ search: e.target.value, page: 1 });
   };
 
   const handleRatingFilter = (rating: number | undefined) => {
-    setFilters((prev) => ({ ...prev, rating, page: 1 }));
+    updateSearchParams({ rating, page: 1 });
   };
 
   const handlePageChange = (page: number) => {
-    setFilters((prev) => ({ ...prev, page }));
+    updateSearchParams({ page });
   };
 
   const handleLimitChange = (limit: number) => {
-    setFilters((prev) => ({ ...prev, limit, page: 1 }));
+    updateSearchParams({ limit, page: 1 });
   };
 
   const closeModal = () => setSelectedFeedback(null);
@@ -93,7 +94,7 @@ export default function FeedbacksAll() {
     });
   };
 
-  if (loading && !feedbacks.length) {
+  if (loading && !feedbacks.length && !error) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="text-lg text-[var(--text-primary)]">
