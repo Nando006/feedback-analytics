@@ -13,11 +13,12 @@ import { LoaderUserDashboard } from 'src/routes/loaders/loaderUserDashboard';
 import { LoaderFeedbacksAll } from 'src/routes/loaders/loaderFeedbacksAll';
 import { LoaderFeedbacksAnalyticsAll } from 'src/routes/loaders/loaderFeedbacksAnalyticsAll';
 import { LoaderFeedbacksAnalyticsPositive } from 'src/routes/loaders/loaderFeedbacksAnalyticsPositive';
+import { LoaderFeedbacksAnalyticsNegative } from 'src/routes/loaders/loaderFeedbacksAnalyticsNegative';
 import Profile from 'pages/user/profile';
 import FeedbacksInsightsEmotional from 'pages/user/feedbacks/insights/feedbacksInsightsEmotional';
 import FeedbacksInsightsStatistics from 'pages/user/feedbacks/insights/feedbacksInsightsStatistics';
 import FeedbacksAnalyticsPositive from 'pages/user/feedbacks/analytics/feedbacksAnalyticsPositive';
-import FeedbacksAnalyticsNegative from 'pages/user/feedbacks/analytics/feedbacks.AnalyticsNegative';
+import FeedbacksAnalyticsNegative from 'pages/user/feedbacks/analytics/feedbacksAnalyticsNegative';
 import FeedbacksAnalyticsAll from 'pages/user/feedbacks/analytics/feedbacksAnalyticsAll';
 import QRCodeProducts from 'pages/user/qrcodes/qrcodeProducts';
 import { ActionCollectingData } from './actions/actionCollectingData';
@@ -70,6 +71,7 @@ export function RouteUser() {
       />
       <Route
         path="feedbacks/analytics/negative"
+        loader={LoaderFeedbacksAnalyticsNegative}
         element={<FeedbacksAnalyticsNegative />}
       />
       <Route
