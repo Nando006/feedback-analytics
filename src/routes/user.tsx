@@ -14,6 +14,7 @@ import { LoaderFeedbacksAll } from 'src/routes/loaders/loaderFeedbacksAll';
 import { LoaderFeedbacksAnalyticsAll } from 'src/routes/loaders/loaderFeedbacksAnalyticsAll';
 import { LoaderFeedbacksAnalyticsPositive } from 'src/routes/loaders/loaderFeedbacksAnalyticsPositive';
 import { LoaderFeedbacksAnalyticsNegative } from 'src/routes/loaders/loaderFeedbacksAnalyticsNegative';
+import { LoaderFeedbacksInsightsStatistics } from 'src/routes/loaders/loaderFeedbacksInsightsStatistics';
 import Profile from 'pages/user/profile';
 import FeedbacksInsightsEmotional from 'pages/user/feedbacks/insights/feedbacksInsightsEmotional';
 import FeedbacksInsightsStatistics from 'pages/user/feedbacks/insights/feedbacksInsightsStatistics';
@@ -84,6 +85,7 @@ export function RouteUser() {
       />
       <Route
         path="insights/statistics"
+        loader={LoaderFeedbacksInsightsStatistics}
         element={<FeedbacksInsightsStatistics />}
       />
       <Route
