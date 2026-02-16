@@ -17,6 +17,7 @@ import { LoaderFeedbacksAnalyticsNegative } from 'src/routes/loaders/loaderFeedb
 import { LoaderFeedbacksInsightsStatistics } from 'src/routes/loaders/loaderFeedbacksInsightsStatistics';
 import { LoaderFeedbacksInsightsEmotional } from './loaders/loaderFeedbacksInsightsEmotional';
 import { LoaderFeedbacksInsightsReport } from './loaders/loaderFeedbacksInsightsReport';
+import { LoaderQrCodeEnterprise } from './loaders/loaderQrCodeEnterprise';
 import Profile from 'pages/user/profile';
 import FeedbacksInsightsEmotional from 'pages/user/feedbacks/insights/feedbacksInsightsEmotional';
 import FeedbacksInsightsStatistics from 'pages/user/feedbacks/insights/feedbacksInsightsStatistics';
@@ -48,6 +49,7 @@ export function RouteUser() {
       />
       <Route
         path="qrcode/enterprise"
+        loader={LoaderQrCodeEnterprise}
         element={<QRCodeEnterprise />}
       />
       <Route
