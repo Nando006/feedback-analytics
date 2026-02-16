@@ -1,14 +1,9 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { Link, useRouteLoaderData } from 'react-router-dom';
+import { useMemo } from 'react';
+import { Link, useLoaderData, useRouteLoaderData } from 'react-router-dom';
 import type { IconType } from 'react-icons';
 import CardSimple from 'components/user/shared/cards/cardSimple';
-import type {
-  PropsCollectingDataEnterprise,
-  PropsEnterprise,
-} from 'lib/interfaces/entities/enterprise';
-import type { PropsAuthUser } from 'lib/interfaces/entities/authUser';
-import type { Feedback, FeedbackStats } from 'lib/interfaces/user/feedback';
-import { ServiceGetFeedbacks, ServiceGetFeedbackStats } from 'src/services/serviceFeedbacks';
+import type { LoaderUserProtected } from 'src/routes/loaders/loaderUserProtected';
+import type { LoaderUserDashboard } from 'src/routes/loaders/loaderUserDashboard';
 import {
   FaArrowRight,
   FaChartLine,
@@ -19,32 +14,26 @@ import {
   FaStar,
 } from 'react-icons/fa';
 
-type LoaderData = {
-  user: PropsAuthUser['user'];
-  enterprise: PropsEnterprise;
-  collecting: PropsCollectingDataEnterprise | null;
-};
+type UserLoaderData = Awaited<ReturnType<typeof LoaderUserProtected>>;
+type DashboardLoaderData = Awaited<ReturnType<typeof LoaderUserDashboard>>;
 
 type MetricCardProps = {
   title: string;
   value: string;
   helper?: string;
-  loading?: boolean;
   icon: IconType;
 };
 
 const RATING_ORDER = [5, 4, 3, 2, 1] as const;
 const LATEST_LIMIT = 5;
 
-function MetricCard({ title, value, helper, loading, icon: Icon }: MetricCardProps) {
+function MetricCard({ title, value, helper, icon: Icon }: MetricCardProps) {
   return (
     <div className="rounded-2xl border border-neutral-800 bg-neutral-900/60 p-6 shadow-[var(--shadow-primary)]">
       <div className="flex items-center justify-between gap-4">
         <div>
           <p className="text-sm text-neutral-400">{title}</p>
-          <p className="mt-3 text-3xl font-semibold text-neutral-100">
-            {loading ? <span className="skeleton inline-block h-8 w-20" /> : value}
-          </p>
+          <p className="mt-3 text-3xl font-semibold text-neutral-100">{value}</p>
         </div>
         <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-neutral-800/70 text-neutral-200">
           <Icon size={20} />
@@ -77,48 +66,15 @@ function formatDateTime(value: string) {
 }
 
 export default function Dashboard() {
-  const loaderData = useRouteLoaderData('user') as LoaderData | undefined;
-  const user = loaderData?.user;
-  const enterprise = loaderData?.enterprise;
-  const collecting = loaderData?.collecting ?? null;
-  const [stats, setStats] = useState<FeedbackStats | null>(null);
-  const [latestFeedbacks, setLatestFeedbacks] = useState<Feedback[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const hasLoadedOnceRef = useRef(false);
+  const userLoaderData = useRouteLoaderData<UserLoaderData>('user');
+  const dashboardLoaderData = useLoaderData<DashboardLoaderData>();
 
-  useEffect(() => {
-    let active = true;
-    async function load() {
-      setLoading(true);
-      setError(null);
-      try {
-        const [statsResponse, feedbackResponse] = await Promise.all([
-          ServiceGetFeedbackStats(),
-          ServiceGetFeedbacks({ limit: LATEST_LIMIT, page: 1 }),
-        ]);
-        if (!active) return;
-        setStats(statsResponse);
-        setLatestFeedbacks(feedbackResponse.feedbacks);
-      } catch (err) {
-        console.error('Erro ao carregar o dashboard:', err);
-        if (!active) return;
-        setStats(null);
-        setLatestFeedbacks([]);
-        setError('Não foi possível carregar os dados do dashboard. Tente novamente mais tarde.');
-      } finally {
-        if (active) {
-          setLoading(false);
-          hasLoadedOnceRef.current = true;
-        }
-      }
-    }
-
-    void load();
-    return () => {
-      active = false;
-    };
-  }, []);
+  const user = userLoaderData?.user;
+  const enterprise = userLoaderData?.enterprise;
+  const collecting = userLoaderData?.collecting ?? null;
+  const stats = dashboardLoaderData?.stats ?? null;
+  const latestFeedbacks = dashboardLoaderData?.latestFeedbacks ?? [];
+  const error = dashboardLoaderData?.dashboardError ?? null;
 
   const distribution = useMemo(() => {
     if (!stats) return [] as Array<{ rating: number; count: number; percent: number }>;
@@ -179,7 +135,6 @@ export default function Dashboard() {
           title="Feedbacks recebidos"
           value={formatNumber(totalFeedbacks)}
           helper="Total acumulado no workspace"
-          loading={loading && !hasLoadedOnceRef.current}
           icon={FaComments}
         />
         <MetricCard
@@ -189,21 +144,18 @@ export default function Dashboard() {
             maximumFractionDigits: 1,
           })}
           helper="Avaliação média em estrelas"
-          loading={loading && !hasLoadedOnceRef.current}
           icon={FaStar}
         />
         <MetricCard
           title="Feedbacks positivos"
           value={formatNumber(positive)}
           helper="Notas 4 ★ e 5 ★"
-          loading={loading && !hasLoadedOnceRef.current}
           icon={FaSmile}
         />
         <MetricCard
           title="Feedbacks críticos"
           value={formatNumber(negative)}
           helper="Notas 1 ★ e 2 ★"
-          loading={loading && !hasLoadedOnceRef.current}
           icon={FaFrown}
         />
       </section>
@@ -224,19 +176,7 @@ export default function Dashboard() {
             </header>
 
             <div className="mt-6 space-y-4">
-              {loading && !hasLoadedOnceRef.current ? (
-                <div className="space-y-3">
-                  {Array.from({ length: 5 }).map((_, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center gap-3">
-                      <span className="skeleton inline-block h-5 w-12" />
-                      <div className="skeleton h-2 flex-1" />
-                      <span className="skeleton inline-block h-5 w-10" />
-                    </div>
-                  ))}
-                </div>
-              ) : distribution.length === 0 ? (
+              {distribution.length === 0 ? (
                 <div className="rounded-xl border border-neutral-800/60 bg-neutral-900/70 p-6 text-center text-sm text-neutral-400">
                   Ainda não há avaliações suficientes para compor a distribuição.
                 </div>
@@ -283,19 +223,7 @@ export default function Dashboard() {
             </header>
 
             <div className="mt-6 space-y-4">
-              {loading && !hasLoadedOnceRef.current ? (
-                <div className="space-y-4">
-                  {Array.from({ length: LATEST_LIMIT }).map((_, index) => (
-                    <div
-                      key={index}
-                      className="space-y-2 rounded-xl border border-neutral-800/60 bg-neutral-900/80 p-4">
-                      <span className="skeleton inline-block h-5 w-16" />
-                      <p className="skeleton h-16" />
-                      <span className="skeleton inline-block h-4 w-28" />
-                    </div>
-                  ))}
-                </div>
-              ) : latestFeedbacks.length === 0 ? (
+              {latestFeedbacks.length === 0 ? (
                 <div className="rounded-xl border border-neutral-800/60 bg-neutral-900/70 p-6 text-center text-sm text-neutral-400">
                   Nenhum feedback foi recebido até o momento.
                 </div>
