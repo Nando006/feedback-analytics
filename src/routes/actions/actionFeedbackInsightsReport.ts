@@ -1,5 +1,6 @@
 import type { ActionFunctionArgs } from 'react-router-dom';
 import { ServiceRunFeedbackIAAnalysis } from 'src/services/serviceFeedbacks';
+import { INTENT_FEEDBACK_RUN_IA } from 'src/routes/constants/intents';
 
 export async function ActionFeedbackInsightsReport({
   request,
@@ -7,7 +8,7 @@ export async function ActionFeedbackInsightsReport({
   const form = await request.formData();
   const intent = String(form.get('intent') ?? '');
 
-  if (intent !== 'run_feedback_ia') {
+  if (intent !== INTENT_FEEDBACK_RUN_IA) {
     return new Response(JSON.stringify({ error: 'invalid_intent' }), {
       status: 400,
       headers: { 'Content-Type': 'application/json' },

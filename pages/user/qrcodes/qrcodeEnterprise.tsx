@@ -6,6 +6,10 @@ import type { PropsEnterprise } from 'lib/interfaces/entities/enterprise';
 import type { PropsAuthUser } from 'lib/interfaces/entities/authUser';
 import { FaDownload, FaShare, FaCopy, FaLightbulb } from 'react-icons/fa';
 import type { LoaderQrCodeEnterprise } from 'src/routes/loaders/loaderQrCodeEnterprise';
+import {
+  INTENT_QR_DISABLE,
+  INTENT_QR_ENABLE,
+} from 'src/routes/constants/intents';
 
 type QrCodeEnterpriseActionResponse = {
   ok?: boolean;
@@ -108,7 +112,7 @@ export default function QRCodeEnterprise() {
   const handleToggleQr = () => {
     setQrError(null);
     qrFetcher.submit(
-      { intent: qrActive ? 'disable' : 'enable' },
+      { intent: qrActive ? INTENT_QR_DISABLE : INTENT_QR_ENABLE },
       { method: 'post' },
     );
   };

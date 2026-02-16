@@ -3,8 +3,12 @@ import {
   ServiceDisableQr,
   ServiceEnableQr,
 } from 'src/services/serviceCollectionPoints';
+import {
+  INTENT_QR_DISABLE,
+  INTENT_QR_ENABLE,
+} from 'src/routes/constants/intents';
 
-type QrToggleIntent = 'enable' | 'disable';
+type QrToggleIntent = typeof INTENT_QR_ENABLE | typeof INTENT_QR_DISABLE;
 
 function getErrorMessage(err: unknown) {
   if (err && typeof err === 'object' && 'message' in err) {
@@ -18,7 +22,7 @@ export async function ActionQrCodeEnterprise({ request }: ActionFunctionArgs) {
   const form = await request.formData();
   const intent = String(form.get('intent') ?? '') as QrToggleIntent;
 
-  if (intent !== 'enable' && intent !== 'disable') {
+  if (intent !== INTENT_QR_ENABLE && intent !== INTENT_QR_DISABLE) {
     return new Response(JSON.stringify({ error: 'Ação inválida para QR Code.' }), {
       status: 400,
       headers: { 'Content-Type': 'application/json' },
@@ -26,7 +30,7 @@ export async function ActionQrCodeEnterprise({ request }: ActionFunctionArgs) {
   }
 
   try {
-    if (intent === 'disable') {
+    if (intent === INTENT_QR_DISABLE) {
       await ServiceDisableQr();
       return new Response(JSON.stringify({ ok: true, active: false }), {
         status: 200,

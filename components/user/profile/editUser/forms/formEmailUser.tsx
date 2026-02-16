@@ -2,6 +2,7 @@ import { useSubmit } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { emailUpdateSchema } from 'lib/schemas/user/emailUpdateSchema';
+import { INTENT_PROFILE_UPDATE_EMAIL } from 'src/routes/constants/intents';
 
 type Props = { defaultEmail?: string };
 type FormValues = { email: string };
@@ -23,7 +24,7 @@ export default function FormEmailUser({ defaultEmail = '' }: Props) {
   const onSubmit = () => {
     const v = getValues();
     const fd = new FormData();
-    fd.set('intent', 'update_email');
+    fd.set('intent', INTENT_PROFILE_UPDATE_EMAIL);
     fd.set('initial_email', defaultEmail);
     fd.set('email', v.email);
     submit(fd, {
