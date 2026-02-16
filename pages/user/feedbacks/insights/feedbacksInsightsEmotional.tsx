@@ -1,9 +1,7 @@
-import { useEffect, useMemo, useState } from 'react';
-import { ServiceGetFeedbackAnalysis } from 'src/services/serviceFeedbacks';
-import type {
-  FeedbackAnalysisItem,
-  FeedbackAnalysisSummary,
-} from 'lib/interfaces/user/feedback';
+import { useMemo } from 'react';
+import { useLoaderData } from 'react-router-dom';
+import type { FeedbackAnalysisItem } from 'lib/interfaces/user/feedback';
+import type { LoaderFeedbacksInsightsEmotional } from 'src/routes/loaders/loaderFeedbacksInsightsEmotional';
 
 type EmotionalCluster = {
   title: string;
@@ -13,38 +11,8 @@ type EmotionalCluster = {
 };
 
 export default function FeedbacksInsigthsEmotional() {
-  const [items, setItems] = useState<FeedbackAnalysisItem[]>([]);
-  const [summary, setSummary] = useState<FeedbackAnalysisSummary | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    let mounted = true;
-
-    (async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const response = await ServiceGetFeedbackAnalysis();
-        if (!mounted) return;
-        setItems(response.items);
-        setSummary(response.summary);
-      } catch (err) {
-        console.error(
-          'Erro ao carregar insights emocionais de feedbacks (IA):',
-          err,
-        );
-        if (!mounted) return;
-        setError('Erro ao carregar insights emocionais');
-      } finally {
-        if (mounted) setLoading(false);
-      }
-    })();
-
-    return () => {
-      mounted = false;
-    };
-  }, []);
+  const { items, summary, error } =
+    useLoaderData<Awaited<ReturnType<typeof LoaderFeedbacksInsightsEmotional>>>();
 
   const clusters = useMemo<EmotionalCluster[]>(() => {
     if (!items.length) return [];
@@ -97,16 +65,6 @@ export default function FeedbacksInsigthsEmotional() {
 
     return clustersOut;
   }, [items]);
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-lg text-[var(--text-primary)]">
-          Carregando insights emocionais...
-        </div>
-      </div>
-    );
-  }
 
   if (error) {
     return (
