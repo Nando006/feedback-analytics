@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
-import { Outlet, useLoaderData } from 'react-router-dom';
+import { Outlet, useLoaderData, useNavigate } from 'react-router-dom';
 import Header from 'components/user/layout/Header';
 import Sidebar from 'components/user/layout/Sidebar';
 import type { PropsCollectingDataEnterprise, PropsEnterprise } from 'lib/interfaces/entities/enterprise';
 import { getCookie, setCookie } from 'lib/utils/cookies';
+import { ServiceLogout } from 'src/services/serviceAuth';
 
 export default function User() {
+  const navigate = useNavigate();
   const { enterprise, collecting } = useLoaderData() as {
     enterprise: PropsEnterprise;
     collecting: PropsCollectingDataEnterprise | null;
@@ -14,7 +16,16 @@ export default function User() {
   const [isOverlayMode, setIsOverlayMode] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isHoverActivator, setIsHoverActivator] = useState(false);
+  const [isSigningOut, setIsSigningOut] = useState(false);
   const closeTimerRef = useRef<number | null>(null);
+
+  async function handleSignOut() {
+    if (isSigningOut) return;
+
+    setIsSigningOut(true);
+    await ServiceLogout().catch(() => {});
+    navigate('/login', { replace: true });
+  }
 
   const cancelClose = () => {
     if (closeTimerRef.current !== null) {
@@ -100,7 +111,9 @@ export default function User() {
           <Sidebar
             isOverlayMode={false}
             isOpen={isSidebarOpen}
-            enterprise={enterprise}
+            enterpriseName={enterprise.full_name}
+            onSignOut={handleSignOut}
+            isSigningOut={isSigningOut}
             collecting={collecting}
           />
         )}
@@ -126,7 +139,9 @@ export default function User() {
           onClose={() => {
             scheduleClose();
           }}
-          enterprise={enterprise}
+          enterpriseName={enterprise.full_name}
+          onSignOut={handleSignOut}
+          isSigningOut={isSigningOut}
           collecting={collecting}
         />
       )}
