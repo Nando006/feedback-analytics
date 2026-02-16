@@ -9,6 +9,7 @@ import { ActionLogin } from './actions/actionLogin';
 import { ActionRegister } from './actions/actionRegister';
 import AuthSuccess from 'pages/public/authSuccess';
 import ErrorPage from 'components/globals/handling/errorPage';
+import { LoaderPublicQrCodeEnterprise } from './loaders/loaderPublicQrCodeEnterprise';
 
 export function RoutePublic() {
   return (
@@ -32,6 +33,7 @@ export function RoutePublic() {
       />
       <Route
         path="feedback/qrcode"
+        loader={LoaderPublicQrCodeEnterprise}
         element={<FeedbackQRCodeEnterprise />}
       />
       <Route
