@@ -1,13 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useLoaderData, useRevalidator } from 'react-router-dom';
 import {
-  ServiceGetFeedbackAnalysis,
-  ServiceGetFeedbackInsightsReport,
   ServiceRunFeedbackIAAnalysis,
 } from 'src/services/serviceFeedbacks';
 import type {
   FeedbackAnalysisSummary,
-  FeedbackInsightsReport,
 } from 'lib/interfaces/user/feedback';
+import type { LoaderFeedbacksInsightsReport } from 'src/routes/loaders/loaderFeedbacksInsightsReport';
 
 function getMoodFromSummary(summary: FeedbackAnalysisSummary | null) {
   if (!summary || summary.totalAnalyzed === 0) {
@@ -49,55 +48,30 @@ function getMoodFromSummary(summary: FeedbackAnalysisSummary | null) {
 }
 
 export default function FeedbacksInsightsReport() {
-  const [report, setReport] = useState<FeedbackInsightsReport | null>(null);
-  const [summary, setSummary] = useState<FeedbackAnalysisSummary | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [refreshing, setRefreshing] = useState(false);
+  const { report, summary, error: loaderError } =
+    useLoaderData<Awaited<ReturnType<typeof LoaderFeedbacksInsightsReport>>>();
+  const revalidator = useRevalidator();
+  const [actionError, setActionError] = useState<string | null>(null);
 
-  const loadData = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      const [reportData, analysisData] = await Promise.all([
-        ServiceGetFeedbackInsightsReport(),
-        ServiceGetFeedbackAnalysis(),
-      ]);
-
-      setReport(reportData);
-      setSummary(analysisData.summary);
-    } catch (err) {
-      console.error('Erro ao carregar relatório de insights (IA):', err);
-      setError('Erro ao carregar relatório de insights');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    void loadData();
-  }, []);
+  const refreshing = revalidator.state === 'loading';
+  const error = actionError ?? loaderError;
 
   const handleRefreshClick = async () => {
     try {
-      setRefreshing(true);
-      setError(null);
+      setActionError(null);
 
       // Dispara reprocessamento de feedbacks pela IA
       await ServiceRunFeedbackIAAnalysis();
 
       // Recarrega o relatório após a atualização
-      await loadData();
+      revalidator.revalidate();
     } catch (err) {
       console.error('Erro ao atualizar insights com IA:', err);
-      setError('Erro ao atualizar insights com IA');
-    } finally {
-      setRefreshing(false);
+      setActionError('Erro ao atualizar insights com IA');
     }
   };
 
-  if (loading) {
+  if (refreshing && !report && !summary && !loaderError) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="text-lg text-[var(--text-primary)]">
