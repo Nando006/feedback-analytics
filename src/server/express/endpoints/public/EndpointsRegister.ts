@@ -2,10 +2,14 @@ import express from 'express';
 import { registerSchema } from '../../../../../lib/schemas/public/registerSchema.js';
 import { createSupabaseServerClient } from '../../supabase.js';
 import {
+  API_ERROR_DATABASE_ERROR,
+  API_ERROR_DOCUMENT_REQUIRED,
   API_ERROR_DOCUMENT_TAKEN,
+  API_ERROR_EMAIL_TAKEN,
   API_ERROR_INTERNAL_ERROR,
   API_ERROR_INVALID_PAYLOAD,
   API_ERROR_PHONE_TAKEN,
+  API_ERROR_SIGNUP_FAILED,
 } from '../../constants/errors.js';
 
 export function EndpointsRegister(app: express.Express) {
@@ -97,13 +101,13 @@ export function EndpointsRegister(app: express.Express) {
 
         // valores padrão
         let http = 400 as 400 | 409;
-        let code = 'signup_failed';
+        let code = API_ERROR_SIGNUP_FAILED;
         let message = 'Não foi possível criar sua conta.';
 
         // e-mail já cadastrado (mensagens comuns do Supabase Auth)
         if (msg.includes('user already registered') || msg.includes('user already exists')) {
           http = 409;
-          code = 'email_taken';
+          code = API_ERROR_EMAIL_TAKEN;
           message = 'E-mail já cadastrado.';
         }
         // mensagens explicitadas pela função do banco (migração adicionada)
@@ -117,12 +121,12 @@ export function EndpointsRegister(app: express.Express) {
           message = 'Documento já cadastrado.';
         } else if (msg.includes('document is required')) {
           http = 400;
-          code = 'document_required';
+          code = API_ERROR_DOCUMENT_REQUIRED;
           message = 'Documento é obrigatório.';
         } else if (msg.includes('database error saving new user')) {
           // fallback para erro genérico do Supabase
           http = 400;
-          code = 'database_error';
+          code = API_ERROR_DATABASE_ERROR;
           message = 'Erro ao salvar novo usuário.';
         }
 

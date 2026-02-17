@@ -34,3 +34,7 @@ export const API_ERROR_FAILED_TO_FETCH_FEEDBACK_ANALYSIS =
 
 export const API_ERROR_PHONE_TAKEN = 'phone_taken' as const;
 export const API_ERROR_DOCUMENT_TAKEN = 'document_taken' as const;
+export const API_ERROR_SIGNUP_FAILED = 'signup_failed' as const;
+export const API_ERROR_EMAIL_TAKEN = 'email_taken' as const;
+export const API_ERROR_DOCUMENT_REQUIRED = 'document_required' as const;
+export const API_ERROR_DATABASE_ERROR = 'database_error' as const;
