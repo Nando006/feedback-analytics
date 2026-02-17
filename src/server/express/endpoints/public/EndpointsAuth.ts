@@ -4,22 +4,14 @@ import { createSupabaseServerClient } from '../../supabase.js';
 import {
   API_ERROR_INVALID_CREDENTIALS,
   API_ERROR_INVALID_PAYLOAD,
-  type ApiAuthErrorCode,
 } from '../../constants/errors.js';
-
-function sendAuthError(
-  res: express.Response,
-  status: number,
-  error: ApiAuthErrorCode,
-) {
-  return res.status(status).json({ error });
-}
+import { sendTypedError } from '../../utils/sendTypedError.js';
 
 export function EndpointsAuth(app: express.Express) {
   app.post('/api/public/auth/login', async (req, res) => {
     const parsed = loginSchema.safeParse(req.body);
     if (!parsed.success) {
-      return sendAuthError(res, 400, API_ERROR_INVALID_PAYLOAD);
+      return sendTypedError(res, 400, API_ERROR_INVALID_PAYLOAD);
     }
 
     const payload = parsed.data;
@@ -39,7 +31,7 @@ export function EndpointsAuth(app: express.Express) {
           });
 
     if (error) {
-      return sendAuthError(res, 401, API_ERROR_INVALID_CREDENTIALS);
+      return sendTypedError(res, 401, API_ERROR_INVALID_CREDENTIALS);
     }
 
     return res.json({ ok: true, user: data.user ?? null });

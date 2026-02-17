@@ -4,16 +4,8 @@ import {
   API_ERROR_ENTERPRISE_ID_REQUIRED,
   API_ERROR_ENTERPRISE_NOT_FOUND,
   API_ERROR_INTERNAL_SERVER_ERROR,
-  type ApiPublicEnterpriseErrorCode,
 } from '../../constants/errors.js';
-
-function sendPublicEnterpriseError(
-  res: express.Response,
-  status: number,
-  error: ApiPublicEnterpriseErrorCode,
-) {
-  return res.status(status).json({ error });
-}
+import { sendTypedError } from '../../utils/sendTypedError.js';
 
 export function EndpointsEnterprise(app: express.Express) {
   // Busca informações públicas de uma empresa para validação
@@ -21,7 +13,7 @@ export function EndpointsEnterprise(app: express.Express) {
     const { id } = req.params;
 
     if (!id) {
-      return sendPublicEnterpriseError(res, 400, API_ERROR_ENTERPRISE_ID_REQUIRED);
+      return sendTypedError(res, 400, API_ERROR_ENTERPRISE_ID_REQUIRED);
     }
 
     const supabase = createSupabaseServerClient(req, res);
@@ -35,7 +27,7 @@ export function EndpointsEnterprise(app: express.Express) {
         .single();
 
       if (error || !enterprise) {
-        return sendPublicEnterpriseError(res, 404, API_ERROR_ENTERPRISE_NOT_FOUND);
+        return sendTypedError(res, 404, API_ERROR_ENTERPRISE_NOT_FOUND);
       }
 
       return res.json({
@@ -44,7 +36,7 @@ export function EndpointsEnterprise(app: express.Express) {
       });
     } catch (err) {
       console.error('Erro ao buscar empresa:', err);
-      return sendPublicEnterpriseError(res, 500, API_ERROR_INTERNAL_SERVER_ERROR);
+      return sendTypedError(res, 500, API_ERROR_INTERNAL_SERVER_ERROR);
     }
   });
 }

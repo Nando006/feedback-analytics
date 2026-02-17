@@ -6,21 +6,8 @@ import {
   API_ERROR_UNABLE_TO_ACTIVATE_QR,
   API_ERROR_UNABLE_TO_CREATE_QR_CP,
   API_ERROR_UNABLE_TO_DISABLE_QR,
-  type ApiQrCollectionPointErrorCode,
 } from '../../constants/errors.js';
-
-function sendCollectionPointQrError(
-  res: express.Response,
-  status: number,
-  error: ApiQrCollectionPointErrorCode,
-  options?: { active?: boolean },
-) {
-  if (typeof options?.active === 'boolean') {
-    return res.status(status).json({ active: options.active, error });
-  }
-
-  return res.status(status).json({ error });
-}
+import { sendTypedError } from '../../utils/sendTypedError.js';
 
 export function EndpointsCollectionPointsQRCode(app: express.Express) {
   // Status do QR (se há CP ativo)
@@ -38,7 +25,7 @@ export function EndpointsCollectionPointsQRCode(app: express.Express) {
         .single();
 
       if (enterpriseError || !enterprise) {
-        return sendCollectionPointQrError(
+        return sendTypedError(
           res,
           404,
           API_ERROR_ENTERPRISE_NOT_FOUND,
@@ -55,7 +42,7 @@ export function EndpointsCollectionPointsQRCode(app: express.Express) {
         .maybeSingle();
 
       if (cpError) {
-        return sendCollectionPointQrError(
+        return sendTypedError(
           res,
           500,
           API_ERROR_COLLECTION_POINT_ERROR,
@@ -82,7 +69,7 @@ export function EndpointsCollectionPointsQRCode(app: express.Express) {
         .single();
 
       if (enterpriseError || !enterprise) {
-        return sendCollectionPointQrError(
+        return sendTypedError(
           res,
           404,
           API_ERROR_ENTERPRISE_NOT_FOUND,
@@ -117,7 +104,7 @@ export function EndpointsCollectionPointsQRCode(app: express.Express) {
           .eq('id', anyCP.id);
 
         if (updErr) {
-          return sendCollectionPointQrError(
+          return sendTypedError(
             res,
             500,
             API_ERROR_UNABLE_TO_ACTIVATE_QR,
@@ -139,7 +126,7 @@ export function EndpointsCollectionPointsQRCode(app: express.Express) {
         .single();
 
       if (createErr || !newCP) {
-        return sendCollectionPointQrError(
+        return sendTypedError(
           res,
           500,
           API_ERROR_UNABLE_TO_CREATE_QR_CP,
@@ -165,7 +152,7 @@ export function EndpointsCollectionPointsQRCode(app: express.Express) {
         .single();
 
       if (enterpriseError || !enterprise) {
-        return sendCollectionPointQrError(
+        return sendTypedError(
           res,
           404,
           API_ERROR_ENTERPRISE_NOT_FOUND,
@@ -190,7 +177,7 @@ export function EndpointsCollectionPointsQRCode(app: express.Express) {
         .eq('id', cp.id);
 
       if (updErr) {
-        return sendCollectionPointQrError(
+        return sendTypedError(
           res,
           500,
           API_ERROR_UNABLE_TO_DISABLE_QR,
