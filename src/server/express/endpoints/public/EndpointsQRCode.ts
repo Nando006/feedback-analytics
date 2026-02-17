@@ -2,7 +2,10 @@ import express from 'express';
 import { qrcodeFeedbackSchema } from '../../../../../lib/schemas/public/feedbackSchema.js';
 import { createSupabaseServerClient } from '../../supabase.js';
 import crypto from 'node:crypto';
-import { API_ERROR_INVALID_PAYLOAD } from '../../constants/errors.js';
+import {
+  API_ERROR_ENTERPRISE_NOT_FOUND,
+  API_ERROR_INVALID_PAYLOAD,
+} from '../../constants/errors.js';
 
 export function EndpointsQRCode(app: express.Express) {
   // Recebe feedback público via QR Code
@@ -23,7 +26,7 @@ export function EndpointsQRCode(app: express.Express) {
       .single();
 
     if (enterpriseErr || !enterpriseRow) {
-      return res.status(404).json({ error: 'enterprise_not_found' });
+      return res.status(404).json({ error: API_ERROR_ENTERPRISE_NOT_FOUND });
     }
 
     // Gera fingerprint do dispositivo (UA + IP + dia) - versão simplificada

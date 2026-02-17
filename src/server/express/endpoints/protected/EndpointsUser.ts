@@ -2,7 +2,11 @@ import express from 'express';
 import { requireAuth } from '../../middleware/auth.js';
 import { emailUpdateSchema } from '../../../../../lib/schemas/user/emailUpdateSchema.js';
 import { metadadosUpdateSchema } from '../../../../../lib/schemas/user/metadadosUpdateSchema.js';
-import { API_ERROR_INVALID_PAYLOAD } from '../../constants/errors.js';
+import {
+  API_ERROR_INVALID_PAYLOAD,
+  API_ERROR_UPDATE_FAILED,
+  API_ERROR_VERIFY_FAILED,
+} from '../../constants/errors.js';
 
 export function EndpointsUser(app: express.Express) {
   app.get('/api/protected/user/auth_user', requireAuth, async (req, res) => {
@@ -36,7 +40,7 @@ export function EndpointsUser(app: express.Express) {
     );
 
     if (error) {
-      return res.status(400).json({ error: 'update_failed' });
+      return res.status(400).json({ error: API_ERROR_UPDATE_FAILED });
     }
 
     return res.json({
@@ -59,7 +63,7 @@ export function EndpointsUser(app: express.Express) {
     });
 
     if (error) {
-      return res.status(400).json({ error: 'update_failed' });
+      return res.status(400).json({ error: API_ERROR_UPDATE_FAILED });
     }
 
     return res.json({
@@ -80,7 +84,7 @@ export function EndpointsUser(app: express.Express) {
 
     const supabase = req.supabase!;
     const { error } = await supabase.auth.updateUser({ phone });
-    if (error) return res.status(400).json({ error: 'update_failed' });
+    if (error) return res.status(400).json({ error: API_ERROR_UPDATE_FAILED });
     return res.json({ ok: true });
   });
 
@@ -100,7 +104,7 @@ export function EndpointsUser(app: express.Express) {
         token,
         phone,
       });
-      if (error) return res.status(400).json({ error: 'verify_failed' });
+      if (error) return res.status(400).json({ error: API_ERROR_VERIFY_FAILED });
       return res.json({ ok: true });
     },
   );

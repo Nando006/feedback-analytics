@@ -1,7 +1,11 @@
 import express from 'express';
 import { enterpriseUpdateSchema } from '../../../../../lib/schemas/user/enterpriseUpdateSchema.js';
 import { requireAuth } from '../../middleware/auth.js';
-import { API_ERROR_INVALID_PAYLOAD } from '../../constants/errors.js';
+import {
+  API_ERROR_ENTERPRISE_NOT_FOUND,
+  API_ERROR_INVALID_PAYLOAD,
+  API_ERROR_UPSERT_FAILED,
+} from '../../constants/errors.js';
 
 export function EndpointsEnterprise(app: express.Express) {
   // Busca os dados da empresa.
@@ -18,7 +22,7 @@ export function EndpointsEnterprise(app: express.Express) {
       .single();
 
     if (error) {
-      return res.status(404).json({ error: 'enterprise_not_found' });
+      return res.status(404).json({ error: API_ERROR_ENTERPRISE_NOT_FOUND });
     }
 
     return res.json({
@@ -53,7 +57,7 @@ export function EndpointsEnterprise(app: express.Express) {
       .single();
 
     if (error) {
-      return res.status(401).json({ error: 'Enterprise_not_found' });
+      return res.status(401).json({ error: API_ERROR_ENTERPRISE_NOT_FOUND });
     }
 
     try {
@@ -140,7 +144,7 @@ export function EndpointsEnterprise(app: express.Express) {
         .single();
 
       if (eErr || !enterpriseRow) {
-        return res.status(404).json({ error: 'enterprise_not_found' });
+        return res.status(404).json({ error: API_ERROR_ENTERPRISE_NOT_FOUND });
       }
 
       const updateData: {
@@ -233,7 +237,7 @@ export function EndpointsEnterprise(app: express.Express) {
           .single();
 
         if (error) {
-          return res.status(400).json({ error: 'upsert_failed' });
+          return res.status(400).json({ error: API_ERROR_UPSERT_FAILED });
         }
 
         return res.json({ collecting: data });
@@ -266,7 +270,7 @@ export function EndpointsEnterprise(app: express.Express) {
         .single();
 
       if (eErr || !enterpriseRow) {
-        return res.status(404).json({ error: 'enterprise_not_found' });
+        return res.status(404).json({ error: API_ERROR_ENTERPRISE_NOT_FOUND });
       }
 
       const upsertData = {
@@ -291,7 +295,7 @@ export function EndpointsEnterprise(app: express.Express) {
         .single();
 
       if (error) {
-        return res.status(400).json({ error: 'upsert_failed' });
+        return res.status(400).json({ error: API_ERROR_UPSERT_FAILED });
       }
 
       return res.json({ collecting: data });

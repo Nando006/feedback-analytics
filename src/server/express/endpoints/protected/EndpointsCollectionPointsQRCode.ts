@@ -1,5 +1,6 @@
 import express from 'express';
 import { requireAuth } from '../../middleware/auth.js';
+import { API_ERROR_ENTERPRISE_NOT_FOUND } from '../../constants/errors.js';
 
 export function EndpointsCollectionPointsQRCode(app: express.Express) {
   // Status do QR (se há CP ativo)
@@ -17,7 +18,7 @@ export function EndpointsCollectionPointsQRCode(app: express.Express) {
         .single();
 
       if (enterpriseError || !enterprise) {
-        return res.status(404).json({ active: false, error: 'enterprise_not_found' });
+        return res.status(404).json({ active: false, error: API_ERROR_ENTERPRISE_NOT_FOUND });
       }
 
       const { data: cp, error: cpError } = await supabase
@@ -51,7 +52,7 @@ export function EndpointsCollectionPointsQRCode(app: express.Express) {
         .single();
 
       if (enterpriseError || !enterprise) {
-        return res.status(404).json({ error: 'enterprise_not_found' });
+        return res.status(404).json({ error: API_ERROR_ENTERPRISE_NOT_FOUND });
       }
 
       // Já ativo?
@@ -122,7 +123,7 @@ export function EndpointsCollectionPointsQRCode(app: express.Express) {
         .single();
 
       if (enterpriseError || !enterprise) {
-        return res.status(404).json({ error: 'enterprise_not_found' });
+        return res.status(404).json({ error: API_ERROR_ENTERPRISE_NOT_FOUND });
       }
 
       const { data: cp } = await supabase

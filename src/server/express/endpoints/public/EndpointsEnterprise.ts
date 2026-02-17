@@ -1,5 +1,6 @@
 import express from 'express';
 import { createSupabaseServerClient } from '../../supabase.js';
+import { API_ERROR_ENTERPRISE_NOT_FOUND } from '../../constants/errors.js';
 
 export function EndpointsEnterprise(app: express.Express) {
   // Busca informações públicas de uma empresa para validação
@@ -21,7 +22,7 @@ export function EndpointsEnterprise(app: express.Express) {
         .single();
 
       if (error || !enterprise) {
-        return res.status(404).json({ error: 'enterprise_not_found' });
+        return res.status(404).json({ error: API_ERROR_ENTERPRISE_NOT_FOUND });
       }
 
       return res.json({

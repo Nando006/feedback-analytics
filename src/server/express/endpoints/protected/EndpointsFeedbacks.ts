@@ -1,5 +1,6 @@
 import express from 'express';
 import { requireAuth } from '../../middleware/auth.js';
+import { API_ERROR_ENTERPRISE_NOT_FOUND } from '../../constants/errors.js';
 
 export function EndpointsFeedbacks(app: express.Express) {
   // Busca feedbacks da empresa com paginação
@@ -27,7 +28,7 @@ export function EndpointsFeedbacks(app: express.Express) {
         .single();
 
       if (enterpriseError || !enterprise) {
-        return res.status(404).json({ error: 'enterprise_not_found' });
+        return res.status(404).json({ error: API_ERROR_ENTERPRISE_NOT_FOUND });
       }
 
       // Construir query base
@@ -134,7 +135,7 @@ export function EndpointsFeedbacks(app: express.Express) {
           .single();
 
         if (enterpriseError || !enterprise) {
-          return res.status(404).json({ error: 'enterprise_not_found' });
+          return res.status(404).json({ error: API_ERROR_ENTERPRISE_NOT_FOUND });
         }
 
         // Buscar estatísticas
@@ -200,7 +201,7 @@ export function EndpointsFeedbacks(app: express.Express) {
           .single();
 
         if (enterpriseError || !enterprise) {
-          return res.status(404).json({ error: 'enterprise_not_found' });
+          return res.status(404).json({ error: API_ERROR_ENTERPRISE_NOT_FOUND });
         }
 
         const { data: report, error } = await supabase
@@ -261,7 +262,7 @@ export function EndpointsFeedbacks(app: express.Express) {
           .single();
 
         if (enterpriseError || !enterprise) {
-          return res.status(404).json({ error: 'enterprise_not_found' });
+          return res.status(404).json({ error: API_ERROR_ENTERPRISE_NOT_FOUND });
         }
 
         // Buscar feedbacks com análise associada
