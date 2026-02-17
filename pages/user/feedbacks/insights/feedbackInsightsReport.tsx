@@ -4,6 +4,7 @@ import type {
   FeedbackAnalysisSummary,
 } from 'lib/interfaces/user/feedback';
 import type { LoaderFeedbacksInsightsReport } from 'src/routes/loaders/loaderFeedbacksInsightsReport';
+import { INTENT_FEEDBACK_RUN_IA } from 'lib/constants/routes/intents';
 
 type ActionData = {
   ok?: boolean;
@@ -67,7 +68,7 @@ export default function FeedbacksInsightsReport() {
 
   const handleRefreshClick = () => {
     const form = new FormData();
-    form.set('intent', 'run_feedback_ia');
+    form.set('intent', INTENT_FEEDBACK_RUN_IA);
     fetcher.submit(form, { method: 'post' });
   };
 

@@ -5,16 +5,26 @@ import {
   ServiceUpdateMetadados,
   ServiceVerifyPhone,
 } from 'src/services/serviceUser';
+import {
+  INTENT_PROFILE_START_PHONE,
+  INTENT_PROFILE_UPDATE_EMAIL,
+  INTENT_PROFILE_UPDATE_FULL_NAME,
+  INTENT_PROFILE_VERIFY_PHONE,
+} from 'lib/constants/routes/intents';
+import {
+  ACTION_ERROR_INVALID_INTENT,
+  ACTION_ERROR_INVALID_PAYLOAD,
+} from 'lib/constants/routes/errors';
 
 export async function ActionProfile({ request }: ActionFunctionArgs) {
   const form = await request.formData();
   const intent = String(form.get('intent') ?? '');
 
   // Atualiza o nome do usuário.
-  if (intent === 'update_full_name') {
+  if (intent === INTENT_PROFILE_UPDATE_FULL_NAME) {
     const full_name = String(form.get('full_name') ?? '');
     if (!full_name) {
-      return new Response(JSON.stringify({ error: 'invalid_payload' }), {
+      return new Response(JSON.stringify({ error: ACTION_ERROR_INVALID_PAYLOAD }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' },
       });
@@ -27,10 +37,10 @@ export async function ActionProfile({ request }: ActionFunctionArgs) {
   }
 
   // Atualiza o e-mail do usuário.
-  if (intent === 'update_email') {
+  if (intent === INTENT_PROFILE_UPDATE_EMAIL) {
     const email = String(form.get('email') ?? '');
     if (!email) {
-      return new Response(JSON.stringify({ error: 'invalid_payload' }), {
+      return new Response(JSON.stringify({ error: ACTION_ERROR_INVALID_PAYLOAD }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' },
       });
@@ -43,10 +53,10 @@ export async function ActionProfile({ request }: ActionFunctionArgs) {
   }
 
   // Inicia a verificação do telefone do usuário.
-  if (intent === 'start_phone') {
+  if (intent === INTENT_PROFILE_START_PHONE) {
     const phone = String(form.get('phone') ?? '');
     if (!phone) {
-      return new Response(JSON.stringify({ error: 'invalid_payload' }), {
+      return new Response(JSON.stringify({ error: ACTION_ERROR_INVALID_PAYLOAD }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' },
       });
@@ -59,10 +69,10 @@ export async function ActionProfile({ request }: ActionFunctionArgs) {
   }
 
   // Confirma a verificação do telefone do usuário.
-  if (intent === 'verify_phone') {
+  if (intent === INTENT_PROFILE_VERIFY_PHONE) {
     const token = String(form.get('token') ?? '');
     if (!token) {
-      return new Response(JSON.stringify({ error: 'invalid_payload' }), {
+      return new Response(JSON.stringify({ error: ACTION_ERROR_INVALID_PAYLOAD }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' },
       });
@@ -75,7 +85,7 @@ export async function ActionProfile({ request }: ActionFunctionArgs) {
   }
 
   // Retorna um erro caso o intent seja inválido.
-  return new Response(JSON.stringify({ error: 'invalid_intent' }), {
+  return new Response(JSON.stringify({ error: ACTION_ERROR_INVALID_INTENT }), {
     status: 400,
     headers: { 'Content-Type': 'application/json' },
   });

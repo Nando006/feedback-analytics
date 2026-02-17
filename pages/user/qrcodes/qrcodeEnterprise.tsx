@@ -1,12 +1,21 @@
-import { useState } from 'react';
-import { useLoaderData, useRouteLoaderData } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useFetcher, useLoaderData, useRouteLoaderData } from 'react-router-dom';
 import { getQrCodeUrl } from 'lib/utils/qrcode';
 import CardSimple from 'components/user/shared/cards/cardSimple';
 import type { PropsEnterprise } from 'lib/interfaces/entities/enterprise';
 import type { PropsAuthUser } from 'lib/interfaces/entities/authUser';
 import { FaDownload, FaShare, FaCopy, FaLightbulb } from 'react-icons/fa';
-import { ServiceEnableQr, ServiceDisableQr } from 'src/services/serviceCollectionPoints';
 import type { LoaderQrCodeEnterprise } from 'src/routes/loaders/loaderQrCodeEnterprise';
+import {
+  INTENT_QR_DISABLE,
+  INTENT_QR_ENABLE,
+} from 'lib/constants/routes/intents';
+
+type QrCodeEnterpriseActionResponse = {
+  ok?: boolean;
+  active?: boolean;
+  error?: string;
+};
 
 export default function QRCodeEnterprise() {
   const { enterprise } = useRouteLoaderData('user') as {
@@ -15,11 +24,31 @@ export default function QRCodeEnterprise() {
   };
   const qrLoaderData =
     useLoaderData<Awaited<ReturnType<typeof LoaderQrCodeEnterprise>>>();
+  const qrFetcher = useFetcher<QrCodeEnterpriseActionResponse>();
 
   const [showCopied, setShowCopied] = useState(false);
   const [qrActive, setQrActive] = useState<boolean>(qrLoaderData?.qrActive ?? false);
-  const [qrLoading, setQrLoading] = useState<boolean>(false);
   const [qrError, setQrError] = useState<string | null>(qrLoaderData?.qrError ?? null);
+
+  const qrLoading = qrFetcher.state !== 'idle';
+
+  useEffect(() => {
+    const actionResult = qrFetcher.data;
+
+    if (!actionResult) {
+      return;
+    }
+
+    if (actionResult.error) {
+      setQrError(actionResult.error);
+      return;
+    }
+
+    if (actionResult.ok && typeof actionResult.active === 'boolean') {
+      setQrError(null);
+      setQrActive(actionResult.active);
+    }
+  }, [qrFetcher.data]);
 
   // Gera URL para formulário de feedback da empresa
   const generateFeedbackUrl = () => {
@@ -80,23 +109,12 @@ export default function QRCodeEnterprise() {
     }
   };
 
-  const handleToggleQr = async () => {
+  const handleToggleQr = () => {
     setQrError(null);
-    setQrLoading(true);
-    try {
-      if (qrActive) {
-        await ServiceDisableQr();
-        setQrActive(false);
-      } else {
-        await ServiceEnableQr();
-        setQrActive(true);
-      }
-    } catch (err) {
-      console.error('Erro ao alternar QR Code:', err);
-      setQrError('Falha ao atualizar o QR Code. Tente novamente.');
-    } finally {
-      setQrLoading(false);
-    }
+    qrFetcher.submit(
+      { intent: qrActive ? INTENT_QR_DISABLE : INTENT_QR_ENABLE },
+      { method: 'post' },
+    );
   };
 
   return (

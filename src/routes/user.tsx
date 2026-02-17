@@ -29,6 +29,8 @@ import { ActionCollectingData } from './actions/actionCollectingData';
 import { ActionFeedbackInsightsReport } from './actions/actionFeedbackInsightsReport';
 import EditCollectingData from 'pages/user/edit/editCollectingData';
 import { ActionProfile } from './actions/actionProfile';
+import { ActionQrCodeEnterprise } from './actions/actionQrCodeEnterprise';
+import { ActionLogout } from './actions/actionLogout';
 
 export function RouteUser() {
   return (
@@ -37,7 +39,8 @@ export function RouteUser() {
       path="/user"
       errorElement={<ErrorPage />}
       element={<LayoutUser />}
-      loader={LoaderUserProtected}>
+      loader={LoaderUserProtected}
+      action={ActionLogout}>
       <Route
         path="dashboard"
         loader={LoaderUserDashboard}
@@ -50,6 +53,7 @@ export function RouteUser() {
       <Route
         path="qrcode/enterprise"
         loader={LoaderQrCodeEnterprise}
+        action={ActionQrCodeEnterprise}
         element={<QRCodeEnterprise />}
       />
       <Route

@@ -2,6 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { nameSchema, type NameFormValues } from 'lib/schemas/user/nameSchema';
 import { useForm } from 'react-hook-form';
 import { useSubmit } from 'react-router-dom';
+import { INTENT_PROFILE_UPDATE_FULL_NAME } from 'lib/constants/routes/intents';
 
 type Props = { defaultFullName?: string };
 
@@ -22,7 +23,7 @@ export default function FormNameUser({ defaultFullName = '' }: Props) {
   const onSubmit = () => {
     const v = getValues();
     const fd = new FormData();
-    fd.set('intent', 'update_full_name');
+    fd.set('intent', INTENT_PROFILE_UPDATE_FULL_NAME);
     fd.set('initial_full_name', defaultFullName);
     fd.set('full_name', v.full_name);
     submit(fd, {

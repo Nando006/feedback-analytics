@@ -1,6 +1,18 @@
 import express from 'express';
 import { registerSchema } from '../../../../../lib/schemas/public/registerSchema.js';
 import { createSupabaseServerClient } from '../../supabase.js';
+import {
+  API_ERROR_DATABASE_ERROR,
+  API_ERROR_DOCUMENT_REQUIRED,
+  API_ERROR_DOCUMENT_TAKEN,
+  API_ERROR_EMAIL_TAKEN,
+  API_ERROR_INTERNAL_ERROR,
+  API_ERROR_INVALID_PAYLOAD,
+  API_ERROR_PHONE_TAKEN,
+  API_ERROR_SIGNUP_FAILED,
+  type ApiRegisterErrorCode,
+} from '../../../../../lib/constants/server/errors.js';
+import { sendTypedError } from '../../../../../lib/utils/sendTypedError.js';
 
 export function EndpointsRegister(app: express.Express) {
   app.post('/api/public/auth/register', async (req, res) => {
@@ -10,8 +22,7 @@ export function EndpointsRegister(app: express.Express) {
 
       // Verifica se os dados do payload são válidos. Se não forem, retorna um erro.
       if (!parsed.success) {
-        return res.status(400).json({
-          error: 'invalid_payload',
+        return sendTypedError(res, 400, API_ERROR_INVALID_PAYLOAD, {
           issues: parsed.error.issues,
         });
       }
@@ -64,7 +75,9 @@ export function EndpointsRegister(app: express.Express) {
           p_phone: data.phone,
         });
         if (phoneExists === true) {
-          return res.status(409).json({ error: 'phone_taken', message: 'Telefone já cadastrado.' });
+          return sendTypedError(res, 409, API_ERROR_PHONE_TAKEN, {
+            message: 'Telefone já cadastrado.',
+          });
         }
 
         // verifica documento existente (usa RPC document_exists)
@@ -72,7 +85,9 @@ export function EndpointsRegister(app: express.Express) {
           p_document: data.document,
         });
         if (docExists === true) {
-          return res.status(409).json({ error: 'document_taken', message: 'Documento já cadastrado.' });
+          return sendTypedError(res, 409, API_ERROR_DOCUMENT_TAKEN, {
+            message: 'Documento já cadastrado.',
+          });
         }
       } catch {
         // Falha nas validações não deve impedir o fluxo; segue para o signup e tratamos lá.
@@ -91,43 +106,43 @@ export function EndpointsRegister(app: express.Express) {
 
         // valores padrão
         let http = 400 as 400 | 409;
-        let code = 'signup_failed';
+        let code: ApiRegisterErrorCode = API_ERROR_SIGNUP_FAILED;
         let message = 'Não foi possível criar sua conta.';
 
         // e-mail já cadastrado (mensagens comuns do Supabase Auth)
         if (msg.includes('user already registered') || msg.includes('user already exists')) {
           http = 409;
-          code = 'email_taken';
+          code = API_ERROR_EMAIL_TAKEN;
           message = 'E-mail já cadastrado.';
         }
         // mensagens explicitadas pela função do banco (migração adicionada)
         else if (msg.includes('phone_already_exists')) {
           http = 409;
-          code = 'phone_taken';
+          code = API_ERROR_PHONE_TAKEN;
           message = 'Telefone já cadastrado.';
         } else if (msg.includes('document_already_exists')) {
           http = 409;
-          code = 'document_taken';
+          code = API_ERROR_DOCUMENT_TAKEN;
           message = 'Documento já cadastrado.';
         } else if (msg.includes('document is required')) {
           http = 400;
-          code = 'document_required';
+          code = API_ERROR_DOCUMENT_REQUIRED;
           message = 'Documento é obrigatório.';
         } else if (msg.includes('database error saving new user')) {
           // fallback para erro genérico do Supabase
           http = 400;
-          code = 'database_error';
+          code = API_ERROR_DATABASE_ERROR;
           message = 'Erro ao salvar novo usuário.';
         }
 
-        return res.status(http).json({ error: code, message });
+        return sendTypedError(res, http, code, { message });
       }
 
       // Retorna o usuário registrado. Se não foi, retorna um erro.
       return res.json({ ok: true, message: 'confirmation_required' });
     } catch (err) {
       console.error('Register endpoint error:', err);
-      return res.status(500).json({ error: 'internal_error' });
+      return sendTypedError(res, 500, API_ERROR_INTERNAL_ERROR);
     }
   });
 }

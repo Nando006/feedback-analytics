@@ -5,6 +5,7 @@ import {
   phoneStartSchema,
   type PhoneStartFormValues,
 } from 'lib/schemas/user/phoneSchema';
+import { INTENT_PROFILE_START_PHONE } from 'lib/constants/routes/intents';
 
 type Props = { defaultPhone?: string };
 
@@ -25,7 +26,7 @@ export default function FormPhoneStartUser({ defaultPhone = '' }: Props) {
   const onSubmit = () => {
     const v = getValues();
     const fd = new FormData();
-    fd.set('intent', 'start_phone');
+    fd.set('intent', INTENT_PROFILE_START_PHONE);
     fd.set('initial_phone', defaultPhone);
     fd.set('phone', v.phone);
     submit(fd, {
