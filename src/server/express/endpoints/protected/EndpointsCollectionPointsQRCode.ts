@@ -6,7 +6,21 @@ import {
   API_ERROR_UNABLE_TO_ACTIVATE_QR,
   API_ERROR_UNABLE_TO_CREATE_QR_CP,
   API_ERROR_UNABLE_TO_DISABLE_QR,
+  type ApiQrCollectionPointErrorCode,
 } from '../../constants/errors.js';
+
+function sendCollectionPointQrError(
+  res: express.Response,
+  status: number,
+  error: ApiQrCollectionPointErrorCode,
+  options?: { active?: boolean },
+) {
+  if (typeof options?.active === 'boolean') {
+    return res.status(status).json({ active: options.active, error });
+  }
+
+  return res.status(status).json({ error });
+}
 
 export function EndpointsCollectionPointsQRCode(app: express.Express) {
   // Status do QR (se há CP ativo)
@@ -24,7 +38,12 @@ export function EndpointsCollectionPointsQRCode(app: express.Express) {
         .single();
 
       if (enterpriseError || !enterprise) {
-        return res.status(404).json({ active: false, error: API_ERROR_ENTERPRISE_NOT_FOUND });
+        return sendCollectionPointQrError(
+          res,
+          404,
+          API_ERROR_ENTERPRISE_NOT_FOUND,
+          { active: false },
+        );
       }
 
       const { data: cp, error: cpError } = await supabase
@@ -36,7 +55,12 @@ export function EndpointsCollectionPointsQRCode(app: express.Express) {
         .maybeSingle();
 
       if (cpError) {
-        return res.status(500).json({ active: false, error: API_ERROR_COLLECTION_POINT_ERROR });
+        return sendCollectionPointQrError(
+          res,
+          500,
+          API_ERROR_COLLECTION_POINT_ERROR,
+          { active: false },
+        );
       }
 
       return res.json({ active: !!cp, id: cp?.id ?? null });
@@ -58,7 +82,11 @@ export function EndpointsCollectionPointsQRCode(app: express.Express) {
         .single();
 
       if (enterpriseError || !enterprise) {
-        return res.status(404).json({ error: API_ERROR_ENTERPRISE_NOT_FOUND });
+        return sendCollectionPointQrError(
+          res,
+          404,
+          API_ERROR_ENTERPRISE_NOT_FOUND,
+        );
       }
 
       // Já ativo?
@@ -89,7 +117,11 @@ export function EndpointsCollectionPointsQRCode(app: express.Express) {
           .eq('id', anyCP.id);
 
         if (updErr) {
-          return res.status(500).json({ error: API_ERROR_UNABLE_TO_ACTIVATE_QR });
+          return sendCollectionPointQrError(
+            res,
+            500,
+            API_ERROR_UNABLE_TO_ACTIVATE_QR,
+          );
         }
 
         return res.json({ id: anyCP.id, active: true });
@@ -107,7 +139,11 @@ export function EndpointsCollectionPointsQRCode(app: express.Express) {
         .single();
 
       if (createErr || !newCP) {
-        return res.status(500).json({ error: API_ERROR_UNABLE_TO_CREATE_QR_CP });
+        return sendCollectionPointQrError(
+          res,
+          500,
+          API_ERROR_UNABLE_TO_CREATE_QR_CP,
+        );
       }
 
       return res.json({ id: newCP.id, active: true });
@@ -129,7 +165,11 @@ export function EndpointsCollectionPointsQRCode(app: express.Express) {
         .single();
 
       if (enterpriseError || !enterprise) {
-        return res.status(404).json({ error: API_ERROR_ENTERPRISE_NOT_FOUND });
+        return sendCollectionPointQrError(
+          res,
+          404,
+          API_ERROR_ENTERPRISE_NOT_FOUND,
+        );
       }
 
       const { data: cp } = await supabase
@@ -150,7 +190,11 @@ export function EndpointsCollectionPointsQRCode(app: express.Express) {
         .eq('id', cp.id);
 
       if (updErr) {
-        return res.status(500).json({ error: API_ERROR_UNABLE_TO_DISABLE_QR });
+        return sendCollectionPointQrError(
+          res,
+          500,
+          API_ERROR_UNABLE_TO_DISABLE_QR,
+        );
       }
 
       return res.json({ active: false });
