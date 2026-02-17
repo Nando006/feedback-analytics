@@ -38,3 +38,11 @@ export const API_ERROR_SIGNUP_FAILED = 'signup_failed' as const;
 export const API_ERROR_EMAIL_TAKEN = 'email_taken' as const;
 export const API_ERROR_DOCUMENT_REQUIRED = 'document_required' as const;
 export const API_ERROR_DATABASE_ERROR = 'database_error' as const;
+
+export type ApiRegisterErrorCode =
+	| typeof API_ERROR_SIGNUP_FAILED
+	| typeof API_ERROR_EMAIL_TAKEN
+	| typeof API_ERROR_PHONE_TAKEN
+	| typeof API_ERROR_DOCUMENT_TAKEN
+	| typeof API_ERROR_DOCUMENT_REQUIRED
+	| typeof API_ERROR_DATABASE_ERROR;

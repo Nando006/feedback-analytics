@@ -10,6 +10,7 @@ import {
   API_ERROR_INVALID_PAYLOAD,
   API_ERROR_PHONE_TAKEN,
   API_ERROR_SIGNUP_FAILED,
+  type ApiRegisterErrorCode,
 } from '../../constants/errors.js';
 
 export function EndpointsRegister(app: express.Express) {
@@ -101,7 +102,7 @@ export function EndpointsRegister(app: express.Express) {
 
         // valores padrão
         let http = 400 as 400 | 409;
-        let code = API_ERROR_SIGNUP_FAILED;
+        let code: ApiRegisterErrorCode = API_ERROR_SIGNUP_FAILED;
         let message = 'Não foi possível criar sua conta.';
 
         // e-mail já cadastrado (mensagens comuns do Supabase Auth)
