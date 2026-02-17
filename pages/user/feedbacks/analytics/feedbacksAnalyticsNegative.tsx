@@ -1,9 +1,9 @@
 import { useLoaderData } from 'react-router-dom';
 import type { LoaderFeedbacksAnalyticsNegative } from 'src/routes/loaders/loaderFeedbacksAnalyticsNegative';
-import AnalyticsNegativeErrorState from 'components/user/feedbacksAnalyticsNegative/AnalyticsNegativeErrorState';
-import AnalyticsNegativeEmptyState from 'components/user/feedbacksAnalyticsNegative/AnalyticsNegativeEmptyState';
-import AnalyticsNegativeSummarySection from 'components/user/feedbacksAnalyticsNegative/AnalyticsNegativeSummarySection';
-import AnalyticsNegativeItemsSection from 'components/user/feedbacksAnalyticsNegative/AnalyticsNegativeItemsSection';
+import AnalyticsNegativeErrorState from 'components/user/pages/feedbacksAnalyticsNegative/AnalyticsNegativeErrorState';
+import AnalyticsNegativeEmptyState from 'components/user/pages/feedbacksAnalyticsNegative/AnalyticsNegativeEmptyState';
+import AnalyticsNegativeSummarySection from 'components/user/pages/feedbacksAnalyticsNegative/AnalyticsNegativeSummarySection';
+import AnalyticsNegativeItemsSection from 'components/user/pages/feedbacksAnalyticsNegative/AnalyticsNegativeItemsSection';
 
 export default function FeedbacksAnalyticsNegative() {
   const { items, summary, error } =

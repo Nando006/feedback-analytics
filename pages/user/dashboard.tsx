@@ -5,11 +5,11 @@ import type { LoaderUserDashboard } from 'src/routes/loaders/loaderUserDashboard
 import {
   FaArrowRight,
 } from 'react-icons/fa';
-import SectionMetric from 'components/user/dashboard/SectionMetric';
-import SectionEvaluationDistribution from 'components/user/dashboard/SectionEvaluationDistribution';
-import SectionLatestFeedbacks from 'components/user/dashboard/SectionLatestFeedbacks';
-import SectionCollectingStrategy from 'components/user/dashboard/SectionCollectingStrategy';
-import SectionSatisfactionRadar from 'components/user/dashboard/SectionSatisfactionRadar';
+import SectionMetric from 'components/user/pages/dashboard/SectionMetric';
+import SectionEvaluationDistribution from 'components/user/pages/dashboard/SectionEvaluationDistribution';
+import SectionLatestFeedbacks from 'components/user/pages/dashboard/SectionLatestFeedbacks';
+import SectionCollectingStrategy from 'components/user/pages/dashboard/SectionCollectingStrategy';
+import SectionSatisfactionRadar from 'components/user/pages/dashboard/SectionSatisfactionRadar';
 
 type UserLoaderData = Awaited<ReturnType<typeof LoaderUserProtected>>;
 type DashboardLoaderData = Awaited<ReturnType<typeof LoaderUserDashboard>>;

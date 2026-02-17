@@ -8,10 +8,10 @@ import {
   INTENT_QR_DISABLE,
   INTENT_QR_ENABLE,
 } from 'lib/constants/routes/intents';
-import SectionQrHeader from 'components/user/qrcodeEnterprise/SectionQrHeader';
-import SectionQrInstructions from 'components/user/qrcodeEnterprise/SectionQrInstructions';
-import SectionQrCodeDisplay from 'components/user/qrcodeEnterprise/SectionQrCodeDisplay';
-import SectionQrUsageTips from 'components/user/qrcodeEnterprise/SectionQrUsageTips';
+import SectionQrHeader from 'components/user/pages/qrcodeEnterprise/SectionQrHeader';
+import SectionQrInstructions from 'components/user/pages/qrcodeEnterprise/SectionQrInstructions';
+import SectionQrCodeDisplay from 'components/user/pages/qrcodeEnterprise/SectionQrCodeDisplay';
+import SectionQrUsageTips from 'components/user/pages/qrcodeEnterprise/SectionQrUsageTips';
 
 type QrCodeEnterpriseActionResponse = {
   ok?: boolean;

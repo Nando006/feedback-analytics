@@ -1,4 +1,4 @@
-import MetricCard from "components/user/shared/MetricCard";
+import MetricCard from "components/user/shared/cards/MetricCard";
 import FormatToCurrencyReal from "lib/utils/FormatToReal";
 import {
   FaComments,

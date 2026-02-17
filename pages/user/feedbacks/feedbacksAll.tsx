@@ -6,15 +6,15 @@ import type {
   FeedbackStats,
 } from 'lib/interfaces/user/feedback';
 import type { LoaderFeedbacksAll } from 'src/routes/loaders/loaderFeedbacksAll';
-import FeedbackHeader from 'components/user/feedbacks/feedbackHeader';
-import FeedbackFiltersComponent from 'components/user/feedbacks/feedbackFilters';
-import FeedbackCard from 'components/user/feedbacks/feedbackCard';
-import FeedbackPagination from 'components/user/feedbacks/feedbackPagination';
-import FeedbacksAllLoadingState from 'components/user/feedbacksAll/FeedbacksAllLoadingState';
-import FeedbacksAllErrorState from 'components/user/feedbacksAll/FeedbacksAllErrorState';
-import FeedbacksAllEmptyState from 'components/user/feedbacksAll/FeedbacksAllEmptyState';
-import FeedbacksAllLoadingOverlay from 'components/user/feedbacksAll/FeedbacksAllLoadingOverlay';
-import FeedbackDetailsModal from 'components/user/feedbacksAll/FeedbackDetailsModal';
+import FeedbackHeader from 'components/user/pages/feedbacks/feedbackHeader';
+import FeedbackFiltersComponent from 'components/user/pages/feedbacks/feedbackFilters';
+import FeedbackCard from 'components/user/pages/feedbacks/feedbackCard';
+import FeedbackPagination from 'components/user/pages/feedbacks/feedbackPagination';
+import FeedbacksAllLoadingState from 'components/user/pages/feedbacksAll/FeedbacksAllLoadingState';
+import FeedbacksAllErrorState from 'components/user/pages/feedbacksAll/FeedbacksAllErrorState';
+import FeedbacksAllEmptyState from 'components/user/pages/feedbacksAll/FeedbacksAllEmptyState';
+import FeedbacksAllLoadingOverlay from 'components/user/pages/feedbacksAll/FeedbacksAllLoadingOverlay';
+import FeedbackDetailsModal from 'components/user/pages/feedbacksAll/FeedbackDetailsModal';
 
 export default function FeedbacksAll() {
   const [searchParams, setSearchParams] = useSearchParams();

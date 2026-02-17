@@ -1,10 +1,10 @@
 import { useLoaderData } from 'react-router-dom';
 import type { LoaderFeedbacksAnalyticsAll } from 'src/routes/loaders/loaderFeedbacksAnalyticsAll';
-import AnalyticsAllErrorState from 'components/user/feedbacksAnalyticsAll/AnalyticsAllErrorState';
-import AnalyticsAllEmptyState from 'components/user/feedbacksAnalyticsAll/AnalyticsAllEmptyState';
-import AnalyticsAllSummarySection from 'components/user/feedbacksAnalyticsAll/AnalyticsAllSummarySection';
-import AnalyticsAllKeywordsSection from 'components/user/feedbacksAnalyticsAll/AnalyticsAllKeywordsSection';
-import AnalyticsAllItemsSection from 'components/user/feedbacksAnalyticsAll/AnalyticsAllItemsSection';
+import AnalyticsAllErrorState from 'components/user/pages/feedbacksAnalyticsAll/AnalyticsAllErrorState';
+import AnalyticsAllEmptyState from 'components/user/pages/feedbacksAnalyticsAll/AnalyticsAllEmptyState';
+import AnalyticsAllSummarySection from 'components/user/pages/feedbacksAnalyticsAll/AnalyticsAllSummarySection';
+import AnalyticsAllKeywordsSection from 'components/user/pages/feedbacksAnalyticsAll/AnalyticsAllKeywordsSection';
+import AnalyticsAllItemsSection from 'components/user/pages/feedbacksAnalyticsAll/AnalyticsAllItemsSection';
 
 export default function FeedbacksAnalyticsAll() {
   const { items, summary, error } =
