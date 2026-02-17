@@ -1,6 +1,10 @@
 import express from 'express';
 import { createSupabaseServerClient } from '../../supabase.js';
-import { API_ERROR_ENTERPRISE_NOT_FOUND } from '../../constants/errors.js';
+import {
+  API_ERROR_ENTERPRISE_ID_REQUIRED,
+  API_ERROR_ENTERPRISE_NOT_FOUND,
+  API_ERROR_INTERNAL_SERVER_ERROR,
+} from '../../constants/errors.js';
 
 export function EndpointsEnterprise(app: express.Express) {
   // Busca informações públicas de uma empresa para validação
@@ -8,7 +12,7 @@ export function EndpointsEnterprise(app: express.Express) {
     const { id } = req.params;
 
     if (!id) {
-      return res.status(400).json({ error: 'enterprise_id_required' });
+      return res.status(400).json({ error: API_ERROR_ENTERPRISE_ID_REQUIRED });
     }
 
     const supabase = createSupabaseServerClient(req, res);
@@ -31,7 +35,7 @@ export function EndpointsEnterprise(app: express.Express) {
       });
     } catch (err) {
       console.error('Erro ao buscar empresa:', err);
-      return res.status(500).json({ error: 'internal_server_error' });
+      return res.status(500).json({ error: API_ERROR_INTERNAL_SERVER_ERROR });
     }
   });
 }

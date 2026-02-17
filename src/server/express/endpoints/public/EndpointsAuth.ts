@@ -1,7 +1,10 @@
 import express from 'express';
 import { loginSchema } from '../../../../../lib/schemas/public/loginSchema.js';
 import { createSupabaseServerClient } from '../../supabase.js';
-import { API_ERROR_INVALID_PAYLOAD } from '../../constants/errors.js';
+import {
+  API_ERROR_INVALID_CREDENTIALS,
+  API_ERROR_INVALID_PAYLOAD,
+} from '../../constants/errors.js';
 
 export function EndpointsAuth(app: express.Express) {
   app.post('/api/public/auth/login', async (req, res) => {
@@ -27,7 +30,7 @@ export function EndpointsAuth(app: express.Express) {
           });
 
     if (error) {
-      return res.status(401).json({ error: 'invalid_credentials' });
+      return res.status(401).json({ error: API_ERROR_INVALID_CREDENTIALS });
     }
 
     return res.json({ ok: true, user: data.user ?? null });

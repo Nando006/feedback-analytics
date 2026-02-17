@@ -1,6 +1,12 @@
 import express from 'express';
 import { requireAuth } from '../../middleware/auth.js';
-import { API_ERROR_ENTERPRISE_NOT_FOUND } from '../../constants/errors.js';
+import {
+  API_ERROR_COLLECTION_POINT_ERROR,
+  API_ERROR_ENTERPRISE_NOT_FOUND,
+  API_ERROR_UNABLE_TO_ACTIVATE_QR,
+  API_ERROR_UNABLE_TO_CREATE_QR_CP,
+  API_ERROR_UNABLE_TO_DISABLE_QR,
+} from '../../constants/errors.js';
 
 export function EndpointsCollectionPointsQRCode(app: express.Express) {
   // Status do QR (se há CP ativo)
@@ -30,7 +36,7 @@ export function EndpointsCollectionPointsQRCode(app: express.Express) {
         .maybeSingle();
 
       if (cpError) {
-        return res.status(500).json({ active: false, error: 'collection_point_error' });
+        return res.status(500).json({ active: false, error: API_ERROR_COLLECTION_POINT_ERROR });
       }
 
       return res.json({ active: !!cp, id: cp?.id ?? null });
@@ -83,7 +89,7 @@ export function EndpointsCollectionPointsQRCode(app: express.Express) {
           .eq('id', anyCP.id);
 
         if (updErr) {
-          return res.status(500).json({ error: 'unable_to_activate_qr' });
+          return res.status(500).json({ error: API_ERROR_UNABLE_TO_ACTIVATE_QR });
         }
 
         return res.json({ id: anyCP.id, active: true });
@@ -101,7 +107,7 @@ export function EndpointsCollectionPointsQRCode(app: express.Express) {
         .single();
 
       if (createErr || !newCP) {
-        return res.status(500).json({ error: 'unable_to_create_qr_cp' });
+        return res.status(500).json({ error: API_ERROR_UNABLE_TO_CREATE_QR_CP });
       }
 
       return res.json({ id: newCP.id, active: true });
@@ -144,7 +150,7 @@ export function EndpointsCollectionPointsQRCode(app: express.Express) {
         .eq('id', cp.id);
 
       if (updErr) {
-        return res.status(500).json({ error: 'unable_to_disable_qr' });
+        return res.status(500).json({ error: API_ERROR_UNABLE_TO_DISABLE_QR });
       }
 
       return res.json({ active: false });

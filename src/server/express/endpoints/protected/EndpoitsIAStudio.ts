@@ -4,6 +4,7 @@ import {
   analyzeFeedbacksForEnterprise,
   IaStudioServiceError,
 } from '../../services/iaStudioService.js';
+import { API_ERROR_INTERNAL_SERVER_ERROR } from '../../constants/errors.js';
 
 export function EndpointsIAStudio(app: express.Express) {
   app.post(
@@ -37,7 +38,7 @@ export function EndpointsIAStudio(app: express.Express) {
         }
 
         console.error('Erro inesperado no endpoint IA Studio:', error);
-        return res.status(500).json({ error: 'internal_server_error' });
+        return res.status(500).json({ error: API_ERROR_INTERNAL_SERVER_ERROR });
       }
     },
   );

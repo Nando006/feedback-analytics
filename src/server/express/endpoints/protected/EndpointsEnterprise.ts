@@ -2,6 +2,8 @@ import express from 'express';
 import { enterpriseUpdateSchema } from '../../../../../lib/schemas/user/enterpriseUpdateSchema.js';
 import { requireAuth } from '../../middleware/auth.js';
 import {
+  API_ERROR_COLLECTING_DATA_NOT_FOUND,
+  API_ERROR_EMPTY_PAYLOAD,
   API_ERROR_ENTERPRISE_NOT_FOUND,
   API_ERROR_INVALID_PAYLOAD,
   API_ERROR_UPSERT_FAILED,
@@ -114,7 +116,7 @@ export function EndpointsEnterprise(app: express.Express) {
         .maybeSingle();
 
       if (cErr) {
-        return res.status(404).json({ error: 'collecting_data_not_found' });
+        return res.status(404).json({ error: API_ERROR_COLLECTING_DATA_NOT_FOUND });
       }
 
       return res.json({ collecting });
@@ -184,7 +186,7 @@ export function EndpointsEnterprise(app: express.Express) {
       }
 
       if (Object.keys(updateData).length === 1) {
-        return res.status(400).json({ error: 'empty_payload' });
+        return res.status(400).json({ error: API_ERROR_EMPTY_PAYLOAD });
       }
 
       const { data: updated, error: updErr } = await supabase

@@ -1,7 +1,12 @@
 import express from 'express';
 import { registerSchema } from '../../../../../lib/schemas/public/registerSchema.js';
 import { createSupabaseServerClient } from '../../supabase.js';
-import { API_ERROR_INVALID_PAYLOAD } from '../../constants/errors.js';
+import {
+  API_ERROR_DOCUMENT_TAKEN,
+  API_ERROR_INTERNAL_ERROR,
+  API_ERROR_INVALID_PAYLOAD,
+  API_ERROR_PHONE_TAKEN,
+} from '../../constants/errors.js';
 
 export function EndpointsRegister(app: express.Express) {
   app.post('/api/public/auth/register', async (req, res) => {
@@ -65,7 +70,7 @@ export function EndpointsRegister(app: express.Express) {
           p_phone: data.phone,
         });
         if (phoneExists === true) {
-          return res.status(409).json({ error: 'phone_taken', message: 'Telefone já cadastrado.' });
+          return res.status(409).json({ error: API_ERROR_PHONE_TAKEN, message: 'Telefone já cadastrado.' });
         }
 
         // verifica documento existente (usa RPC document_exists)
@@ -73,7 +78,7 @@ export function EndpointsRegister(app: express.Express) {
           p_document: data.document,
         });
         if (docExists === true) {
-          return res.status(409).json({ error: 'document_taken', message: 'Documento já cadastrado.' });
+          return res.status(409).json({ error: API_ERROR_DOCUMENT_TAKEN, message: 'Documento já cadastrado.' });
         }
       } catch {
         // Falha nas validações não deve impedir o fluxo; segue para o signup e tratamos lá.
@@ -128,7 +133,7 @@ export function EndpointsRegister(app: express.Express) {
       return res.json({ ok: true, message: 'confirmation_required' });
     } catch (err) {
       console.error('Register endpoint error:', err);
-      return res.status(500).json({ error: 'internal_error' });
+      return res.status(500).json({ error: API_ERROR_INTERNAL_ERROR });
     }
   });
 }
