@@ -3,7 +3,8 @@ import type express from 'express';
 type TypedErrorPayload<
   TError extends string,
   TMeta extends Record<string, unknown> | undefined,
-> = (TMeta extends Record<string, unknown> ? TMeta : {}) & { error: TError };
+> = { error: TError } &
+  (TMeta extends Record<string, unknown> ? TMeta : Record<string, never>);
 
 export function sendTypedError<
   TError extends string,
