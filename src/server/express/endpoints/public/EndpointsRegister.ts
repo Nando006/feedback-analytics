@@ -1,6 +1,7 @@
 import express from 'express';
 import { registerSchema } from '../../../../../lib/schemas/public/registerSchema.js';
 import { createSupabaseServerClient } from '../../supabase.js';
+import { API_ERROR_INVALID_PAYLOAD } from '../../constants/errors.js';
 
 export function EndpointsRegister(app: express.Express) {
   app.post('/api/public/auth/register', async (req, res) => {
@@ -11,7 +12,7 @@ export function EndpointsRegister(app: express.Express) {
       // Verifica se os dados do payload são válidos. Se não forem, retorna um erro.
       if (!parsed.success) {
         return res.status(400).json({
-          error: 'invalid_payload',
+          error: API_ERROR_INVALID_PAYLOAD,
           issues: parsed.error.issues,
         });
       }

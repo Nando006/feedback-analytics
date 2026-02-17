@@ -1,6 +1,7 @@
 import express from 'express';
 import { enterpriseUpdateSchema } from '../../../../../lib/schemas/user/enterpriseUpdateSchema.js';
 import { requireAuth } from '../../middleware/auth.js';
+import { API_ERROR_INVALID_PAYLOAD } from '../../constants/errors.js';
 
 export function EndpointsEnterprise(app: express.Express) {
   // Busca os dados da empresa.
@@ -35,7 +36,7 @@ export function EndpointsEnterprise(app: express.Express) {
     const parsed = enterpriseUpdateSchema.safeParse(req.body);
     if (!parsed.success) {
       return res.status(400).json({
-        error: 'invalid_payload',
+        error: API_ERROR_INVALID_PAYLOAD,
       });
     }
 

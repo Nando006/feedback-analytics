@@ -2,6 +2,7 @@ import express from 'express';
 import { requireAuth } from '../../middleware/auth.js';
 import { emailUpdateSchema } from '../../../../../lib/schemas/user/emailUpdateSchema.js';
 import { metadadosUpdateSchema } from '../../../../../lib/schemas/user/metadadosUpdateSchema.js';
+import { API_ERROR_INVALID_PAYLOAD } from '../../constants/errors.js';
 
 export function EndpointsUser(app: express.Express) {
   app.get('/api/protected/user/auth_user', requireAuth, async (req, res) => {
@@ -12,7 +13,7 @@ export function EndpointsUser(app: express.Express) {
   app.patch('/api/protected/user/email', requireAuth, async (req, res) => {
     const parsed = emailUpdateSchema.safeParse(req.body);
     if (!parsed.success) {
-      return res.status(400).json({ error: 'invalid_payload' });
+      return res.status(400).json({ error: API_ERROR_INVALID_PAYLOAD });
     }
 
     const supabase = req.supabase!;
@@ -48,7 +49,7 @@ export function EndpointsUser(app: express.Express) {
     const parsed = metadadosUpdateSchema.safeParse(req.body);
     if (!parsed.success) {
       return res.status(400).json({
-        error: 'invalid_payload',
+        error: API_ERROR_INVALID_PAYLOAD,
       });
     }
 
@@ -75,7 +76,7 @@ export function EndpointsUser(app: express.Express) {
   // Inicia a verificação de telefone (envia OTP)
   app.post('/api/protected/user/phone/start', requireAuth, async (req, res) => {
     const phone = String(req.body?.phone ?? '');
-    if (!phone) return res.status(400).json({ error: 'invalid_payload' });
+    if (!phone) return res.status(400).json({ error: API_ERROR_INVALID_PAYLOAD });
 
     const supabase = req.supabase!;
     const { error } = await supabase.auth.updateUser({ phone });
@@ -91,7 +92,7 @@ export function EndpointsUser(app: express.Express) {
       const token = String(req.body?.token ?? '');
       const phone = String(req.body?.phone ?? '');
       if (!token || !phone)
-        return res.status(400).json({ error: 'invalid_payload' });
+        return res.status(400).json({ error: API_ERROR_INVALID_PAYLOAD });
 
       const supabase = req.supabase!;
       const { error } = await supabase.auth.verifyOtp({

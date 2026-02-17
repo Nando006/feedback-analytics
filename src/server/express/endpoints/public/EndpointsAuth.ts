@@ -1,12 +1,13 @@
 import express from 'express';
 import { loginSchema } from '../../../../../lib/schemas/public/loginSchema.js';
 import { createSupabaseServerClient } from '../../supabase.js';
+import { API_ERROR_INVALID_PAYLOAD } from '../../constants/errors.js';
 
 export function EndpointsAuth(app: express.Express) {
   app.post('/api/public/auth/login', async (req, res) => {
     const parsed = loginSchema.safeParse(req.body);
     if (!parsed.success) {
-      return res.status(400).json({ error: 'invalid_payload' });
+      return res.status(400).json({ error: API_ERROR_INVALID_PAYLOAD });
     }
 
     const payload = parsed.data;

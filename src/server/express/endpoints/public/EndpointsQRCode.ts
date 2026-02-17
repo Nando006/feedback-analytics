@@ -2,13 +2,14 @@ import express from 'express';
 import { qrcodeFeedbackSchema } from '../../../../../lib/schemas/public/feedbackSchema.js';
 import { createSupabaseServerClient } from '../../supabase.js';
 import crypto from 'node:crypto';
+import { API_ERROR_INVALID_PAYLOAD } from '../../constants/errors.js';
 
 export function EndpointsQRCode(app: express.Express) {
   // Recebe feedback público via QR Code
   app.post('/api/public/qrcode/feedback', async (req, res) => {
     const parsed = qrcodeFeedbackSchema.safeParse(req.body);
     if (!parsed.success) {
-      return res.status(400).json({ error: 'invalid_payload' });
+      return res.status(400).json({ error: API_ERROR_INVALID_PAYLOAD });
     }
 
     const payload = parsed.data;
