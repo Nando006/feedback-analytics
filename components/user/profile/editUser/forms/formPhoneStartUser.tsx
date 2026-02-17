@@ -5,7 +5,7 @@ import {
   phoneStartSchema,
   type PhoneStartFormValues,
 } from 'lib/schemas/user/phoneSchema';
-import { INTENT_PROFILE_START_PHONE } from 'src/routes/constants/intents';
+import { INTENT_PROFILE_START_PHONE } from 'lib/constants/routes/intents';
 
 type Props = { defaultPhone?: string };
 

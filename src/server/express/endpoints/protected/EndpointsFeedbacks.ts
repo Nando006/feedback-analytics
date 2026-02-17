@@ -8,8 +8,8 @@ import {
   API_ERROR_FAILED_TO_FETCH_FEEDBACK_INSIGHTS_REPORT,
   API_ERROR_FAILED_TO_FETCH_STATS,
   API_ERROR_INTERNAL_SERVER_ERROR,
-} from '../../constants/errors.js';
-import { sendTypedError } from '../../utils/sendTypedError.js';
+} from '../../../../../lib/constants/server/errors.js';
+import { sendTypedError } from '../../../../../lib/utils/sendTypedError.js';
 
 export function EndpointsFeedbacks(app: express.Express) {
   // Busca feedbacks da empresa com paginação
@@ -301,23 +301,50 @@ export function EndpointsFeedbacks(app: express.Express) {
           return sendTypedError(res, 500, API_ERROR_FAILED_TO_FETCH_FEEDBACK_ANALYSIS);
         }
 
+        type FeedbackAnalysis = {
+          sentiment: 'positive' | 'neutral' | 'negative';
+          categories: string[] | null;
+          keywords: string[] | null;
+        };
+
         type FeedbackWithAnalysisRow = {
           id: string;
           message: string;
           rating: number | null;
           created_at: string;
-          feedback_analysis: {
-            sentiment: 'positive' | 'neutral' | 'negative';
-            categories: string[] | null;
-            keywords: string[] | null;
-          } | null;
+          feedback_analysis: FeedbackAnalysis | null;
         };
 
-        const typedData = (data ?? []) as FeedbackWithAnalysisRow[];
+        type FeedbackWithAnalysisRowRaw = Omit<
+          FeedbackWithAnalysisRow,
+          'feedback_analysis'
+        > & {
+          feedback_analysis: FeedbackAnalysis | FeedbackAnalysis[] | null;
+        };
 
-        const itemsRaw = typedData.filter(
-          (row) => row.feedback_analysis,
-        ) as FeedbackWithAnalysisRow[];
+        const typedData = (data ?? []) as unknown as FeedbackWithAnalysisRowRaw[];
+
+        const itemsRaw = typedData
+          .map((row): FeedbackWithAnalysisRow => {
+            const analysis = Array.isArray(row.feedback_analysis)
+              ? (row.feedback_analysis[0] ?? null)
+              : row.feedback_analysis;
+
+            return {
+              id: row.id,
+              message: row.message,
+              rating: row.rating,
+              created_at: row.created_at,
+              feedback_analysis: analysis,
+            };
+          })
+          .filter(
+            (
+              row,
+            ): row is FeedbackWithAnalysisRow & {
+              feedback_analysis: FeedbackAnalysis;
+            } => row.feedback_analysis !== null,
+          );
 
         if (itemsRaw.length === 0) {
           return res.json({

@@ -4,7 +4,7 @@ import type {
   FeedbackAnalysisSummary,
 } from 'lib/interfaces/user/feedback';
 import type { LoaderFeedbacksInsightsReport } from 'src/routes/loaders/loaderFeedbacksInsightsReport';
-import { INTENT_FEEDBACK_RUN_IA } from 'src/routes/constants/intents';
+import { INTENT_FEEDBACK_RUN_IA } from 'lib/constants/routes/intents';
 
 type ActionData = {
   ok?: boolean;

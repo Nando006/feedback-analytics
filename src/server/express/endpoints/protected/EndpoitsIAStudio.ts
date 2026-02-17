@@ -4,8 +4,8 @@ import {
   analyzeFeedbacksForEnterprise,
   IaStudioServiceError,
 } from '../../services/iaStudioService.js';
-import { API_ERROR_INTERNAL_SERVER_ERROR } from '../../constants/errors.js';
-import { sendTypedError } from '../../utils/sendTypedError.js';
+import { API_ERROR_INTERNAL_SERVER_ERROR } from '../../../../../lib/constants/server/errors.js';
+import { sendTypedError } from '../../../../../lib/utils/sendTypedError.js';
 
 export function EndpointsIAStudio(app: express.Express) {
   app.post(

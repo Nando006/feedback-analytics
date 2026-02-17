@@ -2,7 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { nameSchema, type NameFormValues } from 'lib/schemas/user/nameSchema';
 import { useForm } from 'react-hook-form';
 import { useSubmit } from 'react-router-dom';
-import { INTENT_PROFILE_UPDATE_FULL_NAME } from 'src/routes/constants/intents';
+import { INTENT_PROFILE_UPDATE_FULL_NAME } from 'lib/constants/routes/intents';
 
 type Props = { defaultFullName?: string };
 

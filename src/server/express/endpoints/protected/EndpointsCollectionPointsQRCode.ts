@@ -6,8 +6,8 @@ import {
   API_ERROR_UNABLE_TO_ACTIVATE_QR,
   API_ERROR_UNABLE_TO_CREATE_QR_CP,
   API_ERROR_UNABLE_TO_DISABLE_QR,
-} from '../../constants/errors.js';
-import { sendTypedError } from '../../utils/sendTypedError.js';
+} from '../../../../../lib/constants/server/errors.js';
+import { sendTypedError } from '../../../../../lib/utils/sendTypedError.js';
 
 export function EndpointsCollectionPointsQRCode(app: express.Express) {
   // Status do QR (se há CP ativo)

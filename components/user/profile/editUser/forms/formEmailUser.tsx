@@ -2,7 +2,7 @@ import { useSubmit } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { emailUpdateSchema } from 'lib/schemas/user/emailUpdateSchema';
-import { INTENT_PROFILE_UPDATE_EMAIL } from 'src/routes/constants/intents';
+import { INTENT_PROFILE_UPDATE_EMAIL } from 'lib/constants/routes/intents';
 
 type Props = { defaultEmail?: string };
 type FormValues = { email: string };

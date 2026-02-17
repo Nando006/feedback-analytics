@@ -4,8 +4,8 @@ import {
   API_ERROR_ENTERPRISE_ID_REQUIRED,
   API_ERROR_ENTERPRISE_NOT_FOUND,
   API_ERROR_INTERNAL_SERVER_ERROR,
-} from '../../constants/errors.js';
-import { sendTypedError } from '../../utils/sendTypedError.js';
+} from '../../../../../lib/constants/server/errors.js';
+import { sendTypedError } from '../../../../../lib/utils/sendTypedError.js';
 
 export function EndpointsEnterprise(app: express.Express) {
   // Busca informações públicas de uma empresa para validação

@@ -1,7 +1,7 @@
 import type { ActionFunctionArgs } from 'react-router-dom';
 import { ServiceRunFeedbackIAAnalysis } from 'src/services/serviceFeedbacks';
-import { INTENT_FEEDBACK_RUN_IA } from 'src/routes/constants/intents';
-import { ACTION_ERROR_INVALID_INTENT } from 'src/routes/constants/errors';
+import { INTENT_FEEDBACK_RUN_IA } from 'lib/constants/routes/intents';
+import { ACTION_ERROR_INVALID_INTENT } from 'lib/constants/routes/errors';
 
 export async function ActionFeedbackInsightsReport({
   request,

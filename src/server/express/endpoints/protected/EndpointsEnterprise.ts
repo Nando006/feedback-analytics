@@ -7,8 +7,8 @@ import {
   API_ERROR_ENTERPRISE_NOT_FOUND,
   API_ERROR_INVALID_PAYLOAD,
   API_ERROR_UPSERT_FAILED,
-} from '../../constants/errors.js';
-import { sendTypedError } from '../../utils/sendTypedError.js';
+} from '../../../../../lib/constants/server/errors.js';
+import { sendTypedError } from '../../../../../lib/utils/sendTypedError.js';
 
 export function EndpointsEnterprise(app: express.Express) {
   // Busca os dados da empresa.

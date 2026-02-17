@@ -11,8 +11,8 @@ import {
   API_ERROR_PHONE_TAKEN,
   API_ERROR_SIGNUP_FAILED,
   type ApiRegisterErrorCode,
-} from '../../constants/errors.js';
-import { sendTypedError } from '../../utils/sendTypedError.js';
+} from '../../../../../lib/constants/server/errors.js';
+import { sendTypedError } from '../../../../../lib/utils/sendTypedError.js';
 
 export function EndpointsRegister(app: express.Express) {
   app.post('/api/public/auth/register', async (req, res) => {

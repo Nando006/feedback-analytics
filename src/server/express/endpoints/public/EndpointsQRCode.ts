@@ -12,8 +12,8 @@ import {
   API_ERROR_ENTERPRISE_NOT_FOUND,
   API_ERROR_FEEDBACK_INSERT_FAILED,
   API_ERROR_INVALID_PAYLOAD,
-} from '../../constants/errors.js';
-import { sendTypedError } from '../../utils/sendTypedError.js';
+} from '../../../../../lib/constants/server/errors.js';
+import { sendTypedError } from '../../../../../lib/utils/sendTypedError.js';
 
 export function EndpointsQRCode(app: express.Express) {
   // Recebe feedback público via QR Code

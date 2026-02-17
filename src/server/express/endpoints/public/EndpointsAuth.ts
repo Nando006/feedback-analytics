@@ -4,8 +4,8 @@ import { createSupabaseServerClient } from '../../supabase.js';
 import {
   API_ERROR_INVALID_CREDENTIALS,
   API_ERROR_INVALID_PAYLOAD,
-} from '../../constants/errors.js';
-import { sendTypedError } from '../../utils/sendTypedError.js';
+} from '../../../../../lib/constants/server/errors.js';
+import { sendTypedError } from '../../../../../lib/utils/sendTypedError.js';
 
 export function EndpointsAuth(app: express.Express) {
   app.post('/api/public/auth/login', async (req, res) => {

@@ -5,7 +5,7 @@ import {
   phoneVerifySchema,
   type PhoneVerifyFormValues,
 } from 'lib/schemas/user/phoneSchema';
-import { INTENT_PROFILE_VERIFY_PHONE } from 'src/routes/constants/intents';
+import { INTENT_PROFILE_VERIFY_PHONE } from 'lib/constants/routes/intents';
 
 export default function FormPhoneVerifyUser() {
   const submit = useSubmit();

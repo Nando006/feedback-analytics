@@ -4,7 +4,7 @@ import Header from 'components/user/layout/Header';
 import Sidebar from 'components/user/layout/Sidebar';
 import type { PropsCollectingDataEnterprise, PropsEnterprise } from 'lib/interfaces/entities/enterprise';
 import { getCookie, setCookie } from 'lib/utils/cookies';
-import { INTENT_LOGOUT } from 'src/routes/constants/intents';
+import { INTENT_LOGOUT } from 'lib/constants/routes/intents';
 
 export default function User() {
   const logoutFetcher = useFetcher();

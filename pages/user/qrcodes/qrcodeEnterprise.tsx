@@ -9,7 +9,7 @@ import type { LoaderQrCodeEnterprise } from 'src/routes/loaders/loaderQrCodeEnte
 import {
   INTENT_QR_DISABLE,
   INTENT_QR_ENABLE,
-} from 'src/routes/constants/intents';
+} from 'lib/constants/routes/intents';
 
 type QrCodeEnterpriseActionResponse = {
   ok?: boolean;
