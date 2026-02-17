@@ -8,7 +8,16 @@ import {
   API_ERROR_FAILED_TO_FETCH_FEEDBACK_INSIGHTS_REPORT,
   API_ERROR_FAILED_TO_FETCH_STATS,
   API_ERROR_INTERNAL_SERVER_ERROR,
+  type ApiFeedbackErrorCode,
 } from '../../constants/errors.js';
+
+function sendFeedbackError(
+  res: express.Response,
+  status: number,
+  error: ApiFeedbackErrorCode,
+) {
+  return res.status(status).json({ error });
+}
 
 export function EndpointsFeedbacks(app: express.Express) {
   // Busca feedbacks da empresa com paginação
@@ -36,7 +45,7 @@ export function EndpointsFeedbacks(app: express.Express) {
         .single();
 
       if (enterpriseError || !enterprise) {
-        return res.status(404).json({ error: API_ERROR_ENTERPRISE_NOT_FOUND });
+        return sendFeedbackError(res, 404, API_ERROR_ENTERPRISE_NOT_FOUND);
       }
 
       // Construir query base
@@ -91,7 +100,7 @@ export function EndpointsFeedbacks(app: express.Express) {
         .eq('enterprise_id', enterprise.id);
 
       if (countError) {
-        return res.status(500).json({ error: API_ERROR_FAILED_TO_COUNT_FEEDBACKS });
+        return sendFeedbackError(res, 500, API_ERROR_FAILED_TO_COUNT_FEEDBACKS);
       }
 
       // Buscar dados com paginação
@@ -101,7 +110,7 @@ export function EndpointsFeedbacks(app: express.Express) {
       );
 
       if (feedbacksError) {
-        return res.status(500).json({ error: API_ERROR_FAILED_TO_FETCH_FEEDBACKS });
+        return sendFeedbackError(res, 500, API_ERROR_FAILED_TO_FETCH_FEEDBACKS);
       }
 
       // Calcular informações de paginação
@@ -122,7 +131,7 @@ export function EndpointsFeedbacks(app: express.Express) {
       });
     } catch (error) {
       console.error('Erro ao buscar feedbacks:', error);
-      return res.status(500).json({ error: API_ERROR_INTERNAL_SERVER_ERROR });
+      return sendFeedbackError(res, 500, API_ERROR_INTERNAL_SERVER_ERROR);
     }
   });
 
@@ -143,7 +152,7 @@ export function EndpointsFeedbacks(app: express.Express) {
           .single();
 
         if (enterpriseError || !enterprise) {
-          return res.status(404).json({ error: API_ERROR_ENTERPRISE_NOT_FOUND });
+          return sendFeedbackError(res, 404, API_ERROR_ENTERPRISE_NOT_FOUND);
         }
 
         // Buscar estatísticas
@@ -153,7 +162,7 @@ export function EndpointsFeedbacks(app: express.Express) {
           .eq('enterprise_id', enterprise.id);
 
         if (statsError) {
-          return res.status(500).json({ error: API_ERROR_FAILED_TO_FETCH_STATS });
+          return sendFeedbackError(res, 500, API_ERROR_FAILED_TO_FETCH_STATS);
         }
 
         // Calcular estatísticas
@@ -187,7 +196,7 @@ export function EndpointsFeedbacks(app: express.Express) {
         });
       } catch (error) {
         console.error('Erro ao buscar estatísticas:', error);
-        return res.status(500).json({ error: API_ERROR_INTERNAL_SERVER_ERROR });
+        return sendFeedbackError(res, 500, API_ERROR_INTERNAL_SERVER_ERROR);
       }
     },
   );
@@ -209,7 +218,7 @@ export function EndpointsFeedbacks(app: express.Express) {
           .single();
 
         if (enterpriseError || !enterprise) {
-          return res.status(404).json({ error: API_ERROR_ENTERPRISE_NOT_FOUND });
+          return sendFeedbackError(res, 404, API_ERROR_ENTERPRISE_NOT_FOUND);
         }
 
         const { data: report, error } = await supabase
@@ -220,9 +229,11 @@ export function EndpointsFeedbacks(app: express.Express) {
 
         if (error) {
           console.error('Erro ao buscar feedback_insights_report:', error);
-          return res
-            .status(500)
-            .json({ error: API_ERROR_FAILED_TO_FETCH_FEEDBACK_INSIGHTS_REPORT });
+          return sendFeedbackError(
+            res,
+            500,
+            API_ERROR_FAILED_TO_FETCH_FEEDBACK_INSIGHTS_REPORT,
+          );
         }
 
         if (!report) {
@@ -241,7 +252,7 @@ export function EndpointsFeedbacks(app: express.Express) {
         });
       } catch (error) {
         console.error('Erro ao buscar relatório de insights (IA):', error);
-        return res.status(500).json({ error: API_ERROR_INTERNAL_SERVER_ERROR });
+        return sendFeedbackError(res, 500, API_ERROR_INTERNAL_SERVER_ERROR);
       }
     },
   );
@@ -270,7 +281,7 @@ export function EndpointsFeedbacks(app: express.Express) {
           .single();
 
         if (enterpriseError || !enterprise) {
-          return res.status(404).json({ error: API_ERROR_ENTERPRISE_NOT_FOUND });
+          return sendFeedbackError(res, 404, API_ERROR_ENTERPRISE_NOT_FOUND);
         }
 
         // Buscar feedbacks com análise associada
@@ -299,9 +310,11 @@ export function EndpointsFeedbacks(app: express.Express) {
 
         if (error) {
           console.error('Erro ao buscar análises de feedbacks:', error);
-          return res
-            .status(500)
-            .json({ error: API_ERROR_FAILED_TO_FETCH_FEEDBACK_ANALYSIS });
+          return sendFeedbackError(
+            res,
+            500,
+            API_ERROR_FAILED_TO_FETCH_FEEDBACK_ANALYSIS,
+          );
         }
 
         type FeedbackWithAnalysisRow = {
@@ -395,7 +408,7 @@ export function EndpointsFeedbacks(app: express.Express) {
         });
       } catch (error) {
         console.error('Erro ao buscar análises de feedbacks (IA):', error);
-        return res.status(500).json({ error: API_ERROR_INTERNAL_SERVER_ERROR });
+        return sendFeedbackError(res, 500, API_ERROR_INTERNAL_SERVER_ERROR);
       }
     },
   );

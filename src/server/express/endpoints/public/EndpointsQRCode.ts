@@ -12,14 +12,23 @@ import {
   API_ERROR_ENTERPRISE_NOT_FOUND,
   API_ERROR_FEEDBACK_INSERT_FAILED,
   API_ERROR_INVALID_PAYLOAD,
+  type ApiQrErrorCode,
 } from '../../constants/errors.js';
+
+function sendQrError(
+  res: express.Response,
+  status: number,
+  error: ApiQrErrorCode,
+) {
+  return res.status(status).json({ error });
+}
 
 export function EndpointsQRCode(app: express.Express) {
   // Recebe feedback público via QR Code
   app.post('/api/public/qrcode/feedback', async (req, res) => {
     const parsed = qrcodeFeedbackSchema.safeParse(req.body);
     if (!parsed.success) {
-      return res.status(400).json({ error: API_ERROR_INVALID_PAYLOAD });
+      return sendQrError(res, 400, API_ERROR_INVALID_PAYLOAD);
     }
 
     const payload = parsed.data;
@@ -33,7 +42,7 @@ export function EndpointsQRCode(app: express.Express) {
       .single();
 
     if (enterpriseErr || !enterpriseRow) {
-      return res.status(404).json({ error: API_ERROR_ENTERPRISE_NOT_FOUND });
+      return sendQrError(res, 404, API_ERROR_ENTERPRISE_NOT_FOUND);
     }
 
     // Gera fingerprint do dispositivo (UA + IP + dia) - versão simplificada
@@ -62,11 +71,11 @@ export function EndpointsQRCode(app: express.Express) {
 
     if (cpErr) {
       console.error('Erro ao buscar collection_point:', cpErr);
-      return res.status(500).json({ error: API_ERROR_COLLECTION_POINT_ERROR });
+      return sendQrError(res, 500, API_ERROR_COLLECTION_POINT_ERROR);
     }
 
     if (!collectionPoint) {
-      return res.status(404).json({ error: API_ERROR_COLLECTION_POINT_NOT_FOUND });
+      return sendQrError(res, 404, API_ERROR_COLLECTION_POINT_NOT_FOUND);
     }
 
     // 2. Buscar ou criar dispositivo rastreado PRIMEIRO
@@ -81,13 +90,13 @@ export function EndpointsQRCode(app: express.Express) {
 
     if (deviceErr) {
       console.error('Erro ao verificar dispositivo:', deviceErr);
-      return res.status(500).json({ error: API_ERROR_DEVICE_CHECK_FAILED });
+      return sendQrError(res, 500, API_ERROR_DEVICE_CHECK_FAILED);
     }
 
     // Verifica se dispositivo está bloqueado
     if (trackedDevice?.is_blocked) {
       console.log('Dispositivo bloqueado');
-      return res.status(403).json({ error: API_ERROR_DEVICE_BLOCKED });
+      return sendQrError(res, 403, API_ERROR_DEVICE_BLOCKED);
     }
 
     // Verifica se já enviou feedback hoje
@@ -98,7 +107,7 @@ export function EndpointsQRCode(app: express.Express) {
 
       if (lastFeedback >= today) {
         console.log('Dispositivo já enviou feedback hoje');
-        return res.status(409).json({ error: API_ERROR_DEVICE_ALREADY_SUBMITTED });
+        return sendQrError(res, 409, API_ERROR_DEVICE_ALREADY_SUBMITTED);
       }
     }
 
@@ -180,7 +189,7 @@ export function EndpointsQRCode(app: express.Express) {
 
       if (createDeviceErr || !newDevice) {
         console.error('Erro ao criar dispositivo:', createDeviceErr);
-        return res.status(500).json({ error: API_ERROR_DEVICE_CREATION_FAILED });
+        return sendQrError(res, 500, API_ERROR_DEVICE_CREATION_FAILED);
       }
 
       trackedDevice = newDevice;
@@ -206,7 +215,7 @@ export function EndpointsQRCode(app: express.Express) {
 
     if (feedbackErr) {
       console.error('Erro ao inserir feedback:', feedbackErr);
-      return res.status(500).json({ error: API_ERROR_FEEDBACK_INSERT_FAILED });
+      return sendQrError(res, 500, API_ERROR_FEEDBACK_INSERT_FAILED);
     }
 
     // 4. Atualizar dispositivo com novo feedback
