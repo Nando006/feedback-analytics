@@ -11,6 +11,10 @@ import {
   INTENT_PROFILE_UPDATE_FULL_NAME,
   INTENT_PROFILE_VERIFY_PHONE,
 } from 'src/routes/constants/intents';
+import {
+  ACTION_ERROR_INVALID_INTENT,
+  ACTION_ERROR_INVALID_PAYLOAD,
+} from 'src/routes/constants/errors';
 
 export async function ActionProfile({ request }: ActionFunctionArgs) {
   const form = await request.formData();
@@ -20,7 +24,7 @@ export async function ActionProfile({ request }: ActionFunctionArgs) {
   if (intent === INTENT_PROFILE_UPDATE_FULL_NAME) {
     const full_name = String(form.get('full_name') ?? '');
     if (!full_name) {
-      return new Response(JSON.stringify({ error: 'invalid_payload' }), {
+      return new Response(JSON.stringify({ error: ACTION_ERROR_INVALID_PAYLOAD }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' },
       });
@@ -36,7 +40,7 @@ export async function ActionProfile({ request }: ActionFunctionArgs) {
   if (intent === INTENT_PROFILE_UPDATE_EMAIL) {
     const email = String(form.get('email') ?? '');
     if (!email) {
-      return new Response(JSON.stringify({ error: 'invalid_payload' }), {
+      return new Response(JSON.stringify({ error: ACTION_ERROR_INVALID_PAYLOAD }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' },
       });
@@ -52,7 +56,7 @@ export async function ActionProfile({ request }: ActionFunctionArgs) {
   if (intent === INTENT_PROFILE_START_PHONE) {
     const phone = String(form.get('phone') ?? '');
     if (!phone) {
-      return new Response(JSON.stringify({ error: 'invalid_payload' }), {
+      return new Response(JSON.stringify({ error: ACTION_ERROR_INVALID_PAYLOAD }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' },
       });
@@ -68,7 +72,7 @@ export async function ActionProfile({ request }: ActionFunctionArgs) {
   if (intent === INTENT_PROFILE_VERIFY_PHONE) {
     const token = String(form.get('token') ?? '');
     if (!token) {
-      return new Response(JSON.stringify({ error: 'invalid_payload' }), {
+      return new Response(JSON.stringify({ error: ACTION_ERROR_INVALID_PAYLOAD }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' },
       });
@@ -81,7 +85,7 @@ export async function ActionProfile({ request }: ActionFunctionArgs) {
   }
 
   // Retorna um erro caso o intent seja inválido.
-  return new Response(JSON.stringify({ error: 'invalid_intent' }), {
+  return new Response(JSON.stringify({ error: ACTION_ERROR_INVALID_INTENT }), {
     status: 400,
     headers: { 'Content-Type': 'application/json' },
   });
