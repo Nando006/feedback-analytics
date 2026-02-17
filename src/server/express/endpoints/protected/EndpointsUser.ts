@@ -7,6 +7,7 @@ import {
   API_ERROR_UPDATE_FAILED,
   API_ERROR_VERIFY_FAILED,
 } from '../../constants/errors.js';
+import { sendTypedError } from '../../utils/sendTypedError.js';
 
 export function EndpointsUser(app: express.Express) {
   app.get('/api/protected/user/auth_user', requireAuth, async (req, res) => {
@@ -17,7 +18,7 @@ export function EndpointsUser(app: express.Express) {
   app.patch('/api/protected/user/email', requireAuth, async (req, res) => {
     const parsed = emailUpdateSchema.safeParse(req.body);
     if (!parsed.success) {
-      return res.status(400).json({ error: API_ERROR_INVALID_PAYLOAD });
+      return sendTypedError(res, 400, API_ERROR_INVALID_PAYLOAD);
     }
 
     const supabase = req.supabase!;
@@ -40,7 +41,7 @@ export function EndpointsUser(app: express.Express) {
     );
 
     if (error) {
-      return res.status(400).json({ error: API_ERROR_UPDATE_FAILED });
+      return sendTypedError(res, 400, API_ERROR_UPDATE_FAILED);
     }
 
     return res.json({
@@ -52,9 +53,7 @@ export function EndpointsUser(app: express.Express) {
   app.patch('/api/protected/user/metadados', requireAuth, async (req, res) => {
     const parsed = metadadosUpdateSchema.safeParse(req.body);
     if (!parsed.success) {
-      return res.status(400).json({
-        error: API_ERROR_INVALID_PAYLOAD,
-      });
+      return sendTypedError(res, 400, API_ERROR_INVALID_PAYLOAD);
     }
 
     const supabase = req.supabase!;
@@ -63,7 +62,7 @@ export function EndpointsUser(app: express.Express) {
     });
 
     if (error) {
-      return res.status(400).json({ error: API_ERROR_UPDATE_FAILED });
+      return sendTypedError(res, 400, API_ERROR_UPDATE_FAILED);
     }
 
     return res.json({
@@ -80,11 +79,11 @@ export function EndpointsUser(app: express.Express) {
   // Inicia a verificação de telefone (envia OTP)
   app.post('/api/protected/user/phone/start', requireAuth, async (req, res) => {
     const phone = String(req.body?.phone ?? '');
-    if (!phone) return res.status(400).json({ error: API_ERROR_INVALID_PAYLOAD });
+    if (!phone) return sendTypedError(res, 400, API_ERROR_INVALID_PAYLOAD);
 
     const supabase = req.supabase!;
     const { error } = await supabase.auth.updateUser({ phone });
-    if (error) return res.status(400).json({ error: API_ERROR_UPDATE_FAILED });
+    if (error) return sendTypedError(res, 400, API_ERROR_UPDATE_FAILED);
     return res.json({ ok: true });
   });
 
@@ -96,7 +95,7 @@ export function EndpointsUser(app: express.Express) {
       const token = String(req.body?.token ?? '');
       const phone = String(req.body?.phone ?? '');
       if (!token || !phone)
-        return res.status(400).json({ error: API_ERROR_INVALID_PAYLOAD });
+        return sendTypedError(res, 400, API_ERROR_INVALID_PAYLOAD);
 
       const supabase = req.supabase!;
       const { error } = await supabase.auth.verifyOtp({
@@ -104,7 +103,7 @@ export function EndpointsUser(app: express.Express) {
         token,
         phone,
       });
-      if (error) return res.status(400).json({ error: API_ERROR_VERIFY_FAILED });
+      if (error) return sendTypedError(res, 400, API_ERROR_VERIFY_FAILED);
       return res.json({ ok: true });
     },
   );

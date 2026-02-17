@@ -5,6 +5,7 @@ import {
   IaStudioServiceError,
 } from '../../services/iaStudioService.js';
 import { API_ERROR_INTERNAL_SERVER_ERROR } from '../../constants/errors.js';
+import { sendTypedError } from '../../utils/sendTypedError.js';
 
 export function EndpointsIAStudio(app: express.Express) {
   app.post(
@@ -34,11 +35,11 @@ export function EndpointsIAStudio(app: express.Express) {
             console.error('Resposta inválida da IA no IA Studio:', error);
           }
 
-          return res.status(error.statusCode).json({ error: error.code });
+          return sendTypedError(res, error.statusCode, error.code);
         }
 
         console.error('Erro inesperado no endpoint IA Studio:', error);
-        return res.status(500).json({ error: API_ERROR_INTERNAL_SERVER_ERROR });
+        return sendTypedError(res, 500, API_ERROR_INTERNAL_SERVER_ERROR);
       }
     },
   );
