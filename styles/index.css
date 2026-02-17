@@ -14,46 +14,91 @@
   color-scheme: light dark;
 
   /* Cores principais - Dark Mode */
-  --bg-primary: #262626; /* bg-neutral-800 */
-  --bg-secondary: #404040; /* bg-neutral-700 */
-  --bg-tertiary: #525252; /* bg-neutral-600 */
-  --bg-quartiary: #737373; /* bg-neutral-500 */
+  --bg-primary: #262626;
+  /* bg-neutral-800 */
+  --bg-secondary: #404040;
+  /* bg-neutral-700 */
+  --bg-tertiary: #525252;
+  /* bg-neutral-600 */
+  --bg-quartiary: #737373;
+  /* bg-neutral-500 */
 
   /* Cores de texto - Dark Mode */
-  --text-primary: #f5f5f5; /* text-neutral-100 */
-  --text-secondary: #d4d4d8; /* text-neutral-300 */
-  --text-muted: #a1a1aa; /* text-neutral-400 */
+  --text-primary: #f5f5f5;
+  /* text-neutral-100 */
+  --text-secondary: #d4d4d8;
+  /* text-neutral-300 */
+  --text-muted: #a1a1aa;
+  /* text-neutral-400 */
 
   /* Sombras - Dark Mode */
-  --shadow-primary: 0 4px 20px rgba(23, 23, 23, 0.4); /* shadow com neutral-900 */
-  --shadow-secondary: 0 2px 10px rgba(38, 38, 38, 0.3); /* shadow com neutral-800 */
+  --shadow-primary: 0 4px 20px rgba(23, 23, 23, 0.4);
+  /* shadow com neutral-900 */
+  --shadow-secondary: 0 2px 10px rgba(38, 38, 38, 0.3);
+  /* shadow com neutral-800 */
 
   color: var(--text-primary);
   background-color: var(--bg-primary);
+
+  /* Principais cores do projeto */
+  --primary-color: #20B2AA;
+  --secondary-color: #3ED9E3;
+  --primary-color-dark: #136863;
+  --terciary-color: #1EA49C;
+  --terciary-color-dark: #136863;
+  --header-color: #343B4F;
+  --dark-color: #121212;
+  --gray-color: #2D2D30;
 }
 
 @media (prefers-color-scheme: light) {
   :root {
     /* Cores principais - Light Mode */
-    --bg-primary: #ffffff; /* bg-white */
-    --bg-secondary: #f5f5f5; /* bg-neutral-100 */
-    --bg-tertiary: #e5e5e5; /* bg-neutral-200 */
-    --bg-quartiary: #d4d4d4; /* bg-neutral-300 */
+    --bg-primary: #ffffff;
+    /* bg-white */
+    --bg-secondary: #f5f5f5;
+    /* bg-neutral-100 */
+    --bg-tertiary: #e5e5e5;
+    /* bg-neutral-200 */
+    --bg-quartiary: #d4d4d4;
+    /* bg-neutral-300 */
 
     /* Cores de texto - Light Mode */
-    --text-primary: #171717; /* text-neutral-900 */
-    --text-secondary: #525252; /* text-neutral-600 */
-    --text-muted: #737373; /* text-neutral-500 */
+    --text-primary: #171717;
+    /* text-neutral-900 */
+    --text-secondary: #525252;
+    /* text-neutral-600 */
+    --text-muted: #737373;
+    /* text-neutral-500 */
 
     /* Sombras - Light Mode */
-    --shadow-primary: 0 4px 20px rgba(115, 115, 115, 0.15); /* shadow com neutral-500 */
-    --shadow-secondary: 0 2px 10px rgba(163, 163, 163, 0.1); /* shadow com neutral-400 */
+    --shadow-primary: 0 4px 20px rgba(115, 115, 115, 0.15);
+    /* shadow com neutral-500 */
+    --shadow-secondary: 0 2px 10px rgba(163, 163, 163, 0.1);
+    /* shadow com neutral-400 */
 
     color: var(--text-primary);
     background-color: var(--bg-primary);
   }
 }
 
+/* Fonts */
+
 .font-inter {
-  font-family: 'Inter', 'Roboto', 'Arial';
+  font-family: 'Inter', 'Arial', 'sans-serif';
+}
+
+/* Titles */
+.font-montserrat {
+  font-family: 'Montserrat', 'Arial', 'sans-serif';
+}
+
+/* Body */
+.font-work-sans {
+  font-family: 'Work Sans', 'Roboto', 'sans-serif';
+}
+
+/* Buttons */
+.font-poppins {
+  font-family: 'Poppins', 'Roboto', 'sans-serif';
 }
