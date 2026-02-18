@@ -1,5 +1,5 @@
-import Info from 'components/user/profile/info';
-import Header from 'components/user/profile/header';
+import Info from 'components/user/pages/profile/info';
+import Header from 'components/user/pages/profile/header';
 import { useRouteLoaderData } from 'react-router-dom';
 import type {
   CollectingDataEnterprise,
