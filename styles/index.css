@@ -42,8 +42,9 @@
 
   /* Principais cores do projeto */
   --primary-color: #20B2AA;
-  --secondary-color: #3ED9E3;
   --primary-color-dark: #136863;
+  --secondary-color: #3ED9E3;
+  --secondary-color-dark: #1EA49C;
   --terciary-color: #1EA49C;
   --terciary-color-dark: #136863;
   --header-color: #343B4F;
