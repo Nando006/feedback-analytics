@@ -5,7 +5,7 @@ export default function Header() {
     <nav className="p-5 flex items-center justify-between shadow-md bg-(--header-color) border-b border-(--secondary-color)">
       <div>
         <Link to="/">
-          <h1 className="font-montserrat text-2xl font-semibold">
+          <h1 className="font-montserrat text-2xl text-white font-semibold">
             Feedback Analytics
           </h1>
         </Link>
