@@ -1,3 +1,7 @@
+/**
+ * Entidade principal de empresa cadastrada na plataforma.
+ * Usado em: layouts/user.tsx, pages/user/qrcodes/qrcodeEnterprise.tsx e src/routes/load/loadUserContext.ts.
+ */
 export interface Enterprise {
   id: string;
   document: string;
@@ -10,6 +14,10 @@ export interface Enterprise {
   phone?: string | null;
 }
 
+/**
+ * Resposta de API com empresa e, opcionalmente, usuário relacionado.
+ * Usado em: src/services/serviceEnterprise.ts.
+ */
 export interface ApiEnterpriseResponse {
   enterprise: Enterprise;
   user?: {
@@ -19,6 +27,10 @@ export interface ApiEnterpriseResponse {
   };
 }
 
+/**
+ * Dados de coleta de contexto de negócio para análises de feedback.
+ * Usado em: layouts/user.tsx, components/user/layout/ui.types.ts, pages/user/profile.tsx e src/services/serviceEnterprise.ts.
+ */
 export interface CollectingDataEnterprise {
   id: string;
   enterprise_id: string;
@@ -31,6 +43,10 @@ export interface CollectingDataEnterprise {
   updated_at: string;
 }
 
+/**
+ * Payload parcial para atualização dos dados de coleta da empresa.
+ * Usado em: src/services/serviceEnterprise.ts.
+ */
 export type UpdateCollectingDataPayload = Partial<
   Pick<
     CollectingDataEnterprise,
@@ -42,6 +58,10 @@ export type UpdateCollectingDataPayload = Partial<
   >
 >;
 
+/**
+ * Agregado da empresa com seus dados de coleta (quando existentes).
+ * Usado em: components/user/pages/profile/info.tsx e pages/user/profile.tsx.
+ */
 export interface EnterpriseAndCollectingData {
   enterprise: Enterprise;
   collecting: CollectingDataEnterprise | null;

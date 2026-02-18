@@ -1,4 +1,4 @@
-import type { CustomerData } from 'lib/interfaces/contracts/public/qrcode.contract';
+import type { CustomerData } from 'lib/interfaces/contracts/qrcode.contract';
 import type { FieldCustomerGenderProps } from './ui.types';
 
 export default function FieldCustomerGender({ gender, onGenderChange }: FieldCustomerGenderProps) {

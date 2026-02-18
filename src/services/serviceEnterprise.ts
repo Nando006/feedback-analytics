@@ -1,5 +1,5 @@
 import type { ApiEnterpriseResponse } from 'lib/interfaces/entities/enterprise.entity';
-import type { EnterprisePublicResponse } from 'lib/interfaces/contracts/public/enterprise.contract';
+import type { EnterpriseContractResponse } from 'lib/interfaces/contracts/enterprise.contract';
 import type {
   CollectingDataEnterprise,
   UpdateCollectingDataPayload,
@@ -11,7 +11,7 @@ export function ServiceGetEnterprise() {
 }
 
 export function ServiceGetEnterprisePublic(enterpriseId: string) {
-  return getJson<EnterprisePublicResponse>(
+  return getJson<EnterpriseContractResponse>(
     `/api/public/enterprise/${enterpriseId}`,
   );
 }

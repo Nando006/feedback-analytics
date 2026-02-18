@@ -1,3 +1,7 @@
+/**
+ * Cliente identificado no dispositivo associado ao feedback.
+ * Usado em: lib/interfaces/domain/feedback.domain.ts (composição de TrackedDevice).
+ */
 export interface Customer {
   id: string;
   name: string | null;
@@ -5,6 +9,10 @@ export interface Customer {
   gender: string | null;
 }
 
+/**
+ * Dispositivo rastreado utilizado para envio de feedback.
+ * Usado em: lib/interfaces/domain/feedback.domain.ts (composição de Feedback).
+ */
 export interface TrackedDevice {
   id: string;
   device_fingerprint: string | null;
@@ -16,6 +24,10 @@ export interface TrackedDevice {
   customer: Customer | null;
 }
 
+/**
+ * Ponto/canal de coleta por onde o feedback foi recebido.
+ * Usado em: lib/interfaces/domain/feedback.domain.ts (composição de Feedback).
+ */
 export interface CollectionPoint {
   id: string;
   name: string;
@@ -23,6 +35,10 @@ export interface CollectionPoint {
   identifier: string | null;
 }
 
+/**
+ * Entidade de feedback com vínculo de canal e dispositivo rastreado.
+ * Usado em: src/services/serviceFeedbacks.ts, src/routes/load/loadFeedbacks.ts, loaderUserDashboard.ts e components/user/pages/feedbacksAll/ui.types.ts.
+ */
 export interface Feedback {
   id: string;
   message: string;
@@ -33,6 +49,10 @@ export interface Feedback {
   tracked_devices: TrackedDevice | null;
 }
 
+/**
+ * Metadados de paginação para listagens de feedback.
+ * Usado em: src/services/serviceFeedbacks.ts e components/user/pages/feedbacks/ui.types.ts.
+ */
 export interface FeedbackPagination {
   currentPage: number;
   totalPages: number;
@@ -42,11 +62,19 @@ export interface FeedbackPagination {
   hasPreviousPage: boolean;
 }
 
+/**
+ * Resposta paginada de feedbacks para a interface do usuário.
+ * Usado em: src/services/serviceFeedbacks.ts e src/routes/load/loadFeedbacksAll.ts.
+ */
 export interface FeedbacksResponse {
   feedbacks: Feedback[];
   pagination: FeedbackPagination;
 }
 
+/**
+ * Distribuição de quantidade de feedbacks por nota de 1 a 5.
+ * Usado em: lib/interfaces/domain/feedback.domain.ts (composição de FeedbackStats).
+ */
 export interface RatingDistribution {
   1: number;
   2: number;
@@ -55,12 +83,20 @@ export interface RatingDistribution {
   5: number;
 }
 
+/**
+ * Quebra de sentimento em positivo, neutro e negativo.
+ * Usado em: lib/interfaces/domain/feedback.domain.ts (composição de FeedbackStats e FeedbackAnalysisSummary).
+ */
 export interface SentimentBreakdown {
   positive: number;
   neutral: number;
   negative: number;
 }
 
+/**
+ * Indicadores agregados para visão geral dos feedbacks.
+ * Usado em: src/services/serviceFeedbacks.ts, src/routes/load/loadFeedbackStats.ts e components/user/pages/feedbacks/ui.types.ts.
+ */
 export interface FeedbackStats {
   totalFeedbacks: number;
   averageRating: number;
@@ -68,6 +104,10 @@ export interface FeedbackStats {
   sentimentBreakdown: SentimentBreakdown;
 }
 
+/**
+ * Filtros disponíveis para consultas/listagens de feedback.
+ * Usado em: src/routes/load/loadFeedbacks.ts e components/user/pages/feedbacks/ui.types.ts.
+ */
 export interface FeedbackFilters {
   page?: number;
   limit?: number;
@@ -75,8 +115,16 @@ export interface FeedbackFilters {
   search?: string;
 }
 
+/**
+ * Sentimento classificado para um feedback analisado.
+ * Usado em: lib/interfaces/domain/feedback.domain.ts (composição de FeedbackAnalysisItem).
+ */
 export type FeedbackSentiment = 'positive' | 'neutral' | 'negative';
 
+/**
+ * Item de feedback enriquecido com análise semântica.
+ * Usado em: src/routes/load/loadFeedbackAnalysis.ts e components/user/pages/feedbacksInsightsEmotional/ui.types.ts.
+ */
 export interface FeedbackAnalysisItem {
   id: string;
   message: string;
@@ -87,11 +135,19 @@ export interface FeedbackAnalysisItem {
   keywords: string[];
 }
 
+/**
+ * Termo mais frequente em categorias ou palavras-chave.
+ * Usado em: lib/interfaces/domain/feedback.domain.ts (composição de FeedbackAnalysisSummary).
+ */
 export interface TopTerm {
   name: string;
   count: number;
 }
 
+/**
+ * Resumo consolidado da análise de feedbacks.
+ * Usado em: src/routes/load/loadFeedbackAnalysis.ts e components/user/pages/feedbacksInsightsReport/ui.types.ts.
+ */
 export interface FeedbackAnalysisSummary {
   totalAnalyzed: number;
   sentiments: SentimentBreakdown;
@@ -99,11 +155,19 @@ export interface FeedbackAnalysisSummary {
   topKeywords: TopTerm[];
 }
 
+/**
+ * Resposta completa da análise com itens detalhados e resumo.
+ * Usado em: src/services/serviceFeedbacks.ts e src/routes/load/loadFeedbackAnalysis.ts.
+ */
 export interface FeedbackAnalysisResponse {
   items: FeedbackAnalysisItem[];
   summary: FeedbackAnalysisSummary;
 }
 
+/**
+ * Relatório textual de insights e recomendações gerado para feedbacks.
+ * Usado em: src/routes/load/loadFeedbackInsightsReport.ts e pages/user/feedbacks/insights/feedbackInsightsReport.tsx.
+ */
 export interface FeedbackInsightsReport {
   summary: string | null;
   recommendations: string[];

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useFetcher, useLoaderData } from 'react-router-dom';
 import Card from 'components/public/shared/card';
 import SVGImageProfile from 'components/svg/imageProfile';
-import type { CustomerData, FeedbackData } from 'lib/interfaces/contracts/public/qrcode.contract';
+import type { CustomerData, FeedbackData } from 'lib/interfaces/contracts/qrcode.contract';
 import StateSentPreviousFeedback from 'components/public/qrcode/enterprise/stateSentPreviousFeedback';
 import StateError from 'components/public/qrcode/enterprise/stateError';
 import StateSubmitted from 'components/public/qrcode/enterprise/stateSubmitted';

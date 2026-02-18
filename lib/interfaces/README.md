@@ -8,8 +8,8 @@ Este diretório contém apenas contratos de tipagem compartilhados no projeto.
   - Entidades centrais do sistema (usuário autenticado, empresa, composições entre entidades).
   - Ex.: `auth-user.entity.ts`, `enterprise.entity.ts`, `enterprise-and-user.entity.ts`
 
-- `contracts/public/`
-  - Contratos de entrada/saída usados no fluxo público (payloads e responses).
+- `contracts/`
+  - Contratos de entrada/saída reutilizáveis entre frontend e backend (payloads e responses).
   - Ex.: `qrcode.contract.ts`, `enterprise.contract.ts`, `action-data.contract.ts`
 
 - `domain/`
