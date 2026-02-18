@@ -3,18 +3,18 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { emailUpdateSchema } from 'lib/schemas/user/emailUpdateSchema';
 import { INTENT_PROFILE_UPDATE_EMAIL } from 'lib/constants/routes/intents';
+import type { FormEmailUserProps, FormEmailUserValues } from './ui.types';
 
-type Props = { defaultEmail?: string };
-type FormValues = { email: string };
-
-export default function FormEmailUser({ defaultEmail = '' }: Props) {
+export default function FormEmailUser({
+  defaultEmail = '',
+}: FormEmailUserProps) {
   const submit = useSubmit();
   const {
     register,
     handleSubmit,
     formState: { errors },
     getValues,
-  } = useForm<FormValues>({
+  } = useForm<FormEmailUserValues>({
     resolver: zodResolver(emailUpdateSchema),
     mode: 'onSubmit',
     reValidateMode: 'onChange',

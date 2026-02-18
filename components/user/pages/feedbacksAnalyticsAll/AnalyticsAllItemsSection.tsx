@@ -1,10 +1,4 @@
-import type { LoaderFeedbacksAnalyticsAll } from 'src/routes/loaders/loaderFeedbacksAnalyticsAll';
-
-type Items = Awaited<ReturnType<typeof LoaderFeedbacksAnalyticsAll>>['items'];
-
-interface PropsAnalyticsAllItemsSection {
-  items: Items;
-}
+import type { AnalyticsAllItemsSectionProps } from './ui.types';
 
 function sentimentClass(sentiment: 'positive' | 'neutral' | 'negative') {
   if (sentiment === 'positive') {
@@ -26,7 +20,7 @@ function sentimentLabel(sentiment: 'positive' | 'neutral' | 'negative') {
 
 export default function AnalyticsAllItemsSection({
   items,
-}: PropsAnalyticsAllItemsSection) {
+}: AnalyticsAllItemsSectionProps) {
   return (
     <div className="relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900/60 p-6 glass-card">
       <h3 className="mb-4 text-base font-semibold text-[var(--text-primary)]">

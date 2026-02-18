@@ -1,6 +1,6 @@
-import type { PropsFieldAnalyticsGoal } from "lib/interfaces/user/propsCollectingDataEnterprise";
+import type { FieldAnalyticsGoalProps } from './ui.types';
 
-export default function FieldAnalyticsGoal({ value, onChange }: PropsFieldAnalyticsGoal) {
+export default function FieldAnalyticsGoal({ value, onChange }: FieldAnalyticsGoalProps) {
   return (
     <div className="group">
       <label

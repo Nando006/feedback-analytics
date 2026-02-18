@@ -1,17 +1,12 @@
 import { FaFrown, FaMeh, FaSmile } from 'react-icons/fa';
 import FormatToCurrencyReal from 'lib/utils/FormatToReal';
-
-interface PropsSectionSatisfactionRadar {
-  positive: number;
-  neutral: number;
-  negative: number;
-}
+import type { SectionSatisfactionRadarProps } from './ui.types';
 
 export default function SectionSatisfactionRadar({
   positive,
   neutral,
   negative,
-}: PropsSectionSatisfactionRadar) {
+}: SectionSatisfactionRadarProps) {
   return (
     <section className="rounded-2xl border border-neutral-800 bg-neutral-900/60 p-6 shadow-[var(--shadow-primary)]">
       <header className="flex items-center justify-between gap-3">

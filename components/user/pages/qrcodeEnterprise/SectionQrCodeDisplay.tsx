@@ -1,15 +1,6 @@
 import CardSimple from 'components/user/shared/cards/cardSimple';
 import { FaCopy, FaDownload, FaShare } from 'react-icons/fa';
-
-interface PropsSectionQrCodeDisplay {
-  enterpriseName?: string | null;
-  qrCodeUrl: string;
-  feedbackUrl: string;
-  showCopied: boolean;
-  onDownload: () => void;
-  onCopyLink: () => void;
-  onShare: () => void;
-}
+import type { SectionQrCodeDisplayProps } from './ui.types';
 
 export default function SectionQrCodeDisplay({
   enterpriseName,
@@ -19,7 +10,7 @@ export default function SectionQrCodeDisplay({
   onDownload,
   onCopyLink,
   onShare,
-}: PropsSectionQrCodeDisplay) {
+}: SectionQrCodeDisplayProps) {
   return (
     <CardSimple>
       <div className="flex flex-col items-center space-y-8">

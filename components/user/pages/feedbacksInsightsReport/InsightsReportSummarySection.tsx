@@ -1,10 +1,8 @@
-interface PropsInsightsReportSummarySection {
-  summaryText: string;
-}
+import type { InsightsReportSummarySectionProps } from './ui.types';
 
 export default function InsightsReportSummarySection({
   summaryText,
-}: PropsInsightsReportSummarySection) {
+}: InsightsReportSummarySectionProps) {
   return (
     <div className="mt-4">
       <h3 className="mb-2 text-base font-semibold text-[var(--text-primary)]">

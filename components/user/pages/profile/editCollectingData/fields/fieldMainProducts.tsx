@@ -1,6 +1,6 @@
-import type { PropsFieldMainProducts } from "lib/interfaces/user/propsCollectingDataEnterprise";
+import type { FieldMainProductsProps } from './ui.types';
 
-export default function FieldMainProducts({ value, onChange }: PropsFieldMainProducts) {
+export default function FieldMainProducts({ value, onChange }: FieldMainProductsProps) {
   return (
     <div className="animate-fadeIn group overflow-hidden rounded-xl border border-purple-500/30 bg-gradient-to-br from-purple-500/5 to-transparent p-6">
       <div className="mb-4 flex items-start gap-3">

@@ -1,9 +1,4 @@
-import type { Feedback } from 'lib/interfaces/user/feedback';
-
-interface PropsFeedbackDetailsModal {
-  selectedFeedback: Feedback;
-  onClose: () => void;
-}
+import type { FeedbackDetailsModalProps } from './ui.types';
 
 function formatDateTime(dateString: string) {
   return new Date(dateString).toLocaleDateString('pt-BR', {
@@ -18,7 +13,7 @@ function formatDateTime(dateString: string) {
 export default function FeedbackDetailsModal({
   selectedFeedback,
   onClose,
-}: PropsFeedbackDetailsModal) {
+}: FeedbackDetailsModalProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose}>
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />

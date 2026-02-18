@@ -1,16 +1,8 @@
-import type { LoaderFeedbacksInsightsStatistics } from 'src/routes/loaders/loaderFeedbacksInsightsStatistics';
-
-type Summary = Awaited<
-  ReturnType<typeof LoaderFeedbacksInsightsStatistics>
->['summary'];
-
-interface PropsInsightsStatisticsThemesSection {
-  summary: NonNullable<Summary>;
-}
+import type { InsightsStatisticsThemesSectionProps } from './ui.types';
 
 export default function InsightsStatisticsThemesSection({
   summary,
-}: PropsInsightsStatisticsThemesSection) {
+}: InsightsStatisticsThemesSectionProps) {
   return (
     <div className="relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900/60 p-6 glass-card">
       <h3 className="mb-4 text-base font-semibold text-[var(--text-primary)]">

@@ -1,15 +1,4 @@
-import type { FeedbackAnalysisItem } from 'lib/interfaces/user/feedback';
-
-export type EmotionalCluster = {
-  title: string;
-  description: string;
-  tone: 'positive' | 'neutral' | 'negative';
-  items: FeedbackAnalysisItem[];
-};
-
-interface PropsInsightsEmotionalClustersSection {
-  clusters: EmotionalCluster[];
-}
+import type { InsightsEmotionalClustersSectionProps } from './ui.types';
 
 function sentimentLabel(sentiment: 'positive' | 'neutral' | 'negative') {
   if (sentiment === 'positive') return 'Positivo';
@@ -19,7 +8,7 @@ function sentimentLabel(sentiment: 'positive' | 'neutral' | 'negative') {
 
 export default function InsightsEmotionalClustersSection({
   clusters,
-}: PropsInsightsEmotionalClustersSection) {
+}: InsightsEmotionalClustersSectionProps) {
   return (
     <div className="relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900/60 p-6 glass-card space-y-6">
       <h3 className="text-base font-semibold text-[var(--text-primary)]">

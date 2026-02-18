@@ -1,10 +1,8 @@
-interface PropsAnalyticsNegativeErrorState {
-  error: string;
-}
+import type { AnalyticsNegativeErrorStateProps } from './ui.types';
 
 export default function AnalyticsNegativeErrorState({
   error,
-}: PropsAnalyticsNegativeErrorState) {
+}: AnalyticsNegativeErrorStateProps) {
   return (
     <div className="flex h-64 items-center justify-center">
       <div className="text-red-400">{error}</div>

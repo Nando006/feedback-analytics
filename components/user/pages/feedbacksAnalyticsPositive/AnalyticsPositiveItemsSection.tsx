@@ -1,16 +1,8 @@
-import type { LoaderFeedbacksAnalyticsPositive } from 'src/routes/loaders/loaderFeedbacksAnalyticsPositive';
-
-type Items = Awaited<
-  ReturnType<typeof LoaderFeedbacksAnalyticsPositive>
->['items'];
-
-interface PropsAnalyticsPositiveItemsSection {
-  items: Items;
-}
+import type { AnalyticsPositiveItemsSectionProps } from './ui.types';
 
 export default function AnalyticsPositiveItemsSection({
   items,
-}: PropsAnalyticsPositiveItemsSection) {
+}: AnalyticsPositiveItemsSectionProps) {
   return (
     <div className="relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900/60 p-6 glass-card">
       <h3 className="mb-4 text-base font-semibold text-[var(--text-primary)]">

@@ -1,12 +1,12 @@
-import type { PropsEnterpriseAndCollectingDataEnterprise } from 'lib/interfaces/entities/enterprise';
+import CardSimple from 'components/user/shared/cards/cardSimple';
+import type { EnterpriseAndCollectingData } from 'lib/interfaces/entities/enterprise.entity';
 import { formatDocument } from 'lib/utils/formatDocument';
 import { formatPhone } from 'lib/utils/formatPhone';
-import CardSimple from '../shared/cards/cardSimple';
 
 export default function Info({
   enterprise,
   collecting,
-}: PropsEnterpriseAndCollectingDataEnterprise) {
+}: EnterpriseAndCollectingData) {
   return (
     <div className="">
       <div className="space-y-6 lg:col-span-2">

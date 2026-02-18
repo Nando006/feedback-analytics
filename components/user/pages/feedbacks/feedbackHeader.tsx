@@ -1,8 +1,4 @@
-import type { FeedbackStats } from 'lib/interfaces/user/feedback';
-
-interface FeedbackHeaderProps {
-  stats: FeedbackStats | null;
-}
+import type { FeedbackHeaderProps } from './ui.types';
 
 export default function FeedbackHeader({ stats }: FeedbackHeaderProps) {
   return (

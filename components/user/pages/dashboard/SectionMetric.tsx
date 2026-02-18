@@ -6,15 +6,9 @@ import {
   FaSmile,
   FaStar,
 } from 'react-icons/fa';
+import type { SectionMetricProps } from './ui.types';
 
-interface PropsSectionMetric {
-  totalFeedbacks: number;
-  averageRating: number;
-  positive: number;
-  negative: number;
-}
-
-export default function SectionMetric({ totalFeedbacks, averageRating, positive, negative }: PropsSectionMetric) {
+export default function SectionMetric({ totalFeedbacks, averageRating, positive, negative }: SectionMetricProps) {
 
   return (
     <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">

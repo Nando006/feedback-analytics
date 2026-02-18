@@ -1,9 +1,4 @@
-import type { Feedback } from 'lib/interfaces/user/feedback';
-
-interface FeedbackCardProps {
-  feedback: Feedback;
-  onClick?: () => void;
-}
+import type { FeedbackCardProps } from './ui.types';
 
 export default function FeedbackCard({ feedback, onClick }: FeedbackCardProps) {
   // Função para renderizar estrelas

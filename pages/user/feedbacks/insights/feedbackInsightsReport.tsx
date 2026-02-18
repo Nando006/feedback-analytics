@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useFetcher, useLoaderData, useRevalidator } from 'react-router-dom';
 import type {
   FeedbackAnalysisSummary,
-} from 'lib/interfaces/user/feedback';
+} from 'lib/interfaces/domain/feedback.domain';
 import type { LoaderFeedbacksInsightsReport } from 'src/routes/loaders/loaderFeedbacksInsightsReport';
 import { INTENT_FEEDBACK_RUN_IA } from 'lib/constants/routes/intents';
 import InsightsReportLoadingState from 'components/user/pages/feedbacksInsightsReport/InsightsReportLoadingState';
@@ -12,11 +12,7 @@ import InsightsReportHeaderSection from 'components/user/pages/feedbacksInsights
 import InsightsReportMoodSection from 'components/user/pages/feedbacksInsightsReport/InsightsReportMoodSection';
 import InsightsReportSummarySection from 'components/user/pages/feedbacksInsightsReport/InsightsReportSummarySection';
 import InsightsReportRecommendationsSection from 'components/user/pages/feedbacksInsightsReport/InsightsReportRecommendationsSection';
-
-type ActionData = {
-  ok?: boolean;
-  error?: string;
-};
+import type { FeedbackInsightsReportActionData } from './ui.types';
 
 function getMoodFromSummary(summary: FeedbackAnalysisSummary | null) {
   if (!summary || summary.totalAnalyzed === 0) {
@@ -61,7 +57,7 @@ export default function FeedbacksInsightsReport() {
   const { report, summary, error: loaderError } =
     useLoaderData<Awaited<ReturnType<typeof LoaderFeedbacksInsightsReport>>>();
   const revalidator = useRevalidator();
-  const fetcher = useFetcher<ActionData>();
+  const fetcher = useFetcher<FeedbackInsightsReportActionData>();
 
   const refreshing =
     fetcher.state !== 'idle' || revalidator.state === 'loading';

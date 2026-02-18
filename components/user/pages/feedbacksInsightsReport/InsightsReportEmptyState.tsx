@@ -1,12 +1,9 @@
-interface PropsInsightsReportEmptyState {
-  refreshing: boolean;
-  onRefresh: () => void;
-}
+import type { InsightsReportEmptyStateProps } from './ui.types';
 
 export default function InsightsReportEmptyState({
   refreshing,
   onRefresh,
-}: PropsInsightsReportEmptyState) {
+}: InsightsReportEmptyStateProps) {
   return (
     <div className="font-inter space-y-6">
       <div className="relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900/60 p-6 glass-card">

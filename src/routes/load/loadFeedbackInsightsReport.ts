@@ -1,7 +1,7 @@
 import type {
   FeedbackAnalysisSummary,
   FeedbackInsightsReport,
-} from 'lib/interfaces/user/feedback';
+} from 'lib/interfaces/domain/feedback.domain';
 import { ServiceGetFeedbackInsightsReport } from 'src/services/serviceFeedbacks';
 import { loadFeedbackAnalysisData } from 'src/routes/load/loadFeedbackAnalysis';
 

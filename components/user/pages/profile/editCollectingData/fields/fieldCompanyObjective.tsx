@@ -1,6 +1,6 @@
-import type { PropsFieldCompanyObjective } from "lib/interfaces/user/propsCollectingDataEnterprise";
+import type { FieldCompanyObjectiveProps } from './ui.types';
 
-export default function FieldCompanyObjective({ value, onChange }: PropsFieldCompanyObjective) {
+export default function FieldCompanyObjective({ value, onChange }: FieldCompanyObjectiveProps) {
   return (
     <div className="group">
       <label

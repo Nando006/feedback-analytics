@@ -1,9 +1,4 @@
-import type { FeedbackPagination } from 'lib/interfaces/user/feedback';
-
-interface FeedbackPaginationProps {
-  pagination: FeedbackPagination;
-  onPageChange: (page: number) => void;
-}
+import type { FeedbackPaginationProps } from './ui.types';
 
 export default function FeedbackPagination({
   pagination,

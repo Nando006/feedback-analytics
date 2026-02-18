@@ -1,12 +1,5 @@
 import CardSimple from 'components/user/shared/cards/cardSimple';
-
-interface PropsSectionQrHeader {
-  enterpriseName?: string | null;
-  qrActive: boolean;
-  qrLoading: boolean;
-  qrError: string | null;
-  onToggleQr: () => void;
-}
+import type { SectionQrHeaderProps } from './ui.types';
 
 export default function SectionQrHeader({
   enterpriseName,
@@ -14,7 +7,7 @@ export default function SectionQrHeader({
   qrLoading,
   qrError,
   onToggleQr,
-}: PropsSectionQrHeader) {
+}: SectionQrHeaderProps) {
   return (
     <CardSimple type="header">
       <div>

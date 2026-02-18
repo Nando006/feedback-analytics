@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import type { UseFormRegisterReturn } from 'react-hook-form';
 
-export interface PropsFieldForm {
+export interface FieldFormProps {
   id: string;
   name: string;
   label?: string;
@@ -14,20 +14,12 @@ export interface PropsFieldForm {
 }
 
 export type TypeRegisterDocument = 'CPF' | 'CNPJ';
-export interface PropsRegisterFieldDocument extends PropsFieldForm {
+
+export interface RegisterFieldDocumentProps extends FieldFormProps {
   docType: TypeRegisterDocument;
 }
 
-export interface PropsFieldCustomerEmail {
+export interface FieldCustomerEmailProps {
   email: string;
   onEmailChange: (email: string) => void;
 }
-
-export type ActionData = {
-  ok?: boolean;
-  error?: string;
-  message?: string;
-  issues?: unknown;
-};
-
-

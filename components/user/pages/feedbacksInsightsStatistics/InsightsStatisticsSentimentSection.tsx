@@ -1,22 +1,11 @@
-import type { LoaderFeedbacksInsightsStatistics } from 'src/routes/loaders/loaderFeedbacksInsightsStatistics';
-
-type Summary = Awaited<
-  ReturnType<typeof LoaderFeedbacksInsightsStatistics>
->['summary'];
-
-interface PropsInsightsStatisticsSentimentSection {
-  summary: NonNullable<Summary>;
-  positivePct: number;
-  neutralPct: number;
-  negativePct: number;
-}
+import type { InsightsStatisticsSentimentSectionProps } from './ui.types';
 
 export default function InsightsStatisticsSentimentSection({
   summary,
   positivePct,
   neutralPct,
   negativePct,
-}: PropsInsightsStatisticsSentimentSection) {
+}: InsightsStatisticsSentimentSectionProps) {
   return (
     <div className="relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900/60 p-6 glass-card">
       <h2 className="mb-2 text-lg font-semibold text-[var(--text-primary)]">

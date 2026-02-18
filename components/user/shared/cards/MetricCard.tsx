@@ -1,11 +1,4 @@
-import type { IconType } from 'react-icons';
-
-type MetricCardProps = {
-  title: string;
-  value: string;
-  helper?: string;
-  icon: IconType;
-};
+import type { MetricCardProps } from './ui.types';
 
 export default function MetricCard({ title, value, helper, icon: Icon }: MetricCardProps) {
   return (

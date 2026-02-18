@@ -1,10 +1,8 @@
-interface PropsFeedbacksAllEmptyState {
-  hasFilters: boolean;
-}
+import type { FeedbacksAllEmptyStateProps } from './ui.types';
 
 export default function FeedbacksAllEmptyState({
   hasFilters,
-}: PropsFeedbacksAllEmptyState) {
+}: FeedbacksAllEmptyStateProps) {
   return (
     <div className="relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900/50 p-12 glass-card">
       <div className="text-center">

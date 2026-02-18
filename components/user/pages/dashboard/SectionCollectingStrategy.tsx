@@ -1,16 +1,10 @@
 import { Link } from 'react-router-dom';
 import { FaArrowRight, FaMeh } from 'react-icons/fa';
-import type { LoaderUserProtected } from 'src/routes/loaders/loaderUserProtected';
-
-type CollectingData = Awaited<ReturnType<typeof LoaderUserProtected>>['collecting'];
-
-interface PropsSectionCollectingStrategy {
-  collecting: CollectingData | null;
-}
+import type { SectionCollectingStrategyProps } from './ui.types';
 
 export default function SectionCollectingStrategy({
   collecting,
-}: PropsSectionCollectingStrategy) {
+}: SectionCollectingStrategyProps) {
   return (
     <section className="rounded-2xl border border-neutral-800 bg-neutral-900/60 p-6 shadow-[var(--shadow-primary)]">
       <header className="flex items-center justify-between gap-3">

@@ -1,7 +1,7 @@
-import type { PropsFieldBusinessSummary } from "lib/interfaces/user/propsCollectingDataEnterprise";
+import type { FieldBusinessSummaryProps } from './ui.types';
 
 
-export default function FieldBusinessSummary({ value, onChange }: PropsFieldBusinessSummary) {
+export default function FieldBusinessSummary({ value, onChange }: FieldBusinessSummaryProps) {
   return (
     <div className="group">
       <label

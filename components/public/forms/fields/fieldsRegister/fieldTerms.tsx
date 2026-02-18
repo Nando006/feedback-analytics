@@ -1,4 +1,4 @@
-import type { PropsFieldForm } from 'lib/interfaces/public/propsFieldForm';
+import type { FieldFormProps } from '../ui.types';
 
 export default function FieldTermsRegister({
   id,
@@ -6,7 +6,7 @@ export default function FieldTermsRegister({
   label,
   register,
   error,
-}: PropsFieldForm) {
+}: FieldFormProps) {
   return (
     <div className="flex items-center gap-3">
       <input

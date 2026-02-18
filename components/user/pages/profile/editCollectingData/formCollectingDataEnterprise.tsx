@@ -1,4 +1,4 @@
-import type { PropsCollectingDataEnterprise } from "lib/interfaces/entities/enterprise";
+import type { CollectingDataEnterprise } from "lib/interfaces/entities/enterprise.entity";
 import { useEffect, useState, type ChangeEvent } from "react";
 import { Form, useRouteLoaderData } from "react-router-dom";
 import FieldCompanyObjective from "./fields/fieldCompanyObjective";
@@ -10,7 +10,7 @@ import FieldMainProducts from "./fields/fieldMainProducts";
 export default function FormCollectingDataEnterprise() {
 
     const { collecting } = useRouteLoaderData('user') as {
-      collecting: PropsCollectingDataEnterprise | null;
+      collecting: CollectingDataEnterprise | null;
     };
 
     const [companyObjective, setCompanyObjective] = useState(

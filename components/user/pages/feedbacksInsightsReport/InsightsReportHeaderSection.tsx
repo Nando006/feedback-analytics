@@ -1,14 +1,10 @@
-interface PropsInsightsReportHeaderSection {
-  updatedLabel: string | null;
-  refreshing: boolean;
-  onRefresh: () => void;
-}
+import type { InsightsReportHeaderSectionProps } from './ui.types';
 
 export default function InsightsReportHeaderSection({
   updatedLabel,
   refreshing,
   onRefresh,
-}: PropsInsightsReportHeaderSection) {
+}: InsightsReportHeaderSectionProps) {
   return (
     <div className="mb-4 flex items-start justify-between gap-4">
       <div>

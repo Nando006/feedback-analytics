@@ -1,17 +1,6 @@
-import type { PropsCollectingDataEnterprise } from 'lib/interfaces/entities/enterprise';
 import CardProfile from '../shared/cards/cardProfile';
 import Menu from './Menu';
-
-export interface PropsSidebar {
-  isOverlayMode: boolean;
-  isOpen: boolean;
-  onOpen?: () => void;
-  onClose?: () => void;
-  enterpriseName?: string;
-  onSignOut: () => void;
-  isSigningOut?: boolean;
-  collecting: PropsCollectingDataEnterprise | null;
-}
+import type { SidebarProps } from './ui.types';
 
 export default function Sidebar({
   isOverlayMode,
@@ -22,7 +11,7 @@ export default function Sidebar({
   onSignOut,
   isSigningOut = false,
   collecting,
-}: PropsSidebar) {
+}: SidebarProps) {
   if (isOverlayMode) {
     return (
       <aside

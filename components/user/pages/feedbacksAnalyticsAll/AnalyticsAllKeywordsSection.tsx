@@ -1,14 +1,8 @@
-import type { LoaderFeedbacksAnalyticsAll } from 'src/routes/loaders/loaderFeedbacksAnalyticsAll';
-
-type Summary = Awaited<ReturnType<typeof LoaderFeedbacksAnalyticsAll>>['summary'];
-
-interface PropsAnalyticsAllKeywordsSection {
-  summary: NonNullable<Summary>;
-}
+import type { AnalyticsAllKeywordsSectionProps } from './ui.types';
 
 export default function AnalyticsAllKeywordsSection({
   summary,
-}: PropsAnalyticsAllKeywordsSection) {
+}: AnalyticsAllKeywordsSectionProps) {
   return (
     <div className="relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900/60 p-6 glass-card">
       <h3 className="mb-4 text-base font-semibold text-[var(--text-primary)]">

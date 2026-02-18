@@ -1,20 +1,16 @@
-import FormEmailUser from 'components/user/profile/editUser/forms/formEmailUser';
-import FormNameUser from 'components/user/profile/editUser/forms/formNameUser';
-import FormPhoneStartUser from 'components/user/profile/editUser/forms/formPhoneStartUser';
-import FormPhoneVerifyUser from 'components/user/profile/editUser/forms/formPhoneVerifyUser';
-import CardSimple from 'components/user/shared/cards/cardSimple';
 
-type Props = {
-  defaultFullName?: string;
-  defaultEmail?: string;
-  defaultPhone?: string;
-};
+import CardSimple from 'components/user/shared/cards/cardSimple';
+import FormPhoneVerifyUser from './forms/formPhoneVerifyUser';
+import FormPhoneStartUser from './forms/formPhoneStartUser';
+import FormEmailUser from './forms/formEmailUser';
+import FormNameUser from './forms/formNameUser';
+import type { InformationProps } from './ui.types';
 
 export default function Information({
   defaultFullName,
   defaultEmail,
   defaultPhone,
-}: Props) {
+}: InformationProps) {
   return (
     <CardSimple>
       <div className="w-full">

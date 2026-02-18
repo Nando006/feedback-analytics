@@ -1,9 +1,8 @@
 import { Link } from 'react-router-dom';
-import Avatar from '../shared/avatar';
-import type { PropsEnterpriseAndUser } from 'lib/interfaces/entities/enterpriseAndUser';
-import CardSimple from '../shared/cards/cardSimple';
-
-export default function Header({ enterprise, user }: PropsEnterpriseAndUser) {
+import type { EnterpriseAndUser } from 'lib/interfaces/entities/enterprise-and-user.entity';
+import Avatar from 'components/user/shared/avatar';
+import CardSimple from 'components/user/shared/cards/cardSimple';
+export default function Header({ enterprise, user }: EnterpriseAndUser) {
   return (
     <CardSimple type="header">
       <Avatar />

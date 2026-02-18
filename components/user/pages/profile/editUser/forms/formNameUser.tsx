@@ -3,10 +3,11 @@ import { nameSchema, type NameFormValues } from 'lib/schemas/user/nameSchema';
 import { useForm } from 'react-hook-form';
 import { useSubmit } from 'react-router-dom';
 import { INTENT_PROFILE_UPDATE_FULL_NAME } from 'lib/constants/routes/intents';
+import type { FormNameUserProps } from './ui.types';
 
-type Props = { defaultFullName?: string };
-
-export default function FormNameUser({ defaultFullName = '' }: Props) {
+export default function FormNameUser({
+  defaultFullName = '',
+}: FormNameUserProps) {
   const submit = useSubmit();
   const {
     register,

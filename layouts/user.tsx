@@ -2,15 +2,15 @@ import { useEffect, useRef, useState } from 'react';
 import { Outlet, useFetcher, useLoaderData } from 'react-router-dom';
 import Header from 'components/user/layout/Header';
 import Sidebar from 'components/user/layout/Sidebar';
-import type { PropsCollectingDataEnterprise, PropsEnterprise } from 'lib/interfaces/entities/enterprise';
+import type { CollectingDataEnterprise, Enterprise } from 'lib/interfaces/entities/enterprise.entity';
 import { getCookie, setCookie } from 'lib/utils/cookies';
 import { INTENT_LOGOUT } from 'lib/constants/routes/intents';
 
 export default function User() {
   const logoutFetcher = useFetcher();
   const { enterprise, collecting } = useLoaderData() as {
-    enterprise: PropsEnterprise;
-    collecting: PropsCollectingDataEnterprise | null;
+    enterprise: Enterprise;
+    collecting: CollectingDataEnterprise | null;
   };
 
   const [isOverlayMode, setIsOverlayMode] = useState(false);

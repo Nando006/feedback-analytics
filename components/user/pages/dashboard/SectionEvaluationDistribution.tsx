@@ -1,17 +1,11 @@
 import { useMemo } from 'react';
 import { FaChartLine } from 'react-icons/fa6';
 import { FaStar } from 'react-icons/fa';
-import type { LoaderUserDashboard } from 'src/routes/loaders/loaderUserDashboard';
+import type { EvaluationDistributionProps } from './ui.types';
 
-type DashboardStats = Awaited<ReturnType<typeof LoaderUserDashboard>>['stats'];
+const RATING_ORDER = [5, 4, 3, 2, 1] as const;
 
-interface PropsEvaluationDistribution {
-  stats: DashboardStats | null;
-}
-
-export default function SectionEvaluationDistribution({ stats }: PropsEvaluationDistribution) {
-  const RATING_ORDER = [5, 4, 3, 2, 1] as const;
-
+export default function SectionEvaluationDistribution({ stats }: EvaluationDistributionProps) {
   const distribution = useMemo(() => {
     if (!stats)
       return [] as Array<{ rating: number; count: number; percent: number }>;

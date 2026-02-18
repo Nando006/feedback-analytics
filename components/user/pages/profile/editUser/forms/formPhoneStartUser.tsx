@@ -6,10 +6,11 @@ import {
   type PhoneStartFormValues,
 } from 'lib/schemas/user/phoneSchema';
 import { INTENT_PROFILE_START_PHONE } from 'lib/constants/routes/intents';
+import type { FormPhoneStartUserProps } from './ui.types';
 
-type Props = { defaultPhone?: string };
-
-export default function FormPhoneStartUser({ defaultPhone = '' }: Props) {
+export default function FormPhoneStartUser({
+  defaultPhone = '',
+}: FormPhoneStartUserProps) {
   const submit = useSubmit();
   const {
     register,

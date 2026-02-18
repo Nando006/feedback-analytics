@@ -1,16 +1,8 @@
-import type { LoaderFeedbacksAnalyticsPositive } from 'src/routes/loaders/loaderFeedbacksAnalyticsPositive';
-
-type Summary = Awaited<
-  ReturnType<typeof LoaderFeedbacksAnalyticsPositive>
->['summary'];
-
-interface PropsAnalyticsPositiveSummarySection {
-  summary: NonNullable<Summary>;
-}
+import type { AnalyticsPositiveSummarySectionProps } from './ui.types';
 
 export default function AnalyticsPositiveSummarySection({
   summary,
-}: PropsAnalyticsPositiveSummarySection) {
+}: AnalyticsPositiveSummarySectionProps) {
   return (
     <div className="relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900/60 p-6 glass-card">
       <h2 className="mb-2 text-lg font-semibold text-[var(--text-primary)]">

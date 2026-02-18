@@ -1,20 +1,4 @@
-import type { FeedbackAnalysisSummary } from 'lib/interfaces/user/feedback';
-
-type MoodTone = 'positive' | 'neutral' | 'negative';
-
-type MoodData = {
-  label: string;
-  tone: MoodTone;
-  description: string;
-};
-
-interface PropsInsightsReportMoodSection {
-  mood: MoodData;
-  summary: FeedbackAnalysisSummary | null;
-  positivePct: number;
-  neutralPct: number;
-  negativePct: number;
-}
+import type { MoodTone, InsightsReportMoodSectionProps } from './ui.types';
 
 const toneColors: Record<MoodTone, { border: string; bg: string; text: string }> = {
   positive: {
@@ -40,7 +24,7 @@ export default function InsightsReportMoodSection({
   positivePct,
   neutralPct,
   negativePct,
-}: PropsInsightsReportMoodSection) {
+}: InsightsReportMoodSectionProps) {
   const tone = toneColors[mood.tone];
 
   return (

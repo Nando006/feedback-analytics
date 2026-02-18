@@ -2,19 +2,12 @@ import { Link } from 'react-router-dom';
 import { FaArrowRight, FaStar } from 'react-icons/fa';
 import { truncateMessage } from 'lib/utils/truncateText';
 import { formatDateTime } from 'lib/utils/FormatDate';
-import type { LoaderUserDashboard } from 'src/routes/loaders/loaderUserDashboard';
-
-type LatestFeedbacks = Awaited<ReturnType<typeof LoaderUserDashboard>>['latestFeedbacks'];
-
-interface PropsLatestFeedbacks {
-  latestFeedbacks: LatestFeedbacks;
-  latestLimit: number;
-}
+import type { LatestFeedbacksProps } from './ui.types';
 
 export default function SectionLatestFeedbacks({
   latestFeedbacks,
   latestLimit,
-}: PropsLatestFeedbacks) {
+}: LatestFeedbacksProps) {
   return (
     <section className="rounded-2xl border border-neutral-800 bg-neutral-900/60 p-6 shadow-[var(--shadow-primary)]">
       <header className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">

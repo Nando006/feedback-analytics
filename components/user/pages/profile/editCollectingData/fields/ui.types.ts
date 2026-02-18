@@ -1,26 +1,26 @@
-import type { ChangeEvent } from "react";
+import type { ChangeEvent } from 'react';
 
-export interface PropsFieldMainProducts {
+export interface FieldMainProductsProps {
   value: string;
   onChange: (value: string) => void;
 }
 
-export interface PropsFieldUsesCompanyProducts {
+export interface FieldUsesCompanyProductsProps {
   checked: boolean;
   onChange: (event: ChangeEvent<HTMLInputElement>) => void;
 }
 
-export interface PropsFieldBusinessSummary {
+export interface FieldBusinessSummaryProps {
   value: string;
   onChange: (value: string) => void;
 }
 
-export interface PropsFieldAnalyticsGoal {
+export interface FieldAnalyticsGoalProps {
   value: string;
   onChange: (value: string) => void;
 }
 
-export interface PropsFieldCompanyObjective {
+export interface FieldCompanyObjectiveProps {
   value: string;
   onChange: (value: string) => void;
 }

@@ -4,7 +4,7 @@ import type {
   Feedback,
   FeedbackPagination as FeedbackPaginationType,
   FeedbackStats,
-} from 'lib/interfaces/user/feedback';
+} from 'lib/interfaces/domain/feedback.domain';
 import type { LoaderFeedbacksAll } from 'src/routes/loaders/loaderFeedbacksAll';
 import FeedbackHeader from 'components/user/pages/feedbacks/feedbackHeader';
 import FeedbackFiltersComponent from 'components/user/pages/feedbacks/feedbackFilters';

@@ -1,16 +1,8 @@
-import type { LoaderFeedbacksAnalyticsNegative } from 'src/routes/loaders/loaderFeedbacksAnalyticsNegative';
-
-type Items = Awaited<
-  ReturnType<typeof LoaderFeedbacksAnalyticsNegative>
->['items'];
-
-interface PropsAnalyticsNegativeItemsSection {
-  items: Items;
-}
+import type { AnalyticsNegativeItemsSectionProps } from './ui.types';
 
 export default function AnalyticsNegativeItemsSection({
   items,
-}: PropsAnalyticsNegativeItemsSection) {
+}: AnalyticsNegativeItemsSectionProps) {
   return (
     <div className="relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900/60 p-6 glass-card">
       <h3 className="mb-4 text-base font-semibold text-[var(--text-primary)]">

@@ -2,18 +2,13 @@ import { useEffect, useState } from 'react';
 import { useFetcher, useLoaderData } from 'react-router-dom';
 import Card from 'components/public/shared/card';
 import SVGImageProfile from 'components/svg/imageProfile';
-import type { PropsCustomerData, PropsFeedbackData } from 'lib/interfaces/public/propsQRcode';
+import type { CustomerData, FeedbackData } from 'lib/interfaces/contracts/public/qrcode.contract';
 import StateSentPreviousFeedback from 'components/public/qrcode/enterprise/stateSentPreviousFeedback';
 import StateError from 'components/public/qrcode/enterprise/stateError';
 import StateSubmitted from 'components/public/qrcode/enterprise/stateSubmitted';
 import FormQRCodeFeedback from 'components/public/forms/formQRCodeFeedback';
 import type { LoaderPublicQrCodeEnterprise } from 'src/routes/loaders/loaderPublicQrCodeEnterprise';
-
-type ActionData = {
-  ok?: boolean;
-  alreadySubmitted?: boolean;
-  error?: string;
-};
+import type { QrcodeEnterpriseActionData } from './ui.types';
 
 export default function FeedbackQRCodeEnterprise() {
   const loaderData =
@@ -23,17 +18,17 @@ export default function FeedbackQRCodeEnterprise() {
   const initialError = loaderData?.error ?? '';
   const enterpriseName = loaderData?.enterpriseName ?? '';
 
-  const [formData, setFormData] = useState<PropsFeedbackData>({
+  const [formData, setFormData] = useState<FeedbackData>({
     message: '',
     rating: 0,
     enterprise_id: enterpriseId,
   });
-  const [customerData, setCustomerData] = useState<PropsCustomerData>({});
+  const [customerData, setCustomerData] = useState<CustomerData>({});
   const [showOptionalFields, setShowOptionalFields] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [error, setError] = useState(initialError);
   const [hasAlreadySubmitted, setHasAlreadySubmitted] = useState(false);
-  const fetcher = useFetcher<ActionData>();
+  const fetcher = useFetcher<QrcodeEnterpriseActionData>();
 
   const isSubmitting = fetcher.state !== 'idle';
 
@@ -55,12 +50,12 @@ export default function FeedbackQRCodeEnterprise() {
     }
   }, [fetcher.state, fetcher.data]);
 
-  const handleFormDataChange = (data: Partial<PropsFeedbackData>) => {
+  const handleFormDataChange = (data: Partial<FeedbackData>) => {
     setFormData((prev) => ({ ...prev, ...data }));
   };
 
   const handleCustomerDataChange = (
-    field: keyof PropsCustomerData,
+    field: keyof CustomerData,
     value: string | undefined,
   ) => {
     setCustomerData((prev) => ({ ...prev, [field]: value }));

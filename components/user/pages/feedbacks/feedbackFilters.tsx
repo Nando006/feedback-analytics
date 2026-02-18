@@ -1,11 +1,4 @@
-import type { FeedbackFilters } from 'lib/interfaces/user/feedback';
-
-interface FeedbackFiltersProps {
-  filters: FeedbackFilters;
-  onSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onRatingFilter: (rating: number | undefined) => void;
-  onLimitChange: (limit: number) => void;
-}
+import type { FeedbackFiltersProps } from './ui.types';
 
 export default function FeedbackFilters({
   filters,

@@ -1,10 +1,8 @@
-interface PropsInsightsReportRecommendationsSection {
-  recommendations: string[];
-}
+import type { InsightsReportRecommendationsSectionProps } from './ui.types';
 
 export default function InsightsReportRecommendationsSection({
   recommendations,
-}: PropsInsightsReportRecommendationsSection) {
+}: InsightsReportRecommendationsSectionProps) {
   return (
     <div className="mt-6">
       <h3 className="mb-2 text-base font-semibold text-[var(--text-primary)]">
