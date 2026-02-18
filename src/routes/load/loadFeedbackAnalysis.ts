@@ -3,7 +3,7 @@ import type {
   FeedbackAnalysisItem,
   FeedbackAnalysisSummary,
   FeedbackSentiment,
-} from 'lib/interfaces/user/feedback';
+} from 'lib/interfaces/domain/feedback.domain';
 
 export type FeedbackAnalysisLoadData = {
   items: FeedbackAnalysisItem[];

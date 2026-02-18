@@ -3,7 +3,7 @@ import type {
   FeedbackFilters,
   FeedbackPagination,
   FeedbackStats,
-} from 'lib/interfaces/user/feedback';
+} from 'lib/interfaces/domain/feedback.domain';
 import { ServiceGetFeedbacks } from 'src/services/serviceFeedbacks';
 import { loadFeedbackStatsData } from 'src/routes/load/loadFeedbackStats';
 

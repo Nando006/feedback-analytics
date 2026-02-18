@@ -1,6 +1,6 @@
 import { NavLink } from 'react-router-dom';
 import { FaAlignLeft, FaBuffer, FaChevronRight } from 'react-icons/fa6';
-import type { MenuItem } from 'lib/interfaces/user/propsMenu';
+import type { MenuItem } from './ui.types';
 import { menuData } from 'lib/mock/menu';
 
 function filterMenu(items: MenuItem[], allowProducts: boolean): MenuItem[] {

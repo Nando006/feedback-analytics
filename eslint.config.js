@@ -20,4 +20,23 @@ export default tseslint.config([
       globals: globals.browser,
     },
   },
+  {
+    files: ['components/**/*.{ts,tsx}', 'pages/**/*.{ts,tsx}'],
+    ignores: ['**/ui.types.ts'],
+    rules: {
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: 'TSInterfaceDeclaration',
+          message:
+            'Declare tipos de apresentação em ui.types.ts e importe no componente/página.',
+        },
+        {
+          selector: 'TSTypeAliasDeclaration',
+          message:
+            'Declare tipos de apresentação em ui.types.ts e importe no componente/página.',
+        },
+      ],
+    },
+  },
 ])

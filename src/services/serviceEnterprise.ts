@@ -1,25 +1,25 @@
-import type { PropsApiEnterpriseResponse } from 'lib/interfaces/entities/enterprise';
-import type { PropsEnterprisePublicResponse } from 'lib/interfaces/public/propsEnterprise';
+import type { ApiEnterpriseResponse } from 'lib/interfaces/entities/enterprise.entity';
+import type { EnterpriseContractResponse } from 'lib/interfaces/contracts/enterprise.contract';
 import type {
-  PropsCollectingDataEnterprise,
-  TypeUpdateCollectingDataPayload,
-} from 'lib/interfaces/entities/enterprise';
+  CollectingDataEnterprise,
+  UpdateCollectingDataPayload,
+} from 'lib/interfaces/entities/enterprise.entity';
 import { getJson, patchJson } from '../../lib/utils/http';
 
 export function ServiceGetEnterprise() {
-  return getJson<PropsApiEnterpriseResponse>('/api/protected/user/enterprise');
+  return getJson<ApiEnterpriseResponse>('/api/protected/user/enterprise');
 }
 
 export function ServiceGetEnterprisePublic(enterpriseId: string) {
-  return getJson<PropsEnterprisePublicResponse>(
+  return getJson<EnterpriseContractResponse>(
     `/api/public/enterprise/${enterpriseId}`,
   );
 }
 
-export async function ServiceGetCollectingDataEnterprise(): Promise<PropsCollectingDataEnterprise | null> {
+export async function ServiceGetCollectingDataEnterprise(): Promise<CollectingDataEnterprise | null> {
   try {
     const { collecting } = await getJson<{
-      collecting: PropsCollectingDataEnterprise;
+      collecting: CollectingDataEnterprise;
     }>('/api/protected/user/collecting_data');
     return collecting ?? null;
   } catch (error) {
@@ -30,10 +30,10 @@ export async function ServiceGetCollectingDataEnterprise(): Promise<PropsCollect
 }
 
 export async function ServiceUpdateCollectingDataEnterprise(
-  payload: TypeUpdateCollectingDataPayload,
-): Promise<PropsCollectingDataEnterprise> {
+  payload: UpdateCollectingDataPayload,
+): Promise<CollectingDataEnterprise> {
   const { collecting } = await patchJson<{
-    collecting: PropsCollectingDataEnterprise;
+    collecting: CollectingDataEnterprise;
   }>('/api/protected/user/collecting_data', payload);
   return collecting;
 }

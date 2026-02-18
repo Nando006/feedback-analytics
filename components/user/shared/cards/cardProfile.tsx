@@ -1,21 +1,21 @@
 import SVGImageProfile from 'components/svg/imageProfile';
-import type { PropsApiEnterpriseResponse } from 'lib/interfaces/entities/enterprise';
 import { useTruncatedText } from 'lib/utils/truncateText';
 import { FaSignOutAlt } from 'react-icons/fa';
-import { Link, useNavigate } from 'react-router-dom';
-import { ServiceLogout } from 'src/services/serviceAuth';
+import { Link } from 'react-router-dom';
+import type { CardProfileProps } from './ui.types';
 
 export default function CardProfile({
-  enterprise,
-}: PropsApiEnterpriseResponse) {
-  const navigate = useNavigate();
-
-  const full_name = enterprise.full_name ?? '';
+  fullName,
+  onSignOut,
+  isSigningOut = false,
+}: CardProfileProps) {
+  const full_name = fullName ?? '';
   const { display, props: domProps } = useTruncatedText(full_name, 15);
 
-  async function handleSignOut() {
-    await ServiceLogout().catch(() => {});
-    navigate('/login', { replace: true });
+  function handleSignOut(event: React.MouseEvent<HTMLButtonElement>) {
+    event.preventDefault();
+    event.stopPropagation();
+    onSignOut();
   }
 
   return (
@@ -38,9 +38,10 @@ export default function CardProfile({
           <button
             type="button"
             onClick={handleSignOut}
+            disabled={isSigningOut}
             title="Sair"
             aria-label="Sair"
-            className="text-2xl cursor-pointer group">
+            className="text-2xl cursor-pointer group disabled:opacity-60">
             <FaSignOutAlt className="text-red-400 group-hover:text-red-500 duration-200" />
           </button>
         </div>

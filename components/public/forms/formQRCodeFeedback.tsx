@@ -3,7 +3,7 @@ import FieldMessage from './fields/fieldsQRCode/fieldMessage';
 import FieldCustomerName from './fields/fieldsQRCode/fieldCustomerName';
 import FieldCustomerEmail from './fields/fieldsQRCode/fieldCustomerEmail';
 import FieldCustomerGender from './fields/fieldsQRCode/fieldCustomerGender';
-import type { PropsFormQRCodeFeedback } from 'lib/interfaces/public/propsQRcode';
+import type { FormQRCodeFeedbackProps } from './fields/fieldsQRCode/ui.types';
 
 export default function FormQRCodeFeedback({
   formData,
@@ -15,7 +15,7 @@ export default function FormQRCodeFeedback({
   onCustomerDataChange,
   onToggleOptionalFields,
   onSubmit,
-}: PropsFormQRCodeFeedback) {
+}: FormQRCodeFeedbackProps) {
   return (
     <form onSubmit={onSubmit} className="space-y-6">
       <FieldRating

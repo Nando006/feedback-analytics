@@ -1,4 +1,4 @@
-import type { PropsHeader } from 'lib/interfaces/user/propsHeader';
+import type { HeaderProps } from './ui.types';
 import { FaBars, FaLayerGroup } from 'react-icons/fa6';
 
 export default function Header({
@@ -7,7 +7,7 @@ export default function Header({
   onToggleSidebar,
   onSetOverlay,
   onSetPush,
-}: PropsHeader) {
+}: HeaderProps) {
   return (
     <div className="flex h-full items-center gap-8 px-4">
       <div className="space-x-2">

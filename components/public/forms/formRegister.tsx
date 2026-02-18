@@ -11,7 +11,7 @@ import FieldDocument from './fields/fieldsRegister/fieldDocument';
 import FieldPhoneRegister from './fields/fieldsRegister/fieldPhone';
 import FieldPasswordRegister from './fields/fieldsRegister/fieldPassword';
 import FieldTermsRegister from './fields/fieldsRegister/fieldTerms';
-import type { ActionData } from 'lib/interfaces/public/propsFieldForm';
+import type { ActionData } from 'lib/interfaces/contracts/action-data.contract';
 
 export default function FormRegister() {
   const submit = useSubmit();
