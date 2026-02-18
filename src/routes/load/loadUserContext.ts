@@ -3,23 +3,23 @@ import {
   ServiceGetCollectingDataEnterprise,
   ServiceGetEnterprise,
 } from 'src/services/serviceEnterprise';
-import type { PropsAuthUser } from 'lib/interfaces/entities/authUser';
+import type { AuthUser } from 'lib/interfaces/entities/auth-user.entity';
 import type {
-  PropsApiEnterpriseResponse,
-  PropsCollectingDataEnterprise,
-} from 'lib/interfaces/entities/enterprise';
+  ApiEnterpriseResponse,
+  CollectingDataEnterprise,
+} from 'lib/interfaces/entities/enterprise.entity';
 
 export async function loadUserContextData() {
   const [auth, enterprisePayload] = (await Promise.all([
     ServiceGetUser(),
     ServiceGetEnterprise().catch(() => null),
-  ])) as [PropsAuthUser, PropsApiEnterpriseResponse | null];
+  ])) as [AuthUser, ApiEnterpriseResponse | null];
 
   const user = auth.user;
   const collecting = enterprisePayload
     ? ((await ServiceGetCollectingDataEnterprise().catch(
         () => null,
-      )) as PropsCollectingDataEnterprise | null)
+      )) as CollectingDataEnterprise | null)
     : null;
 
   const enterprise = enterprisePayload?.enterprise

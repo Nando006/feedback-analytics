@@ -1,4 +1,4 @@
-import type { PropsRegisterFieldDocument } from 'lib/interfaces/public/propsFieldForm';
+import type { RegisterFieldDocumentProps } from '../ui.types';
 import { useEffect, useState } from 'react';
 
 function digitsOnly(value: string) {
@@ -27,7 +27,7 @@ export default function FieldDocument({
   docType,
   register,
   error,
-}: PropsRegisterFieldDocument) {
+}: RegisterFieldDocumentProps) {
   const [display, setDisplay] = useState('');
 
   useEffect(() => {

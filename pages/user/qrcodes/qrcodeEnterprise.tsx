@@ -1,28 +1,23 @@
 import { useEffect, useState } from 'react';
 import { useFetcher, useLoaderData, useRouteLoaderData } from 'react-router-dom';
 import { getQrCodeUrl } from 'lib/utils/qrcode';
-import type { PropsEnterprise } from 'lib/interfaces/entities/enterprise';
-import type { PropsAuthUser } from 'lib/interfaces/entities/authUser';
+import type { Enterprise } from 'lib/interfaces/entities/enterprise.entity';
+import type { AuthUser } from 'lib/interfaces/entities/auth-user.entity';
 import type { LoaderQrCodeEnterprise } from 'src/routes/loaders/loaderQrCodeEnterprise';
 import {
   INTENT_QR_DISABLE,
   INTENT_QR_ENABLE,
 } from 'lib/constants/routes/intents';
-import SectionQrHeader from 'components/user/qrcodeEnterprise/SectionQrHeader';
-import SectionQrInstructions from 'components/user/qrcodeEnterprise/SectionQrInstructions';
-import SectionQrCodeDisplay from 'components/user/qrcodeEnterprise/SectionQrCodeDisplay';
-import SectionQrUsageTips from 'components/user/qrcodeEnterprise/SectionQrUsageTips';
-
-type QrCodeEnterpriseActionResponse = {
-  ok?: boolean;
-  active?: boolean;
-  error?: string;
-};
+import SectionQrHeader from 'components/user/pages/qrcodeEnterprise/SectionQrHeader';
+import SectionQrInstructions from 'components/user/pages/qrcodeEnterprise/SectionQrInstructions';
+import SectionQrCodeDisplay from 'components/user/pages/qrcodeEnterprise/SectionQrCodeDisplay';
+import SectionQrUsageTips from 'components/user/pages/qrcodeEnterprise/SectionQrUsageTips';
+import type { QrCodeEnterpriseActionResponse } from './ui.types';
 
 export default function QRCodeEnterprise() {
   const { enterprise } = useRouteLoaderData('user') as {
-    enterprise: PropsEnterprise;
-    user: PropsAuthUser['user'];
+    enterprise: Enterprise;
+    user: AuthUser['user'];
   };
   const qrLoaderData =
     useLoaderData<Awaited<ReturnType<typeof LoaderQrCodeEnterprise>>>();

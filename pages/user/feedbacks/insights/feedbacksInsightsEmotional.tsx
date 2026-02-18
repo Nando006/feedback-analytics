@@ -1,10 +1,11 @@
 import { useMemo } from 'react';
 import { useLoaderData } from 'react-router-dom';
 import type { LoaderFeedbacksInsightsEmotional } from 'src/routes/loaders/loaderFeedbacksInsightsEmotional';
-import InsightsEmotionalErrorState from 'components/user/feedbacksInsightsEmotional/InsightsEmotionalErrorState';
-import InsightsEmotionalEmptyState from 'components/user/feedbacksInsightsEmotional/InsightsEmotionalEmptyState';
-import InsightsEmotionalThermometerSection from 'components/user/feedbacksInsightsEmotional/InsightsEmotionalThermometerSection';
-import InsightsEmotionalClustersSection, { type EmotionalCluster } from 'components/user/feedbacksInsightsEmotional/InsightsEmotionalClustersSection';
+import InsightsEmotionalErrorState from 'components/user/pages/feedbacksInsightsEmotional/InsightsEmotionalErrorState';
+import InsightsEmotionalEmptyState from 'components/user/pages/feedbacksInsightsEmotional/InsightsEmotionalEmptyState';
+import InsightsEmotionalThermometerSection from 'components/user/pages/feedbacksInsightsEmotional/InsightsEmotionalThermometerSection';
+import InsightsEmotionalClustersSection from 'components/user/pages/feedbacksInsightsEmotional/InsightsEmotionalClustersSection';
+import type { EmotionalCluster } from 'components/user/pages/feedbacksInsightsEmotional/ui.types';
 
 export default function FeedbacksInsigthsEmotional() {
   const { items, summary, error } =

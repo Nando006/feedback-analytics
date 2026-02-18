@@ -1,9 +1,9 @@
 import { useLoaderData } from 'react-router-dom';
 import type { LoaderFeedbacksInsightsStatistics } from 'src/routes/loaders/loaderFeedbacksInsightsStatistics';
-import InsightsStatisticsErrorState from 'components/user/feedbacksInsightsStatistics/InsightsStatisticsErrorState';
-import InsightsStatisticsEmptyState from 'components/user/feedbacksInsightsStatistics/InsightsStatisticsEmptyState';
-import InsightsStatisticsSentimentSection from 'components/user/feedbacksInsightsStatistics/InsightsStatisticsSentimentSection';
-import InsightsStatisticsThemesSection from 'components/user/feedbacksInsightsStatistics/InsightsStatisticsThemesSection';
+import InsightsStatisticsErrorState from 'components/user/pages/feedbacksInsightsStatistics/InsightsStatisticsErrorState';
+import InsightsStatisticsEmptyState from 'components/user/pages/feedbacksInsightsStatistics/InsightsStatisticsEmptyState';
+import InsightsStatisticsSentimentSection from 'components/user/pages/feedbacksInsightsStatistics/InsightsStatisticsSentimentSection';
+import InsightsStatisticsThemesSection from 'components/user/pages/feedbacksInsightsStatistics/InsightsStatisticsThemesSection';
 
 export default function FeedbacksInsightsStatistics() {
   const { summary, error } =

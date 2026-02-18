@@ -4,7 +4,7 @@ import { useRouteLoaderData } from 'react-router-dom';
 import Profile from '../user/profile';
 
 // Mock dos componentes filhos
-vi.mock('components/user/profile/info', () => ({
+vi.mock('components/user/pages/profile/info', () => ({
   default: ({
     enterprise,
     collecting,
@@ -21,7 +21,7 @@ vi.mock('components/user/profile/info', () => ({
   ),
 }));
 
-vi.mock('components/user/profile/header', () => ({
+vi.mock('components/user/pages/profile/header', () => ({
   default: ({
     enterprise,
     user,

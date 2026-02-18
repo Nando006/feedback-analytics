@@ -1,18 +1,14 @@
 import { Link, useLoaderData, useRouteLoaderData } from 'react-router-dom';
 import CardSimple from 'components/user/shared/cards/cardSimple';
-import type { LoaderUserProtected } from 'src/routes/loaders/loaderUserProtected';
-import type { LoaderUserDashboard } from 'src/routes/loaders/loaderUserDashboard';
 import {
   FaArrowRight,
 } from 'react-icons/fa';
-import SectionMetric from 'components/user/dashboard/SectionMetric';
-import SectionEvaluationDistribution from 'components/user/dashboard/SectionEvaluationDistribution';
-import SectionLatestFeedbacks from 'components/user/dashboard/SectionLatestFeedbacks';
-import SectionCollectingStrategy from 'components/user/dashboard/SectionCollectingStrategy';
-import SectionSatisfactionRadar from 'components/user/dashboard/SectionSatisfactionRadar';
-
-type UserLoaderData = Awaited<ReturnType<typeof LoaderUserProtected>>;
-type DashboardLoaderData = Awaited<ReturnType<typeof LoaderUserDashboard>>;
+import SectionMetric from 'components/user/pages/dashboard/SectionMetric';
+import SectionEvaluationDistribution from 'components/user/pages/dashboard/SectionEvaluationDistribution';
+import SectionLatestFeedbacks from 'components/user/pages/dashboard/SectionLatestFeedbacks';
+import SectionCollectingStrategy from 'components/user/pages/dashboard/SectionCollectingStrategy';
+import SectionSatisfactionRadar from 'components/user/pages/dashboard/SectionSatisfactionRadar';
+import type { DashboardLoaderData, UserLoaderData } from './ui.types';
 
 
 const LATEST_LIMIT = 5;

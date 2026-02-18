@@ -1,5 +1,5 @@
 import type { LoaderFunctionArgs } from 'react-router-dom';
-import type { Feedback, FeedbackStats } from 'lib/interfaces/user/feedback';
+import type { Feedback, FeedbackStats } from 'lib/interfaces/domain/feedback.domain';
 import { loadFeedbackStatsData } from 'src/routes/load/loadFeedbackStats';
 import { loadFeedbacksData } from 'src/routes/load/loadFeedbacks';
 

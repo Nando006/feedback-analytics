@@ -1,4 +1,4 @@
-import type { Feedback, FeedbackFilters } from 'lib/interfaces/user/feedback';
+import type { Feedback, FeedbackFilters } from 'lib/interfaces/domain/feedback.domain';
 import { ServiceGetFeedbacks } from 'src/services/serviceFeedbacks';
 
 export async function loadFeedbacksData(

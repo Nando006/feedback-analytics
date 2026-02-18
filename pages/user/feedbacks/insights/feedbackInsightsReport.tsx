@@ -2,21 +2,17 @@ import { useEffect } from 'react';
 import { useFetcher, useLoaderData, useRevalidator } from 'react-router-dom';
 import type {
   FeedbackAnalysisSummary,
-} from 'lib/interfaces/user/feedback';
+} from 'lib/interfaces/domain/feedback.domain';
 import type { LoaderFeedbacksInsightsReport } from 'src/routes/loaders/loaderFeedbacksInsightsReport';
 import { INTENT_FEEDBACK_RUN_IA } from 'lib/constants/routes/intents';
-import InsightsReportLoadingState from 'components/user/feedbacksInsightsReport/InsightsReportLoadingState';
-import InsightsReportErrorState from 'components/user/feedbacksInsightsReport/InsightsReportErrorState';
-import InsightsReportEmptyState from 'components/user/feedbacksInsightsReport/InsightsReportEmptyState';
-import InsightsReportHeaderSection from 'components/user/feedbacksInsightsReport/InsightsReportHeaderSection';
-import InsightsReportMoodSection from 'components/user/feedbacksInsightsReport/InsightsReportMoodSection';
-import InsightsReportSummarySection from 'components/user/feedbacksInsightsReport/InsightsReportSummarySection';
-import InsightsReportRecommendationsSection from 'components/user/feedbacksInsightsReport/InsightsReportRecommendationsSection';
-
-type ActionData = {
-  ok?: boolean;
-  error?: string;
-};
+import InsightsReportLoadingState from 'components/user/pages/feedbacksInsightsReport/InsightsReportLoadingState';
+import InsightsReportErrorState from 'components/user/pages/feedbacksInsightsReport/InsightsReportErrorState';
+import InsightsReportEmptyState from 'components/user/pages/feedbacksInsightsReport/InsightsReportEmptyState';
+import InsightsReportHeaderSection from 'components/user/pages/feedbacksInsightsReport/InsightsReportHeaderSection';
+import InsightsReportMoodSection from 'components/user/pages/feedbacksInsightsReport/InsightsReportMoodSection';
+import InsightsReportSummarySection from 'components/user/pages/feedbacksInsightsReport/InsightsReportSummarySection';
+import InsightsReportRecommendationsSection from 'components/user/pages/feedbacksInsightsReport/InsightsReportRecommendationsSection';
+import type { FeedbackInsightsReportActionData } from './ui.types';
 
 function getMoodFromSummary(summary: FeedbackAnalysisSummary | null) {
   if (!summary || summary.totalAnalyzed === 0) {
@@ -61,7 +57,7 @@ export default function FeedbacksInsightsReport() {
   const { report, summary, error: loaderError } =
     useLoaderData<Awaited<ReturnType<typeof LoaderFeedbacksInsightsReport>>>();
   const revalidator = useRevalidator();
-  const fetcher = useFetcher<ActionData>();
+  const fetcher = useFetcher<FeedbackInsightsReportActionData>();
 
   const refreshing =
     fetcher.state !== 'idle' || revalidator.state === 'loading';

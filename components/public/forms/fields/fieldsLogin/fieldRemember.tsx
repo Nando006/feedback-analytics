@@ -1,11 +1,11 @@
-import type { PropsFieldForm } from 'lib/interfaces/public/propsFieldForm';
+import type { FieldFormProps } from '../ui.types';
 
 export default function FieldRemember({
   id,
   label,
   name,
   register,
-}: PropsFieldForm) {
+}: FieldFormProps) {
   return (
     <div className="flex items-center space-x-2">
       <input

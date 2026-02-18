@@ -2,12 +2,7 @@ import SVGImageProfile from 'components/svg/imageProfile';
 import { useTruncatedText } from 'lib/utils/truncateText';
 import { FaSignOutAlt } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
-
-type CardProfileProps = {
-  fullName?: string;
-  onSignOut: () => void;
-  isSigningOut?: boolean;
-};
+import type { CardProfileProps } from './ui.types';
 
 export default function CardProfile({
   fullName,

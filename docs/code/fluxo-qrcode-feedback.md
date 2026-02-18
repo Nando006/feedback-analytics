@@ -39,7 +39,7 @@ Este documento descreve o fluxo completo de coleta de feedback por QR Code: fron
 ### Services front
 
 - `src/services/enterprisePublic.ts`
-  - `getEnterprisePublic(enterpriseId)` → `getJson<PropsEnterprisePublicResponse>(/api/public/enterprise/:id)`
+  - `getEnterprisePublic(enterpriseId)` → `getJson<EnterpriseContractResponse>(/api/public/enterprise/:id)`
 - `src/services/qrcode/feedback.ts`
   - `submitQrcodeFeedback(payload: QrcodeFeedbackPayload)` → `postJson<PropsQrcodeFeedbackResponse>('/api/public/qrcode/feedback', payload)`
 - `src/services/http.ts`
