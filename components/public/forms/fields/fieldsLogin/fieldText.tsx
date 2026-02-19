@@ -1,4 +1,4 @@
-import type { PropsFieldForm } from 'lib/interfaces/public/propsFieldForm';
+import type { FieldFormProps } from '../ui.types';
 
 export default function FieldText({
   id,
@@ -7,7 +7,7 @@ export default function FieldText({
   icon,
   register,
   error,
-}: PropsFieldForm) {
+}: FieldFormProps) {
   return (
     <div className="space-y-1 relative">
       <label

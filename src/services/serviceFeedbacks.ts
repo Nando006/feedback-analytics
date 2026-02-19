@@ -5,7 +5,7 @@ import type {
   FeedbackAnalysisResponse,
   FeedbackSentiment,
   FeedbackInsightsReport,
-} from 'lib/interfaces/user/feedback';
+} from 'lib/interfaces/domain/feedback.domain';
 import { getJson, postJson } from '../../lib/utils/http';
 
 export function ServiceGetFeedbacks(filters: FeedbackFilters = {}) {

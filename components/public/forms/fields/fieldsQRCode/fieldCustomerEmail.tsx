@@ -1,6 +1,6 @@
-import type { PropsFieldCustomerEmail } from "lib/interfaces/public/propsFieldForm";
+import type { FieldCustomerEmailProps } from '../ui.types';
 
-export default function FieldCustomerEmail({ email, onEmailChange }: PropsFieldCustomerEmail) {
+export default function FieldCustomerEmail({ email, onEmailChange }: FieldCustomerEmailProps) {
   return (
     <div>
       <label

@@ -1,4 +1,4 @@
-import type { PropsAuthUser } from 'lib/interfaces/entities/authUser';
+import type { AuthUser } from 'lib/interfaces/entities/auth-user.entity';
 import { getJson } from '../../lib/utils/http';
 
 type MetadadosResponse = {
@@ -14,7 +14,7 @@ type EmailUpdateResponse = {
 type OkResponse = { ok: boolean };
 
 export function ServiceGetUser() {
-  return getJson<PropsAuthUser>('/api/protected/user/auth_user');
+  return getJson<AuthUser>('/api/protected/user/auth_user');
 }
 
 export function ServiceUpdateMetadados(full_name: string) {

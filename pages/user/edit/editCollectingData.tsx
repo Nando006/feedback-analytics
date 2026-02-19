@@ -1,6 +1,6 @@
 import CardSimple from 'components/user/shared/cards/cardSimple';
-import Header from 'components/user/profile/editCollectingData/header';
-import FormCollectingDataEnterprise from 'components/user/profile/editCollectingData/formCollectingDataEnterprise';
+import Header from 'components/user/pages/profile/editCollectingData/header';
+import FormCollectingDataEnterprise from 'components/user/pages/profile/editCollectingData/formCollectingDataEnterprise';
 
 export default function EditCollectingData() {
 

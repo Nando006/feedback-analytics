@@ -1,24 +1,17 @@
-import type { PropsApiEnterpriseResponse, PropsCollectingDataEnterprise } from 'lib/interfaces/entities/enterprise';
 import CardProfile from '../shared/cards/cardProfile';
 import Menu from './Menu';
-
-export interface PropsSidebar {
-  isOverlayMode: boolean;
-  isOpen: boolean;
-  onOpen?: () => void;
-  onClose?: () => void;
-}
+import type { SidebarProps } from './ui.types';
 
 export default function Sidebar({
   isOverlayMode,
   isOpen,
   onOpen,
   onClose,
-  enterprise,
+  enterpriseName,
+  onSignOut,
+  isSigningOut = false,
   collecting,
-}: PropsSidebar & PropsApiEnterpriseResponse & {
-  collecting: PropsCollectingDataEnterprise | null
-}) {
+}: SidebarProps) {
   if (isOverlayMode) {
     return (
       <aside
@@ -35,7 +28,11 @@ export default function Sidebar({
           </div>
           <div className="mt-2 border-t border-neutral-800/40">
             <div className="flex justify-end">
-              <CardProfile enterprise={enterprise} />
+              <CardProfile
+                fullName={enterpriseName}
+                onSignOut={onSignOut}
+                isSigningOut={isSigningOut}
+              />
             </div>
           </div>
         </div>
@@ -54,7 +51,11 @@ export default function Sidebar({
         </div>
         <div className="mt-2 border-t border-neutral-800/40">
           <div className="flex justify-end">
-            <CardProfile enterprise={enterprise} />
+            <CardProfile
+              fullName={enterpriseName}
+              onSignOut={onSignOut}
+              isSigningOut={isSigningOut}
+            />
           </div>
         </div>
       </div>
