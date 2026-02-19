@@ -1,5 +1,6 @@
 import type { ActionFunctionArgs } from 'react-router-dom';
 import { ServiceSubmitQrcodeFeedback } from 'src/services/serviceFeedbackQRCode';
+import { getPublicQrFeedbackErrorMessage } from 'lib/utils/publicQrFeedbackErrorMessage';
 
 type HttpError = Error & {
   status?: number;
@@ -84,30 +85,22 @@ export async function ActionPublicQrCodeFeedback({
       });
     }
 
-    if (
-      status === 404 ||
-      code === 'collection_point_not_found' ||
-      code === 'enterprise_not_found'
-    ) {
-      return new Response(
-        JSON.stringify({
-          error:
-            'QR Code inválido ou desativado para esta empresa. Solicite um novo QR Code ao estabelecimento.',
-        }),
-        {
-          status: 404,
-          headers: { 'Content-Type': 'application/json' },
-        },
-      );
-    }
+    const errorMessage = getPublicQrFeedbackErrorMessage({
+      status,
+      code,
+      fallbackMessage:
+        err && typeof err === 'object' && 'message' in err
+          ? String(err.message)
+          : undefined,
+    });
 
-    const errorMessage =
-      err && typeof err === 'object' && 'message' in err
-        ? String(err.message)
-        : 'Erro ao enviar feedback. Tente novamente.';
+    const responseStatus =
+      typeof status === 'number' && status >= 400 && status <= 599
+        ? status
+        : 400;
 
     return new Response(JSON.stringify({ error: errorMessage }), {
-      status: 400,
+      status: responseStatus,
       headers: { 'Content-Type': 'application/json' },
     });
   }
