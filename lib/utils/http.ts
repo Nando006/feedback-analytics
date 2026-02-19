@@ -3,13 +3,45 @@
  * Helpers finos ed HTTP, sem lógica de domínio
  */
 
+type HttpError = Error & {
+  status?: number;
+  code?: string;
+};
+
+async function throwIfNotOk(res: Response): Promise<void> {
+  if (res.ok) return;
+
+  let message = 'Request failed';
+  let code: string | undefined;
+
+  try {
+    const payload = (await res.clone().json()) as {
+      error?: string;
+      message?: string;
+    };
+
+    if (typeof payload?.error === 'string' && payload.error.length > 0) {
+      code = payload.error;
+      message = payload.error;
+    } else if (
+      typeof payload?.message === 'string' &&
+      payload.message.length > 0
+    ) {
+      message = payload.message;
+    }
+  } catch {
+    // resposta sem JSON, mantém a mensagem padrão
+  }
+
+  const error = new Error(message) as HttpError;
+  error.status = res.status;
+  error.code = code;
+  throw error;
+}
+
 export async function getJson<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(path, { credentials: 'include', ...(init ?? {}) });
-  if (!res.ok) {
-    const error = new Error('Request failed');
-    (error as Error & { status?: number }).status = res.status;
-    throw error;
-  }
+  await throwIfNotOk(res);
 
   return res.json() as Promise<T>;
 }
@@ -29,11 +61,7 @@ export async function postJson<T>(
     ...(init ?? {}),
   });
 
-  if (!res.ok) {
-    const error = new Error('Request failed');
-    (error as Error & { status?: number }).status = res.status;
-    throw error;
-  }
+  await throwIfNotOk(res);
 
   return res.json() as Promise<T>;
 }
@@ -53,11 +81,7 @@ export async function patchJson<T>(
     ...(init ?? {}),
   });
 
-  if (!res.ok) {
-    const error = new Error('Request failed');
-    (error as Error & { status?: number }).status = res.status;
-    throw error;
-  }
+  await throwIfNotOk(res);
 
   return res.json() as Promise<T>;
 }
@@ -77,11 +101,7 @@ export async function putJson<T>(
     ...(init ?? {}),
   });
 
-  if (!res.ok) {
-    const error = new Error('Request failed');
-    (error as Error & { status?: number }).status = res.status;
-    throw error;
-  }
+  await throwIfNotOk(res);
 
   return res.json() as Promise<T>;
 }
@@ -96,11 +116,7 @@ export async function deleteJson<T>(
     ...(init ?? {}),
   });
 
-  if (!res.ok) {
-    const error = new Error('Request failed');
-    (error as Error & { status?: number }).status = res.status;
-    throw error;
-  }
+  await throwIfNotOk(res);
 
   return res.json() as Promise<T>;
 }

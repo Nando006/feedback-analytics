@@ -16,6 +16,7 @@ export interface SectionQrHeaderProps {
  */
 export interface SectionQrCodeDisplayProps {
   enterpriseName?: string | null;
+  qrActive: boolean;
   qrCodeUrl: string;
   feedbackUrl: string;
   showCopied: boolean;

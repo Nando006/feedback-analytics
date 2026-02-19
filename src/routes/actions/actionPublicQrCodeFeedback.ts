@@ -1,5 +1,11 @@
 import type { ActionFunctionArgs } from 'react-router-dom';
 import { ServiceSubmitQrcodeFeedback } from 'src/services/serviceFeedbackQRCode';
+import { getPublicQrFeedbackErrorMessage } from 'lib/utils/publicQrFeedbackErrorMessage';
+
+type HttpError = Error & {
+  status?: number;
+  code?: string;
+};
 
 export async function ActionPublicQrCodeFeedback({
   request,
@@ -65,11 +71,13 @@ export async function ActionPublicQrCodeFeedback({
       headers: { 'Content-Type': 'application/json' },
     });
   } catch (err: unknown) {
+    const httpError = err as HttpError;
+    const status = httpError?.status;
+    const code = httpError?.code;
+
     if (
-      err &&
-      typeof err === 'object' &&
-      'status' in err &&
-      err.status === 409
+      status === 409 ||
+      code === 'DEVICE_ALREADY_SUBMITTED'
     ) {
       return new Response(JSON.stringify({ alreadySubmitted: true }), {
         status: 409,
@@ -77,13 +85,22 @@ export async function ActionPublicQrCodeFeedback({
       });
     }
 
-    const errorMessage =
-      err && typeof err === 'object' && 'message' in err
-        ? String(err.message)
-        : 'Erro ao enviar feedback. Tente novamente.';
+    const errorMessage = getPublicQrFeedbackErrorMessage({
+      status,
+      code,
+      fallbackMessage:
+        err && typeof err === 'object' && 'message' in err
+          ? String(err.message)
+          : undefined,
+    });
+
+    const responseStatus =
+      typeof status === 'number' && status >= 400 && status <= 599
+        ? status
+        : 400;
 
     return new Response(JSON.stringify({ error: errorMessage }), {
-      status: 400,
+      status: responseStatus,
       headers: { 'Content-Type': 'application/json' },
     });
   }
