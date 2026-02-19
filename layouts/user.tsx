@@ -1,20 +1,32 @@
 import { useEffect, useRef, useState } from 'react';
-import { Outlet, useLoaderData } from 'react-router-dom';
+import { Outlet, useFetcher, useLoaderData } from 'react-router-dom';
 import Header from 'components/user/layout/Header';
 import Sidebar from 'components/user/layout/Sidebar';
-import type { PropsCollectingDataEnterprise, PropsEnterprise } from 'lib/interfaces/entities/enterprise';
+import type { CollectingDataEnterprise, Enterprise } from 'lib/interfaces/entities/enterprise.entity';
 import { getCookie, setCookie } from 'lib/utils/cookies';
+import { INTENT_LOGOUT } from 'lib/constants/routes/intents';
 
 export default function User() {
+  const logoutFetcher = useFetcher();
   const { enterprise, collecting } = useLoaderData() as {
-    enterprise: PropsEnterprise;
-    collecting: PropsCollectingDataEnterprise | null;
+    enterprise: Enterprise;
+    collecting: CollectingDataEnterprise | null;
   };
 
   const [isOverlayMode, setIsOverlayMode] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isHoverActivator, setIsHoverActivator] = useState(false);
   const closeTimerRef = useRef<number | null>(null);
+  const isSigningOut = logoutFetcher.state !== 'idle';
+
+  function handleSignOut() {
+    if (isSigningOut) return;
+
+    logoutFetcher.submit(
+      { intent: INTENT_LOGOUT },
+      { method: 'post', action: '/user' },
+    );
+  }
 
   const cancelClose = () => {
     if (closeTimerRef.current !== null) {
@@ -100,7 +112,9 @@ export default function User() {
           <Sidebar
             isOverlayMode={false}
             isOpen={isSidebarOpen}
-            enterprise={enterprise}
+            enterpriseName={enterprise.full_name ?? undefined}
+            onSignOut={handleSignOut}
+            isSigningOut={isSigningOut}
             collecting={collecting}
           />
         )}
@@ -126,7 +140,9 @@ export default function User() {
           onClose={() => {
             scheduleClose();
           }}
-          enterprise={enterprise}
+          enterpriseName={enterprise.full_name ?? undefined}
+          onSignOut={handleSignOut}
+          isSigningOut={isSigningOut}
           collecting={collecting}
         />
       )}
