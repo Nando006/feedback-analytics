@@ -1,6 +1,11 @@
 import type { ActionFunctionArgs } from 'react-router-dom';
 import { ServiceSubmitQrcodeFeedback } from 'src/services/serviceFeedbackQRCode';
 
+type HttpError = Error & {
+  status?: number;
+  code?: string;
+};
+
 export async function ActionPublicQrCodeFeedback({
   request,
 }: ActionFunctionArgs) {
@@ -65,16 +70,35 @@ export async function ActionPublicQrCodeFeedback({
       headers: { 'Content-Type': 'application/json' },
     });
   } catch (err: unknown) {
+    const httpError = err as HttpError;
+    const status = httpError?.status;
+    const code = httpError?.code;
+
     if (
-      err &&
-      typeof err === 'object' &&
-      'status' in err &&
-      err.status === 409
+      status === 409 ||
+      code === 'DEVICE_ALREADY_SUBMITTED'
     ) {
       return new Response(JSON.stringify({ alreadySubmitted: true }), {
         status: 409,
         headers: { 'Content-Type': 'application/json' },
       });
+    }
+
+    if (
+      status === 404 ||
+      code === 'collection_point_not_found' ||
+      code === 'enterprise_not_found'
+    ) {
+      return new Response(
+        JSON.stringify({
+          error:
+            'QR Code inválido ou desativado para esta empresa. Solicite um novo QR Code ao estabelecimento.',
+        }),
+        {
+          status: 404,
+          headers: { 'Content-Type': 'application/json' },
+        },
+      );
     }
 
     const errorMessage =
