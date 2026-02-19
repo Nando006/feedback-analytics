@@ -129,6 +129,7 @@ export default function QRCodeEnterprise() {
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
         <SectionQrCodeDisplay
           enterpriseName={enterprise.full_name}
+          qrActive={qrActive}
           qrCodeUrl={qrCodeUrl}
           feedbackUrl={feedbackUrl}
           showCopied={showCopied}
