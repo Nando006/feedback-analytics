@@ -33,4 +33,4 @@ Este sistema está estruturado em uma arquitetura Single Page Application(SPA), 
 - Ainda no terminal dentro da pasta do projeto execute:
     - `npm run dev` para executar somente o front end
     - `npm run server:dev` para executar somente o back end
-    - `npm run dev:all` para executar o front e back.
+    - `npm run dev:all` para executar o front e back
