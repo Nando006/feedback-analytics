@@ -4,7 +4,7 @@ import SVGLock from 'components/svg/lock';
 
 export default function Login() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-neutral-900 to-neutral-800 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-(--bg-color)/80 flex items-center justify-center p-4">
       {/* Container principal */}
       <div className="w-full max-w-md">
         <Card
@@ -17,17 +17,17 @@ export default function Login() {
 
         {/* Elementos decorativos */}
         <div className="mt-8 text-center">
-          <p className="text-neutral-500 text-xs">
+          <p className="text-neutral-500 text-xs font-work-sans">
             Ao continuar, você concorda com nossos{' '}
             <a
               href="#"
-              className="text-purple-400 hover:text-purple-300 transition-colors">
+              className="text-(--secondary-color) hover:text-(--secondary-color-dark) transition-colors">
               Termos de Serviço
             </a>{' '}
             e{' '}
             <a
               href="#"
-              className="text-purple-400 hover:text-purple-300 transition-colors">
+              className="text-(--secondary-color) hover:text-(--secondary-color-dark) transition-colors">
               Política de Privacidade
             </a>
           </p>
