@@ -10,27 +10,27 @@ export default function Card({
   linkLogin,
 }: CardProps) {
   return (
-    <div className="bg-neutral-800/60 backdrop-blur-lg border border-neutral-700/50 rounded-2xl shadow-2xl p-8">
+    <div className="bg-(--container-secondary)/80 backdrop-blur-lg border border-(--bg-secondary) rounded-2xl shadow-2xl p-8">
       <div className="text-center mb-8">
         {icon && (
-          <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-700 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+          <div className="w-16 h-16 bg-gradient-to-br from-(--primary-color) to-(--terciary-color-dark) rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
             {icon}
           </div>
         )}
 
-        <h1 className="text-2xl font-bold text-neutral-100 mb-2">{title}</h1>
-        <p className="text-neutral-400">{text}</p>
+        <h1 className="font-montserrat text-2xl font-bold text-(--text-primary) mb-2">{title}</h1>
+        <p className="font-work-sans text-(--text-secondary)">{text}</p>
       </div>
 
       {children}
 
       {linkRegister && (
         <div className="mt-8 text-center">
-          <p className="text-neutral-400 text-sm">
+          <p className="text-(--text-secondary) text-sm font-work-sans">
             Não tem uma conta?{' '}
             <Link
               to={linkRegister}
-              className="text-purple-400 hover:text-purple-300 transition-colors font-medium">
+              className="text-(--secondary-color) hover:text-(--secondary-color-dark) transition-colors font-medium font-poppins">
               Cadastre-se aqui
             </Link>
           </p>
@@ -39,11 +39,11 @@ export default function Card({
 
       {linkLogin && (
         <div className="mt-8 text-center">
-          <p className="text-neutral-400 text-sm">
+          <p className="text-(--text-secondary) text-sm font-work-sans">
             Já tem uma conta?{' '}
             <Link
               to={linkLogin}
-              className="text-purple-400 hover:text-purple-300 transition-colors font-medium">
+              className="text-(--secondary-color) hover:text-(--secondary-color-dark) transition-colors font-medium font-poppins">
               Entrar
             </Link>
           </p>
