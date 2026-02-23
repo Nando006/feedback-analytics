@@ -8,9 +8,9 @@ export default function FieldAccountTypeRegister({
 }: FieldFormProps) {
   return (
     <div className="space-y-2 relative">
-      <span className="pl-2 text-sm text-neutral-300">Tipo de conta</span>
+      <span className="font-work-sans pl-2 text-sm text-(--text-secondary)">Tipo de conta</span>
       <div className="flex items-center gap-4">
-        <label className="inline-flex items-center gap-2 cursor-pointer">
+        <label className="inline-flex items-center gap-2 cursor-pointer font-poppins text-lg">
           <input
             type="radio"
             id={`${id}-cpf`}
@@ -19,11 +19,11 @@ export default function FieldAccountTypeRegister({
             {...register}
             className="peer sr-only"
           />
-          <span className="px-3 py-2 rounded-md border border-neutral-700/60 bg-neutral-800/60 peer-checked:border-purple-600">
+          <span className="px-3 py-2 rounded-md border border-neutral-700/60 bg-(--container-secondary) peer-checked:border-(--primary-color)">
             CPF
           </span>
         </label>
-        <label className="inline-flex items-center gap-2 cursor-pointer">
+        <label className="inline-flex items-center gap-2 cursor-pointer font-poppins text-lg">
           <input
             type="radio"
             id={`${id}-cnpj`}
@@ -32,7 +32,7 @@ export default function FieldAccountTypeRegister({
             {...register}
             className="peer sr-only"
           />
-          <span className="px-3 py-2 rounded-md border border-neutral-700/60 bg-neutral-800/60 peer-checked:border-purple-600">
+          <span className="px-3 py-2 rounded-md border border-neutral-700/60 bg-(--container-secondary) peer-checked:border-(--primary-color)">
             CNPJ
           </span>
         </label>
@@ -40,7 +40,7 @@ export default function FieldAccountTypeRegister({
       {error && (
         <span
           role="alert"
-          className="absolute -right-1 -bottom-5 text-red-400/70 text-sm font-medium">
+          className="font-work-sans absolute -right-1 -bottom-5 text-(--negative)/70 text-sm font-medium">
           {error}
         </span>
       )}
