@@ -38,7 +38,7 @@ export default function FieldDocument({
     <div className="space-y-1 relative">
       <label
         htmlFor={name}
-        className="flex items-center gap-2 pl-2 text-sm text-neutral-300">
+        className="flex items-center gap-2 pl-2 text-sm text-(--text-secondary) font-work-sans">
         <span>{label}</span>
       </label>
       <input
@@ -46,7 +46,7 @@ export default function FieldDocument({
         name={name}
         inputMode="numeric"
         aria-invalid={error ? true : undefined}
-        className="h-12 w-full rounded-lg bg-neutral-800/60 border border-neutral-700/60 px-4 outline-none focus:border-purple-600 transition-colors"
+        className="h-12 w-full rounded-lg bg-(--container-secondary) border border-(--container-border) px-4 outline-none focus:border-(--primary-color) transition-colors font-poppins"
         {...register}
         value={display}
         onChange={(e) => {
@@ -60,7 +60,7 @@ export default function FieldDocument({
       {error && (
         <span
           role="alert"
-          className="absolute -right-1 -bottom-5 text-red-400/70 text-sm font-medium">
+          className="font-work-sans absolute -right-1 -bottom-5 text-(--negative)/70 text-sm font-medium">
           {error}
         </span>
       )}
