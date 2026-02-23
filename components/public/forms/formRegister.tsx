@@ -12,6 +12,7 @@ import FieldPhoneRegister from './fields/fieldsRegister/fieldPhone';
 import FieldPasswordRegister from './fields/fieldsRegister/fieldPassword';
 import FieldTermsRegister from './fields/fieldsRegister/fieldTerms';
 import type { ActionData } from 'lib/interfaces/contracts/action-data.contract';
+import { FaSpinner } from 'react-icons/fa6';
 
 export default function FormRegister() {
   const submit = useSubmit();
@@ -71,14 +72,14 @@ export default function FormRegister() {
           role="status"
           aria-live="polite"
           className="rounded-lg border border-green-600/40 bg-green-500/10 p-4 text-green-200">
-          <div className="text-sm">
+          <div className="text-sm font-work-sans ">
             Conta criada! Enviamos um e-mail de confirmação. Verifique sua caixa
             de entrada e confirme para ativar seu acesso.
           </div>
           <div className="mt-3">
             <Link
               to="/login"
-              className="inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium bg-purple-600 hover:bg-purple-700 transition-colors">
+              className="inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium bg-(--primary-color) hover:bg-(--primary-color-hover) transition-colors">
               Ir para o login
             </Link>
           </div>
@@ -88,8 +89,8 @@ export default function FormRegister() {
       {actionData?.error && !isSuccess && (
         <div
           role="alert"
-          className="rounded-lg border border-red-600/40 bg-red-500/10 p-4 text-red-200">
-          <div className="text-sm">
+          className="rounded-lg border border-(--negative)/40 bg-red-500/10 p-4 text-red-200">
+          <div className="text-sm font-work-sans">
             Não foi possível criar sua conta.{' '}
             {actionData.message ?? 'Verifique os campos e tente novamente.'}
           </div>
@@ -173,10 +174,16 @@ export default function FormRegister() {
           error={errors.terms?.message as string | undefined}
         />
         <button
-          className="h-12 w-full rounded-lg font-medium shadow-md bg-gradient-to-r from-purple-600 to-purple-700 border border-purple-300/60 text-neutral-50 transition-all duration-150 hover:brightness-105 active:translate-y-px disabled:opacity-60 disabled:cursor-not-allowed"
+          className="h-12 w-full bg-gradient-to-r from-(--primary-color) to-(--terciary-color-dark) hover:from-(--terciary-color-dark) hover:to-(--primary-color) transition rounded-lg cursor-pointer font-poppins disabled:cursor-not-allowed disabled:opacity-80 flex items-center justify-center gap-2 text-gray-100 font-semibold"
           disabled={isSubmitting}
           aria-busy={isSubmitting}>
-          {isSubmitting ? 'Criando...' : 'Criar conta'}
+          {isSubmitting ? (
+                    <>
+                      <FaSpinner className="animate-spin text-(--text-primary)" aria-hidden="true" />
+                    </>
+                  ) : (
+                    'Criar Conta'
+                  )}
         </button>
       </form>
     </div>
