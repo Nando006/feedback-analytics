@@ -30,11 +30,11 @@ export default function FieldPasswordRegister({
       'Muito forte',
     ];
     const colorMap = [
-      'bg-red-500',
-      'bg-red-500',
-      'bg-yellow-500',
-      'bg-green-500',
-      'bg-purple-600',
+      'bg-(--negative)',
+      'bg-(--negative)',
+      'bg-(--neutral)',
+      'bg-(--positive)',
+      'bg-(--primary-color)',
     ];
     return {
       percent,
@@ -45,10 +45,10 @@ export default function FieldPasswordRegister({
   }, [value]);
 
   return (
-    <div className="space-y-1 relative">
+    <div className="space-y-1 relative mb-10">
       <label
         htmlFor={name}
-        className="flex items-center gap-2 pl-2 text-sm text-neutral-300">
+        className="flex items-center gap-2 pl-2 text-sm text-(--text-secondary) font-work-sans">
         {icon && <span>{icon}</span>}
         <span>{label}</span>
       </label>
@@ -59,7 +59,7 @@ export default function FieldPasswordRegister({
           type={show ? 'text' : 'password'}
           aria-invalid={error ? true : undefined}
           autoComplete="new-password"
-          className="h-12 w-full rounded-lg bg-neutral-800/60 border border-neutral-700/60 pl-4 pr-12 outline-none focus:border-purple-600 transition-colors"
+          className="h-12 w-full rounded-lg bg-(--container-secondary) border border-(--container-border) pl-4 pr-12 outline-none focus:border-(--primary-color) transition-colors font-poppins"
           {...register}
           onChange={(e) => {
             register?.onChange?.(e);
@@ -69,7 +69,7 @@ export default function FieldPasswordRegister({
         <button
           type="button"
           aria-label={show ? 'Ocultar senha' : 'Mostrar senha'}
-          className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-md text-neutral-300 hover:text-neutral-100 hover:bg-neutral-700/60 focus:outline-none focus:ring-2 focus:ring-purple-600"
+          className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-md text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--container-border) focus:outline-none focus:ring-2 focus:ring-(--primary-color)"
           onClick={() => setShow((s) => !s)}>
           {show ? (
             <svg
@@ -92,22 +92,22 @@ export default function FieldPasswordRegister({
       </div>
       {strength.showBar && (
         <div className="mt-2">
-          <div className="w-full h-2 rounded-full overflow-hidden bg-neutral-700/60">
+          <div className="w-full h-2 rounded-full overflow-hidden bg-(--container-secondary)">
             <div
               className={`h-full ${strength.color}`}
               style={{ width: `${strength.percent}%` }}
             />
           </div>
-          <div className="mt-1 text-[11px] flex items-center justify-between text-neutral-400">
+          <div className="mt-1 text-[11px] flex items-center justify-between text-(--text-muted) font-work-sans">
             <span>Força da senha</span>
-            <span className="text-neutral-300">{strength.label}</span>
+            <span className="text-(--text-secondary)">{strength.label}</span>
           </div>
         </div>
       )}
       {error && (
         <span
           role="alert"
-          className="absolute -right-1 -bottom-5 text-red-400/70 text-sm font-medium">
+          className="font-work-sans absolute -right-1 -bottom-5 text-(--negative)/70 text-sm font-medium">
           {error}
         </span>
       )}
