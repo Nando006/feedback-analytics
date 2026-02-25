@@ -1,24 +1,8 @@
 import type { RegisterFieldDocumentProps } from '../ui.types';
 import { useEffect, useState } from 'react';
 
-function digitsOnly(value: string) {
-  return (value || '').replace(/\D+/g, '');
-}
-function formatCPF(v: string) {
-  const s = digitsOnly(v).slice(0, 11);
-  return s
-    .replace(/^(\d{3})(\d)/, '$1.$2')
-    .replace(/^(\d{3})\.(\d{3})(\d)/, '$1.$2.$3')
-    .replace(/\.(\d{3})(\d{1,2})$/, '.$1-$2');
-}
-function formatCNPJ(v: string) {
-  const s = digitsOnly(v).slice(0, 14);
-  return s
-    .replace(/^(\d{2})(\d)/, '$1.$2')
-    .replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3')
-    .replace(/\.(\d{3})(\d)/, '.$1/$2')
-    .replace(/(\d{4})(\d{1,2})$/, '$1-$2');
-}
+import { digitsOnly } from 'lib/utils/digitsOnly';
+import { formatDocumentInput } from 'lib/utils/formatDocumentInput';
 
 export default function FieldDocument({
   id,
@@ -38,7 +22,7 @@ export default function FieldDocument({
     <div className="space-y-1 relative">
       <label
         htmlFor={name}
-        className="flex items-center gap-2 pl-2 text-sm text-neutral-300">
+        className="flex items-center gap-2 pl-2 text-sm text-(--text-secondary) font-work-sans">
         <span>{label}</span>
       </label>
       <input
@@ -46,13 +30,12 @@ export default function FieldDocument({
         name={name}
         inputMode="numeric"
         aria-invalid={error ? true : undefined}
-        className="h-12 w-full rounded-lg bg-neutral-800/60 border border-neutral-700/60 px-4 outline-none focus:border-purple-600 transition-colors"
+        className="h-12 w-full rounded-lg bg-(--container-secondary) border border-(--container-border) px-4 outline-none focus:border-(--primary-color) transition-colors font-poppins"
         {...register}
         value={display}
         onChange={(e) => {
           const raw = digitsOnly(e.target.value);
-          const formatted =
-            docType === 'CNPJ' ? formatCNPJ(raw) : formatCPF(raw);
+          const formatted = formatDocumentInput(raw, docType);
           setDisplay(formatted);
           register?.onChange?.({ target: { name, value: raw } });
         }}
@@ -60,7 +43,7 @@ export default function FieldDocument({
       {error && (
         <span
           role="alert"
-          className="absolute -right-1 -bottom-5 text-red-400/70 text-sm font-medium">
+          className="font-work-sans absolute -right-1 -bottom-5 text-(--negative)/70 text-sm font-medium">
           {error}
         </span>
       )}

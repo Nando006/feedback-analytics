@@ -86,9 +86,7 @@ describe('Login Page', () => {
     const mainDiv = container.firstChild as HTMLElement;
     expect(mainDiv).toHaveClass(
       'min-h-screen',
-      'bg-gradient-to-b',
-      'from-neutral-900',
-      'to-neutral-800',
+      'bg-(--bg-color)',
     );
   });
 
