@@ -4,7 +4,7 @@ import SVGLock from 'components/svg/lock';
 
 export default function Login() {
   return (
-    <div className="min-h-screen bg-(--bg-color)/80 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-(--bg-color) flex items-center justify-center p-4">
       {/* Container principal */}
       <div className="w-full max-w-md">
         <Card
