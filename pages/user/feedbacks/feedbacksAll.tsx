@@ -10,7 +10,6 @@ import FeedbackHeader from 'components/user/pages/feedbacks/feedbackHeader';
 import FeedbackFiltersComponent from 'components/user/pages/feedbacks/feedbackFilters';
 import FeedbackCard from 'components/user/pages/feedbacks/feedbackCard';
 import FeedbackPagination from 'components/user/pages/feedbacks/feedbackPagination';
-import FeedbacksAllLoadingState from 'components/user/pages/feedbacksAll/FeedbacksAllLoadingState';
 import FeedbacksAllErrorState from 'components/user/pages/feedbacksAll/FeedbacksAllErrorState';
 import FeedbacksAllEmptyState from 'components/user/pages/feedbacksAll/FeedbacksAllEmptyState';
 import FeedbacksAllLoadingOverlay from 'components/user/pages/feedbacksAll/FeedbacksAllLoadingOverlay';
@@ -37,7 +36,7 @@ export default function FeedbacksAll() {
     navigation.state === 'loading' &&
     navigation.location?.pathname === '/user/feedbacks/all';
 
-  const initialLoading = loading && !feedbacks.length && !error;
+  // const initialLoading = loading && !feedbacks.length && !error; // removed loading state
 
   useEffect(() => {
     if (navigation.state === 'idle') {
@@ -124,9 +123,7 @@ export default function FeedbacksAll() {
       {/* Lista de feedbacks + Paginação + Overlay */}
       <div className="relative">
         <div className="space-y-4">
-          {initialLoading ? (
-            <FeedbacksAllLoadingState />
-          ) : feedbacks.length === 0 ? (
+          {feedbacks.length === 0 ? (
             <FeedbacksAllEmptyState hasFilters={Boolean(filters.search || filters.rating)} />
           ) : (
             feedbacks.map((feedback) => (
