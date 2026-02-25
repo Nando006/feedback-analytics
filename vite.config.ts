@@ -2,10 +2,28 @@ import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 import * as path from 'path';
 import tailwindcss from '@tailwindcss/vite';
+import { execSync } from 'child_process';
+
+function getGitVersionTag(): string {
+  try {
+    return execSync('git describe --tags --abbrev=0', {
+      stdio: ['ignore', 'pipe', 'ignore'],
+    })
+      .toString()
+      .trim();
+  } catch {
+    return 'dev';
+  }
+}
+
+const gitVersion = getGitVersionTag();
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  define: {
+    __APP_VERSION__: JSON.stringify(gitVersion),
+  },
   resolve: {
     alias: {
       src: path.resolve(__dirname, './src'),

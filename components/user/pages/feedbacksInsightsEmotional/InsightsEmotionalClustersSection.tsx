@@ -1,10 +1,6 @@
 import type { InsightsEmotionalClustersSectionProps } from './ui.types';
 
-function sentimentLabel(sentiment: 'positive' | 'neutral' | 'negative') {
-  if (sentiment === 'positive') return 'Positivo';
-  if (sentiment === 'negative') return 'Negativo';
-  return 'Neutro';
-}
+import { sentimentLabel } from 'lib/utils/sentiment';
 
 export default function InsightsEmotionalClustersSection({
   clusters,
