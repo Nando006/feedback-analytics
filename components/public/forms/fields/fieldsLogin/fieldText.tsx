@@ -21,13 +21,13 @@ export default function FieldText({
         id={id}
         name={name}
         aria-invalid={error ? true : undefined}
-        className="h-12 w-full pl-5 bg-neutral-700/50 rounded-lg border border-neutral-600/50 outline-none hover:border-neutral-500 focus:border-purple-600 duration-200"
+        className="h-12 w-full pl-5 bg-(--bg-primary) rounded-lg border border-(--bg-tertiary) outline-none hover:border-(--bg-secondary) focus:border-(--primary-color) duration-200"
         {...register}
       />
       {error && (
         <span
           role="alert"
-          className="absolute right-1 -bottom-5 text-red-400/60 text-sm font-semibold">
+          className="absolute right-1 -bottom-5 text-(--negative) text-sm font-semibold">
           {error}
         </span>
       )}
