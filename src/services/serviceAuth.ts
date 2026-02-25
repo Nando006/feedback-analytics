@@ -1,8 +1,7 @@
 import { supabase } from 'src/supabase/supabaseClient';
 
 export type LoginPayload =
-  | { email: string; password: string; remember: boolean }
-  | { phone: string; password: string; remember: boolean };
+  { email: string; password: string; remember: boolean };
 
 export async function ServiceLogin(
   payload: LoginPayload,
