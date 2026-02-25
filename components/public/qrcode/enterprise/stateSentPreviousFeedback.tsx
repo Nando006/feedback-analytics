@@ -7,16 +7,16 @@ export default function StateSentPreviousFeedback({
   enterpriseName: string;
 }) {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-neutral-900 to-neutral-800 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-(--container-secondary) flex items-center justify-center p-4">
       <Card
         title="Feedback Já Enviado"
         text="Este dispositivo já enviou feedback para esta empresa hoje"
         icon={<SVGImageProfile />}
         children={
           <div className="text-center">
-            <div className="w-16 h-16 bg-orange-600/20 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="w-16 h-16 bg-(--neutral)/20 rounded-full flex items-center justify-center mx-auto mb-4">
               <svg
-                className="w-8 h-8 text-orange-400"
+                className="w-8 h-8 text-(--neutral)"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24">
@@ -28,17 +28,17 @@ export default function StateSentPreviousFeedback({
                 />
               </svg>
             </div>
-            <p className="text-neutral-400 mb-6">
+            <p className="text-(--text-secondary) mb-6 font-work-sans">
               Obrigado! Este dispositivo já enviou feedback para esta empresa
               hoje. Você poderá enviar um novo feedback amanhã.
             </p>
             {enterpriseName && (
-              <p className="text-sm text-neutral-500 mb-6">
+              <p className="text-sm text-(--text-tertiary) mb-6 font-work-sans">
                 <span className="font-medium">Empresa:</span> {enterpriseName}
               </p>
             )}
-            <div className="bg-blue-600/10 border border-blue-600/20 rounded-lg p-4">
-              <p className="text-blue-300 text-sm">
+            <div className="bg-(--primary-color)/10 border border-(--primary-color)/20 rounded-lg p-4">
+              <p className="text-(--primary-color) text-sm font-work-sans">
                 <strong>Por que não posso enviar outro feedback?</strong>
                 <br />
                 Para evitar spam e garantir a qualidade dos feedbacks,
