@@ -1,6 +1,8 @@
 import type { FieldFormProps } from '../ui.types';
 import { useMemo, useState } from 'react';
 
+import { getPasswordStrength } from 'lib/utils/passwordStrength';
+
 export default function FieldPassword({
   id,
   name,
@@ -13,35 +15,7 @@ export default function FieldPassword({
   const [value, setValue] = useState('');
 
   const strength = useMemo(() => {
-    const pwd = value || '';
-    let score = 0;
-    if (pwd.length >= 8) score += 1;
-    if (/[a-z]/.test(pwd)) score += 1;
-    if (/[A-Z]/.test(pwd)) score += 1;
-    if (/\d/.test(pwd)) score += 1;
-    if (/[^A-Za-z0-9]/.test(pwd)) score += 1;
-    const normalized = Math.min(4, score);
-    const percent = (normalized / 4) * 100;
-    const labelMap = [
-      'Muito fraca',
-      'Fraca',
-      'Razoável',
-      'Forte',
-      'Muito forte',
-    ];
-    const colorMap = [
-      'bg-red-500',
-      'bg-red-500',
-      'bg-yellow-500',
-      'bg-green-500',
-      'bg-purple-600',
-    ];
-    return {
-      percent,
-      label: labelMap[normalized],
-      color: colorMap[normalized],
-      showBar: pwd.length > 0,
-    };
+    return getPasswordStrength(value);
   }, [value]);
 
   return (

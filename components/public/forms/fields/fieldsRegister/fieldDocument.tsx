@@ -1,24 +1,8 @@
 import type { RegisterFieldDocumentProps } from '../ui.types';
 import { useEffect, useState } from 'react';
 
-function digitsOnly(value: string) {
-  return (value || '').replace(/\D+/g, '');
-}
-function formatCPF(v: string) {
-  const s = digitsOnly(v).slice(0, 11);
-  return s
-    .replace(/^(\d{3})(\d)/, '$1.$2')
-    .replace(/^(\d{3})\.(\d{3})(\d)/, '$1.$2.$3')
-    .replace(/\.(\d{3})(\d{1,2})$/, '.$1-$2');
-}
-function formatCNPJ(v: string) {
-  const s = digitsOnly(v).slice(0, 14);
-  return s
-    .replace(/^(\d{2})(\d)/, '$1.$2')
-    .replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3')
-    .replace(/\.(\d{3})(\d)/, '.$1/$2')
-    .replace(/(\d{4})(\d{1,2})$/, '$1-$2');
-}
+import { digitsOnly } from 'lib/utils/digitsOnly';
+import { formatDocumentInput } from 'lib/utils/formatDocumentInput';
 
 export default function FieldDocument({
   id,
@@ -51,8 +35,7 @@ export default function FieldDocument({
         value={display}
         onChange={(e) => {
           const raw = digitsOnly(e.target.value);
-          const formatted =
-            docType === 'CNPJ' ? formatCNPJ(raw) : formatCPF(raw);
+          const formatted = formatDocumentInput(raw, docType);
           setDisplay(formatted);
           register?.onChange?.({ target: { name, value: raw } });
         }}
