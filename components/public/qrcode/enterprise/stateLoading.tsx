@@ -3,16 +3,16 @@ import SVGImageProfile from 'components/svg/imageProfile';
 
 export default function StateLoading() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-neutral-900 to-neutral-800 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-(--container-secondary) flex items-center justify-center p-4">
       <Card
         title="Validando..."
         text="Verificando informações da empresa"
         icon={<SVGImageProfile />}
         children={
           <div className="text-center">
-            <div className="w-16 h-16 bg-blue-600/20 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="w-16 h-16 bg-(--container-secondary) rounded-full flex items-center justify-center mx-auto mb-4">
               <svg
-                className="w-8 h-8 text-blue-400 animate-spin"
+                className="w-8 h-8 text-(--primary-color) animate-spin"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24">
@@ -24,7 +24,7 @@ export default function StateLoading() {
                 />
               </svg>
             </div>
-            <p className="text-neutral-400">
+            <p className="text-(--text-secondary)">
               Aguarde enquanto validamos as informações...
             </p>
           </div>
