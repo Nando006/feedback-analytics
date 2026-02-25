@@ -4,6 +4,7 @@ import FieldCustomerName from './fields/fieldsQRCode/fieldCustomerName';
 import FieldCustomerEmail from './fields/fieldsQRCode/fieldCustomerEmail';
 import FieldCustomerGender from './fields/fieldsQRCode/fieldCustomerGender';
 import type { FormQRCodeFeedbackProps } from './fields/fieldsQRCode/ui.types';
+import { FaSpinner } from 'react-icons/fa6';
 
 export default function FormQRCodeFeedback({
   formData,
@@ -28,16 +29,15 @@ export default function FormQRCodeFeedback({
         onMessageChange={(message) => onFormDataChange({ message })}
       />
 
-      <div className="border-t border-neutral-700 pt-4">
+      <div className="border-t border-(--container-border) pt-4">
         <button
           type="button"
           onClick={onToggleOptionalFields}
-          className="flex items-center justify-between w-full text-left text-sm font-medium text-neutral-200 hover:text-purple-400 transition-colors">
+          className="flex items-center justify-between w-full text-left text-sm font-medium text-(--text-secondary) hover:text-(--primary-color) transition-colors font-work-sans">
           <span>Informações pessoais (opcional)</span>
           <svg
-            className={`w-5 h-5 transition-transform ${
-              showOptionalFields ? 'rotate-180' : ''
-            }`}
+            className={`w-5 h-5 transition-transform ${showOptionalFields ? 'rotate-180' : ''
+              }`}
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24">
@@ -49,16 +49,16 @@ export default function FormQRCodeFeedback({
             />
           </svg>
         </button>
-        <p className="text-xs text-neutral-400 mt-1">
+        <p className="text-xs text-(--text-muted) font-work-sans mt-1">
           Compartilhe suas informações para nos ajudar a melhorar nossos
           serviços
         </p>
       </div>
 
       {showOptionalFields && (
-        <div className="space-y-4 bg-neutral-800/50 p-6 rounded-xl border border-neutral-700">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-blue-500 rounded-lg flex items-center justify-center">
+        <div className="space-y-4 bg-(--container-secondary)/50 p-6 rounded-xl border border-(--container-border)">
+          <div className="flex items-center mb-4 gap-2">
+            <div className="w-8 h-8 bg-gradient-to-br from-(--primary-color) to-(--terciary-color-dark) rounded-lg flex items-center justify-center">
               <svg
                 className="w-4 h-4 text-white"
                 fill="none"
@@ -72,7 +72,7 @@ export default function FormQRCodeFeedback({
                 />
               </svg>
             </div>
-            <h3 className="text-lg font-semibold text-neutral-100">
+            <h3 className="text-lg font-semibold text-(--text-primary) font-montserrat">
               Informações Pessoais
             </h3>
           </div>
@@ -102,8 +102,14 @@ export default function FormQRCodeFeedback({
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-neutral-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors disabled:cursor-not-allowed">
-        {isSubmitting ? 'Enviando...' : 'Enviar Feedback'}
+        className="w-full bg-gradient-to-r from-(--primary-color) to-(--tertiary-color-dark) hover:from-(--tertiary-color-dark) hover:to-(--primary-color) disabled:bg-neutral-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors disabled:cursor-not-allowed font-poppins cursor-pointer">
+        {isSubmitting ? (
+          <>
+            <FaSpinner className="animate-spin text-gray-100 mx-auto" aria-hidden="true" />
+          </>
+        ) : (
+          'Enviar Feedback'
+        )}
       </button>
     </form>
   );
