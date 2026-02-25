@@ -13,7 +13,7 @@ export default function Card({
     <div className="bg-(--container-secondary)/80 backdrop-blur-lg border border-(--bg-secondary) rounded-2xl shadow-2xl p-8">
       <div className="text-center mb-8">
         {icon && (
-          <div className="w-16 h-16 bg-gradient-to-br from-(--primary-color) to-(--terciary-color-dark) rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+          <div className="w-16 h-16 p-2 bg-gradient-to-br from-(--primary-color) to-(--terciary-color-dark) rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
             {icon}
           </div>
         )}
