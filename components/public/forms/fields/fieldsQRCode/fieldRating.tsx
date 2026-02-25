@@ -11,7 +11,7 @@ export default function FieldRating({ rating, onRatingChange }: FieldRatingProps
 
   return (
     <div>
-      <label className="block text-sm font-medium text-neutral-200 mb-3">
+      <label className="font-work-sans block text-sm font-medium text-(--text-primary) mb-3">
         Como você avalia nossa experiência?
       </label>
       <div className="flex justify-center gap-2">
@@ -22,8 +22,8 @@ export default function FieldRating({ rating, onRatingChange }: FieldRatingProps
             onClick={() => onRatingChange(star)}
             className={`w-12 h-12 rounded-full transition-all duration-200 ${
               star <= rating
-                ? 'bg-yellow-500 text-white scale-110'
-                : 'bg-neutral-700 text-neutral-400 hover:bg-neutral-600'
+                ? 'bg-(--neutral) text-white scale-110'
+                : 'bg-(--container-border) text-(--text-secondary) hover:bg-(--container-secondary)'
             }`}>
             <svg
               className="w-6 h-6 mx-auto"
@@ -35,7 +35,7 @@ export default function FieldRating({ rating, onRatingChange }: FieldRatingProps
         ))}
       </div>
       {rating > 0 && (
-        <p className="text-center text-sm text-neutral-400 mt-2">
+        <p className="text-center text-sm text-(--text-secondary) mt-2">
           {ratingLabels[rating as keyof typeof ratingLabels]}
         </p>
       )}
