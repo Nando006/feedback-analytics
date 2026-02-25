@@ -19,16 +19,10 @@ export function EndpointsAuth(app: express.Express) {
       remember: payload.remember ?? false,
     });
 
-    const { data, error } =
-      'email' in payload
-        ? await supabase.auth.signInWithPassword({
-            email: payload.email,
-            password: payload.password,
-          })
-        : await supabase.auth.signInWithPassword({
-            phone: payload.phone,
-            password: payload.password,
-          });
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: payload.email,
+      password: payload.password,
+    });
 
     if (error) {
       return sendTypedError(res, 401, API_ERROR_INVALID_CREDENTIALS);

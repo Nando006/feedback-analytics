@@ -1,23 +1,8 @@
 import type { FieldFormProps } from '../ui.types';
 import { useState } from 'react';
 
-function digitsOnly(value: string) {
-  return (value || '').replace(/\D+/g, '');
-}
-function formatBR(raw: string) {
-  const d = digitsOnly(raw).slice(0, 13); // 55 + 11
-  const only = d.startsWith('55') ? d : `55${d}`;
-  const country = '+55';
-  const local = only.slice(2);
-  const ddd = local.slice(0, 2);
-  const rest = local.slice(2);
-  if (rest.length <= 4) return `${country} (${ddd}${rest ? `) ${rest}` : ')'}`;
-  if (rest.length <= 9)
-    return `${country} (${ddd}) ${rest.slice(0, rest.length - 4)}-${rest.slice(
-      -4,
-    )}`;
-  return `${country} (${ddd}) ${rest.slice(0, 5)}-${rest.slice(5, 9)}`;
-}
+import { digitsOnly } from 'lib/utils/digitsOnly';
+import { formatPhoneInputBR } from 'lib/utils/formatPhoneInputBR';
 
 export default function FieldPhoneRegister({
   id,
@@ -46,7 +31,7 @@ export default function FieldPhoneRegister({
         onChange={(e) => {
           const raw = digitsOnly(e.target.value);
           const withCountry = raw.startsWith('55') ? raw : `55${raw}`;
-          setDisplay(formatBR(withCountry));
+          setDisplay(formatPhoneInputBR(withCountry));
           register?.onChange?.({
             target: { name, value: `+${withCountry}` },
           });
