@@ -140,6 +140,11 @@ export default function Home() {
             ))}
           </div>
         </section>
+
+        <footer className="container mx-auto flex items-center justify-between px-6 pb-10 text-xs text-(--text-muted) font-work-sans">
+          <span>Feedback Analytics</span>
+          <span>Versão: {__APP_VERSION__}</span>
+        </footer>
       </div>
       {showVideo && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-4">

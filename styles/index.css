@@ -47,8 +47,8 @@
   --primary-color-dark: #136863;
   --secondary-color: #3ED9E3;
   --secondary-color-dark: #1EA49C;
-  --terciary-color: #1EA49C;
-  --terciary-color-dark: #136863;
+  --tertiary-color: #1EA49C;
+  --tertiary-color-dark: #136863;
 
   /* Cores de Estrutura (Fundo e Superfície) */
   --header-color: #343B4F;
@@ -58,7 +58,7 @@
   --container-secondary: oklch(26.9% 0 0);
   /* Neutral-800 */
   
-  --container-border: oklch(26.9% 0 0);
+  --container-border: oklch(39.514% 0.00133 15.353);
   /* Neutral-800 */
 
   /* feelings */

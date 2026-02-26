@@ -113,7 +113,7 @@ export default function FeedbackQRCodeEnterprise() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-neutral-900 to-neutral-800 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-(--container-primary) flex items-center justify-center p-4">
       <Card
         title="Compartilhe sua Experiência"
         text={

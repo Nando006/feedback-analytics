@@ -1,6 +1,8 @@
 import type { FieldFormProps } from '../ui.types';
 import { useMemo, useState } from 'react';
 
+import { getPasswordStrength } from 'lib/utils/passwordStrength';
+
 export default function FieldPassword({
   id,
   name,
@@ -13,35 +15,7 @@ export default function FieldPassword({
   const [value, setValue] = useState('');
 
   const strength = useMemo(() => {
-    const pwd = value || '';
-    let score = 0;
-    if (pwd.length >= 8) score += 1;
-    if (/[a-z]/.test(pwd)) score += 1;
-    if (/[A-Z]/.test(pwd)) score += 1;
-    if (/\d/.test(pwd)) score += 1;
-    if (/[^A-Za-z0-9]/.test(pwd)) score += 1;
-    const normalized = Math.min(4, score);
-    const percent = (normalized / 4) * 100;
-    const labelMap = [
-      'Muito fraca',
-      'Fraca',
-      'Razoável',
-      'Forte',
-      'Muito forte',
-    ];
-    const colorMap = [
-      'bg-red-500',
-      'bg-red-500',
-      'bg-yellow-500',
-      'bg-green-500',
-      'bg-purple-600',
-    ];
-    return {
-      percent,
-      label: labelMap[normalized],
-      color: colorMap[normalized],
-      showBar: pwd.length > 0,
-    };
+    return getPasswordStrength(value);
   }, [value]);
 
   return (
@@ -58,7 +32,7 @@ export default function FieldPassword({
           id={id}
           name={name}
           aria-invalid={error ? true : undefined}
-          className="h-12 w-full pl-5 pr-12 bg-neutral-700/50 rounded-lg border border-neutral-600/50 outline-none hover:border-neutral-500 focus:border-purple-600 duration-200"
+          className="h-12 w-full pl-5 bg-(--bg-primary) rounded-lg border border-(--bg-tertiary) outline-none hover:border-(--bg-secondary) focus:border-(--primary-color) duration-200"
           {...register}
           onChange={(e) => {
             register?.onChange?.(e);
@@ -68,7 +42,7 @@ export default function FieldPassword({
         <button
           type="button"
           aria-label={show ? 'Ocultar senha' : 'Mostrar senha'}
-          className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-md text-neutral-300 hover:text-neutral-100 hover:bg-neutral-700/60 focus:outline-none focus:ring-2 focus:ring-purple-600"
+          className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-md text-(--text-primary) hover:text-(--text-tertiary) hover:bg-(--bg-secondary) focus:outline-none focus:ring-2 focus:ring-(--primary-color) cursor-pointer"
           onClick={() => setShow((s) => !s)}>
           {show ? (
             <svg
@@ -91,22 +65,22 @@ export default function FieldPassword({
       </div>
       {strength.showBar && (
         <div className="mt-2">
-          <div className="w-full h-2 rounded-full overflow-hidden bg-neutral-700/60">
+          <div className="w-full h-2 rounded-full overflow-hidden bg-(--bg-tertiary)">
             <div
               className={`h-full transition-[width] duration-200 ease-in-out ${strength.color}`}
               style={{ width: `${strength.percent}%` }}
             />
           </div>
-          <div className="mt-1 text-[11px] flex items-center justify-between text-neutral-400">
+          <div className="mt-1 text-[11px] flex items-center justify-between text-(--text-secondary)">
             <span>Força da senha</span>
-            <span className="text-neutral-300">{strength.label}</span>
+            <span className="text-(--text-tertiary)">{strength.label}</span>
           </div>
         </div>
       )}
       {error && (
         <span
           role="alert"
-          className="absolute right-1 -bottom-5 text-red-400/60 text-sm font-semibold">
+          className="absolute right-1 -bottom-5 text-(--negative) text-sm font-semibold">
           {error}
         </span>
       )}

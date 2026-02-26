@@ -12,12 +12,12 @@ export default function FieldRemember({
         id={id}
         name={name}
         type="checkbox"
-        className="w-4 h-4 bg-neutral-700/50 rounded border border-neutral-600/50"
+        className="w-4 h-4 bg-(--bg-secondary) rounded border border-(--bg-tertiary) cursor-pointer text-(--primary-color) focus:ring-(--primary-color) hover:bg-(--bg-secondary) duration-200"
         {...register}
       />
       <label
         htmlFor={id}
-        className="text-sm text-neutral-400 cursor-pointer">
+        className="text-sm text-(--text-secondary) cursor-pointer">
         {label}
       </label>
     </div>

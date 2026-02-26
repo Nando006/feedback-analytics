@@ -1,5 +1,7 @@
 import type { AnalyticsAllItemsSectionProps } from './ui.types';
 
+import { sentimentLabel } from 'lib/utils/sentiment';
+
 function sentimentClass(sentiment: 'positive' | 'neutral' | 'negative') {
   if (sentiment === 'positive') {
     return 'border-emerald-500/60 bg-emerald-500/10 text-emerald-300';
@@ -10,12 +12,6 @@ function sentimentClass(sentiment: 'positive' | 'neutral' | 'negative') {
   }
 
   return 'border-amber-500/60 bg-amber-500/10 text-amber-300';
-}
-
-function sentimentLabel(sentiment: 'positive' | 'neutral' | 'negative') {
-  if (sentiment === 'positive') return 'Positivo';
-  if (sentiment === 'negative') return 'Negativo';
-  return 'Neutro';
 }
 
 export default function AnalyticsAllItemsSection({
