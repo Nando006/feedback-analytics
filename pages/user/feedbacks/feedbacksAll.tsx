@@ -36,8 +36,6 @@ export default function FeedbacksAll() {
     navigation.state === 'loading' &&
     navigation.location?.pathname === '/user/feedbacks/all';
 
-  // const initialLoading = loading && !feedbacks.length && !error; // removed loading state
-
   useEffect(() => {
     if (navigation.state === 'idle') {
       setSuppressOverlay(false);
