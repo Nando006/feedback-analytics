@@ -1,6 +1,11 @@
 import { ServiceUpdateCollectingDataEnterprise } from 'src/services/serviceEnterprise';
 import type { ActionFunctionArgs } from 'react-router-dom';
 
+type HttpError = Error & {
+  status?: number;
+  code?: string;
+};
+
 export async function ActionCollectingData({ request }: ActionFunctionArgs) {
   const form = await request.formData();
 
@@ -55,9 +60,28 @@ export async function ActionCollectingData({ request }: ActionFunctionArgs) {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
     });
-  } catch {
-    return new Response(JSON.stringify({ error: 'upsert_failed' }), {
-      status: 400,
+  } catch (error) {
+    const httpError = error as HttpError;
+    const status =
+      typeof httpError?.status === 'number' &&
+      httpError.status >= 400 &&
+      httpError.status <= 599
+        ? httpError.status
+        : 400;
+
+    console.error('ActionCollectingData: falha ao salvar coleta', {
+      status: httpError?.status,
+      code: httpError?.code,
+      message: httpError?.message,
+    });
+
+    return new Response(
+      JSON.stringify({
+        error: httpError?.code || 'upsert_failed',
+        message: httpError?.message || 'Falha ao salvar dados de coleta.',
+      }),
+      {
+      status,
       headers: { 'Content-Type': 'application/json' },
     });
   }
