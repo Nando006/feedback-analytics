@@ -24,7 +24,13 @@ export default function Sidebar({
         }`}>
         <div className="flex h-full flex-col">
           <div className="flex-1">
-            <Menu usesCompanyProducts={Boolean(collecting?.uses_company_products)} />
+            <Menu
+              usesCompanyProducts={Boolean(collecting?.uses_company_products)}
+              usesCompanyServices={Boolean(collecting?.uses_company_services)}
+              usesCompanyDepartments={Boolean(
+                collecting?.uses_company_departments,
+              )}
+            />
           </div>
           <div className="mt-2 border-t border-neutral-800/40">
             <div className="flex justify-end">
@@ -47,7 +53,11 @@ export default function Sidebar({
       }`}>
       <div className="flex h-full flex-col">
         <div className="flex-1">
-          <Menu usesCompanyProducts={Boolean(collecting?.uses_company_products)} />
+          <Menu
+            usesCompanyProducts={Boolean(collecting?.uses_company_products)}
+            usesCompanyServices={Boolean(collecting?.uses_company_services)}
+            usesCompanyDepartments={Boolean(collecting?.uses_company_departments)}
+          />
         </div>
         <div className="mt-2 border-t border-neutral-800/40">
           <div className="flex justify-end">

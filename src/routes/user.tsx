@@ -25,6 +25,8 @@ import FeedbacksAnalyticsPositive from 'pages/user/feedbacks/analytics/feedbacks
 import FeedbacksAnalyticsNegative from 'pages/user/feedbacks/analytics/feedbacksAnalyticsNegative';
 import FeedbacksAnalyticsAll from 'pages/user/feedbacks/analytics/feedbacksAnalyticsAll';
 import QRCodeProducts from 'pages/user/qrcodes/qrcodeProducts';
+import QRCodeServices from 'pages/user/qrcodes/qrcodeServices';
+import QRCodeDepartments from 'pages/user/qrcodes/qrcodeDepartments';
 import { ActionCollectingData } from './actions/actionCollectingData';
 import { ActionFeedbackInsightsReport } from './actions/actionFeedbackInsightsReport';
 import EditCollectingData from 'pages/user/edit/editCollectingData';
@@ -59,6 +61,14 @@ export function RouteUser() {
       <Route
         path="qrcode/products"
         element={<QRCodeProducts />}
+      />
+      <Route
+        path="qrcode/services"
+        element={<QRCodeServices />}
+      />
+      <Route
+        path="qrcode/departments"
+        element={<QRCodeDepartments />}
       />
       <Route
         path="feedbacks/all"
