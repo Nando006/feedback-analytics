@@ -10,11 +10,13 @@ export interface FieldMainProductsProps {
 }
 
 /**
- * Props do campo de confirmação de uso dos próprios produtos.
+ * Props do bloco de capacidades da empresa (produtos, serviços e áreas/departamentos).
  * Usado em: components/user/pages/profile/editCollectingData/fields/fieldUsesCompanyProducts.tsx.
  */
 export interface FieldUsesCompanyProductsProps {
-  checked: boolean;
+  usesCompanyProducts: boolean;
+  usesCompanyServices: boolean;
+  usesCompanyDepartments: boolean;
   onChange: (event: ChangeEvent<HTMLInputElement>) => void;
 }
 

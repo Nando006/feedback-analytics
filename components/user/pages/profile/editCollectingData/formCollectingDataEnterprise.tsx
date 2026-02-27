@@ -25,6 +25,12 @@ export default function FormCollectingDataEnterprise() {
     const [usesCompanyProducts, setUsesCompanyProducts] = useState(
       collecting?.uses_company_products ?? false,
     );
+    const [usesCompanyServices, setUsesCompanyServices] = useState(
+      collecting?.uses_company_services ?? false,
+    );
+    const [usesCompanyDepartments, setUsesCompanyDepartments] = useState(
+      collecting?.uses_company_departments ?? false,
+    );
     const [productsText, setProductsText] = useState(
       (collecting?.main_products_or_services ?? []).join('\n'),
     );
@@ -36,7 +42,21 @@ export default function FormCollectingDataEnterprise() {
     }, [usesCompanyProducts]);
 
     const handleToggle = (event: ChangeEvent<HTMLInputElement>) => {
-      setUsesCompanyProducts(event.target.checked);
+      const { name, checked } = event.target;
+
+      if (name === 'uses_company_products') {
+        setUsesCompanyProducts(checked);
+        return;
+      }
+
+      if (name === 'uses_company_services') {
+        setUsesCompanyServices(checked);
+        return;
+      }
+
+      if (name === 'uses_company_departments') {
+        setUsesCompanyDepartments(checked);
+      }
     };
   return (
     <Form
@@ -59,7 +79,9 @@ export default function FormCollectingDataEnterprise() {
         />
 
         <FieldUsesCompanyProducts
-          checked={usesCompanyProducts}
+          usesCompanyProducts={usesCompanyProducts}
+          usesCompanyServices={usesCompanyServices}
+          usesCompanyDepartments={usesCompanyDepartments}
           onChange={handleToggle}
         />
 
