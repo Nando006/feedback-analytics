@@ -2,8 +2,8 @@
 
 ## Tabelas
 - `auth.users`: tabela base de usuários de autenticação (credenciais, metadados e estado de conta).
-- `public.enterprise`: cadastro da empresa vinculada ao usuário autenticado (`auth_user_id`).N
-- `public.collecting_data_enterprise`: dados estratégicos da empresa para contexto de análise (objetivo, resumo, produtos etc.).
+- `public.enterprise`: cadastro da empresa vinculada ao usuário autenticado (`auth_user_id`).
+- `public.collecting_data_enterprise`: dados estratégicos da empresa para contexto de análise (objetivo, resumo, listas de produtos/serviços e flags de uso de produtos, serviços e áreas/departamentos).
 - `public.collection_points`: pontos de coleta de feedback (ex.: QR Code), com status e identificação.
 - `public.customer`: cadastro de clientes finais associados à empresa.
 - `public.tracked_devices`: rastreio de dispositivos por fingerprint, bloqueio e contagem de feedbacks.
