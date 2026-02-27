@@ -10,7 +10,7 @@ vi.mock('src/services/serviceEnterprise', () => ({
 const mockUpdateCollectingDataEnterprise = vi.mocked(ServiceUpdateCollectingDataEnterprise);
 
 function createRequest(body: Record<string, string | undefined>) {
-  const formData = new FormData();
+  const formData = new URLSearchParams();
   Object.entries(body).forEach(([key, value]) => {
     if (typeof value !== 'undefined') {
       formData.append(key, value);
@@ -20,6 +20,9 @@ function createRequest(body: Record<string, string | undefined>) {
   return new Request('http://localhost/user/edit/collecting-data-enterprise', {
     method: 'POST',
     body: formData,
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+    },
   });
 }
 
@@ -47,6 +50,8 @@ describe('ActionCollectingData', () => {
       business_summary: null,
       main_products_or_services: ['Produto 1', 'Produto 2'],
       uses_company_products: true,
+      uses_company_services: true,
+      uses_company_departments: false,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     });
@@ -58,6 +63,8 @@ describe('ActionCollectingData', () => {
         business_summary: 'Resumo',
         main_products_or_services: 'Produto 1\nProduto 2\n',
         uses_company_products: 'on',
+        uses_company_services: 'on',
+        uses_company_departments: 'false',
       }),
     );
 
@@ -67,6 +74,8 @@ describe('ActionCollectingData', () => {
       business_summary: 'Resumo',
       main_products_or_services: ['Produto 1', 'Produto 2'],
       uses_company_products: true,
+      uses_company_services: true,
+      uses_company_departments: false,
     });
   });
 
@@ -79,6 +88,8 @@ describe('ActionCollectingData', () => {
       business_summary: null,
       main_products_or_services: null,
       uses_company_products: false,
+      uses_company_services: false,
+      uses_company_departments: false,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     });
@@ -87,6 +98,8 @@ describe('ActionCollectingData', () => {
       createArgs({
         main_products_or_services: 'Produto 1',
         uses_company_products: 'false',
+        uses_company_services: 'false',
+        uses_company_departments: 'false',
       }),
     );
 
@@ -96,6 +109,8 @@ describe('ActionCollectingData', () => {
       business_summary: null,
       main_products_or_services: null,
       uses_company_products: false,
+      uses_company_services: false,
+      uses_company_departments: false,
     });
   });
 });

@@ -39,6 +39,8 @@ export interface CollectingDataEnterprise {
   business_summary: string | null;
   main_products_or_services: string[] | null;
   uses_company_products: boolean;
+  uses_company_services: boolean;
+  uses_company_departments: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -55,6 +57,8 @@ export type UpdateCollectingDataPayload = Partial<
     | 'business_summary'
     | 'main_products_or_services'
     | 'uses_company_products'
+    | 'uses_company_services'
+    | 'uses_company_departments'
   >
 >;
 

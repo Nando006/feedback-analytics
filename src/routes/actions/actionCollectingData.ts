@@ -16,6 +16,16 @@ export async function ActionCollectingData({ request }: ActionFunctionArgs) {
     uses_company_products_raw === 'on' ||
     uses_company_products_raw === 'true' ||
     uses_company_products_raw === '1';
+  const uses_company_services_raw = form.get('uses_company_services');
+  const uses_company_services =
+    uses_company_services_raw === 'on' ||
+    uses_company_services_raw === 'true' ||
+    uses_company_services_raw === '1';
+  const uses_company_departments_raw = form.get('uses_company_departments');
+  const uses_company_departments =
+    uses_company_departments_raw === 'on' ||
+    uses_company_departments_raw === 'true' ||
+    uses_company_departments_raw === '1';
 
   /* Processando o campo de texto 'main_products_or_services' recebido do formulário,
   separando cada linha, removendo espaços em branco e filtrando linhas vazias,
@@ -37,6 +47,8 @@ export async function ActionCollectingData({ request }: ActionFunctionArgs) {
         ? main_products_or_services
         : null,
       uses_company_products,
+      uses_company_services,
+      uses_company_departments,
     });
 
     return new Response(JSON.stringify({ collecting }), {

@@ -109,7 +109,7 @@ export function EndpointsEnterprise(app: express.Express) {
       const { data: collecting, error: cErr } = await supabase
         .from('collecting_data_enterprise')
         .select(
-          'id, enterprise_id, company_objective, analytics_goal, business_summary, main_products_or_services, uses_company_products, created_at, updated_at',
+          'id, enterprise_id, company_objective, analytics_goal, business_summary, main_products_or_services, uses_company_products, uses_company_services, uses_company_departments, created_at, updated_at',
         )
         .eq('enterprise_id', enterpriseRow.id)
         .maybeSingle();
@@ -136,6 +136,8 @@ export function EndpointsEnterprise(app: express.Express) {
         business_summary?: string | null;
         main_products_or_services?: string[] | null;
         uses_company_products?: boolean;
+        uses_company_services?: boolean;
+        uses_company_departments?: boolean;
       };
 
       const { data: enterpriseRow, error: eErr } = await supabase
@@ -155,6 +157,8 @@ export function EndpointsEnterprise(app: express.Express) {
         business_summary?: string | null;
         main_products_or_services?: string[] | null;
         uses_company_products?: boolean;
+        uses_company_services?: boolean;
+        uses_company_departments?: boolean;
       } = { updated_at: new Date().toISOString() };
       if (Object.prototype.hasOwnProperty.call(payload, 'company_objective')) {
         updateData.company_objective = payload.company_objective;
@@ -183,6 +187,18 @@ export function EndpointsEnterprise(app: express.Express) {
           updateData.main_products_or_services = null;
         }
       }
+      if (
+        Object.prototype.hasOwnProperty.call(payload, 'uses_company_services')
+      ) {
+        updateData.uses_company_services =
+          payload.uses_company_services ?? false;
+      }
+      if (
+        Object.prototype.hasOwnProperty.call(payload, 'uses_company_departments')
+      ) {
+        updateData.uses_company_departments =
+          payload.uses_company_departments ?? false;
+      }
 
       if (Object.keys(updateData).length === 1) {
         return sendTypedError(res, 400, API_ERROR_EMPTY_PAYLOAD);
@@ -193,7 +209,7 @@ export function EndpointsEnterprise(app: express.Express) {
         .update(updateData)
         .eq('enterprise_id', enterpriseRow.id)
         .select(
-          'id, enterprise_id, company_objective, analytics_goal, business_summary, main_products_or_services, uses_company_products, created_at, updated_at',
+          'id, enterprise_id, company_objective, analytics_goal, business_summary, main_products_or_services, uses_company_products, uses_company_services, uses_company_departments, created_at, updated_at',
         )
         .single();
 
@@ -205,6 +221,8 @@ export function EndpointsEnterprise(app: express.Express) {
           business_summary?: string | null;
           main_products_or_services?: string[] | null;
           uses_company_products?: boolean;
+          uses_company_services?: boolean;
+          uses_company_departments?: boolean;
         } = {
           enterprise_id: enterpriseRow.id,
           ...('company_objective' in payload
@@ -227,13 +245,22 @@ export function EndpointsEnterprise(app: express.Express) {
           ...('uses_company_products' in payload
             ? { uses_company_products: payload.uses_company_products ?? false }
             : {}),
+          ...('uses_company_services' in payload
+            ? { uses_company_services: payload.uses_company_services ?? false }
+            : {}),
+          ...('uses_company_departments' in payload
+            ? {
+                uses_company_departments:
+                  payload.uses_company_departments ?? false,
+              }
+            : {}),
         };
 
         const { data, error } = await supabase
           .from('collecting_data_enterprise')
           .insert(insertData)
           .select(
-            'id, enterprise_id, company_objective, analytics_goal, business_summary, main_products_or_services, uses_company_products, created_at, updated_at',
+            'id, enterprise_id, company_objective, analytics_goal, business_summary, main_products_or_services, uses_company_products, uses_company_services, uses_company_departments, created_at, updated_at',
           )
           .single();
 
@@ -262,6 +289,8 @@ export function EndpointsEnterprise(app: express.Express) {
         business_summary?: string | null;
         main_products_or_services?: string[] | null;
         uses_company_products?: boolean;
+        uses_company_services?: boolean;
+        uses_company_departments?: boolean;
       };
 
       const { data: enterpriseRow, error: eErr } = await supabase
@@ -284,6 +313,8 @@ export function EndpointsEnterprise(app: express.Express) {
             ? null
             : payload.main_products_or_services ?? null,
         uses_company_products: payload.uses_company_products ?? false,
+        uses_company_services: payload.uses_company_services ?? false,
+        uses_company_departments: payload.uses_company_departments ?? false,
         updated_at: new Date().toISOString(),
       };
 
@@ -291,7 +322,7 @@ export function EndpointsEnterprise(app: express.Express) {
         .from('collecting_data_enterprise')
         .upsert(upsertData, { onConflict: 'enterprise_id' })
         .select(
-          'id, enterprise_id, company_objective, analytics_goal, business_summary, main_products_or_services, uses_company_products, created_at, updated_at',
+          'id, enterprise_id, company_objective, analytics_goal, business_summary, main_products_or_services, uses_company_products, uses_company_services, uses_company_departments, created_at, updated_at',
         )
         .single();
 
