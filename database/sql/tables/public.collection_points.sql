@@ -6,6 +6,7 @@ CREATE SCHEMA IF NOT EXISTS "public";
 
 CREATE TABLE IF NOT EXISTS "public"."collection_points" (
   "enterprise_id" uuid NOT NULL,
+  "catalog_item_id" uuid,
   "name" text NOT NULL,
   "type" text NOT NULL,
   "identifier" text,
@@ -16,6 +17,28 @@ CREATE TABLE IF NOT EXISTS "public"."collection_points" (
   PRIMARY KEY ("id")
 );
 
+ALTER TABLE "public"."collection_points"
+  ADD COLUMN IF NOT EXISTS "catalog_item_id" uuid;
+
+CREATE INDEX IF NOT EXISTS "idx_collection_points_catalog_item_id"
+  ON "public"."collection_points" ("catalog_item_id");
+
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+    FROM pg_constraint
+    WHERE conname = 'collection_points_catalog_item_id_fkey'
+  ) THEN
+    ALTER TABLE "public"."collection_points"
+      ADD CONSTRAINT "collection_points_catalog_item_id_fkey"
+      FOREIGN KEY ("catalog_item_id")
+      REFERENCES "public"."catalog_items"("id")
+      ON DELETE SET NULL;
+  END IF;
+END
+$$;
+
 ALTER TABLE "public"."collection_points" ENABLE ROW LEVEL SECURITY;
 
 -- Policies
@@ -24,7 +47,7 @@ CREATE POLICY "Anon pode ler pontos QR_CODE ativos" ON "public"."collection_poin
   AS PERMISSIVE
   FOR SELECT
   TO anon
-  USING (((type = 'QR_CODE'::text) AND (status = 'ACTIVE'::text)));
+  USING (((type = 'QR_CODE'::text) AND (status = 'ACTIVE'::text) AND ((catalog_item_id IS NULL) OR (EXISTS ( SELECT 1 FROM catalog_items ci WHERE ((ci.id = collection_points.catalog_item_id) AND (ci.status = 'ACTIVE'::text)))))));
 
 DROP POLICY IF EXISTS "Usuários autenticados podem gerenciar pontos de coleta" ON "public"."collection_points";
 CREATE POLICY "Usuários autenticados podem gerenciar pontos de coleta" ON "public"."collection_points"

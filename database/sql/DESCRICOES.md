@@ -4,6 +4,7 @@
 - `auth.users`: tabela base de usuários de autenticação (credenciais, metadados e estado de conta).
 - `public.enterprise`: cadastro da empresa vinculada ao usuário autenticado (`auth_user_id`).
 - `public.collecting_data_enterprise`: dados estratégicos da empresa para contexto de análise (objetivo, resumo, listas de produtos/serviços e flags de uso de produtos, serviços e áreas/departamentos).
+- `public.catalog_items`: catálogo estruturado de produtos, serviços e áreas/departamentos da empresa (nome, descrição, tipo e status).
 - `public.collection_points`: pontos de coleta de feedback (ex.: QR Code), com status e identificação.
 - `public.customer`: cadastro de clientes finais associados à empresa.
 - `public.tracked_devices`: rastreio de dispositivos por fingerprint, bloqueio e contagem de feedbacks.
@@ -27,7 +28,7 @@
 ## Triggers
 - `auth.users.on_auth_user_created`: ao criar usuário, dispara criação/configuração inicial da empresa.
 - `auth.users.on_auth_user_metadata_before_update`: antes de atualizar usuário, limpa metadados.
-- `public.*.set_updated_at` (collecting_data_enterprise, collection_points, customer, enterprise, feedback, feedback_analysis, tracked_devices): atualiza `updated_at` automaticamente em updates.
+- `public.*.set_updated_at` (collecting_data_enterprise, catalog_items, collection_points, customer, enterprise, feedback, feedback_analysis, tracked_devices): atualiza `updated_at` automaticamente em updates.
 - `storage.buckets.enforce_bucket_name_length_trigger` (INSERT/UPDATE): valida tamanho de nome de bucket no módulo de storage.
 - `storage.buckets.protect_buckets_delete`: bloqueia deleções indevidas em buckets protegidos.
 - `storage.objects.protect_objects_delete`: bloqueia deleções indevidas em objetos protegidos.
@@ -37,8 +38,12 @@
 ### public.collecting_data_enterprise
 - `Auth gerencia dados de coleta`: só usuários autenticados da própria empresa podem ler/escrever dados de coleta.
 
+### public.catalog_items
+- `Usuários autenticados podem gerenciar catálogo`: gestão completa do catálogo restrita à empresa dona.
+- `Anon pode ler catálogo ativo`: acesso público apenas para itens ativos.
+
 ### public.collection_points
-- `Anon pode ler pontos QR_CODE ativos`: acesso público somente para leitura de pontos QR ativos.
+- `Anon pode ler pontos QR_CODE ativos`: acesso público somente para leitura de pontos QR ativos, e quando houver item associado ele também deve estar ativo.
 - `Usuários autenticados podem gerenciar pontos de coleta`: gestão completa apenas pela empresa dona.
 
 ### public.customer
