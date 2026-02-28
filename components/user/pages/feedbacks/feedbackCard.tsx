@@ -67,6 +67,10 @@ export default function FeedbackCard({ feedback, onClick }: FeedbackCardProps) {
           : 'Empresa';
 
   const itemName = resolvedItemName;
+  const channelDisplayName =
+    feedback.collection_points?.type === 'QR_CODE'
+      ? (feedback.collection_points?.name || '').replace(/^QR Code\s*-\s*.+$/, 'QR Code')
+      : (feedback.collection_points?.name || 'N/A');
 
   return (
     <div
@@ -108,12 +112,12 @@ export default function FeedbackCard({ feedback, onClick }: FeedbackCardProps) {
         <div className="flex items-center gap-4 text-[var(--text-muted)]">
           <span>
             <strong className="text-[var(--text-secondary)]">Canal:</strong>{' '}
-            {feedback.collection_points?.name || 'N/A'}
+            {channelDisplayName}
           </span>
-          <span>
+          {/* <span>
             <strong className="text-[var(--text-secondary)]">Tipo:</strong>{' '}
             {feedback.collection_points?.type || 'N/A'}
-          </span>
+          </span> */}
           <span>
             <strong className="text-[var(--text-secondary)]">Categoria:</strong>{' '}
             {itemKindLabel}
