@@ -10,6 +10,179 @@ import {
 } from '../../../../../lib/constants/server/errors.js';
 import { sendTypedError } from '../../../../../lib/utils/sendTypedError.js';
 
+type CatalogItemKind = 'PRODUCT' | 'SERVICE' | 'DEPARTMENT';
+
+type CatalogItemInput = {
+  id?: string;
+  name: string;
+  description?: string | null;
+  sort_order?: number;
+  status?: 'ACTIVE' | 'INACTIVE';
+};
+
+type CollectingDataPayload = {
+  company_objective?: string | null;
+  analytics_goal?: string | null;
+  business_summary?: string | null;
+  main_products_or_services?: string[] | null;
+  uses_company_products?: boolean;
+  uses_company_services?: boolean;
+  uses_company_departments?: boolean;
+  catalog_products?: CatalogItemInput[] | null;
+  catalog_services?: CatalogItemInput[] | null;
+  catalog_departments?: CatalogItemInput[] | null;
+};
+
+function normalizeCatalogItems(items: CatalogItemInput[] | null | undefined) {
+  return (items ?? [])
+    .map((item, index) => {
+      const name = String(item?.name ?? '').trim();
+      if (!name) return null;
+
+      return {
+        ...(item?.id ? { id: item.id } : {}),
+        name,
+        description: item?.description?.trim() || null,
+        sort_order:
+          typeof item?.sort_order === 'number' && Number.isFinite(item.sort_order)
+            ? item.sort_order
+            : index,
+        status: item?.status === 'INACTIVE' ? 'INACTIVE' : ('ACTIVE' as const),
+      };
+    })
+    .filter((item) => item !== null);
+}
+
+async function syncCatalogItemsByKind(params: {
+  supabase: express.Request['supabase'];
+  enterpriseId: string;
+  kind: CatalogItemKind;
+  items: CatalogItemInput[] | null | undefined;
+  disableAll: boolean;
+}) {
+  const { supabase, enterpriseId, kind, items, disableAll } = params;
+
+  if (!supabase) return { error: true as const };
+
+  if (disableAll) {
+    const { error } = await supabase
+      .from('catalog_items')
+      .update({ status: 'INACTIVE', updated_at: new Date().toISOString() })
+      .eq('enterprise_id', enterpriseId)
+      .eq('kind', kind)
+      .eq('status', 'ACTIVE');
+
+    return { error: Boolean(error) };
+  }
+
+  const normalizedItems = normalizeCatalogItems(items);
+
+  const { data: existing, error: existingError } = await supabase
+    .from('catalog_items')
+    .select('id')
+    .eq('enterprise_id', enterpriseId)
+    .eq('kind', kind);
+
+  if (existingError) {
+    return { error: true as const };
+  }
+
+  const existingIds = new Set((existing ?? []).map((row) => row.id));
+  const updateRows = normalizedItems
+    .filter((item) => item.id && existingIds.has(item.id))
+    .map((item) => ({
+      id: item.id,
+      enterprise_id: enterpriseId,
+      kind,
+      name: item.name,
+      description: item.description,
+      sort_order: item.sort_order,
+      status: item.status,
+      updated_at: new Date().toISOString(),
+    }));
+
+  const insertRows = normalizedItems
+    .filter((item) => !item.id || !existingIds.has(item.id))
+    .map((item) => ({
+      enterprise_id: enterpriseId,
+      kind,
+      name: item.name,
+      description: item.description,
+      sort_order: item.sort_order,
+      status: item.status,
+    }));
+
+  if (updateRows.length > 0) {
+    const { error } = await supabase.from('catalog_items').upsert(updateRows, {
+      onConflict: 'id',
+    });
+    if (error) return { error: true as const };
+  }
+
+  if (insertRows.length > 0) {
+    const { error } = await supabase.from('catalog_items').insert(insertRows);
+    if (error) return { error: true as const };
+  }
+
+  const incomingKnownIds = new Set(
+    normalizedItems
+      .map((item) => item.id)
+      .filter((id): id is string => Boolean(id) && existingIds.has(id)),
+  );
+
+  const staleIds = (existing ?? [])
+    .map((row) => row.id)
+    .filter((id) => !incomingKnownIds.has(id));
+
+  if (staleIds.length > 0) {
+    const { error } = await supabase
+      .from('catalog_items')
+      .update({ status: 'INACTIVE', updated_at: new Date().toISOString() })
+      .in('id', staleIds);
+
+    if (error) return { error: true as const };
+  }
+
+  return { error: false as const };
+}
+
+async function getCatalogSnapshot(
+  supabase: express.Request['supabase'],
+  enterpriseId: string,
+) {
+  if (!supabase) {
+    return {
+      catalog_products: [],
+      catalog_services: [],
+      catalog_departments: [],
+    };
+  }
+
+  const { data, error } = await supabase
+    .from('catalog_items')
+    .select(
+      'id, enterprise_id, kind, name, description, status, sort_order, created_at, updated_at',
+    )
+    .eq('enterprise_id', enterpriseId)
+    .eq('status', 'ACTIVE')
+    .order('sort_order', { ascending: true })
+    .order('created_at', { ascending: true });
+
+  if (error || !data) {
+    return {
+      catalog_products: [],
+      catalog_services: [],
+      catalog_departments: [],
+    };
+  }
+
+  return {
+    catalog_products: data.filter((item) => item.kind === 'PRODUCT'),
+    catalog_services: data.filter((item) => item.kind === 'SERVICE'),
+    catalog_departments: data.filter((item) => item.kind === 'DEPARTMENT'),
+  };
+}
+
 export function EndpointsEnterprise(app: express.Express) {
   // Busca os dados da empresa.
   app.get('/api/protected/user/enterprise', requireAuth, async (req, res) => {
@@ -118,7 +291,13 @@ export function EndpointsEnterprise(app: express.Express) {
         return sendTypedError(res, 404, API_ERROR_COLLECTING_DATA_NOT_FOUND);
       }
 
-      return res.json({ collecting });
+      if (!collecting) {
+        return res.json({ collecting: null });
+      }
+
+      const catalog = await getCatalogSnapshot(supabase, enterpriseRow.id);
+
+      return res.json({ collecting: { ...collecting, ...catalog } });
     },
   );
 
@@ -130,15 +309,7 @@ export function EndpointsEnterprise(app: express.Express) {
       const supabase = req.supabase!;
       const user = req.user!;
 
-      const payload = (req.body ?? {}) as {
-        company_objective?: string | null;
-        analytics_goal?: string | null;
-        business_summary?: string | null;
-        main_products_or_services?: string[] | null;
-        uses_company_products?: boolean;
-        uses_company_services?: boolean;
-        uses_company_departments?: boolean;
-      };
+      const payload = (req.body ?? {}) as CollectingDataPayload;
 
       const { data: enterpriseRow, error: eErr } = await supabase
         .from('enterprise')
@@ -200,7 +371,25 @@ export function EndpointsEnterprise(app: express.Express) {
           payload.uses_company_departments ?? false;
       }
 
-      if (Object.keys(updateData).length === 1) {
+      const hasCatalogProducts = Object.prototype.hasOwnProperty.call(
+        payload,
+        'catalog_products',
+      );
+      const hasCatalogServices = Object.prototype.hasOwnProperty.call(
+        payload,
+        'catalog_services',
+      );
+      const hasCatalogDepartments = Object.prototype.hasOwnProperty.call(
+        payload,
+        'catalog_departments',
+      );
+
+      if (
+        Object.keys(updateData).length === 1 &&
+        !hasCatalogProducts &&
+        !hasCatalogServices &&
+        !hasCatalogDepartments
+      ) {
         return sendTypedError(res, 400, API_ERROR_EMPTY_PAYLOAD);
       }
 
@@ -268,10 +457,96 @@ export function EndpointsEnterprise(app: express.Express) {
           return sendTypedError(res, 400, API_ERROR_UPSERT_FAILED);
         }
 
-        return res.json({ collecting: data });
+        const syncProductResult =
+          hasCatalogProducts || payload.uses_company_products === false
+            ? await syncCatalogItemsByKind({
+                supabase,
+                enterpriseId: enterpriseRow.id,
+                kind: 'PRODUCT',
+                items: payload.catalog_products,
+                disableAll: payload.uses_company_products === false,
+              })
+            : { error: false as const };
+
+        const syncServiceResult =
+          hasCatalogServices || payload.uses_company_services === false
+            ? await syncCatalogItemsByKind({
+                supabase,
+                enterpriseId: enterpriseRow.id,
+                kind: 'SERVICE',
+                items: payload.catalog_services,
+                disableAll: payload.uses_company_services === false,
+              })
+            : { error: false as const };
+
+        const syncDepartmentResult =
+          hasCatalogDepartments || payload.uses_company_departments === false
+            ? await syncCatalogItemsByKind({
+                supabase,
+                enterpriseId: enterpriseRow.id,
+                kind: 'DEPARTMENT',
+                items: payload.catalog_departments,
+                disableAll: payload.uses_company_departments === false,
+              })
+            : { error: false as const };
+
+        if (
+          syncProductResult.error ||
+          syncServiceResult.error ||
+          syncDepartmentResult.error
+        ) {
+          return sendTypedError(res, 400, API_ERROR_UPSERT_FAILED);
+        }
+
+        const catalog = await getCatalogSnapshot(supabase, enterpriseRow.id);
+
+        return res.json({ collecting: { ...data, ...catalog } });
       }
 
-      return res.json({ collecting: updated });
+      const syncProductResult =
+        hasCatalogProducts || payload.uses_company_products === false
+          ? await syncCatalogItemsByKind({
+              supabase,
+              enterpriseId: enterpriseRow.id,
+              kind: 'PRODUCT',
+              items: payload.catalog_products,
+              disableAll: payload.uses_company_products === false,
+            })
+          : { error: false as const };
+
+      const syncServiceResult =
+        hasCatalogServices || payload.uses_company_services === false
+          ? await syncCatalogItemsByKind({
+              supabase,
+              enterpriseId: enterpriseRow.id,
+              kind: 'SERVICE',
+              items: payload.catalog_services,
+              disableAll: payload.uses_company_services === false,
+            })
+          : { error: false as const };
+
+      const syncDepartmentResult =
+        hasCatalogDepartments || payload.uses_company_departments === false
+          ? await syncCatalogItemsByKind({
+              supabase,
+              enterpriseId: enterpriseRow.id,
+              kind: 'DEPARTMENT',
+              items: payload.catalog_departments,
+              disableAll: payload.uses_company_departments === false,
+            })
+          : { error: false as const };
+
+      if (
+        syncProductResult.error ||
+        syncServiceResult.error ||
+        syncDepartmentResult.error
+      ) {
+        return sendTypedError(res, 400, API_ERROR_UPSERT_FAILED);
+      }
+
+      const catalog = await getCatalogSnapshot(supabase, enterpriseRow.id);
+
+      return res.json({ collecting: { ...updated, ...catalog } });
     },
   );
 
@@ -283,15 +558,7 @@ export function EndpointsEnterprise(app: express.Express) {
       const supabase = req.supabase!;
       const user = req.user!;
 
-      const payload = (req.body ?? {}) as {
-        company_objective?: string | null;
-        analytics_goal?: string | null;
-        business_summary?: string | null;
-        main_products_or_services?: string[] | null;
-        uses_company_products?: boolean;
-        uses_company_services?: boolean;
-        uses_company_departments?: boolean;
-      };
+      const payload = (req.body ?? {}) as CollectingDataPayload;
 
       const { data: enterpriseRow, error: eErr } = await supabase
         .from('enterprise')
@@ -330,7 +597,41 @@ export function EndpointsEnterprise(app: express.Express) {
         return sendTypedError(res, 400, API_ERROR_UPSERT_FAILED);
       }
 
-      return res.json({ collecting: data });
+      const syncProductResult = await syncCatalogItemsByKind({
+        supabase,
+        enterpriseId: enterpriseRow.id,
+        kind: 'PRODUCT',
+        items: payload.catalog_products,
+        disableAll: payload.uses_company_products === false,
+      });
+
+      const syncServiceResult = await syncCatalogItemsByKind({
+        supabase,
+        enterpriseId: enterpriseRow.id,
+        kind: 'SERVICE',
+        items: payload.catalog_services,
+        disableAll: payload.uses_company_services === false,
+      });
+
+      const syncDepartmentResult = await syncCatalogItemsByKind({
+        supabase,
+        enterpriseId: enterpriseRow.id,
+        kind: 'DEPARTMENT',
+        items: payload.catalog_departments,
+        disableAll: payload.uses_company_departments === false,
+      });
+
+      if (
+        syncProductResult.error ||
+        syncServiceResult.error ||
+        syncDepartmentResult.error
+      ) {
+        return sendTypedError(res, 400, API_ERROR_UPSERT_FAILED);
+      }
+
+      const catalog = await getCatalogSnapshot(supabase, enterpriseRow.id);
+
+      return res.json({ collecting: { ...data, ...catalog } });
     },
   );
 }
