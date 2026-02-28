@@ -1,6 +1,7 @@
+import { memo } from 'react';
 import type { FieldCompanyObjectiveProps } from './ui.types';
 
-export default function FieldCompanyObjective({ value, onChange }: FieldCompanyObjectiveProps) {
+const FieldCompanyObjective = memo(function FieldCompanyObjective({ value, onChange }: FieldCompanyObjectiveProps) {
   return (
     <div className="group">
       <label
@@ -30,4 +31,6 @@ export default function FieldCompanyObjective({ value, onChange }: FieldCompanyO
       </div>
     </div>
   );
-}
+});
+
+export default FieldCompanyObjective;

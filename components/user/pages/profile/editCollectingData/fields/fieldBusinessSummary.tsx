@@ -1,7 +1,8 @@
+import { memo } from 'react';
 import type { FieldBusinessSummaryProps } from './ui.types';
 
 
-export default function FieldBusinessSummary({ value, onChange }: FieldBusinessSummaryProps) {
+const FieldBusinessSummary = memo(function FieldBusinessSummary({ value, onChange }: FieldBusinessSummaryProps) {
   return (
     <div className="group">
       <label
@@ -31,4 +32,6 @@ export default function FieldBusinessSummary({ value, onChange }: FieldBusinessS
       </div>
     </div>
   );
-}
+});
+
+export default FieldBusinessSummary;

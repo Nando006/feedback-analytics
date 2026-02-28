@@ -1,6 +1,7 @@
+import { memo } from 'react';
 import type { FieldAnalyticsGoalProps } from './ui.types';
 
-export default function FieldAnalyticsGoal({ value, onChange }: FieldAnalyticsGoalProps) {
+const FieldAnalyticsGoal = memo(function FieldAnalyticsGoal({ value, onChange }: FieldAnalyticsGoalProps) {
   return (
     <div className="group">
       <label
@@ -30,4 +31,6 @@ export default function FieldAnalyticsGoal({ value, onChange }: FieldAnalyticsGo
       </div>
     </div>
   );
-}
+});
+
+export default FieldAnalyticsGoal;

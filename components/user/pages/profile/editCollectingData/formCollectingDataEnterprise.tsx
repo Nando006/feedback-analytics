@@ -2,7 +2,7 @@ import type {
   CatalogItemInput,
   CollectingDataEnterprise,
 } from 'lib/interfaces/entities/enterprise.entity';
-import { useCallback, useEffect, useRef, useState, type ChangeEvent } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent } from 'react';
 import { Form, useRouteLoaderData } from 'react-router-dom';
 import FieldCompanyObjective from './fields/fieldCompanyObjective';
 import FieldAnalyticsGoal from './fields/fieldAnalyticsGoal';
@@ -35,15 +35,28 @@ export default function FormCollectingDataEnterprise() {
     collecting: CollectingDataEnterprise | null;
   };
 
-  const initialProducts =
-    collecting?.catalog_products && collecting.catalog_products.length > 0
-      ? normalizeCatalogInput(collecting.catalog_products)
-      : (collecting?.main_products_or_services ?? []).map((name, index) => ({
-          name,
-          description: '',
-          status: 'ACTIVE' as const,
-          sort_order: index,
-        }));
+  const initialProducts = useMemo(
+    () =>
+      collecting?.catalog_products && collecting.catalog_products.length > 0
+        ? normalizeCatalogInput(collecting.catalog_products)
+        : (collecting?.main_products_or_services ?? []).map((name, index) => ({
+            name,
+            description: '',
+            status: 'ACTIVE' as const,
+            sort_order: index,
+          })),
+    [collecting?.catalog_products, collecting?.main_products_or_services],
+  );
+
+  const initialServices = useMemo(
+    () => normalizeCatalogInput(collecting?.catalog_services),
+    [collecting?.catalog_services],
+  );
+
+  const initialDepartments = useMemo(
+    () => normalizeCatalogInput(collecting?.catalog_departments),
+    [collecting?.catalog_departments],
+  );
 
   const [companyObjective, setCompanyObjective] = useState(
     collecting?.company_objective ?? '',
@@ -63,15 +76,9 @@ export default function FormCollectingDataEnterprise() {
   const [usesCompanyDepartments, setUsesCompanyDepartments] = useState(
     collecting?.uses_company_departments ?? false,
   );
-  const [productItems, setProductItems] = useState<CatalogItemInput[]>(
-    initialProducts,
-  );
-  const [serviceItems, setServiceItems] = useState<CatalogItemInput[]>(
-    normalizeCatalogInput(collecting?.catalog_services),
-  );
-  const [departmentItems, setDepartmentItems] = useState<CatalogItemInput[]>(
-    normalizeCatalogInput(collecting?.catalog_departments),
-  );
+  const [productItems, setProductItems] = useState<CatalogItemInput[]>(() => initialProducts);
+  const [serviceItems, setServiceItems] = useState<CatalogItemInput[]>(() => initialServices);
+  const [departmentItems, setDepartmentItems] = useState<CatalogItemInput[]>(() => initialDepartments);
   const productsInputRef = useRef<HTMLInputElement | null>(null);
   const servicesInputRef = useRef<HTMLInputElement | null>(null);
   const departmentsInputRef = useRef<HTMLInputElement | null>(null);
@@ -95,7 +102,7 @@ export default function FormCollectingDataEnterprise() {
     }
   }, [usesCompanyDepartments]);
 
-  const handleToggle = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleToggle = useCallback((event: ChangeEvent<HTMLInputElement>) => {
     const { name, checked } = event.target;
 
     if (name === 'uses_company_products') {
@@ -111,7 +118,7 @@ export default function FormCollectingDataEnterprise() {
     if (name === 'uses_company_departments') {
       setUsesCompanyDepartments(checked);
     }
-  };
+  }, []);
 
   const handleSubmit = useCallback(() => {
     if (productsInputRef.current) {

@@ -1,7 +1,7 @@
-import type { ChangeEvent } from 'react';
+import { memo, type ChangeEvent } from 'react';
 import type { FieldUsesCompanyProductsProps } from './ui.types';
 
-function CheckboxItem({
+const CheckboxItem = memo(function CheckboxItem({
   name,
   checked,
   title,
@@ -42,9 +42,9 @@ function CheckboxItem({
       </div>
     </label>
   );
-}
+});
 
-export default function FieldUsesCompanyProducts({
+const FieldUsesCompanyProducts = memo(function FieldUsesCompanyProducts({
   usesCompanyProducts,
   usesCompanyServices,
   usesCompanyDepartments,
@@ -84,4 +84,6 @@ export default function FieldUsesCompanyProducts({
       />
     </div>
   );
-}
+});
+
+export default FieldUsesCompanyProducts;
