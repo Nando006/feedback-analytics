@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { useFetcher, useRouteLoaderData } from 'react-router-dom';
 import { getQrCodeUrl } from 'lib/utils/qrcode';
 import type { Enterprise } from 'lib/interfaces/entities/enterprise.entity';
@@ -22,6 +22,66 @@ type QrCatalogActionResponse = {
   collection_point_id?: string;
   error?: string;
 };
+
+type QrPreviewImageProps = {
+  src: string;
+  alt: string;
+};
+
+const QrPreviewImage = memo(function QrPreviewImage({
+  src,
+  alt,
+}: QrPreviewImageProps) {
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const element = containerRef.current;
+
+    if (!element || isVisible) {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      {
+        root: null,
+        rootMargin: '220px',
+        threshold: 0.01,
+      },
+    );
+
+    observer.observe(element);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [isVisible]);
+
+  return (
+    <div
+      ref={containerRef}
+      className="mb-4 flex min-h-52 items-center justify-center rounded-xl border border-neutral-800 bg-neutral-950/60 p-4"
+    >
+      {isVisible ? (
+        <img
+          src={src}
+          alt={alt}
+          className="h-44 w-44"
+          loading="lazy"
+          decoding="async"
+        />
+      ) : (
+        <div className="h-44 w-44 animate-pulse rounded-lg bg-neutral-900" />
+      )}
+    </div>
+  );
+});
 
 export default function QrCodeCatalogPage({
   title,
@@ -151,15 +211,10 @@ export default function QrCodeCatalogPage({
                 </div>
 
                 {item.active && item.qrCodeUrl ? (
-                  <div className="mb-4 flex items-center justify-center rounded-xl border border-neutral-800 bg-neutral-950/60 p-4">
-                    <img
-                      src={item.qrCodeUrl}
-                      alt={`QR Code de ${item.name}`}
-                      className="h-44 w-44"
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  </div>
+                  <QrPreviewImage
+                    src={item.qrCodeUrl}
+                    alt={`QR Code de ${item.name}`}
+                  />
                 ) : (
                   <div className="mb-4 rounded-xl border border-dashed border-neutral-700 bg-neutral-950/40 p-4 text-center text-xs text-neutral-500">
                     Ative o QR Code para gerar o link e a imagem deste item.

@@ -1,4 +1,4 @@
-import { memo, useCallback, type ChangeEvent } from 'react';
+import { memo, useCallback, useEffect, useRef, type ChangeEvent } from 'react';
 import type { CatalogItemInput } from 'lib/interfaces/entities/enterprise.entity';
 import type { FieldCatalogItemsProps } from './ui.types';
 
@@ -78,11 +78,42 @@ export default function FieldCatalogItems({
   items,
   onChange,
 }: FieldCatalogItemsProps) {
+  const localKeySequenceRef = useRef(0);
+  const localKeysRef = useRef<string[]>([]);
+
+  const createLocalKey = useCallback(() => {
+    localKeySequenceRef.current += 1;
+    return `local-item-${localKeySequenceRef.current}`;
+  }, []);
+
+  useEffect(() => {
+    if (items.length === 0) {
+      localKeysRef.current = [];
+      return;
+    }
+
+    if (localKeysRef.current.length > items.length) {
+      localKeysRef.current = localKeysRef.current.slice(0, items.length);
+      return;
+    }
+
+    if (localKeysRef.current.length < items.length) {
+      const missing = items.length - localKeysRef.current.length;
+      const newKeys = Array.from({ length: missing }, () => createLocalKey());
+      localKeysRef.current = [...localKeysRef.current, ...newKeys];
+    }
+  }, [items.length, createLocalKey]);
+
   const handleAddItem = useCallback(() => {
+    localKeysRef.current = [...localKeysRef.current, createLocalKey()];
     onChange([...items, { ...EMPTY_ITEM, sort_order: items.length }]);
-  }, [items, onChange]);
+  }, [createLocalKey, items, onChange]);
 
   const handleRemoveItem = useCallback((index: number) => {
+    localKeysRef.current = localKeysRef.current.filter(
+      (_, currentIndex) => currentIndex !== index,
+    );
+
     const nextItems = items
       .filter((_, currentIndex) => currentIndex !== index)
       .map((item, currentIndex) => ({
@@ -141,7 +172,7 @@ export default function FieldCatalogItems({
         <div className="space-y-3">
           {items.map((item, index) => (
             <CatalogItemRow
-              key={item.id ?? `${title}-${index}`}
+              key={item.id ?? localKeysRef.current[index] ?? `${title}-${index}`}
               index={index}
               item={item}
               onRemove={handleRemoveItem}
