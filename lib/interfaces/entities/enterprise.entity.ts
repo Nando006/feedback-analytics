@@ -41,6 +41,9 @@ export interface CollectingDataEnterprise {
   uses_company_products: boolean;
   uses_company_services: boolean;
   uses_company_departments: boolean;
+  catalog_products?: CatalogItem[];
+  catalog_services?: CatalogItem[];
+  catalog_departments?: CatalogItem[];
   created_at: string;
   updated_at: string;
 }

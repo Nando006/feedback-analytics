@@ -1,4 +1,5 @@
 import type { ChangeEvent } from 'react';
+import type { CatalogItemInput } from 'lib/interfaces/entities/enterprise.entity';
 
 /**
  * Props do campo de principais produtos/serviços.
@@ -7,6 +8,18 @@ import type { ChangeEvent } from 'react';
 export interface FieldMainProductsProps {
   value: string;
   onChange: (value: string) => void;
+}
+
+/**
+ * Props do campo dinâmico de itens de catálogo por categoria.
+ * Usado em: components/user/pages/profile/editCollectingData/fields/fieldCatalogItems.tsx.
+ */
+export interface FieldCatalogItemsProps {
+  title: string;
+  description: string;
+  emptyLabel: string;
+  items: CatalogItemInput[];
+  onChange: (items: CatalogItemInput[]) => void;
 }
 
 /**

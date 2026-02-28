@@ -1,63 +1,131 @@
-import type { CollectingDataEnterprise } from "lib/interfaces/entities/enterprise.entity";
-import { useEffect, useState, type ChangeEvent } from "react";
-import { Form, useRouteLoaderData } from "react-router-dom";
-import FieldCompanyObjective from "./fields/fieldCompanyObjective";
-import FieldAnalyticsGoal from "./fields/fieldAnalyticsGoal";
-import FieldBusinessSummary from "./fields/fieldBusinessSummary";
-import FieldUsesCompanyProducts from "./fields/fieldUsesCompanyProducts";
-import FieldMainProducts from "./fields/fieldMainProducts";
+import type {
+  CatalogItemInput,
+  CollectingDataEnterprise,
+} from 'lib/interfaces/entities/enterprise.entity';
+import { useEffect, useMemo, useState, type ChangeEvent } from 'react';
+import { Form, useRouteLoaderData } from 'react-router-dom';
+import FieldCompanyObjective from './fields/fieldCompanyObjective';
+import FieldAnalyticsGoal from './fields/fieldAnalyticsGoal';
+import FieldBusinessSummary from './fields/fieldBusinessSummary';
+import FieldUsesCompanyProducts from './fields/fieldUsesCompanyProducts';
+import FieldCatalogItems from './fields/fieldCatalogItems';
+
+function normalizeCatalogInput(items: CatalogItemInput[] | undefined) {
+  return (items ?? []).map((item, index) => ({
+    ...(item.id ? { id: item.id } : {}),
+    name: item.name ?? '',
+    description: item.description ?? '',
+    status: item.status ?? 'ACTIVE',
+    sort_order:
+      typeof item.sort_order === 'number' && Number.isFinite(item.sort_order)
+        ? item.sort_order
+        : index,
+  }));
+}
+
+function buildLegacyProducts(items: CatalogItemInput[]) {
+  return items
+    .map((item) => String(item.name ?? '').trim())
+    .filter((name) => name.length > 0)
+    .join('\n');
+}
 
 export default function FormCollectingDataEnterprise() {
+  const { collecting } = useRouteLoaderData('user') as {
+    collecting: CollectingDataEnterprise | null;
+  };
 
-    const { collecting } = useRouteLoaderData('user') as {
-      collecting: CollectingDataEnterprise | null;
-    };
+  const initialProducts =
+    collecting?.catalog_products && collecting.catalog_products.length > 0
+      ? normalizeCatalogInput(collecting.catalog_products)
+      : (collecting?.main_products_or_services ?? []).map((name, index) => ({
+          name,
+          description: '',
+          status: 'ACTIVE' as const,
+          sort_order: index,
+        }));
 
-    const [companyObjective, setCompanyObjective] = useState(
-      collecting?.company_objective ?? '',
-    );
-    const [analyticsGoal, setAnalyticsGoal] = useState(
-      collecting?.analytics_goal ?? '',
-    );
-    const [businessSummary, setBusinessSummary] = useState(
-      collecting?.business_summary ?? '',
-    );
-    const [usesCompanyProducts, setUsesCompanyProducts] = useState(
-      collecting?.uses_company_products ?? false,
-    );
-    const [usesCompanyServices, setUsesCompanyServices] = useState(
-      collecting?.uses_company_services ?? false,
-    );
-    const [usesCompanyDepartments, setUsesCompanyDepartments] = useState(
-      collecting?.uses_company_departments ?? false,
-    );
-    const [productsText, setProductsText] = useState(
-      (collecting?.main_products_or_services ?? []).join('\n'),
-    );
+  const [companyObjective, setCompanyObjective] = useState(
+    collecting?.company_objective ?? '',
+  );
+  const [analyticsGoal, setAnalyticsGoal] = useState(
+    collecting?.analytics_goal ?? '',
+  );
+  const [businessSummary, setBusinessSummary] = useState(
+    collecting?.business_summary ?? '',
+  );
+  const [usesCompanyProducts, setUsesCompanyProducts] = useState(
+    collecting?.uses_company_products ?? false,
+  );
+  const [usesCompanyServices, setUsesCompanyServices] = useState(
+    collecting?.uses_company_services ?? false,
+  );
+  const [usesCompanyDepartments, setUsesCompanyDepartments] = useState(
+    collecting?.uses_company_departments ?? false,
+  );
+  const [productItems, setProductItems] = useState<CatalogItemInput[]>(
+    initialProducts,
+  );
+  const [serviceItems, setServiceItems] = useState<CatalogItemInput[]>(
+    normalizeCatalogInput(collecting?.catalog_services),
+  );
+  const [departmentItems, setDepartmentItems] = useState<CatalogItemInput[]>(
+    normalizeCatalogInput(collecting?.catalog_departments),
+  );
 
-    useEffect(() => {
-      if (!usesCompanyProducts) {
-        setProductsText('');
-      }
-    }, [usesCompanyProducts]);
+  useEffect(() => {
+    if (!usesCompanyProducts) {
+      setProductItems([]);
+    }
+  }, [usesCompanyProducts]);
 
-    const handleToggle = (event: ChangeEvent<HTMLInputElement>) => {
-      const { name, checked } = event.target;
+  useEffect(() => {
+    if (!usesCompanyServices) {
+      setServiceItems([]);
+    }
+  }, [usesCompanyServices]);
 
-      if (name === 'uses_company_products') {
-        setUsesCompanyProducts(checked);
-        return;
-      }
+  useEffect(() => {
+    if (!usesCompanyDepartments) {
+      setDepartmentItems([]);
+    }
+  }, [usesCompanyDepartments]);
 
-      if (name === 'uses_company_services') {
-        setUsesCompanyServices(checked);
-        return;
-      }
+  const handleToggle = (event: ChangeEvent<HTMLInputElement>) => {
+    const { name, checked } = event.target;
 
-      if (name === 'uses_company_departments') {
-        setUsesCompanyDepartments(checked);
-      }
-    };
+    if (name === 'uses_company_products') {
+      setUsesCompanyProducts(checked);
+      return;
+    }
+
+    if (name === 'uses_company_services') {
+      setUsesCompanyServices(checked);
+      return;
+    }
+
+    if (name === 'uses_company_departments') {
+      setUsesCompanyDepartments(checked);
+    }
+  };
+
+  const serializedProducts = useMemo(
+    () => JSON.stringify(productItems),
+    [productItems],
+  );
+  const serializedServices = useMemo(
+    () => JSON.stringify(serviceItems),
+    [serviceItems],
+  );
+  const serializedDepartments = useMemo(
+    () => JSON.stringify(departmentItems),
+    [departmentItems],
+  );
+  const legacyProductsText = useMemo(
+    () => buildLegacyProducts(productItems),
+    [productItems],
+  );
+
   return (
     <Form
       method="post"
@@ -85,10 +153,54 @@ export default function FormCollectingDataEnterprise() {
           onChange={handleToggle}
         />
 
+        <input
+          type="hidden"
+          name="catalog_products"
+          value={serializedProducts}
+        />
+        <input
+          type="hidden"
+          name="catalog_services"
+          value={serializedServices}
+        />
+        <input
+          type="hidden"
+          name="catalog_departments"
+          value={serializedDepartments}
+        />
+        <input
+          type="hidden"
+          name="main_products_or_services"
+          value={legacyProductsText}
+        />
+
         {usesCompanyProducts && (
-          <FieldMainProducts
-            value={productsText}
-            onChange={setProductsText}
+          <FieldCatalogItems
+            title="Produtos"
+            description="Cadastre os produtos da empresa para segmentar os feedbacks."
+            emptyLabel="Nenhum produto cadastrado ainda."
+            items={productItems}
+            onChange={setProductItems}
+          />
+        )}
+
+        {usesCompanyServices && (
+          <FieldCatalogItems
+            title="Serviços"
+            description="Cadastre os serviços oferecidos para coletar feedback por serviço."
+            emptyLabel="Nenhum serviço cadastrado ainda."
+            items={serviceItems}
+            onChange={setServiceItems}
+          />
+        )}
+
+        {usesCompanyDepartments && (
+          <FieldCatalogItems
+            title="Departamentos"
+            description="Cadastre departamentos para direcionar feedback por área."
+            emptyLabel="Nenhum departamento cadastrado ainda."
+            items={departmentItems}
+            onChange={setDepartmentItems}
           />
         )}
       </div>
