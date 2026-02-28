@@ -1,4 +1,4 @@
-import { useEffect, useState, type ChangeEvent } from 'react';
+import { useCallback, useEffect, useState, type ChangeEvent } from 'react';
 import { useLoaderData, useNavigation, useSearchParams } from 'react-router-dom';
 import type {
   FeedbackCategory,
@@ -35,6 +35,8 @@ export default function FeedbacksAll() {
     item: '',
   };
   const error = loaderData?.error ?? null;
+  const [searchInput, setSearchInput] = useState(filters.search ?? '');
+  const [itemInput, setItemInput] = useState(filters.item ?? '');
   const loading =
     navigation.state === 'loading' &&
     navigation.location?.pathname === '/user/feedbacks/all';
@@ -49,7 +51,7 @@ export default function FeedbacksAll() {
     null,
   );
 
-  const updateSearchParams = (next: {
+  const updateSearchParams = useCallback((next: {
     page?: number;
     limit?: number;
     rating?: number;
@@ -62,9 +64,9 @@ export default function FeedbacksAll() {
     const page = next.page ?? filters.page;
     const limit = next.limit ?? filters.limit;
     const rating = next.rating ?? filters.rating;
-    const search = next.search ?? filters.search;
+    const search = next.search ?? searchInput;
     const category = next.category ?? filters.category;
-    const item = next.item ?? filters.item;
+    const item = next.item ?? itemInput;
 
     params.set('page', String(page));
     params.set('limit', String(limit));
@@ -94,12 +96,37 @@ export default function FeedbacksAll() {
     }
 
     setSearchParams(params);
-  };
+  }, [
+    searchParams,
+    setSearchParams,
+    filters.page,
+    filters.limit,
+    filters.rating,
+    filters.category,
+    searchInput,
+    itemInput,
+  ]);
+
+  useEffect(() => {
+    if (searchInput === (filters.search ?? '') && itemInput === (filters.item ?? '')) {
+      return;
+    }
+
+    const timeoutId = setTimeout(() => {
+      setSuppressOverlay(true);
+      updateSearchParams({
+        search: searchInput,
+        item: itemInput,
+        page: 1,
+      });
+    }, 450);
+
+    return () => clearTimeout(timeoutId);
+  }, [searchInput, itemInput, filters.search, filters.item, updateSearchParams]);
 
   // Handlers
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setSuppressOverlay(true);
-    updateSearchParams({ search: e.target.value, page: 1 });
+    setSearchInput(e.target.value);
   };
 
   const handleRatingFilter = (rating: number | undefined) => {
@@ -108,8 +135,7 @@ export default function FeedbacksAll() {
   };
 
   const handleItemChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setSuppressOverlay(true);
-    updateSearchParams({ item: e.target.value, page: 1 });
+    setItemInput(e.target.value);
   };
 
   const handleCategoryFilter = (category: FeedbackCategory | undefined) => {
@@ -141,7 +167,7 @@ export default function FeedbacksAll() {
 
       {/* Filtros */}
       <FeedbackFiltersComponent
-        filters={filters}
+        filters={{ ...filters, search: searchInput, item: itemInput }}
         onSearchChange={handleSearchChange}
         onItemChange={handleItemChange}
         onRatingFilter={handleRatingFilter}
@@ -155,7 +181,7 @@ export default function FeedbacksAll() {
           {feedbacks.length === 0 ? (
             <FeedbacksAllEmptyState
               hasFilters={Boolean(
-                filters.search || filters.rating || filters.category || filters.item,
+                searchInput || filters.rating || filters.category || itemInput,
               )}
             />
           ) : (
