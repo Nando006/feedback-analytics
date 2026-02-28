@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
-import { useFetcher, useRevalidator, useRouteLoaderData } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import { useFetcher, useRouteLoaderData } from 'react-router-dom';
 import { getQrCodeUrl } from 'lib/utils/qrcode';
 import type { Enterprise } from 'lib/interfaces/entities/enterprise.entity';
 import type { AuthUser } from 'lib/interfaces/entities/auth-user.entity';
@@ -33,22 +33,67 @@ export default function QrCodeCatalogPage({
     user: AuthUser['user'];
   };
   const fetcher = useFetcher<QrCatalogActionResponse>();
-  const revalidator = useRevalidator();
+  const [items, setItems] = useState(data.items);
+  const [pendingCatalogItemId, setPendingCatalogItemId] = useState<string | null>(null);
 
   useEffect(() => {
-    if (fetcher.state !== 'idle' || !fetcher.data?.ok) {
+    setItems(data.items);
+  }, [data.items]);
+
+  useEffect(() => {
+    if (fetcher.state !== 'idle' || !fetcher.data) {
       return;
     }
 
-    revalidator.revalidate();
-  }, [fetcher.state, fetcher.data, revalidator]);
+    if (fetcher.data.ok && fetcher.data.catalog_item_id) {
+      setItems((previousItems) =>
+        previousItems.map((item) => {
+          if (item.catalog_item_id !== fetcher.data?.catalog_item_id) {
+            return item;
+          }
+
+          return {
+            ...item,
+            active: Boolean(fetcher.data?.active),
+            collection_point_id:
+              fetcher.data?.active
+                ? (fetcher.data.collection_point_id ?? item.collection_point_id)
+                : null,
+          };
+        }),
+      );
+    }
+
+    setPendingCatalogItemId(null);
+  }, [fetcher.state, fetcher.data]);
 
   const buildFeedbackUrl = (collectionPointId: string, catalogItemId: string) => {
     const baseUrl = window.location.origin;
     return `${baseUrl}/feedback/qrcode?enterprise=${enterprise.id}&collection_point=${collectionPointId}&item=${catalogItemId}`;
   };
 
+  const hasItems = items.length > 0;
+
+  const itemsWithQrData = useMemo(
+    () =>
+      items.map((item) => {
+        const feedbackUrl = item.collection_point_id
+          ? buildFeedbackUrl(item.collection_point_id, item.catalog_item_id)
+          : null;
+
+        return {
+          ...item,
+          feedbackUrl,
+          qrCodeUrl: feedbackUrl
+            ? getQrCodeUrl(feedbackUrl, { size: 260, format: 'png' })
+            : null,
+        };
+      }),
+    [items, enterprise.id],
+  );
+
   const handleToggle = (catalogItemId: string, isActive: boolean) => {
+    setPendingCatalogItemId(catalogItemId);
     fetcher.submit(
       {
         intent: isActive ? INTENT_QR_DISABLE : INTENT_QR_ENABLE,
@@ -77,19 +122,10 @@ export default function QrCodeCatalogPage({
         </div>
       )}
 
-      {data.items.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-neutral-700 bg-neutral-900/40 p-6 text-sm text-neutral-400">
-          Nenhum item ativo encontrado nessa categoria. Cadastre itens na tela de coleta para gerar QR Codes.
-        </div>
-      ) : (
+      {hasItems ? (
         <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
-          {data.items.map((item) => {
-            const feedbackUrl = item.collection_point_id
-              ? buildFeedbackUrl(item.collection_point_id, item.catalog_item_id)
-              : null;
-            const qrCodeUrl = feedbackUrl
-              ? getQrCodeUrl(feedbackUrl, { size: 260, format: 'png' })
-              : null;
+          {itemsWithQrData.map((item) => {
+            const isPending = pendingCatalogItemId === item.catalog_item_id && fetcher.state !== 'idle';
 
             return (
               <article
@@ -114,12 +150,14 @@ export default function QrCodeCatalogPage({
                   </span>
                 </div>
 
-                {item.active && qrCodeUrl ? (
+                {item.active && item.qrCodeUrl ? (
                   <div className="mb-4 flex items-center justify-center rounded-xl border border-neutral-800 bg-neutral-950/60 p-4">
                     <img
-                      src={qrCodeUrl}
+                      src={item.qrCodeUrl}
                       alt={`QR Code de ${item.name}`}
                       className="h-44 w-44"
+                      loading="lazy"
+                      decoding="async"
                     />
                   </div>
                 ) : (
@@ -128,23 +166,31 @@ export default function QrCodeCatalogPage({
                   </div>
                 )}
 
-                {item.active && feedbackUrl && (
+                {item.active && item.feedbackUrl && (
                   <div className="mb-4 rounded-lg border border-neutral-800 bg-neutral-950/60 px-3 py-2 text-xs text-neutral-300 break-all">
-                    {feedbackUrl}
+                    {item.feedbackUrl}
                   </div>
                 )}
 
                 <button
                   type="button"
                   onClick={() => handleToggle(item.catalog_item_id, item.active)}
-                  disabled={fetcher.state !== 'idle'}
+                  disabled={isPending}
                   className="w-full rounded-lg border border-neutral-700 px-3 py-2 text-sm font-medium text-neutral-100 transition-colors hover:border-neutral-500 hover:bg-neutral-800 disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  {item.active ? 'Desativar QR deste item' : 'Ativar QR deste item'}
+                  {isPending
+                    ? 'Atualizando...'
+                    : item.active
+                      ? 'Desativar QR deste item'
+                      : 'Ativar QR deste item'}
                 </button>
               </article>
             );
           })}
+        </div>
+      ) : (
+        <div className="rounded-2xl border border-dashed border-neutral-700 bg-neutral-900/40 p-6 text-sm text-neutral-400">
+          Nenhum item ativo encontrado nessa categoria. Cadastre itens na tela de coleta para gerar QR Codes.
         </div>
       )}
     </div>

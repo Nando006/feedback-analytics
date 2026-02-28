@@ -2,7 +2,7 @@ import type {
   CatalogItemInput,
   CollectingDataEnterprise,
 } from 'lib/interfaces/entities/enterprise.entity';
-import { useEffect, useMemo, useState, type ChangeEvent } from 'react';
+import { useCallback, useEffect, useRef, useState, type ChangeEvent } from 'react';
 import { Form, useRouteLoaderData } from 'react-router-dom';
 import FieldCompanyObjective from './fields/fieldCompanyObjective';
 import FieldAnalyticsGoal from './fields/fieldAnalyticsGoal';
@@ -72,6 +72,10 @@ export default function FormCollectingDataEnterprise() {
   const [departmentItems, setDepartmentItems] = useState<CatalogItemInput[]>(
     normalizeCatalogInput(collecting?.catalog_departments),
   );
+  const productsInputRef = useRef<HTMLInputElement | null>(null);
+  const servicesInputRef = useRef<HTMLInputElement | null>(null);
+  const departmentsInputRef = useRef<HTMLInputElement | null>(null);
+  const legacyProductsInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     if (!usesCompanyProducts) {
@@ -109,26 +113,28 @@ export default function FormCollectingDataEnterprise() {
     }
   };
 
-  const serializedProducts = useMemo(
-    () => JSON.stringify(productItems),
-    [productItems],
-  );
-  const serializedServices = useMemo(
-    () => JSON.stringify(serviceItems),
-    [serviceItems],
-  );
-  const serializedDepartments = useMemo(
-    () => JSON.stringify(departmentItems),
-    [departmentItems],
-  );
-  const legacyProductsText = useMemo(
-    () => buildLegacyProducts(productItems),
-    [productItems],
-  );
+  const handleSubmit = useCallback(() => {
+    if (productsInputRef.current) {
+      productsInputRef.current.value = JSON.stringify(productItems);
+    }
+
+    if (servicesInputRef.current) {
+      servicesInputRef.current.value = JSON.stringify(serviceItems);
+    }
+
+    if (departmentsInputRef.current) {
+      departmentsInputRef.current.value = JSON.stringify(departmentItems);
+    }
+
+    if (legacyProductsInputRef.current) {
+      legacyProductsInputRef.current.value = buildLegacyProducts(productItems);
+    }
+  }, [productItems, serviceItems, departmentItems]);
 
   return (
     <Form
       method="post"
+      onSubmit={handleSubmit}
       className="space-y-8">
       <div className="space-y-6">
         <FieldCompanyObjective
@@ -154,24 +160,28 @@ export default function FormCollectingDataEnterprise() {
         />
 
         <input
+          ref={productsInputRef}
           type="hidden"
           name="catalog_products"
-          value={serializedProducts}
+          defaultValue="[]"
         />
         <input
+          ref={servicesInputRef}
           type="hidden"
           name="catalog_services"
-          value={serializedServices}
+          defaultValue="[]"
         />
         <input
+          ref={departmentsInputRef}
           type="hidden"
           name="catalog_departments"
-          value={serializedDepartments}
+          defaultValue="[]"
         />
         <input
+          ref={legacyProductsInputRef}
           type="hidden"
           name="main_products_or_services"
-          value={legacyProductsText}
+          defaultValue=""
         />
 
         {usesCompanyProducts && (

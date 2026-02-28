@@ -1,4 +1,5 @@
 import ErrorPage from 'components/user/shared/handling/errorPage';
+import type { ShouldRevalidateFunctionArgs } from 'react-router-dom';
 import Dashboard from 'pages/user/dashboard';
 import EditCustomer from 'pages/user/edit/editCustomers';
 import EditUser from 'pages/user/edit/editProfile';
@@ -38,6 +39,21 @@ import { LoaderQrCodeProducts } from './loaders/loaderQrCodeProducts';
 import { LoaderQrCodeServices } from './loaders/loaderQrCodeServices';
 import { LoaderQrCodeDepartments } from './loaders/loaderQrCodeDepartments';
 
+function shouldRevalidateUserRoute({
+  formMethod,
+  formAction,
+  defaultShouldRevalidate,
+}: ShouldRevalidateFunctionArgs) {
+  const isPost = String(formMethod ?? '').toUpperCase() === 'POST';
+  const actionPath = String(formAction ?? '');
+
+  if (isPost && actionPath.includes('/user/qrcode/')) {
+    return false;
+  }
+
+  return defaultShouldRevalidate;
+}
+
 export function RouteUser() {
   return (
     <Route
@@ -46,6 +62,7 @@ export function RouteUser() {
       errorElement={<ErrorPage />}
       element={<LayoutUser />}
       loader={LoaderUserProtected}
+      shouldRevalidate={shouldRevalidateUserRoute}
       action={ActionLogout}>
       <Route
         path="dashboard"

@@ -23,6 +23,7 @@ export default function SectionQrCodeDisplay({
                   src={qrCodeUrl}
                   alt={`QR Code para feedback - ${enterpriseName || 'Empresa'}`}
                   className=""
+                  decoding="async"
                 />
               </div>
 
