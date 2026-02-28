@@ -71,7 +71,7 @@ const CatalogItemRow = memo(function CatalogItemRow({
   );
 });
 
-export default function FieldCatalogItems({
+const FieldCatalogItems = memo(function FieldCatalogItems({
   title,
   description,
   emptyLabel,
@@ -186,4 +186,6 @@ export default function FieldCatalogItems({
       )}
     </div>
   );
-}
+});
+
+export default FieldCatalogItems;

@@ -1,4 +1,4 @@
-import { memo, useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useFetcher, useRouteLoaderData } from 'react-router-dom';
 import { getQrCodeUrl } from 'lib/utils/qrcode';
 import type { Enterprise } from 'lib/interfaces/entities/enterprise.entity';
@@ -21,11 +21,6 @@ type QrCatalogActionResponse = {
   catalog_item_id?: string;
   collection_point_id?: string;
   error?: string;
-};
-
-type QrCatalogItemViewModel = QrCodeCatalogLoadData['items'][number] & {
-  feedbackUrl: string | null;
-  qrCodeUrl: string | null;
 };
 
 type QrPreviewImageProps = {
@@ -89,16 +84,35 @@ const QrPreviewImage = memo(function QrPreviewImage({
 });
 
 type QrCatalogItemCardProps = {
-  item: QrCatalogItemViewModel;
+  item: QrCodeCatalogLoadData['items'][number];
+  enterpriseId: string;
   isPending: boolean;
   onToggle: (catalogItemId: string, isActive: boolean) => void;
 };
 
 const QrCatalogItemCard = memo(function QrCatalogItemCard({
   item,
+  enterpriseId,
   isPending,
   onToggle,
 }: QrCatalogItemCardProps) {
+  const feedbackUrl = useMemo(() => {
+    if (!item.collection_point_id) {
+      return null;
+    }
+
+    const baseUrl = window.location.origin;
+    return `${baseUrl}/feedback/qrcode?enterprise=${enterpriseId}&collection_point=${item.collection_point_id}&item=${item.catalog_item_id}`;
+  }, [enterpriseId, item.catalog_item_id, item.collection_point_id]);
+
+  const qrCodeUrl = useMemo(
+    () =>
+      feedbackUrl
+        ? getQrCodeUrl(feedbackUrl, { size: 260, format: 'png' })
+        : null,
+    [feedbackUrl],
+  );
+
   return (
     <article
       className="rounded-2xl border border-neutral-800 bg-neutral-900/60 p-5"
@@ -121,9 +135,9 @@ const QrCatalogItemCard = memo(function QrCatalogItemCard({
         </span>
       </div>
 
-      {item.active && item.qrCodeUrl ? (
+      {item.active && qrCodeUrl ? (
         <QrPreviewImage
-          src={item.qrCodeUrl}
+          src={qrCodeUrl}
           alt={`QR Code de ${item.name}`}
         />
       ) : (
@@ -132,9 +146,9 @@ const QrCatalogItemCard = memo(function QrCatalogItemCard({
         </div>
       )}
 
-      {item.active && item.feedbackUrl && (
+      {item.active && feedbackUrl && (
         <div className="mb-4 rounded-lg border border-neutral-800 bg-neutral-950/60 px-3 py-2 text-xs text-neutral-300 break-all">
-          {item.feedbackUrl}
+          {feedbackUrl}
         </div>
       )}
 
@@ -198,32 +212,9 @@ export default function QrCodeCatalogPage({
     setPendingCatalogItemId(null);
   }, [fetcher.state, fetcher.data]);
 
-  const buildFeedbackUrl = (collectionPointId: string, catalogItemId: string) => {
-    const baseUrl = window.location.origin;
-    return `${baseUrl}/feedback/qrcode?enterprise=${enterprise.id}&collection_point=${collectionPointId}&item=${catalogItemId}`;
-  };
-
   const hasItems = items.length > 0;
 
-  const itemsWithQrData = useMemo<QrCatalogItemViewModel[]>(
-    () =>
-      items.map((item) => {
-        const feedbackUrl = item.collection_point_id
-          ? buildFeedbackUrl(item.collection_point_id, item.catalog_item_id)
-          : null;
-
-        return {
-          ...item,
-          feedbackUrl,
-          qrCodeUrl: feedbackUrl
-            ? getQrCodeUrl(feedbackUrl, { size: 260, format: 'png' })
-            : null,
-        };
-      }),
-    [items, enterprise.id],
-  );
-
-  const handleToggle = (catalogItemId: string, isActive: boolean) => {
+  const handleToggle = useCallback((catalogItemId: string, isActive: boolean) => {
     setPendingCatalogItemId(catalogItemId);
     fetcher.submit(
       {
@@ -232,7 +223,7 @@ export default function QrCodeCatalogPage({
       },
       { method: 'post' },
     );
-  };
+  }, [fetcher]);
 
   return (
     <div className="space-y-6">
@@ -255,13 +246,14 @@ export default function QrCodeCatalogPage({
 
       {hasItems ? (
         <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
-          {itemsWithQrData.map((item) => {
+          {items.map((item) => {
             const isPending = pendingCatalogItemId === item.catalog_item_id && fetcher.state !== 'idle';
 
             return (
               <QrCatalogItemCard
                 key={item.catalog_item_id}
                 item={item}
+                enterpriseId={enterprise.id}
                 isPending={isPending}
                 onToggle={handleToggle}
               />
