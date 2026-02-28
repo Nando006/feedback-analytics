@@ -54,6 +54,21 @@ function shouldRevalidateUserRoute({
   return defaultShouldRevalidate;
 }
 
+function shouldRevalidateQrRoute({
+  formMethod,
+  formAction,
+  defaultShouldRevalidate,
+}: ShouldRevalidateFunctionArgs) {
+  const isPost = String(formMethod ?? '').toUpperCase() === 'POST';
+  const actionPath = String(formAction ?? '');
+
+  if (isPost && actionPath.includes('/user/qrcode/')) {
+    return false;
+  }
+
+  return defaultShouldRevalidate;
+}
+
 export function RouteUser() {
   return (
     <Route
@@ -77,24 +92,28 @@ export function RouteUser() {
         path="qrcode/enterprise"
         loader={LoaderQrCodeEnterprise}
         action={ActionQrCodeEnterprise}
+        shouldRevalidate={shouldRevalidateQrRoute}
         element={<QRCodeEnterprise />}
       />
       <Route
         path="qrcode/products"
         loader={LoaderQrCodeProducts}
         action={ActionQrCodeCatalog}
+        shouldRevalidate={shouldRevalidateQrRoute}
         element={<QRCodeProducts />}
       />
       <Route
         path="qrcode/services"
         loader={LoaderQrCodeServices}
         action={ActionQrCodeCatalog}
+        shouldRevalidate={shouldRevalidateQrRoute}
         element={<QRCodeServices />}
       />
       <Route
         path="qrcode/departments"
         loader={LoaderQrCodeDepartments}
         action={ActionQrCodeCatalog}
+        shouldRevalidate={shouldRevalidateQrRoute}
         element={<QRCodeDepartments />}
       />
       <Route

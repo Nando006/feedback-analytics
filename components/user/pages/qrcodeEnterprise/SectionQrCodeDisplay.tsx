@@ -1,8 +1,9 @@
+import { memo } from 'react';
 import CardSimple from 'components/user/shared/cards/cardSimple';
 import { FaCopy, FaDownload, FaShare } from 'react-icons/fa';
 import type { SectionQrCodeDisplayProps } from './ui.types';
 
-export default function SectionQrCodeDisplay({
+const SectionQrCodeDisplay = memo(function SectionQrCodeDisplay({
   enterpriseName,
   qrActive,
   qrCodeUrl,
@@ -81,4 +82,6 @@ export default function SectionQrCodeDisplay({
       </div>
     </CardSimple>
   );
-}
+});
+
+export default SectionQrCodeDisplay;
