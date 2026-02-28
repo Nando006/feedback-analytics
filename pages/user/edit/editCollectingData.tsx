@@ -8,7 +8,7 @@ export default function EditCollectingData() {
     <div className="font-inter space-y-6 pb-8">
       <Header />
       
-      <CardSimple>
+      <CardSimple disableGlass>
         <div className="w-full">
           <div className="mb-6 border-b border-neutral-800 pb-4">
             <h2 className="text-xl font-semibold text-neutral-100">

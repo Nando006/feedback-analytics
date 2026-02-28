@@ -58,15 +58,6 @@ export default function FormCollectingDataEnterprise() {
     [collecting?.catalog_departments],
   );
 
-  const [companyObjective, setCompanyObjective] = useState(
-    collecting?.company_objective ?? '',
-  );
-  const [analyticsGoal, setAnalyticsGoal] = useState(
-    collecting?.analytics_goal ?? '',
-  );
-  const [businessSummary, setBusinessSummary] = useState(
-    collecting?.business_summary ?? '',
-  );
   const [usesCompanyProducts, setUsesCompanyProducts] = useState(
     collecting?.uses_company_products ?? false,
   );
@@ -121,6 +112,10 @@ export default function FormCollectingDataEnterprise() {
   }, []);
 
   const handleSubmit = useCallback(() => {
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+
     if (productsInputRef.current) {
       productsInputRef.current.value = JSON.stringify(productItems);
     }
@@ -145,18 +140,15 @@ export default function FormCollectingDataEnterprise() {
       className="space-y-8">
       <div className="space-y-6">
         <FieldCompanyObjective
-          value={companyObjective}
-          onChange={setCompanyObjective}
+          defaultValue={collecting?.company_objective ?? ''}
         />
 
         <FieldAnalyticsGoal
-          value={analyticsGoal}
-          onChange={setAnalyticsGoal}
+          defaultValue={collecting?.analytics_goal ?? ''}
         />
 
         <FieldBusinessSummary
-          value={businessSummary}
-          onChange={setBusinessSummary}
+          defaultValue={collecting?.business_summary ?? ''}
         />
 
         <FieldUsesCompanyProducts
@@ -242,7 +234,7 @@ export default function FormCollectingDataEnterprise() {
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round">
-            <polyline points="9 18 15 12 9 6"></polyline>
+            {/* <polyline points="9 18 15 12 9 6"></polyline> */}
           </svg>
         </button>
       </div>

@@ -1,8 +1,10 @@
-import { memo } from 'react';
+import { memo, useState } from 'react';
 import type { FieldBusinessSummaryProps } from './ui.types';
 
 
-const FieldBusinessSummary = memo(function FieldBusinessSummary({ value, onChange }: FieldBusinessSummaryProps) {
+const FieldBusinessSummary = memo(function FieldBusinessSummary({ defaultValue }: FieldBusinessSummaryProps) {
+  const [characterCount, setCharacterCount] = useState(defaultValue.length);
+
   return (
     <div className="group">
       <label
@@ -17,8 +19,8 @@ const FieldBusinessSummary = memo(function FieldBusinessSummary({ value, onChang
           name="business_summary"
           className="w-full rounded-xl border border-neutral-700 bg-neutral-900 px-4 py-3 text-neutral-100 outline-none transition-all duration-200 placeholder:text-neutral-600 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
           rows={5}
-          value={value}
-          onChange={(event) => onChange(event.target.value)}
+          defaultValue={defaultValue}
+          onInput={(event) => setCharacterCount(event.currentTarget.value.length)}
           placeholder="Ex: Atuamos há 5 anos no mercado de software, oferecendo sistemas de gestão..."
         />
         <div className="mt-1.5 flex items-center justify-between">
@@ -26,7 +28,7 @@ const FieldBusinessSummary = memo(function FieldBusinessSummary({ value, onChang
             Conte brevemente sobre a empresa e seu funcionamento
           </p>
           <span className="text-xs text-neutral-600">
-            {value.length} caracteres
+            {characterCount} caracteres
           </span>
         </div>
       </div>

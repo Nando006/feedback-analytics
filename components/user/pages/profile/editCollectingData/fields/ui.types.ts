@@ -38,8 +38,7 @@ export interface FieldUsesCompanyProductsProps {
  * Usado em: components/user/pages/profile/editCollectingData/fields/fieldBusinessSummary.tsx.
  */
 export interface FieldBusinessSummaryProps {
-  value: string;
-  onChange: (value: string) => void;
+  defaultValue: string;
 }
 
 /**
@@ -47,8 +46,7 @@ export interface FieldBusinessSummaryProps {
  * Usado em: components/user/pages/profile/editCollectingData/fields/fieldAnalyticsGoal.tsx.
  */
 export interface FieldAnalyticsGoalProps {
-  value: string;
-  onChange: (value: string) => void;
+  defaultValue: string;
 }
 
 /**
@@ -56,6 +54,5 @@ export interface FieldAnalyticsGoalProps {
  * Usado em: components/user/pages/profile/editCollectingData/fields/fieldCompanyObjective.tsx.
  */
 export interface FieldCompanyObjectiveProps {
-  value: string;
-  onChange: (value: string) => void;
+  defaultValue: string;
 }

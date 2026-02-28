@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect, useRef, type ChangeEvent } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { CatalogItemInput } from 'lib/interfaces/entities/enterprise.entity';
 import type { FieldCatalogItemsProps } from './ui.types';
 
@@ -7,6 +7,9 @@ const EMPTY_ITEM: CatalogItemInput = {
   description: '',
   status: 'ACTIVE',
 };
+
+const INITIAL_VISIBLE_ITEMS = 30;
+const VISIBLE_ITEMS_STEP = 30;
 
 type CatalogItemRowProps = {
   index: number;
@@ -25,6 +28,30 @@ const CatalogItemRow = memo(function CatalogItemRow({
   onRemove,
   onChangeField,
 }: CatalogItemRowProps) {
+  const [draftName, setDraftName] = useState(item.name);
+  const [draftDescription, setDraftDescription] = useState(item.description ?? '');
+
+  useEffect(() => {
+    setDraftName(item.name);
+  }, [item.name]);
+
+  useEffect(() => {
+    setDraftDescription(item.description ?? '');
+  }, [item.description]);
+
+  const handleNameBlur = () => {
+    if (draftName !== item.name) {
+      onChangeField(index, 'name', draftName);
+    }
+  };
+
+  const handleDescriptionBlur = () => {
+    const currentDescription = item.description ?? '';
+    if (draftDescription !== currentDescription) {
+      onChangeField(index, 'description', draftDescription);
+    }
+  };
+
   return (
     <div
       className="rounded-lg border border-neutral-800 bg-neutral-950/50 p-3"
@@ -40,15 +67,14 @@ const CatalogItemRow = memo(function CatalogItemRow({
         </button>
       </div>
 
-      <div className="grid gap-3 md:grid-cols-2">
+      <div className="grid gap-3">
         <div>
           <label className="mb-1 block text-xs text-neutral-300">Nome</label>
           <input
             type="text"
-            value={item.name}
-            onChange={(event: ChangeEvent<HTMLInputElement>) =>
-              onChangeField(index, 'name', event.target.value)
-            }
+            value={draftName}
+            onChange={(event) => setDraftName(event.target.value)}
+            onBlur={handleNameBlur}
             className="w-full rounded-lg border border-neutral-700 bg-neutral-900 px-3 py-2 text-sm text-neutral-100 outline-none transition-all placeholder:text-neutral-600 focus:border-neutral-500"
             placeholder="Ex.: Atendimento Premium"
           />
@@ -58,10 +84,9 @@ const CatalogItemRow = memo(function CatalogItemRow({
           <label className="mb-1 block text-xs text-neutral-300">Descrição</label>
           <input
             type="text"
-            value={item.description ?? ''}
-            onChange={(event: ChangeEvent<HTMLInputElement>) =>
-              onChangeField(index, 'description', event.target.value)
-            }
+            value={draftDescription}
+            onChange={(event) => setDraftDescription(event.target.value)}
+            onBlur={handleDescriptionBlur}
             className="w-full rounded-lg border border-neutral-700 bg-neutral-900 px-3 py-2 text-sm text-neutral-100 outline-none transition-all placeholder:text-neutral-600 focus:border-neutral-500"
             placeholder="Detalhe opcional"
           />
@@ -80,6 +105,9 @@ const FieldCatalogItems = memo(function FieldCatalogItems({
 }: FieldCatalogItemsProps) {
   const localKeySequenceRef = useRef(0);
   const localKeysRef = useRef<string[]>([]);
+  const [visibleCount, setVisibleCount] = useState(() =>
+    Math.min(INITIAL_VISIBLE_ITEMS, items.length),
+  );
 
   const createLocalKey = useCallback(() => {
     localKeySequenceRef.current += 1;
@@ -89,6 +117,7 @@ const FieldCatalogItems = memo(function FieldCatalogItems({
   useEffect(() => {
     if (items.length === 0) {
       localKeysRef.current = [];
+      setVisibleCount(0);
       return;
     }
 
@@ -102,6 +131,16 @@ const FieldCatalogItems = memo(function FieldCatalogItems({
       const newKeys = Array.from({ length: missing }, () => createLocalKey());
       localKeysRef.current = [...localKeysRef.current, ...newKeys];
     }
+
+    setVisibleCount((previousVisibleCount) => {
+      const maxInitial = Math.min(INITIAL_VISIBLE_ITEMS, items.length);
+
+      if (previousVisibleCount <= 0) {
+        return maxInitial;
+      }
+
+      return Math.min(Math.max(previousVisibleCount, maxInitial), items.length);
+    });
   }, [items.length, createLocalKey]);
 
   const handleAddItem = useCallback(() => {
@@ -110,6 +149,7 @@ const FieldCatalogItems = memo(function FieldCatalogItems({
       ...previousItems,
       { ...EMPTY_ITEM, sort_order: previousItems.length },
     ]);
+    setVisibleCount((previousVisibleCount) => previousVisibleCount + 1);
   }, [createLocalKey, onChange]);
 
   const handleRemoveItem = useCallback((index: number) => {
@@ -151,6 +191,19 @@ const FieldCatalogItems = memo(function FieldCatalogItems({
     );
   }, [onChange]);
 
+  const visibleItems = useMemo(
+    () => items.slice(0, visibleCount),
+    [items, visibleCount],
+  );
+
+  const hiddenItemsCount = items.length - visibleItems.length;
+
+  const handleShowMore = useCallback(() => {
+    setVisibleCount((previousVisibleCount) =>
+      Math.min(previousVisibleCount + VISIBLE_ITEMS_STEP, items.length),
+    );
+  }, [items.length]);
+
   return (
     <div className="rounded-xl border border-neutral-800 bg-neutral-900/60 p-5">
       <div className="mb-4 flex items-center justify-between gap-3">
@@ -173,7 +226,7 @@ const FieldCatalogItems = memo(function FieldCatalogItems({
         </p>
       ) : (
         <div className="space-y-3">
-          {items.map((item, index) => (
+          {visibleItems.map((item, index) => (
             <CatalogItemRow
               key={item.id ?? localKeysRef.current[index] ?? `${title}-${index}`}
               index={index}
@@ -182,6 +235,21 @@ const FieldCatalogItems = memo(function FieldCatalogItems({
               onChangeField={handleChangeField}
             />
           ))}
+
+          {hiddenItemsCount > 0 && (
+            <div className="rounded-lg border border-dashed border-neutral-700 bg-neutral-950/40 p-3 text-center">
+              <p className="mb-2 text-xs text-neutral-400">
+                {hiddenItemsCount} itens ocultos para manter a tela fluida.
+              </p>
+              <button
+                type="button"
+                onClick={handleShowMore}
+                className="rounded-lg border border-neutral-700 px-3 py-2 text-xs font-medium text-neutral-200 transition-colors hover:border-neutral-500 hover:bg-neutral-800"
+              >
+                Mostrar mais {Math.min(VISIBLE_ITEMS_STEP, hiddenItemsCount)} itens
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>
