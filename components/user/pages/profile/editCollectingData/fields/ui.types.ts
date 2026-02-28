@@ -1,4 +1,4 @@
-import type { ChangeEvent } from 'react';
+import type { ChangeEvent, Dispatch, SetStateAction } from 'react';
 import type { CatalogItemInput } from 'lib/interfaces/entities/enterprise.entity';
 
 /**
@@ -19,7 +19,7 @@ export interface FieldCatalogItemsProps {
   description: string;
   emptyLabel: string;
   items: CatalogItemInput[];
-  onChange: (items: CatalogItemInput[]) => void;
+  onChange: Dispatch<SetStateAction<CatalogItemInput[]>>;
 }
 
 /**

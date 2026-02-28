@@ -23,6 +23,11 @@ type QrCatalogActionResponse = {
   error?: string;
 };
 
+type QrCatalogItemViewModel = QrCodeCatalogLoadData['items'][number] & {
+  feedbackUrl: string | null;
+  qrCodeUrl: string | null;
+};
+
 type QrPreviewImageProps = {
   src: string;
   alt: string;
@@ -83,6 +88,72 @@ const QrPreviewImage = memo(function QrPreviewImage({
   );
 });
 
+type QrCatalogItemCardProps = {
+  item: QrCatalogItemViewModel;
+  isPending: boolean;
+  onToggle: (catalogItemId: string, isActive: boolean) => void;
+};
+
+const QrCatalogItemCard = memo(function QrCatalogItemCard({
+  item,
+  isPending,
+  onToggle,
+}: QrCatalogItemCardProps) {
+  return (
+    <article
+      className="rounded-2xl border border-neutral-800 bg-neutral-900/60 p-5"
+    >
+      <div className="mb-4 flex items-start justify-between gap-3">
+        <div>
+          <h2 className="text-base font-semibold text-neutral-100">{item.name}</h2>
+          <p className="mt-1 text-xs text-neutral-400">
+            {item.description || 'Sem descrição'}
+          </p>
+        </div>
+        <span
+          className={`rounded-full px-2 py-1 text-[11px] font-semibold ${
+            item.active
+              ? 'bg-emerald-500/15 text-emerald-300'
+              : 'bg-neutral-700/60 text-neutral-300'
+          }`}
+        >
+          {item.active ? 'Ativo' : 'Inativo'}
+        </span>
+      </div>
+
+      {item.active && item.qrCodeUrl ? (
+        <QrPreviewImage
+          src={item.qrCodeUrl}
+          alt={`QR Code de ${item.name}`}
+        />
+      ) : (
+        <div className="mb-4 rounded-xl border border-dashed border-neutral-700 bg-neutral-950/40 p-4 text-center text-xs text-neutral-500">
+          Ative o QR Code para gerar o link e a imagem deste item.
+        </div>
+      )}
+
+      {item.active && item.feedbackUrl && (
+        <div className="mb-4 rounded-lg border border-neutral-800 bg-neutral-950/60 px-3 py-2 text-xs text-neutral-300 break-all">
+          {item.feedbackUrl}
+        </div>
+      )}
+
+      <button
+        type="button"
+        onClick={() => onToggle(item.catalog_item_id, item.active)}
+        disabled={isPending}
+        className="w-full rounded-lg border border-neutral-700 px-3 py-2 text-sm font-medium text-neutral-100 transition-colors hover:border-neutral-500 hover:bg-neutral-800 disabled:cursor-not-allowed disabled:opacity-60"
+      >
+        {isPending
+          ? 'Atualizando...'
+          : item.active
+            ? 'Desativar QR deste item'
+            : 'Ativar QR deste item'}
+      </button>
+    </article>
+  );
+});
+
 export default function QrCodeCatalogPage({
   title,
   subtitle,
@@ -134,7 +205,7 @@ export default function QrCodeCatalogPage({
 
   const hasItems = items.length > 0;
 
-  const itemsWithQrData = useMemo(
+  const itemsWithQrData = useMemo<QrCatalogItemViewModel[]>(
     () =>
       items.map((item) => {
         const feedbackUrl = item.collection_point_id
@@ -188,58 +259,12 @@ export default function QrCodeCatalogPage({
             const isPending = pendingCatalogItemId === item.catalog_item_id && fetcher.state !== 'idle';
 
             return (
-              <article
+              <QrCatalogItemCard
                 key={item.catalog_item_id}
-                className="rounded-2xl border border-neutral-800 bg-neutral-900/60 p-5"
-              >
-                <div className="mb-4 flex items-start justify-between gap-3">
-                  <div>
-                    <h2 className="text-base font-semibold text-neutral-100">{item.name}</h2>
-                    <p className="mt-1 text-xs text-neutral-400">
-                      {item.description || 'Sem descrição'}
-                    </p>
-                  </div>
-                  <span
-                    className={`rounded-full px-2 py-1 text-[11px] font-semibold ${
-                      item.active
-                        ? 'bg-emerald-500/15 text-emerald-300'
-                        : 'bg-neutral-700/60 text-neutral-300'
-                    }`}
-                  >
-                    {item.active ? 'Ativo' : 'Inativo'}
-                  </span>
-                </div>
-
-                {item.active && item.qrCodeUrl ? (
-                  <QrPreviewImage
-                    src={item.qrCodeUrl}
-                    alt={`QR Code de ${item.name}`}
-                  />
-                ) : (
-                  <div className="mb-4 rounded-xl border border-dashed border-neutral-700 bg-neutral-950/40 p-4 text-center text-xs text-neutral-500">
-                    Ative o QR Code para gerar o link e a imagem deste item.
-                  </div>
-                )}
-
-                {item.active && item.feedbackUrl && (
-                  <div className="mb-4 rounded-lg border border-neutral-800 bg-neutral-950/60 px-3 py-2 text-xs text-neutral-300 break-all">
-                    {item.feedbackUrl}
-                  </div>
-                )}
-
-                <button
-                  type="button"
-                  onClick={() => handleToggle(item.catalog_item_id, item.active)}
-                  disabled={isPending}
-                  className="w-full rounded-lg border border-neutral-700 px-3 py-2 text-sm font-medium text-neutral-100 transition-colors hover:border-neutral-500 hover:bg-neutral-800 disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  {isPending
-                    ? 'Atualizando...'
-                    : item.active
-                      ? 'Desativar QR deste item'
-                      : 'Ativar QR deste item'}
-                </button>
-              </article>
+                item={item}
+                isPending={isPending}
+                onToggle={handleToggle}
+              />
             );
           })}
         </div>

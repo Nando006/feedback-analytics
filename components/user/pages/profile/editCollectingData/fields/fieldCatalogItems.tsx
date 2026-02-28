@@ -106,47 +106,50 @@ export default function FieldCatalogItems({
 
   const handleAddItem = useCallback(() => {
     localKeysRef.current = [...localKeysRef.current, createLocalKey()];
-    onChange([...items, { ...EMPTY_ITEM, sort_order: items.length }]);
-  }, [createLocalKey, items, onChange]);
+    onChange((previousItems) => [
+      ...previousItems,
+      { ...EMPTY_ITEM, sort_order: previousItems.length },
+    ]);
+  }, [createLocalKey, onChange]);
 
   const handleRemoveItem = useCallback((index: number) => {
     localKeysRef.current = localKeysRef.current.filter(
       (_, currentIndex) => currentIndex !== index,
     );
 
-    const nextItems = items
-      .filter((_, currentIndex) => currentIndex !== index)
-      .map((item, currentIndex) => ({
-        ...item,
-        sort_order: currentIndex,
-      }));
-
-    onChange(nextItems);
-  }, [items, onChange]);
+    onChange((previousItems) =>
+      previousItems
+        .filter((_, currentIndex) => currentIndex !== index)
+        .map((item, currentIndex) => ({
+          ...item,
+          sort_order: currentIndex,
+        })),
+    );
+  }, [onChange]);
 
   const handleChangeField = useCallback((
     index: number,
     field: 'name' | 'description',
     value: string,
   ) => {
-    const nextItems: CatalogItemInput[] = items.map((item, currentIndex) => {
-      if (currentIndex !== index) return item;
+    onChange((previousItems) =>
+      previousItems.map((item, currentIndex) => {
+        if (currentIndex !== index) return item;
 
-      const nextName = field === 'name' ? value : item.name;
-      const nextDescription =
-        field === 'description' ? value : (item.description ?? '');
+        const nextName = field === 'name' ? value : item.name;
+        const nextDescription =
+          field === 'description' ? value : (item.description ?? '');
 
-      return {
-        ...item,
-        name: nextName,
-        description: nextDescription,
-        sort_order: currentIndex,
-        status: 'ACTIVE',
-      };
-    });
-
-    onChange(nextItems);
-  }, [items, onChange]);
+        return {
+          ...item,
+          name: nextName,
+          description: nextDescription,
+          sort_order: currentIndex,
+          status: 'ACTIVE',
+        };
+      }),
+    );
+  }, [onChange]);
 
   return (
     <div className="rounded-xl border border-neutral-800 bg-neutral-900/60 p-5">
