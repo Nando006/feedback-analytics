@@ -37,3 +37,12 @@ export interface CustomerData {
   customer_email?: string;
   customer_gender?: 'masculino' | 'feminino' | 'outro' | 'prefiro_nao_informar';
 }
+
+/**
+ * Contexto visual do QR público quando o link representa um item de catálogo.
+ * Usado em: fluxo público de QR (loader/página enterprise.tsx).
+ */
+export interface QrPublicContext {
+  item_name?: string | null;
+  item_kind?: 'PRODUCT' | 'SERVICE' | 'DEPARTMENT' | null;
+}

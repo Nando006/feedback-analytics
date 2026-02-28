@@ -100,14 +100,27 @@ export function EndpointsQRCode(app: express.Express) {
       return sendTypedError(res, 403, API_ERROR_DEVICE_BLOCKED);
     }
 
-    // Verifica se já enviou feedback hoje
-    if (trackedDevice?.last_feedback_at) {
-      const lastFeedback = new Date(trackedDevice.last_feedback_at);
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
+    // Verifica se já enviou feedback hoje nesse QR específico (collection_point)
+    if (trackedDevice?.id) {
+      const todayStart = new Date();
+      todayStart.setHours(0, 0, 0, 0);
 
-      if (lastFeedback >= today) {
-        console.log('Dispositivo já enviou feedback hoje');
+      const { data: duplicateFeedback, error: duplicateFeedbackErr } = await supabase
+        .from('feedback')
+        .select('id')
+        .eq('tracked_device_id', trackedDevice.id)
+        .eq('collection_point_id', collectionPoint.id)
+        .gte('created_at', todayStart.toISOString())
+        .limit(1)
+        .maybeSingle();
+
+      if (duplicateFeedbackErr) {
+        console.error('Erro ao verificar feedback duplicado por QR:', duplicateFeedbackErr);
+        return sendTypedError(res, 500, API_ERROR_DEVICE_CHECK_FAILED);
+      }
+
+      if (duplicateFeedback) {
+        console.log('Dispositivo já enviou feedback hoje neste QR Code');
         return sendTypedError(res, 409, API_ERROR_DEVICE_ALREADY_SUBMITTED);
       }
     }

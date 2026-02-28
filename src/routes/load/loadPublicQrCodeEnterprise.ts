@@ -5,6 +5,8 @@ export type PublicQrCodeEnterpriseLoadData = {
   collectionPointId: string | null;
   catalogItemId: string | null;
   enterpriseName: string;
+  itemName: string | null;
+  itemKind: 'PRODUCT' | 'SERVICE' | 'DEPARTMENT' | null;
   error: string;
 };
 
@@ -23,18 +25,25 @@ export async function loadPublicQrCodeEnterpriseData(
       collectionPointId: null,
       catalogItemId: null,
       enterpriseName: '',
+      itemName: null,
+      itemKind: null,
       error: 'ID da empresa não encontrado na URL. Verifique o QR Code.',
     };
   }
 
   try {
-    const enterprise = await ServiceGetEnterprisePublic(enterpriseId);
+    const enterprise = await ServiceGetEnterprisePublic(enterpriseId, {
+      collectionPointId,
+      catalogItemId,
+    });
 
     return {
       enterpriseId,
-      collectionPointId,
-      catalogItemId,
+      collectionPointId: enterprise.collection_point_id ?? collectionPointId,
+      catalogItemId: enterprise.catalog_item_id ?? catalogItemId,
       enterpriseName: enterprise.name || 'Empresa',
+      itemName: enterprise.item_name ?? null,
+      itemKind: enterprise.item_kind ?? null,
       error: '',
     };
   } catch (err) {
@@ -45,6 +54,8 @@ export async function loadPublicQrCodeEnterpriseData(
       collectionPointId: null,
       catalogItemId: null,
       enterpriseName: '',
+      itemName: null,
+      itemKind: null,
       error: 'Empresa não encontrada. Verifique se o QR Code é válido.',
     };
   }

@@ -1,7 +1,14 @@
 -- Descrição: Registra/atualiza dispositivo e incrementa contagem de feedback.
 -- Uso: Upsert operacional em tracked_devices após envio de feedback.
 
-CREATE OR REPLACE FUNCTION public.register_device_feedback(enterprise_id_param uuid, device_fingerprint_param text, user_agent_param text, ip_address_param inet, customer_id_param uuid DEFAULT NULL::uuid)
+CREATE OR REPLACE FUNCTION public.register_device_feedback(
+  enterprise_id_param uuid,
+  device_fingerprint_param text,
+  user_agent_param text,
+  ip_address_param inet,
+  customer_id_param uuid DEFAULT NULL::uuid,
+  collection_point_id_param uuid DEFAULT NULL::uuid
+)
  RETURNS uuid
  LANGUAGE plpgsql
  SECURITY DEFINER
@@ -10,6 +17,14 @@ DECLARE
   tracked_device_id UUID;
   existing_device RECORD;
 BEGIN
+  -- Serializa operação por dispositivo para reduzir corrida em cenários concorrentes
+  PERFORM pg_advisory_xact_lock(
+    hashtextextended(
+      COALESCE(enterprise_id_param::text, '') || '|' || COALESCE(device_fingerprint_param, ''),
+      0
+    )
+  );
+
   -- Busca por um dispositivo existente na tabela tracked_devices
   SELECT * INTO existing_device
   FROM public.tracked_devices

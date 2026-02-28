@@ -19,6 +19,17 @@ export default function FeedbackQRCodeEnterprise() {
   const catalogItemId = loaderData?.catalogItemId ?? '';
   const initialError = loaderData?.error ?? '';
   const enterpriseName = loaderData?.enterpriseName ?? '';
+  const itemName = loaderData?.itemName ?? '';
+  const itemKind = loaderData?.itemKind ?? null;
+
+  const itemKindLabel =
+    itemKind === 'PRODUCT'
+      ? 'Produto'
+      : itemKind === 'SERVICE'
+        ? 'Serviço'
+        : itemKind === 'DEPARTMENT'
+          ? 'Departamento'
+          : null;
 
   const [formData, setFormData] = useState<FeedbackData>({
     message: '',
@@ -123,9 +134,13 @@ export default function FeedbackQRCodeEnterprise() {
       <Card
         title="Compartilhe sua Experiência"
         text={
-          enterpriseName
-            ? `Conte-nos sobre sua experiência com ${enterpriseName}`
-            : 'Seu feedback é muito importante para nós'
+          itemName && itemKindLabel
+            ? enterpriseName
+              ? `${enterpriseName} · Categoria: ${itemKindLabel} · Item: ${itemName}`
+              : `Categoria: ${itemKindLabel} · Item: ${itemName}`
+            : enterpriseName
+              ? `Conte-nos sobre sua experiência com ${enterpriseName}`
+              : 'Seu feedback é muito importante para nós'
         }
         icon={<SVGImageProfile />}
         children={
