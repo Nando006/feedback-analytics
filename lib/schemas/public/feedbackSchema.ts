@@ -23,6 +23,7 @@ export const feedbackBaseSchema = z.object({
 export const qrcodeFeedbackSchema = feedbackBaseSchema.extend({
   channel: z.literal('QRCODE'),
   collection_point_id: z.uuidv4().optional(),
+  catalog_item_id: z.uuidv4().optional(),
 });
 
 // Types exportados

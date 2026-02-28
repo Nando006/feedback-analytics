@@ -25,6 +25,7 @@ export interface FeedbackData {
   rating: number;
   enterprise_id: string;
   collection_point_id?: string;
+  catalog_item_id?: string;
 }
 
 /**

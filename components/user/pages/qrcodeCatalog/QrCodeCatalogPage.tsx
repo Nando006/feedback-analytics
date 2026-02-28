@@ -43,9 +43,9 @@ export default function QrCodeCatalogPage({
     revalidator.revalidate();
   }, [fetcher.state, fetcher.data, revalidator]);
 
-  const buildFeedbackUrl = (collectionPointId: string) => {
+  const buildFeedbackUrl = (collectionPointId: string, catalogItemId: string) => {
     const baseUrl = window.location.origin;
-    return `${baseUrl}/feedback/qrcode?enterprise=${enterprise.id}&collection_point=${collectionPointId}`;
+    return `${baseUrl}/feedback/qrcode?enterprise=${enterprise.id}&collection_point=${collectionPointId}&item=${catalogItemId}`;
   };
 
   const handleToggle = (catalogItemId: string, isActive: boolean) => {
@@ -85,7 +85,7 @@ export default function QrCodeCatalogPage({
         <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
           {data.items.map((item) => {
             const feedbackUrl = item.collection_point_id
-              ? buildFeedbackUrl(item.collection_point_id)
+              ? buildFeedbackUrl(item.collection_point_id, item.catalog_item_id)
               : null;
             const qrCodeUrl = feedbackUrl
               ? getQrCodeUrl(feedbackUrl, { size: 260, format: 'png' })

@@ -16,6 +16,7 @@ export default function FeedbackQRCodeEnterprise() {
 
   const enterpriseId = loaderData?.enterpriseId ?? '';
   const collectionPointId = loaderData?.collectionPointId ?? '';
+  const catalogItemId = loaderData?.catalogItemId ?? '';
   const initialError = loaderData?.error ?? '';
   const enterpriseName = loaderData?.enterpriseName ?? '';
 
@@ -24,6 +25,7 @@ export default function FeedbackQRCodeEnterprise() {
     rating: 0,
     enterprise_id: enterpriseId,
     collection_point_id: collectionPointId || undefined,
+    catalog_item_id: catalogItemId || undefined,
   });
   const [customerData, setCustomerData] = useState<CustomerData>({});
   const [showOptionalFields, setShowOptionalFields] = useState(false);
@@ -91,6 +93,7 @@ export default function FeedbackQRCodeEnterprise() {
       {
         enterprise_id: formData.enterprise_id,
         collection_point_id: formData.collection_point_id ?? '',
+        catalog_item_id: formData.catalog_item_id ?? '',
         message: formData.message.trim(),
         rating: String(formData.rating),
         customer_name: customerData.customer_name ?? '',
