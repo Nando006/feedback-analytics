@@ -71,7 +71,7 @@ export default function User() {
 
   return (
     <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)]">
-      <header className="sticky top-0 z-50 h-16 border-b border-neutral-800/50 bg-neutral-900/60 backdrop-blur supports-[backdrop-filter]:bg-neutral-900/90">
+      <header className="sticky top-0 z-50 h-16 border-b border-neutral-800/50 bg-neutral-900/90">
         <Header
           isOverlayMode={isOverlayMode}
           isSidebarOpen={isSidebarOpen}

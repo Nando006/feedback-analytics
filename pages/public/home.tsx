@@ -45,8 +45,8 @@ export default function Home() {
                 </div>
               </div>
               <div className="relative">
-                <div className="absolute -inset-10 blur-3xl bg-(--secondary-color)/20" />
-                <div className="relative rounded-2xl border border-(--container-border) bg-(--container-primary)/60 p-6 shadow-lg backdrop-blur">
+                <div className="absolute -inset-10 bg-(--secondary-color)/20" />
+                <div className="relative rounded-2xl border border-(--container-border) bg-(--container-primary)/60 p-6 shadow-lg">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm text-(--text-muted) font-work-sans">Clima geral</p>
@@ -147,7 +147,7 @@ export default function Home() {
         </footer>
       </div>
       {showVideo && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4">
           <div className="relative w-full max-w-4xl rounded-2xl border border-(--container-border) bg-(--container-primary)/90 shadow-2xl overflow-hidden">
             <div className="flex items-center justify-between border-b border-(--container-border) px-6 py-4">
               <div>

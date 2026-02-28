@@ -17,7 +17,7 @@ export default function Sidebar({
       <aside
         onMouseEnter={onOpen}
         onMouseLeave={onClose}
-        className={`fixed left-0 top-16 z-40 h-[calc(100vh-64px)] w-72 transform border-r border-neutral-800/40 bg-neutral-900/80 backdrop-blur transition-transform duration-300 ease-in-out ${
+        className={`fixed left-0 top-16 z-40 h-[calc(100vh-64px)] w-72 transform border-r border-neutral-800/40 bg-neutral-900/80 transition-transform duration-300 ease-in-out ${
           isOpen
             ? 'translate-x-0 pointer-events-auto'
             : '-translate-x-full pointer-events-none'
@@ -48,7 +48,7 @@ export default function Sidebar({
 
   return (
     <aside
-      className={`fixed left-0 top-16 z-30 shrink-0 overflow-hidden border-r border-neutral-800/40 bg-neutral-900/50 backdrop-blur transition-[width] duration-300 ease-in-out h-[calc(100vh-64px)] ${
+      className={`fixed left-0 top-16 z-30 shrink-0 overflow-hidden border-r border-neutral-800/40 bg-neutral-900/50 transition-[width] duration-300 ease-in-out h-[calc(100vh-64px)] ${
         isOpen ? 'w-72 pointer-events-auto' : 'w-0 pointer-events-none'
       }`}>
       <div className="flex h-full flex-col">

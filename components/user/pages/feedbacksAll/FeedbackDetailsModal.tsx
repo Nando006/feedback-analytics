@@ -8,7 +8,7 @@ export default function FeedbackDetailsModal({
 }: FeedbackDetailsModalProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose}>
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+      <div className="absolute inset-0 bg-black/60" />
       <div
         className="relative max-h-[85vh] w-full max-w-3xl overflow-y-auto rounded-2xl border border-neutral-800 bg-neutral-900/90 p-6 glass-card"
         onClick={(e) => e.stopPropagation()}>
