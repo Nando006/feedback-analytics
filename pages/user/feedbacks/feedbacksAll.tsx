@@ -1,6 +1,7 @@
 import { useEffect, useState, type ChangeEvent } from 'react';
 import { useLoaderData, useNavigation, useSearchParams } from 'react-router-dom';
 import type {
+  FeedbackCategory,
   Feedback,
   FeedbackPagination as FeedbackPaginationType,
   FeedbackStats,
@@ -30,6 +31,8 @@ export default function FeedbacksAll() {
     limit: 10,
     rating: undefined,
     search: '',
+    category: undefined,
+    item: '',
   };
   const error = loaderData?.error ?? null;
   const loading =
@@ -51,6 +54,8 @@ export default function FeedbacksAll() {
     limit?: number;
     rating?: number;
     search?: string;
+    category?: FeedbackCategory;
+    item?: string;
   }) => {
     const params = new URLSearchParams(searchParams);
 
@@ -58,6 +63,8 @@ export default function FeedbacksAll() {
     const limit = next.limit ?? filters.limit;
     const rating = next.rating ?? filters.rating;
     const search = next.search ?? filters.search;
+    const category = next.category ?? filters.category;
+    const item = next.item ?? filters.item;
 
     params.set('page', String(page));
     params.set('limit', String(limit));
@@ -74,6 +81,18 @@ export default function FeedbacksAll() {
       params.delete('search');
     }
 
+    if (category) {
+      params.set('category', category);
+    } else {
+      params.delete('category');
+    }
+
+    if (item.trim()) {
+      params.set('item', item);
+    } else {
+      params.delete('item');
+    }
+
     setSearchParams(params);
   };
 
@@ -86,6 +105,16 @@ export default function FeedbacksAll() {
   const handleRatingFilter = (rating: number | undefined) => {
     setSuppressOverlay(true);
     updateSearchParams({ rating, page: 1 });
+  };
+
+  const handleItemChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setSuppressOverlay(true);
+    updateSearchParams({ item: e.target.value, page: 1 });
+  };
+
+  const handleCategoryFilter = (category: FeedbackCategory | undefined) => {
+    setSuppressOverlay(true);
+    updateSearchParams({ category, page: 1 });
   };
 
   const handlePageChange = (page: number) => {
@@ -114,7 +143,9 @@ export default function FeedbacksAll() {
       <FeedbackFiltersComponent
         filters={filters}
         onSearchChange={handleSearchChange}
+        onItemChange={handleItemChange}
         onRatingFilter={handleRatingFilter}
+        onCategoryFilter={handleCategoryFilter}
         onLimitChange={handleLimitChange}
       />
 
@@ -122,7 +153,11 @@ export default function FeedbacksAll() {
       <div className="relative">
         <div className="space-y-4">
           {feedbacks.length === 0 ? (
-            <FeedbacksAllEmptyState hasFilters={Boolean(filters.search || filters.rating)} />
+            <FeedbacksAllEmptyState
+              hasFilters={Boolean(
+                filters.search || filters.rating || filters.category || filters.item,
+              )}
+            />
           ) : (
             feedbacks.map((feedback) => (
               <FeedbackCard

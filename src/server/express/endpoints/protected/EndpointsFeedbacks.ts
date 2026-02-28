@@ -28,6 +28,18 @@ export function EndpointsFeedbacks(app: express.Express) {
       ? parseInt(req.query.rating as string)
       : null;
     const search = (req.query.search as string) || '';
+    const item = String(req.query.item ?? '').trim();
+    const categoryRaw = String(req.query.category ?? '')
+      .trim()
+      .toUpperCase();
+
+    const category =
+      categoryRaw === 'COMPANY' ||
+      categoryRaw === 'PRODUCT' ||
+      categoryRaw === 'SERVICE' ||
+      categoryRaw === 'DEPARTMENT'
+        ? categoryRaw
+        : null;
 
     try {
       // Primeiro, buscar a empresa do usuário
@@ -39,6 +51,82 @@ export function EndpointsFeedbacks(app: express.Express) {
 
       if (enterpriseError || !enterprise) {
         return sendTypedError(res, 404, API_ERROR_ENTERPRISE_NOT_FOUND);
+      }
+
+      let filteredCollectionPointIds: string[] | null = null;
+
+      if (category || item) {
+        if (category === 'COMPANY') {
+          if (item) {
+            filteredCollectionPointIds = [];
+          } else {
+            const { data: companyCollectionPoints, error: companyCpError } = await supabase
+              .from('collection_points')
+              .select('id')
+              .eq('enterprise_id', enterprise.id)
+              .eq('status', 'ACTIVE')
+              .is('catalog_item_id', null);
+
+            if (companyCpError) {
+              return sendTypedError(res, 500, API_ERROR_FAILED_TO_FETCH_FEEDBACKS);
+            }
+
+            filteredCollectionPointIds = (companyCollectionPoints ?? []).map((cp) => cp.id);
+          }
+        } else {
+          let catalogQuery = supabase
+            .from('catalog_items')
+            .select('id')
+            .eq('enterprise_id', enterprise.id)
+            .eq('status', 'ACTIVE');
+
+          if (category) {
+            catalogQuery = catalogQuery.eq('kind', category);
+          }
+
+          if (item) {
+            catalogQuery = catalogQuery.ilike('name', `%${item}%`);
+          }
+
+          const { data: catalogItems, error: catalogItemsError } = await catalogQuery;
+
+          if (catalogItemsError) {
+            return sendTypedError(res, 500, API_ERROR_FAILED_TO_FETCH_FEEDBACKS);
+          }
+
+          const catalogItemIds = (catalogItems ?? []).map((catalogItem) => catalogItem.id);
+
+          if (catalogItemIds.length === 0) {
+            filteredCollectionPointIds = [];
+          } else {
+            const { data: catalogCollectionPoints, error: catalogCpError } = await supabase
+              .from('collection_points')
+              .select('id')
+              .eq('enterprise_id', enterprise.id)
+              .eq('status', 'ACTIVE')
+              .in('catalog_item_id', catalogItemIds);
+
+            if (catalogCpError) {
+              return sendTypedError(res, 500, API_ERROR_FAILED_TO_FETCH_FEEDBACKS);
+            }
+
+            filteredCollectionPointIds = (catalogCollectionPoints ?? []).map((cp) => cp.id);
+          }
+        }
+      }
+
+      if (filteredCollectionPointIds && filteredCollectionPointIds.length === 0) {
+        return res.json({
+          feedbacks: [],
+          pagination: {
+            currentPage: page,
+            totalPages: 0,
+            totalItems: 0,
+            itemsPerPage: limit,
+            hasNextPage: false,
+            hasPreviousPage: page > 1,
+          },
+        });
       }
 
       // Construir query base
@@ -55,7 +143,8 @@ export function EndpointsFeedbacks(app: express.Express) {
             id,
             name,
             type,
-            identifier
+            identifier,
+            catalog_item_id
           ),
           tracked_devices(
             id,
@@ -86,11 +175,29 @@ export function EndpointsFeedbacks(app: express.Express) {
         query = query.ilike('message', `%${search}%`);
       }
 
+      if (filteredCollectionPointIds) {
+        query = query.in('collection_point_id', filteredCollectionPointIds);
+      }
+
       // Buscar total de registros para paginação (query separada)
-      const { count, error: countError } = await supabase
+      let countQuery = supabase
         .from('feedback')
         .select('*', { count: 'exact', head: true })
         .eq('enterprise_id', enterprise.id);
+
+      if (rating) {
+        countQuery = countQuery.eq('rating', rating);
+      }
+
+      if (search) {
+        countQuery = countQuery.ilike('message', `%${search}%`);
+      }
+
+      if (filteredCollectionPointIds) {
+        countQuery = countQuery.in('collection_point_id', filteredCollectionPointIds);
+      }
+
+      const { count, error: countError } = await countQuery;
 
       if (countError) {
         return sendTypedError(res, 500, API_ERROR_FAILED_TO_COUNT_FEEDBACKS);
@@ -111,8 +218,72 @@ export function EndpointsFeedbacks(app: express.Express) {
       const hasNextPage = page < totalPages;
       const hasPreviousPage = page > 1;
 
+      const catalogItemIds = Array.from(
+        new Set(
+          (feedbacks ?? [])
+            .map((feedback) => feedback.collection_points?.catalog_item_id)
+            .filter((id): id is string => typeof id === 'string' && id.length > 0),
+        ),
+      );
+
+      let catalogItemById = new Map<string, { name: string; kind: 'PRODUCT' | 'SERVICE' | 'DEPARTMENT' }>();
+
+      if (catalogItemIds.length > 0) {
+        const { data: catalogRows, error: catalogRowsError } = await supabase
+          .from('catalog_items')
+          .select('id, name, kind')
+          .in('id', catalogItemIds);
+
+        if (catalogRowsError) {
+          return sendTypedError(res, 500, API_ERROR_FAILED_TO_FETCH_FEEDBACKS);
+        }
+
+        catalogItemById = new Map(
+          (catalogRows ?? [])
+            .map((row) => {
+              const normalizedKind = String(row.kind ?? '').toUpperCase();
+              const kind =
+                normalizedKind === 'PRODUCT' ||
+                normalizedKind === 'SERVICE' ||
+                normalizedKind === 'DEPARTMENT'
+                  ? normalizedKind
+                  : null;
+
+              if (!kind || typeof row.id !== 'string') {
+                return null;
+              }
+
+              return [row.id, { name: row.name, kind }] as const;
+            })
+            .filter((entry): entry is readonly [string, { name: string; kind: 'PRODUCT' | 'SERVICE' | 'DEPARTMENT' }] => Boolean(entry)),
+        );
+
+      }
+
+      const normalizedFeedbacks = (feedbacks ?? []).map((feedback) => {
+        const collectionPoint = feedback.collection_points;
+
+        if (!collectionPoint) {
+          return feedback;
+        }
+
+        const catalogItem = collectionPoint.catalog_item_id
+          ? (catalogItemById.get(collectionPoint.catalog_item_id) ?? null)
+          : null;
+
+        return {
+          ...feedback,
+          collection_points: {
+            ...collectionPoint,
+            catalog_item_name: catalogItem?.name ?? null,
+            catalog_item_kind: catalogItem?.kind ?? null,
+            catalog_items: catalogItem,
+          },
+        };
+      });
+
       return res.json({
-        feedbacks: feedbacks || [],
+        feedbacks: normalizedFeedbacks,
         pagination: {
           currentPage: page,
           totalPages,

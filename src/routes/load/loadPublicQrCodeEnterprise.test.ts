@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { loadPublicQrCodeEnterpriseData } from './loadPublicQrCodeEnterprise';
 import { ServiceGetEnterprisePublic } from 'src/services/serviceEnterprise';
 

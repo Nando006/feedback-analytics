@@ -24,6 +24,7 @@ export function EndpointsQRCode(app: express.Express) {
     }
 
     const payload = parsed.data;
+
     const supabase = createSupabaseServerClient(req, res);
 
     // Verifica se a enterprise existe
@@ -55,7 +56,7 @@ export function EndpointsQRCode(app: express.Express) {
     // 1. Buscar collection_point do tipo QR_CODE para a empresa (não criar no fluxo público)
     let cpQuery = supabase
       .from('collection_points')
-      .select('id')
+      .select('id, name, catalog_item_id')
       .eq('enterprise_id', payload.enterprise_id)
       .eq('type', 'QR_CODE')
       .eq('status', 'ACTIVE');

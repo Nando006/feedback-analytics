@@ -6,6 +6,29 @@ export default function FeedbackDetailsModal({
   selectedFeedback,
   onClose,
 }: FeedbackDetailsModalProps) {
+  const catalogItem = Array.isArray(selectedFeedback.collection_points?.catalog_items)
+    ? (selectedFeedback.collection_points?.catalog_items[0] ?? null)
+    : (selectedFeedback.collection_points?.catalog_items ?? null);
+
+  const resolvedItemKind =
+    selectedFeedback.collection_points?.catalog_item_kind ?? catalogItem?.kind ?? null;
+
+  const normalizedItemKind = String(resolvedItemKind ?? '').toUpperCase();
+
+  const resolvedItemName =
+    selectedFeedback.collection_points?.catalog_item_name ?? catalogItem?.name ?? null;
+
+  const itemKindLabel =
+    normalizedItemKind === 'PRODUCT'
+      ? 'Produto'
+      : normalizedItemKind === 'SERVICE'
+        ? 'Serviço'
+        : normalizedItemKind === 'DEPARTMENT'
+          ? 'Departamento'
+          : 'Empresa';
+
+  const itemName = resolvedItemName;
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose}>
       <div className="absolute inset-0 bg-black/60" />
@@ -56,6 +79,14 @@ export default function FeedbackDetailsModal({
                 <div>
                   <span className="text-[var(--text-secondary)]">Identificador:</span>{' '}
                   {selectedFeedback.collection_points.identifier || '—'}
+                </div>
+                <div>
+                  <span className="text-[var(--text-secondary)]">Categoria:</span>{' '}
+                  {itemKindLabel}
+                </div>
+                <div className="md:col-span-2">
+                  <span className="text-[var(--text-secondary)]">Item:</span>{' '}
+                  {itemName || '—'}
                 </div>
               </div>
             ) : (
