@@ -28,6 +28,10 @@ export default function FeedbackDetailsModal({
           : 'Empresa';
 
   const itemName = resolvedItemName;
+  const channelDisplayName =
+    selectedFeedback.collection_points?.type === 'QR_CODE'
+      ? (selectedFeedback.collection_points?.name || '').replace(/^QR Code\s*-\s*.+$/, 'QR Code')
+      : (selectedFeedback.collection_points?.name || 'N/A');
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose}>
@@ -69,8 +73,8 @@ export default function FeedbackDetailsModal({
             {selectedFeedback.collection_points ? (
               <div className="grid grid-cols-1 gap-2 text-[var(--text-muted)] md:grid-cols-3">
                 <div>
-                  <span className="text-[var(--text-secondary)]">Nome:</span>{' '}
-                  {selectedFeedback.collection_points.name}
+                  <span className="text-[var(--text-secondary)]">Canal:</span>{' '}
+                  {channelDisplayName}
                 </div>
                 <div>
                   <span className="text-[var(--text-secondary)]">Tipo:</span>{' '}
