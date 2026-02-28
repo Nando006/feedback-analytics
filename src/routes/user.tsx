@@ -32,7 +32,11 @@ import { ActionFeedbackInsightsReport } from './actions/actionFeedbackInsightsRe
 import EditCollectingData from 'pages/user/edit/editCollectingData';
 import { ActionProfile } from './actions/actionProfile';
 import { ActionQrCodeEnterprise } from './actions/actionQrCodeEnterprise';
+import { ActionQrCodeCatalog } from './actions/actionQrCodeCatalog';
 import { ActionLogout } from './actions/actionLogout';
+import { LoaderQrCodeProducts } from './loaders/loaderQrCodeProducts';
+import { LoaderQrCodeServices } from './loaders/loaderQrCodeServices';
+import { LoaderQrCodeDepartments } from './loaders/loaderQrCodeDepartments';
 
 export function RouteUser() {
   return (
@@ -60,14 +64,20 @@ export function RouteUser() {
       />
       <Route
         path="qrcode/products"
+        loader={LoaderQrCodeProducts}
+        action={ActionQrCodeCatalog}
         element={<QRCodeProducts />}
       />
       <Route
         path="qrcode/services"
+        loader={LoaderQrCodeServices}
+        action={ActionQrCodeCatalog}
         element={<QRCodeServices />}
       />
       <Route
         path="qrcode/departments"
+        loader={LoaderQrCodeDepartments}
+        action={ActionQrCodeCatalog}
         element={<QRCodeDepartments />}
       />
       <Route

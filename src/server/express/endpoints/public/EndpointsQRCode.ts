@@ -53,13 +53,20 @@ export function EndpointsQRCode(app: express.Express) {
       .digest('hex');
 
     // 1. Buscar collection_point do tipo QR_CODE para a empresa (não criar no fluxo público)
-    const { data: collectionPoint, error: cpErr } = await supabase
+    const cpQuery = supabase
       .from('collection_points')
       .select('id')
       .eq('enterprise_id', payload.enterprise_id)
       .eq('type', 'QR_CODE')
-      .eq('status', 'ACTIVE')
-      .maybeSingle();
+      .eq('status', 'ACTIVE');
+
+    if (payload.collection_point_id) {
+      cpQuery.eq('id', payload.collection_point_id);
+    } else {
+      cpQuery.is('catalog_item_id', null);
+    }
+
+    const { data: collectionPoint, error: cpErr } = await cpQuery.maybeSingle();
 
     if (cpErr) {
       console.error('Erro ao buscar collection_point:', cpErr);

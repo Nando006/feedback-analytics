@@ -24,6 +24,7 @@ export interface FeedbackData {
   message: string;
   rating: number;
   enterprise_id: string;
+  collection_point_id?: string;
 }
 
 /**

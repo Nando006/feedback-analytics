@@ -2,6 +2,7 @@ import { ServiceGetEnterprisePublic } from 'src/services/serviceEnterprise';
 
 export type PublicQrCodeEnterpriseLoadData = {
   enterpriseId: string | null;
+  collectionPointId: string | null;
   enterpriseName: string;
   error: string;
 };
@@ -11,10 +12,12 @@ export async function loadPublicQrCodeEnterpriseData(
 ): Promise<PublicQrCodeEnterpriseLoadData> {
   const url = new URL(requestUrl);
   const enterpriseId = url.searchParams.get('enterprise');
+  const collectionPointId = url.searchParams.get('collection_point');
 
   if (!enterpriseId) {
     return {
       enterpriseId: null,
+      collectionPointId: null,
       enterpriseName: '',
       error: 'ID da empresa não encontrado na URL. Verifique o QR Code.',
     };
@@ -25,6 +28,7 @@ export async function loadPublicQrCodeEnterpriseData(
 
     return {
       enterpriseId,
+      collectionPointId,
       enterpriseName: enterprise.name || 'Empresa',
       error: '',
     };
@@ -33,6 +37,7 @@ export async function loadPublicQrCodeEnterpriseData(
 
     return {
       enterpriseId: null,
+      collectionPointId: null,
       enterpriseName: '',
       error: 'Empresa não encontrada. Verifique se o QR Code é válido.',
     };
