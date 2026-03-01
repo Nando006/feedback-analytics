@@ -7,26 +7,12 @@ import {
   INTENT_QR_DISABLE,
   INTENT_QR_ENABLE,
 } from 'lib/constants/routes/intents';
-import type { QrCodeCatalogLoadData } from 'src/routes/load/loadQrCodeCatalog';
-
-type QrCodeCatalogPageProps = {
-  title: string;
-  subtitle: string;
-  data: QrCodeCatalogLoadData;
-};
-
-type QrCatalogActionResponse = {
-  ok?: boolean;
-  active?: boolean;
-  catalog_item_id?: string;
-  collection_point_id?: string;
-  error?: string;
-};
-
-type QrPreviewImageProps = {
-  src: string;
-  alt: string;
-};
+import type {
+  QrCatalogActionResponse,
+  QrCatalogItemCardProps,
+  QrCodeCatalogPageProps,
+  QrPreviewImageProps,
+} from './ui.types';
 
 const QrPreviewImage = memo(function QrPreviewImage({
   src,
@@ -82,13 +68,6 @@ const QrPreviewImage = memo(function QrPreviewImage({
     </div>
   );
 });
-
-type QrCatalogItemCardProps = {
-  item: QrCodeCatalogLoadData['items'][number];
-  enterpriseId: string;
-  isPending: boolean;
-  onToggle: (catalogItemId: string, isActive: boolean) => void;
-};
 
 const QrCatalogItemCard = memo(function QrCatalogItemCard({
   item,

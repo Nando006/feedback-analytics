@@ -23,6 +23,21 @@ export interface FieldCatalogItemsProps {
 }
 
 /**
+ * Props da linha individual de item do catálogo.
+ * Usado em: components/user/pages/profile/editCollectingData/fields/fieldCatalogItems.tsx.
+ */
+export interface CatalogItemRowProps {
+  index: number;
+  item: CatalogItemInput;
+  onRemove: (index: number) => void;
+  onChangeField: (
+    index: number,
+    field: 'name' | 'description',
+    value: string,
+  ) => void;
+}
+
+/**
  * Props do bloco de capacidades da empresa (produtos, serviços e áreas/departamentos).
  * Usado em: components/user/pages/profile/editCollectingData/fields/fieldUsesCompanyProducts.tsx.
  */

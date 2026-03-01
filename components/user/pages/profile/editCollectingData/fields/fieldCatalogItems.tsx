@@ -1,6 +1,6 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { CatalogItemInput } from 'lib/interfaces/entities/enterprise.entity';
-import type { FieldCatalogItemsProps } from './ui.types';
+import type { CatalogItemRowProps, FieldCatalogItemsProps } from './ui.types';
 
 const EMPTY_ITEM: CatalogItemInput = {
   name: '',
@@ -10,17 +10,6 @@ const EMPTY_ITEM: CatalogItemInput = {
 
 const INITIAL_VISIBLE_ITEMS = 30;
 const VISIBLE_ITEMS_STEP = 30;
-
-type CatalogItemRowProps = {
-  index: number;
-  item: CatalogItemInput;
-  onRemove: (index: number) => void;
-  onChangeField: (
-    index: number,
-    field: 'name' | 'description',
-    value: string,
-  ) => void;
-};
 
 const CatalogItemRow = memo(function CatalogItemRow({
   index,
