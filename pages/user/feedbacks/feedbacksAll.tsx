@@ -60,18 +60,20 @@ export default function FeedbacksAll() {
     item?: string;
   }) => {
     const params = new URLSearchParams(searchParams);
+    const hasKey = <K extends keyof typeof next>(key: K) =>
+      Object.prototype.hasOwnProperty.call(next, key);
 
-    const page = next.page ?? filters.page;
-    const limit = next.limit ?? filters.limit;
-    const rating = next.rating ?? filters.rating;
-    const search = next.search ?? searchInput;
-    const category = next.category ?? filters.category;
-    const item = next.item ?? itemInput;
+    const page = hasKey('page') ? next.page ?? filters.page : filters.page;
+    const limit = hasKey('limit') ? next.limit ?? filters.limit : filters.limit;
+    const rating = hasKey('rating') ? next.rating : filters.rating;
+    const search = hasKey('search') ? (next.search ?? '') : searchInput;
+    const category = hasKey('category') ? next.category : filters.category;
+    const item = hasKey('item') ? (next.item ?? '') : itemInput;
 
     params.set('page', String(page));
     params.set('limit', String(limit));
 
-    if (rating) {
+    if (typeof rating === 'number') {
       params.set('rating', String(rating));
     } else {
       params.delete('rating');
