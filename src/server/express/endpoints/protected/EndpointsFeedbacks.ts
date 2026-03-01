@@ -64,7 +64,6 @@ export function EndpointsFeedbacks(app: express.Express) {
               .from('collection_points')
               .select('id')
               .eq('enterprise_id', enterprise.id)
-              .eq('status', 'ACTIVE')
               .is('catalog_item_id', null);
 
             if (companyCpError) {
@@ -77,8 +76,7 @@ export function EndpointsFeedbacks(app: express.Express) {
           let catalogQuery = supabase
             .from('catalog_items')
             .select('id')
-            .eq('enterprise_id', enterprise.id)
-            .eq('status', 'ACTIVE');
+            .eq('enterprise_id', enterprise.id);
 
           if (category) {
             catalogQuery = catalogQuery.eq('kind', category);
@@ -103,7 +101,6 @@ export function EndpointsFeedbacks(app: express.Express) {
               .from('collection_points')
               .select('id')
               .eq('enterprise_id', enterprise.id)
-              .eq('status', 'ACTIVE')
               .in('catalog_item_id', catalogItemIds);
 
             if (catalogCpError) {
