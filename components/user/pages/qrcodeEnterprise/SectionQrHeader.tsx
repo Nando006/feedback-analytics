@@ -1,7 +1,8 @@
+import { memo } from 'react';
 import CardSimple from 'components/user/shared/cards/cardSimple';
 import type { SectionQrHeaderProps } from './ui.types';
 
-export default function SectionQrHeader({
+const SectionQrHeader = memo(function SectionQrHeader({
   enterpriseName,
   qrActive,
   qrLoading,
@@ -47,4 +48,6 @@ export default function SectionQrHeader({
       </div>
     </CardSimple>
   );
-}
+});
+
+export default SectionQrHeader;

@@ -39,9 +39,36 @@ export interface CollectingDataEnterprise {
   business_summary: string | null;
   main_products_or_services: string[] | null;
   uses_company_products: boolean;
+  uses_company_services: boolean;
+  uses_company_departments: boolean;
+  catalog_products?: CatalogItem[];
+  catalog_services?: CatalogItem[];
+  catalog_departments?: CatalogItem[];
   created_at: string;
   updated_at: string;
 }
+
+export type CatalogItemKind = 'PRODUCT' | 'SERVICE' | 'DEPARTMENT';
+
+export interface CatalogItem {
+  id: string;
+  enterprise_id: string;
+  kind: CatalogItemKind;
+  name: string;
+  description: string | null;
+  status: 'ACTIVE' | 'INACTIVE';
+  sort_order: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export type CatalogItemInput = {
+  id?: string;
+  name: string;
+  description?: string | null;
+  sort_order?: number;
+  status?: 'ACTIVE' | 'INACTIVE';
+};
 
 /**
  * Payload parcial para atualização dos dados de coleta da empresa.
@@ -55,8 +82,14 @@ export type UpdateCollectingDataPayload = Partial<
     | 'business_summary'
     | 'main_products_or_services'
     | 'uses_company_products'
+    | 'uses_company_services'
+    | 'uses_company_departments'
   >
->;
+> & {
+  catalog_products?: CatalogItemInput[] | null;
+  catalog_services?: CatalogItemInput[] | null;
+  catalog_departments?: CatalogItemInput[] | null;
+};
 
 /**
  * Agregado da empresa com seus dados de coleta (quando existentes).

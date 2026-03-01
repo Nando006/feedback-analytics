@@ -8,6 +8,8 @@ export const menuData: MenuItem[] = [
     children: [
       { label: 'Empresa', to: '/user/qrcode/enterprise' },
       { label: 'Produtos', to: '/user/qrcode/products' },
+      { label: 'Serviços', to: '/user/qrcode/services' },
+      { label: 'Áreas/Departamentos', to: '/user/qrcode/departments' },
     ],
   },
   {

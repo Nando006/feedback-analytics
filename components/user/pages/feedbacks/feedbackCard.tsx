@@ -1,6 +1,18 @@
 import type { FeedbackCardProps } from './ui.types';
 
 export default function FeedbackCard({ feedback, onClick }: FeedbackCardProps) {
+  const catalogItem = Array.isArray(feedback.collection_points?.catalog_items)
+    ? (feedback.collection_points?.catalog_items[0] ?? null)
+    : (feedback.collection_points?.catalog_items ?? null);
+
+  const resolvedItemKind =
+    feedback.collection_points?.catalog_item_kind ?? catalogItem?.kind ?? null;
+
+  const normalizedItemKind = String(resolvedItemKind ?? '').toUpperCase();
+
+  const resolvedItemName =
+    feedback.collection_points?.catalog_item_name ?? catalogItem?.name ?? null;
+
   // Função para renderizar estrelas
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }, (_, index) => (
@@ -45,6 +57,21 @@ export default function FeedbackCard({ feedback, onClick }: FeedbackCardProps) {
     return texts[rating as keyof typeof texts] || 'N/A';
   };
 
+  const itemKindLabel =
+    normalizedItemKind === 'PRODUCT'
+      ? 'Produto'
+      : normalizedItemKind === 'SERVICE'
+        ? 'Serviço'
+        : normalizedItemKind === 'DEPARTMENT'
+          ? 'Departamento'
+          : 'Empresa';
+
+  const itemName = resolvedItemName;
+  const channelDisplayName =
+    feedback.collection_points?.type === 'QR_CODE'
+      ? (feedback.collection_points?.name || '').replace(/^QR Code\s*-\s*.+$/, 'QR Code')
+      : (feedback.collection_points?.name || 'N/A');
+
   return (
     <div
       className={`relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900/50 p-6 glass-card ${
@@ -85,11 +112,19 @@ export default function FeedbackCard({ feedback, onClick }: FeedbackCardProps) {
         <div className="flex items-center gap-4 text-[var(--text-muted)]">
           <span>
             <strong className="text-[var(--text-secondary)]">Canal:</strong>{' '}
-            {feedback.collection_points?.name || 'N/A'}
+            {channelDisplayName}
           </span>
-          <span>
+          {/* <span>
             <strong className="text-[var(--text-secondary)]">Tipo:</strong>{' '}
             {feedback.collection_points?.type || 'N/A'}
+          </span> */}
+          <span>
+            <strong className="text-[var(--text-secondary)]">Categoria:</strong>{' '}
+            {itemKindLabel}
+          </span>
+          <span>
+            <strong className="text-[var(--text-secondary)]">Item:</strong>{' '}
+            {itemName || '—'}
           </span>
         </div>
 

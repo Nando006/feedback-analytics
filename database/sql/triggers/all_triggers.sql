@@ -16,6 +16,11 @@ CREATE TRIGGER "set_updated_at" BEFORE UPDATE ON "public"."collecting_data_enter
   FOR EACH ROW
   EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS "set_updated_at" ON "public"."catalog_items";
+CREATE TRIGGER "set_updated_at" BEFORE UPDATE ON "public"."catalog_items"
+  FOR EACH ROW
+  EXECUTE FUNCTION update_updated_at_column();
+
 DROP TRIGGER IF EXISTS "set_updated_at" ON "public"."collection_points";
 CREATE TRIGGER "set_updated_at" BEFORE UPDATE ON "public"."collection_points"
   FOR EACH ROW

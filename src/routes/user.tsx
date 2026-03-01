@@ -1,4 +1,5 @@
 import ErrorPage from 'components/user/shared/handling/errorPage';
+import type { ShouldRevalidateFunctionArgs } from 'react-router-dom';
 import Dashboard from 'pages/user/dashboard';
 import EditCustomer from 'pages/user/edit/editCustomers';
 import EditUser from 'pages/user/edit/editProfile';
@@ -25,12 +26,48 @@ import FeedbacksAnalyticsPositive from 'pages/user/feedbacks/analytics/feedbacks
 import FeedbacksAnalyticsNegative from 'pages/user/feedbacks/analytics/feedbacksAnalyticsNegative';
 import FeedbacksAnalyticsAll from 'pages/user/feedbacks/analytics/feedbacksAnalyticsAll';
 import QRCodeProducts from 'pages/user/qrcodes/qrcodeProducts';
+import QRCodeServices from 'pages/user/qrcodes/qrcodeServices';
+import QRCodeDepartments from 'pages/user/qrcodes/qrcodeDepartments';
 import { ActionCollectingData } from './actions/actionCollectingData';
 import { ActionFeedbackInsightsReport } from './actions/actionFeedbackInsightsReport';
 import EditCollectingData from 'pages/user/edit/editCollectingData';
 import { ActionProfile } from './actions/actionProfile';
 import { ActionQrCodeEnterprise } from './actions/actionQrCodeEnterprise';
+import { ActionQrCodeCatalog } from './actions/actionQrCodeCatalog';
 import { ActionLogout } from './actions/actionLogout';
+import { LoaderQrCodeProducts } from './loaders/loaderQrCodeProducts';
+import { LoaderQrCodeServices } from './loaders/loaderQrCodeServices';
+import { LoaderQrCodeDepartments } from './loaders/loaderQrCodeDepartments';
+
+function shouldRevalidateUserRoute({
+  formMethod,
+  formAction,
+  defaultShouldRevalidate,
+}: ShouldRevalidateFunctionArgs) {
+  const isPost = String(formMethod ?? '').toUpperCase() === 'POST';
+  const actionPath = String(formAction ?? '');
+
+  if (isPost && actionPath.includes('/user/qrcode/')) {
+    return false;
+  }
+
+  return defaultShouldRevalidate;
+}
+
+function shouldRevalidateQrRoute({
+  formMethod,
+  formAction,
+  defaultShouldRevalidate,
+}: ShouldRevalidateFunctionArgs) {
+  const isPost = String(formMethod ?? '').toUpperCase() === 'POST';
+  const actionPath = String(formAction ?? '');
+
+  if (isPost && actionPath.includes('/user/qrcode/')) {
+    return false;
+  }
+
+  return defaultShouldRevalidate;
+}
 
 export function RouteUser() {
   return (
@@ -40,6 +77,7 @@ export function RouteUser() {
       errorElement={<ErrorPage />}
       element={<LayoutUser />}
       loader={LoaderUserProtected}
+      shouldRevalidate={shouldRevalidateUserRoute}
       action={ActionLogout}>
       <Route
         path="dashboard"
@@ -54,11 +92,29 @@ export function RouteUser() {
         path="qrcode/enterprise"
         loader={LoaderQrCodeEnterprise}
         action={ActionQrCodeEnterprise}
+        shouldRevalidate={shouldRevalidateQrRoute}
         element={<QRCodeEnterprise />}
       />
       <Route
         path="qrcode/products"
+        loader={LoaderQrCodeProducts}
+        action={ActionQrCodeCatalog}
+        shouldRevalidate={shouldRevalidateQrRoute}
         element={<QRCodeProducts />}
+      />
+      <Route
+        path="qrcode/services"
+        loader={LoaderQrCodeServices}
+        action={ActionQrCodeCatalog}
+        shouldRevalidate={shouldRevalidateQrRoute}
+        element={<QRCodeServices />}
+      />
+      <Route
+        path="qrcode/departments"
+        loader={LoaderQrCodeDepartments}
+        action={ActionQrCodeCatalog}
+        shouldRevalidate={shouldRevalidateQrRoute}
+        element={<QRCodeDepartments />}
       />
       <Route
         path="feedbacks/all"

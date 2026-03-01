@@ -1,4 +1,5 @@
 import type {
+  FeedbackCategory,
   Feedback,
   FeedbackFilters,
   FeedbackPagination,
@@ -15,7 +16,16 @@ export type FeedbacksAllFilters = {
   limit: number;
   rating?: number;
   search: string;
+  category?: FeedbackCategory;
+  item: string;
 };
+
+const FEEDBACK_CATEGORIES: readonly FeedbackCategory[] = [
+  'COMPANY',
+  'PRODUCT',
+  'SERVICE',
+  'DEPARTMENT',
+];
 
 export type FeedbacksAllData = {
   feedbacks: Feedback[];
@@ -36,12 +46,18 @@ export function parseFeedbacksAllFilters(url: URL): FeedbacksAllFilters {
   const limit = parsePositiveInt(url.searchParams.get('limit'), DEFAULT_LIMIT);
   const ratingRaw = url.searchParams.get('rating');
   const rating = ratingRaw ? parsePositiveInt(ratingRaw, NaN) : undefined;
+  const categoryRaw = (url.searchParams.get('category') ?? '').toUpperCase();
+  const category = FEEDBACK_CATEGORIES.includes(categoryRaw as FeedbackCategory)
+    ? (categoryRaw as FeedbackCategory)
+    : undefined;
 
   return {
     page,
     limit,
     rating: rating && rating >= 1 && rating <= 5 ? rating : undefined,
     search: url.searchParams.get('search') ?? '',
+    category,
+    item: url.searchParams.get('item') ?? '',
   };
 }
 
@@ -62,6 +78,8 @@ export async function loadFeedbacksAllData(
       limit: filters.limit ?? DEFAULT_LIMIT,
       rating: filters.rating,
       search: filters.search ?? '',
+      category: filters.category,
+      item: filters.item ?? '',
     },
     error: feedbacksResponse ? null : 'Erro ao carregar feedbacks',
   };

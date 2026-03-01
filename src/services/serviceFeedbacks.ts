@@ -15,6 +15,8 @@ export function ServiceGetFeedbacks(filters: FeedbackFilters = {}) {
   if (filters.limit) params.append('limit', filters.limit.toString());
   if (filters.rating) params.append('rating', filters.rating.toString());
   if (filters.search) params.append('search', filters.search);
+  if (filters.category) params.append('category', filters.category);
+  if (filters.item) params.append('item', filters.item);
 
   const queryString = params.toString();
   const url = `/api/protected/user/feedbacks${

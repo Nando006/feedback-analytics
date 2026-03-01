@@ -1,6 +1,7 @@
+import { memo } from 'react';
 import CardSimple from 'components/user/shared/cards/cardSimple';
 
-export default function SectionQrInstructions() {
+const SectionQrInstructions = memo(function SectionQrInstructions() {
   return (
     <CardSimple>
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
@@ -36,4 +37,6 @@ export default function SectionQrInstructions() {
       </div>
     </CardSimple>
   );
-}
+});
+
+export default SectionQrInstructions;

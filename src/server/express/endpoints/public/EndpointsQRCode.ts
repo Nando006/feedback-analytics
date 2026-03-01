@@ -24,6 +24,7 @@ export function EndpointsQRCode(app: express.Express) {
     }
 
     const payload = parsed.data;
+
     const supabase = createSupabaseServerClient(req, res);
 
     // Verifica se a enterprise existe
@@ -53,13 +54,22 @@ export function EndpointsQRCode(app: express.Express) {
       .digest('hex');
 
     // 1. Buscar collection_point do tipo QR_CODE para a empresa (não criar no fluxo público)
-    const { data: collectionPoint, error: cpErr } = await supabase
+    let cpQuery = supabase
       .from('collection_points')
-      .select('id')
+      .select('id, name, catalog_item_id')
       .eq('enterprise_id', payload.enterprise_id)
       .eq('type', 'QR_CODE')
-      .eq('status', 'ACTIVE')
-      .maybeSingle();
+      .eq('status', 'ACTIVE');
+
+    if (payload.collection_point_id) {
+      cpQuery = cpQuery.eq('id', payload.collection_point_id);
+    } else if (payload.catalog_item_id) {
+      cpQuery = cpQuery.eq('catalog_item_id', payload.catalog_item_id);
+    } else {
+      cpQuery = cpQuery.is('catalog_item_id', null);
+    }
+
+    const { data: collectionPoint, error: cpErr } = await cpQuery.maybeSingle();
 
     if (cpErr) {
       console.error('Erro ao buscar collection_point:', cpErr);
@@ -91,14 +101,27 @@ export function EndpointsQRCode(app: express.Express) {
       return sendTypedError(res, 403, API_ERROR_DEVICE_BLOCKED);
     }
 
-    // Verifica se já enviou feedback hoje
-    if (trackedDevice?.last_feedback_at) {
-      const lastFeedback = new Date(trackedDevice.last_feedback_at);
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
+    // Verifica se já enviou feedback hoje nesse QR específico (collection_point)
+    if (trackedDevice?.id) {
+      const todayStart = new Date();
+      todayStart.setHours(0, 0, 0, 0);
 
-      if (lastFeedback >= today) {
-        console.log('Dispositivo já enviou feedback hoje');
+      const { data: duplicateFeedback, error: duplicateFeedbackErr } = await supabase
+        .from('feedback')
+        .select('id')
+        .eq('tracked_device_id', trackedDevice.id)
+        .eq('collection_point_id', collectionPoint.id)
+        .gte('created_at', todayStart.toISOString())
+        .limit(1)
+        .maybeSingle();
+
+      if (duplicateFeedbackErr) {
+        console.error('Erro ao verificar feedback duplicado por QR:', duplicateFeedbackErr);
+        return sendTypedError(res, 500, API_ERROR_DEVICE_CHECK_FAILED);
+      }
+
+      if (duplicateFeedback) {
+        console.log('Dispositivo já enviou feedback hoje neste QR Code');
         return sendTypedError(res, 409, API_ERROR_DEVICE_ALREADY_SUBMITTED);
       }
     }

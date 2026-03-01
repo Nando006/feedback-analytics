@@ -12,5 +12,7 @@ export async function LoaderFeedbacksAll({ request }: LoaderFunctionArgs) {
     limit: filters.limit,
     rating: filters.rating,
     search: filters.search,
+    category: filters.category,
+    item: filters.item,
   });
 }

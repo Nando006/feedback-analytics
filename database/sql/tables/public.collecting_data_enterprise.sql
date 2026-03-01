@@ -6,6 +6,8 @@ CREATE SCHEMA IF NOT EXISTS "public";
 
 CREATE TABLE IF NOT EXISTS "public"."collecting_data_enterprise" (
   "uses_company_products" boolean DEFAULT false NOT NULL,
+  "uses_company_services" boolean DEFAULT false NOT NULL,
+  "uses_company_departments" boolean DEFAULT false NOT NULL,
   "enterprise_id" uuid NOT NULL,
   "company_objective" text,
   "analytics_goal" text,
@@ -16,6 +18,12 @@ CREATE TABLE IF NOT EXISTS "public"."collecting_data_enterprise" (
   "updated_at" timestamp with time zone DEFAULT now(),
   PRIMARY KEY ("id")
 );
+
+ALTER TABLE "public"."collecting_data_enterprise"
+  ADD COLUMN IF NOT EXISTS "uses_company_services" boolean DEFAULT false NOT NULL;
+
+ALTER TABLE "public"."collecting_data_enterprise"
+  ADD COLUMN IF NOT EXISTS "uses_company_departments" boolean DEFAULT false NOT NULL;
 
 ALTER TABLE "public"."collecting_data_enterprise" ENABLE ROW LEVEL SECURITY;
 

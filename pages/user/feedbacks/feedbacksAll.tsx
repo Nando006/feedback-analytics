@@ -1,6 +1,7 @@
-import { useEffect, useState, type ChangeEvent } from 'react';
+import { useCallback, useEffect, useState, type ChangeEvent } from 'react';
 import { useLoaderData, useNavigation, useSearchParams } from 'react-router-dom';
 import type {
+  FeedbackCategory,
   Feedback,
   FeedbackPagination as FeedbackPaginationType,
   FeedbackStats,
@@ -30,8 +31,12 @@ export default function FeedbacksAll() {
     limit: 10,
     rating: undefined,
     search: '',
+    category: undefined,
+    item: '',
   };
   const error = loaderData?.error ?? null;
+  const [searchInput, setSearchInput] = useState(filters.search ?? '');
+  const [itemInput, setItemInput] = useState(filters.item ?? '');
   const loading =
     navigation.state === 'loading' &&
     navigation.location?.pathname === '/user/feedbacks/all';
@@ -46,23 +51,29 @@ export default function FeedbacksAll() {
     null,
   );
 
-  const updateSearchParams = (next: {
+  const updateSearchParams = useCallback((next: {
     page?: number;
     limit?: number;
     rating?: number;
     search?: string;
+    category?: FeedbackCategory;
+    item?: string;
   }) => {
     const params = new URLSearchParams(searchParams);
+    const hasKey = <K extends keyof typeof next>(key: K) =>
+      Object.prototype.hasOwnProperty.call(next, key);
 
-    const page = next.page ?? filters.page;
-    const limit = next.limit ?? filters.limit;
-    const rating = next.rating ?? filters.rating;
-    const search = next.search ?? filters.search;
+    const page = hasKey('page') ? next.page ?? filters.page : filters.page;
+    const limit = hasKey('limit') ? next.limit ?? filters.limit : filters.limit;
+    const rating = hasKey('rating') ? next.rating : filters.rating;
+    const search = hasKey('search') ? (next.search ?? '') : searchInput;
+    const category = hasKey('category') ? next.category : filters.category;
+    const item = hasKey('item') ? (next.item ?? '') : itemInput;
 
     params.set('page', String(page));
     params.set('limit', String(limit));
 
-    if (rating) {
+    if (typeof rating === 'number') {
       params.set('rating', String(rating));
     } else {
       params.delete('rating');
@@ -74,18 +85,64 @@ export default function FeedbacksAll() {
       params.delete('search');
     }
 
+    if (category) {
+      params.set('category', category);
+    } else {
+      params.delete('category');
+    }
+
+    if (item.trim()) {
+      params.set('item', item);
+    } else {
+      params.delete('item');
+    }
+
     setSearchParams(params);
-  };
+  }, [
+    searchParams,
+    setSearchParams,
+    filters.page,
+    filters.limit,
+    filters.rating,
+    filters.category,
+    searchInput,
+    itemInput,
+  ]);
+
+  useEffect(() => {
+    if (searchInput === (filters.search ?? '') && itemInput === (filters.item ?? '')) {
+      return;
+    }
+
+    const timeoutId = setTimeout(() => {
+      setSuppressOverlay(true);
+      updateSearchParams({
+        search: searchInput,
+        item: itemInput,
+        page: 1,
+      });
+    }, 450);
+
+    return () => clearTimeout(timeoutId);
+  }, [searchInput, itemInput, filters.search, filters.item, updateSearchParams]);
 
   // Handlers
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setSuppressOverlay(true);
-    updateSearchParams({ search: e.target.value, page: 1 });
+    setSearchInput(e.target.value);
   };
 
   const handleRatingFilter = (rating: number | undefined) => {
     setSuppressOverlay(true);
     updateSearchParams({ rating, page: 1 });
+  };
+
+  const handleItemChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setItemInput(e.target.value);
+  };
+
+  const handleCategoryFilter = (category: FeedbackCategory | undefined) => {
+    setSuppressOverlay(true);
+    updateSearchParams({ category, page: 1 });
   };
 
   const handlePageChange = (page: number) => {
@@ -112,9 +169,11 @@ export default function FeedbacksAll() {
 
       {/* Filtros */}
       <FeedbackFiltersComponent
-        filters={filters}
+        filters={{ ...filters, search: searchInput, item: itemInput }}
         onSearchChange={handleSearchChange}
+        onItemChange={handleItemChange}
         onRatingFilter={handleRatingFilter}
+        onCategoryFilter={handleCategoryFilter}
         onLimitChange={handleLimitChange}
       />
 
@@ -122,7 +181,11 @@ export default function FeedbacksAll() {
       <div className="relative">
         <div className="space-y-4">
           {feedbacks.length === 0 ? (
-            <FeedbacksAllEmptyState hasFilters={Boolean(filters.search || filters.rating)} />
+            <FeedbacksAllEmptyState
+              hasFilters={Boolean(
+                searchInput || filters.rating || filters.category || itemInput,
+              )}
+            />
           ) : (
             feedbacks.map((feedback) => (
               <FeedbackCard

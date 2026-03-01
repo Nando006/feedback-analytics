@@ -3,15 +3,33 @@ import { FaAlignLeft, FaBuffer, FaChevronRight } from 'react-icons/fa6';
 import type { MenuItem } from './ui.types';
 import { menuData } from 'lib/mock/menu';
 
-function filterMenu(items: MenuItem[], allowProducts: boolean): MenuItem[] {
+function filterMenu(
+  items: MenuItem[],
+  options: {
+    allowProducts: boolean;
+    allowServices: boolean;
+    allowDepartments: boolean;
+  },
+): MenuItem[] {
   return items
     .map((item) => {
-      if (!allowProducts && item.to === '/user/qrcode/products') {
+      if (!options.allowProducts && item.to === '/user/qrcode/products') {
+        return null;
+      }
+
+      if (!options.allowServices && item.to === '/user/qrcode/services') {
+        return null;
+      }
+
+      if (
+        !options.allowDepartments &&
+        item.to === '/user/qrcode/departments'
+      ) {
         return null;
       }
 
       if (Array.isArray(item.children) && item.children.length > 0) {
-        const children = filterMenu(item.children, allowProducts);
+        const children = filterMenu(item.children, options);
         const filteredItem: MenuItem = { ...item };
 
         if (children.length > 0) {
@@ -55,7 +73,7 @@ function Item({ item }: { item: MenuItem }) {
       </div>
 
       <div className="submenu pointer-events-none absolute left-full -top-1.5 z-40 ml-2 origin-left scale-95 opacity-0 transition-all duration-150 ease-out">
-        <ul className="min-w-48 max-h-[calc(100vh-64px-16px)] space-y-1 rounded-md border border-neutral-800/50 bg-neutral-900 p-2 shadow-[var(--shadow-primary)] ring-1 ring-neutral-800/50 backdrop-blur">
+        <ul className="min-w-48 max-h-[calc(100vh-64px-16px)] space-y-1 rounded-md border border-neutral-800/50 bg-neutral-900 p-2 shadow-[var(--shadow-primary)] ring-1 ring-neutral-800/50">
           {item.children!.map((child) => (
             <Item
               key={child.label}
@@ -70,10 +88,18 @@ function Item({ item }: { item: MenuItem }) {
 
 export default function Menu({
   usesCompanyProducts,
+  usesCompanyServices,
+  usesCompanyDepartments,
 }: {
   usesCompanyProducts: boolean;
+  usesCompanyServices: boolean;
+  usesCompanyDepartments: boolean;
 }) {
-  const items = filterMenu(menuData, usesCompanyProducts);
+  const items = filterMenu(menuData, {
+    allowProducts: usesCompanyProducts,
+    allowServices: usesCompanyServices,
+    allowDepartments: usesCompanyDepartments,
+  });
 
   return (
     <nav>

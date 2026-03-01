@@ -15,13 +15,28 @@ export default function FeedbackQRCodeEnterprise() {
     useLoaderData<Awaited<ReturnType<typeof LoaderPublicQrCodeEnterprise>>>();
 
   const enterpriseId = loaderData?.enterpriseId ?? '';
+  const collectionPointId = loaderData?.collectionPointId ?? '';
+  const catalogItemId = loaderData?.catalogItemId ?? '';
   const initialError = loaderData?.error ?? '';
   const enterpriseName = loaderData?.enterpriseName ?? '';
+  const itemName = loaderData?.itemName ?? '';
+  const itemKind = loaderData?.itemKind ?? null;
+
+  const itemKindLabel =
+    itemKind === 'PRODUCT'
+      ? 'Produto'
+      : itemKind === 'SERVICE'
+        ? 'Serviço'
+        : itemKind === 'DEPARTMENT'
+          ? 'Departamento'
+          : null;
 
   const [formData, setFormData] = useState<FeedbackData>({
     message: '',
     rating: 0,
     enterprise_id: enterpriseId,
+    collection_point_id: collectionPointId || undefined,
+    catalog_item_id: catalogItemId || undefined,
   });
   const [customerData, setCustomerData] = useState<CustomerData>({});
   const [showOptionalFields, setShowOptionalFields] = useState(false);
@@ -88,6 +103,8 @@ export default function FeedbackQRCodeEnterprise() {
     fetcher.submit(
       {
         enterprise_id: formData.enterprise_id,
+        collection_point_id: formData.collection_point_id ?? '',
+        catalog_item_id: formData.catalog_item_id ?? '',
         message: formData.message.trim(),
         rating: String(formData.rating),
         customer_name: customerData.customer_name ?? '',
@@ -117,9 +134,13 @@ export default function FeedbackQRCodeEnterprise() {
       <Card
         title="Compartilhe sua Experiência"
         text={
-          enterpriseName
-            ? `Conte-nos sobre sua experiência com ${enterpriseName}`
-            : 'Seu feedback é muito importante para nós'
+          itemName && itemKindLabel
+            ? enterpriseName
+              ? `${enterpriseName} · Categoria: ${itemKindLabel} · Item: ${itemName}`
+              : `Categoria: ${itemKindLabel} · Item: ${itemName}`
+            : enterpriseName
+              ? `Conte-nos sobre sua experiência com ${enterpriseName}`
+              : 'Seu feedback é muito importante para nós'
         }
         icon={<SVGImageProfile />}
         children={
