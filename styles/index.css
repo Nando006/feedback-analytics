@@ -2,107 +2,70 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
 
 :root {
-  font-family: 'Roboto', 'Inter', system-ui, Avenir, Helvetica, Arial,
-    sans-serif;
+  font-family: 'Roboto', 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-
   color-scheme: light dark;
 
-  /* Cores principais - Dark Mode */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.public-theme {
   --bg-primary: #262626;
-  /* Neutral 800 */
   --bg-secondary: #404040;
-  /* Neutral 700 */
   --bg-tertiary: #525252;
-  /* Neutral 600 */
   --bg-quartiary: #737373;
-  /* Neutral 500 */
-
-  /* Cores de texto - Dark Mode */
-  --text-primary: #f5f5f5;
-  /* text-neutral 100 */
-  --text-secondary: #d4d4d8;
-  /* text-neutral 300 */
-  --text-muted: #a1a1aa;
-  /* text-neutral 400 */
-  --text-button: oklch(21% 0.034 264.665);
-  /* Gray-900 */
-
-  /* Sombras - Dark Mode */
-  --shadow-primary: 0 4px 20px rgba(23, 23, 23, 0.4);
-  /* shadow com neutral 900 */
-  --shadow-secondary: 0 2px 10px rgba(38, 38, 38, 0.3);
-  /* shadow com neutral 800 */
-
-  color: var(--text-primary);
-  background-color: var(--bg-primary);
-
-  /* Principais cores do projeto - Dark Mode */
-  --primary-color: #20B2AA;
-  --primary-color-dark: #136863;
-  --secondary-color: #3ED9E3;
-  --secondary-color-dark: #1EA49C;
-  --tertiary-color: #1EA49C;
-  --tertiary-color-dark: #136863;
-
-  /* Cores de Estrutura (Fundo e Superfície) */
-  --header-color: #343B4F;
   --bg-color: #121212;
+
+  --text-primary: #f5f5f5;
+  --text-secondary: #d4d4d8;
+
+  --color-primary: #20B2AA;
+  --color-secondary: #3ED9E3;
+  --color-terciary: #1EA49C;
+
+  --header-color: #343B4F;
+
   --container-primary: oklch(20.5% 0 0);
-  /* Neutral 900 */
   --container-secondary: oklch(26.9% 0 0);
-  /* Neutral-800 */
-  
   --container-border: oklch(39.514% 0.00133 15.353);
-  /* Neutral-800 */
-
-  /* feelings */
-
+  
   --positive: oklch(76.5% 0.177 163.223);
-  /* Emerald 400 */
   --neutral: oklch(82.8% 0.189 84.429);
-  /* Amber 400 */
   --negative: oklch(71.2% 0.194 13.428);
-  /* Rose 400 */
+
+  --font-title: 'Montserrat', 'Arial', 'sans-serif';
+  --font-body: 'Inter', 'Arial', 'sans-serif';
+  --font-button: 'Poppins', 'Arial', 'sans-serif';
+}
+
+.private-user-theme {
+
 }
 
 @media (prefers-color-scheme: light) {
   :root {
-    /* Cores principais - Light Mode */
-    --bg-primary: #ffffff;
-    /* bg-white */
-    --bg-secondary: #f5f5f5;
-    /* bg-neutral-100 */
-    --bg-tertiary: #e5e5e5;
-    /* bg-neutral-200 */
-    --bg-quartiary: #d4d4d4;
-    /* bg-neutral-300 */
-
-    /* Cores de texto - Light Mode */
-    --text-primary: #171717;
-    /* text-neutral-900 */
-    --text-secondary: #525252;
-    /* text-neutral-600 */
-    --text-muted: #737373;
-    /* text-neutral-500 */
-    --text-button: oklch(96.7% 0.003 264.542);
-    /* Gray-100 */
-
-    /* Sombras - Light Mode */
-    --shadow-primary: 0 4px 20px rgba(115, 115, 115, 0.15);
-    /* shadow com neutral-500 */
-    --shadow-secondary: 0 2px 10px rgba(163, 163, 163, 0.1);
-    /* shadow com neutral-400 */
-
     color: var(--text-primary);
     background-color: var(--bg-primary);
+  }
 
-    /* Principais cores do projeto - Dark Mode */
+  .public-theme {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f5f5f5;
+    --bg-tertiary: #e5e5e5;
+    --bg-quartiary: #d4d4d4;
+
+    --text-primary: #171717;
+    --text-secondary: #525252;
+    --text-muted: #737373;
+    --text-button: oklch(96.7% 0.003 264.542);
+    
+    --shadow-primary: 0 4px 20px rgba(115, 115, 115, 0.15);
+    --shadow-secondary: 0 2px 10px rgba(163, 163, 163, 0.1);
+
     --primary-color: #1a8b86;
     --primary-color-dark: #3ED9E3;
     --secondary-color: #4d9691;
@@ -110,46 +73,23 @@
     --terciary-color: #3ED9E3;
     --terciary-color-dark: #20B2AA;
 
-    /* Cores de Estrutura (Fundo e Superfície) - Dark Mode */
     --header-color: #38393d;
     --bg-color: #f1e7f1;
 
     --container-primary: oklch(98.5% 0 0);
-    /* Neutral-200 */
     --container-secondary: oklch(97% 0 0);
-    /* Neutral-800 */
-
     --container-border: oklch(92.2% 0 0);
-    /* Neutral-200 */
-
-    /* feelings */
 
     --positive: oklch(72.3% 0.219 149.579);
-    /* Green 500 */
     --neutral: oklch(76.9% 0.188 70.08);
-    /* Amber 500 */
     --negative: oklch(64.5% 0.246 16.439);
-    /* Rose 500 */
+
+    --font-title: 'Montserrat', 'Arial', 'sans-serif';
+    --font-body: 'Inter', 'Arial', 'sans-serif';
+    --font-button: 'Poppins', 'Arial', 'sans-serif';
   }
-}
 
-/* Fonts */
-
-.font-inter {
-  font-family: 'Inter', 'Arial', 'sans-serif';
-}
-
-/* Titles */
-.font-montserrat {
-  font-family: 'Montserrat', 'Arial', 'sans-serif';
-}
-
-/* Body */
-.font-work-sans {
-  font-family: 'Work Sans', 'Roboto', 'sans-serif';
-}
-
-/* Buttons */
-.font-poppins {
-  font-family: 'Poppins', 'Roboto', 'sans-serif';
+  .private-user-theme {
+    
+  }
 }

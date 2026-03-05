@@ -15,7 +15,7 @@ export default function Header() {
           <li>
             <Link
               to="/register"
-              className="font-poppins text-sm font-medium px-6 py-2 md:px-10 rounded-lg border border-(--primary-color) text-white hover:bg-(--primary-color) transition-colors">
+              className="font-poppins text-sm font-medium px-6 py-2 md:px-10 rounded-lg border border-(--color-primary) text-white hover:bg-(--color-primary)/50 transition-colors">
               Registrar
             </Link>
           </li>

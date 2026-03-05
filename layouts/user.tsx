@@ -70,7 +70,7 @@ export default function User() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)]">
+    <div className="private-user-theme min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)]">
       <header className="sticky top-0 z-50 h-16 border-b border-neutral-800/50 bg-neutral-900/90">
         <Header
           isOverlayMode={isOverlayMode}
