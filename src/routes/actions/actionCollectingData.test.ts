@@ -10,7 +10,7 @@ vi.mock('src/services/serviceEnterprise', () => ({
 const mockUpdateCollectingDataEnterprise = vi.mocked(ServiceUpdateCollectingDataEnterprise);
 
 function createRequest(body: Record<string, string | undefined>) {
-  const formData = new FormData();
+  const formData = new URLSearchParams();
   Object.entries(body).forEach(([key, value]) => {
     if (typeof value !== 'undefined') {
       formData.append(key, value);
@@ -20,6 +20,9 @@ function createRequest(body: Record<string, string | undefined>) {
   return new Request('http://localhost/user/edit/collecting-data-enterprise', {
     method: 'POST',
     body: formData,
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+    },
   });
 }
 
@@ -47,6 +50,8 @@ describe('ActionCollectingData', () => {
       business_summary: null,
       main_products_or_services: ['Produto 1', 'Produto 2'],
       uses_company_products: true,
+      uses_company_services: true,
+      uses_company_departments: false,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     });
@@ -58,6 +63,8 @@ describe('ActionCollectingData', () => {
         business_summary: 'Resumo',
         main_products_or_services: 'Produto 1\nProduto 2\n',
         uses_company_products: 'on',
+        uses_company_services: 'on',
+        uses_company_departments: 'false',
       }),
     );
 
@@ -67,6 +74,24 @@ describe('ActionCollectingData', () => {
       business_summary: 'Resumo',
       main_products_or_services: ['Produto 1', 'Produto 2'],
       uses_company_products: true,
+      uses_company_services: true,
+      uses_company_departments: false,
+      catalog_products: [
+        {
+          name: 'Produto 1',
+          description: null,
+          sort_order: 0,
+          status: 'ACTIVE',
+        },
+        {
+          name: 'Produto 2',
+          description: null,
+          sort_order: 1,
+          status: 'ACTIVE',
+        },
+      ],
+      catalog_services: [],
+      catalog_departments: [],
     });
   });
 
@@ -79,6 +104,8 @@ describe('ActionCollectingData', () => {
       business_summary: null,
       main_products_or_services: null,
       uses_company_products: false,
+      uses_company_services: false,
+      uses_company_departments: false,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     });
@@ -87,6 +114,8 @@ describe('ActionCollectingData', () => {
       createArgs({
         main_products_or_services: 'Produto 1',
         uses_company_products: 'false',
+        uses_company_services: 'false',
+        uses_company_departments: 'false',
       }),
     );
 
@@ -96,6 +125,65 @@ describe('ActionCollectingData', () => {
       business_summary: null,
       main_products_or_services: null,
       uses_company_products: false,
+      uses_company_services: false,
+      uses_company_departments: false,
+      catalog_products: [],
+      catalog_services: [],
+      catalog_departments: [],
+    });
+  });
+
+  it('prioriza catálogo estruturado quando catalog_products é informado', async () => {
+    mockUpdateCollectingDataEnterprise.mockResolvedValue({
+      id: 'collecting-id',
+      enterprise_id: 'enterprise-id',
+      company_objective: null,
+      analytics_goal: null,
+      business_summary: null,
+      main_products_or_services: ['Produto JSON'],
+      uses_company_products: true,
+      uses_company_services: false,
+      uses_company_departments: false,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    });
+
+    await ActionCollectingData(
+      createArgs({
+        uses_company_products: 'true',
+        uses_company_services: 'false',
+        uses_company_departments: 'false',
+        main_products_or_services: 'Produto legado',
+        catalog_products: JSON.stringify([
+          {
+            id: '11111111-1111-1111-1111-111111111111',
+            name: 'Produto JSON',
+            description: 'Descrição',
+            sort_order: 3,
+          },
+        ]),
+      }),
+    );
+
+    expect(mockUpdateCollectingDataEnterprise).toHaveBeenCalledWith({
+      company_objective: null,
+      analytics_goal: null,
+      business_summary: null,
+      main_products_or_services: ['Produto JSON'],
+      uses_company_products: true,
+      uses_company_services: false,
+      uses_company_departments: false,
+      catalog_products: [
+        {
+          id: '11111111-1111-1111-1111-111111111111',
+          name: 'Produto JSON',
+          description: 'Descrição',
+          sort_order: 3,
+          status: 'ACTIVE',
+        },
+      ],
+      catalog_services: [],
+      catalog_departments: [],
     });
   });
 });

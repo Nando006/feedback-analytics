@@ -1,7 +1,8 @@
+import { memo } from 'react';
 import CardSimple from 'components/user/shared/cards/cardSimple';
 import { FaLightbulb } from 'react-icons/fa';
 
-export default function SectionQrUsageTips() {
+const SectionQrUsageTips = memo(function SectionQrUsageTips() {
   return (
     <CardSimple>
       <div className="space-y-6">
@@ -58,4 +59,6 @@ export default function SectionQrUsageTips() {
       </div>
     </CardSimple>
   );
-}
+});
+
+export default SectionQrUsageTips;

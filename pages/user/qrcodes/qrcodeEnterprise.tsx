@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useFetcher, useLoaderData, useRouteLoaderData } from 'react-router-dom';
 import { getQrCodeUrl } from 'lib/utils/qrcode';
 import type { Enterprise } from 'lib/interfaces/entities/enterprise.entity';
@@ -48,18 +48,21 @@ export default function QRCodeEnterprise() {
   }, [qrFetcher.data]);
 
   // Gera URL para formulário de feedback da empresa
-  const generateFeedbackUrl = () => {
+  const feedbackUrl = useMemo(() => {
     const baseUrl = window.location.origin;
     return `${baseUrl}/feedback/qrcode?enterprise=${enterprise.id}`;
-  };
+  }, [enterprise.id]);
 
-  const feedbackUrl = generateFeedbackUrl();
-  const qrCodeUrl = getQrCodeUrl(feedbackUrl, {
-    size: 300,
-    format: 'png',
-  });
+  const qrCodeUrl = useMemo(
+    () =>
+      getQrCodeUrl(feedbackUrl, {
+        size: 300,
+        format: 'png',
+      }),
+    [feedbackUrl],
+  );
 
-  const handleDownload = async () => {
+  const handleDownload = useCallback(async () => {
     try {
       const response = await fetch(qrCodeUrl);
       const blob = await response.blob();
@@ -76,9 +79,9 @@ export default function QRCodeEnterprise() {
     } catch (error) {
       console.error('Erro ao baixar QR Code:', error);
     }
-  };
+  }, [enterprise.full_name, qrCodeUrl]);
 
-  const handleCopyLink = async () => {
+  const handleCopyLink = useCallback(async () => {
     try {
       await navigator.clipboard.writeText(feedbackUrl);
       setShowCopied(true);
@@ -86,9 +89,9 @@ export default function QRCodeEnterprise() {
     } catch (error) {
       console.error('Erro ao copiar link:', error);
     }
-  };
+  }, [feedbackUrl]);
 
-  const handleShare = async () => {
+  const handleShare = useCallback(async () => {
     if (navigator.share) {
       try {
         await navigator.share({
@@ -104,15 +107,15 @@ export default function QRCodeEnterprise() {
     } else {
       handleCopyLink();
     }
-  };
+  }, [enterprise.full_name, feedbackUrl, handleCopyLink]);
 
-  const handleToggleQr = () => {
+  const handleToggleQr = useCallback(() => {
     setQrError(null);
     qrFetcher.submit(
       { intent: qrActive ? INTENT_QR_DISABLE : INTENT_QR_ENABLE },
       { method: 'post' },
     );
-  };
+  }, [qrActive, qrFetcher]);
 
   return (
     <div className="font-inter space-y-8">

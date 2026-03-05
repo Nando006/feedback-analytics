@@ -10,9 +10,26 @@ export function ServiceGetEnterprise() {
   return getJson<ApiEnterpriseResponse>('/api/protected/user/enterprise');
 }
 
-export function ServiceGetEnterprisePublic(enterpriseId: string) {
+export function ServiceGetEnterprisePublic(
+  enterpriseId: string,
+  params?: {
+    collectionPointId?: string | null;
+    catalogItemId?: string | null;
+  },
+) {
+  const search = new URLSearchParams();
+
+  if (params?.collectionPointId) {
+    search.set('collection_point', params.collectionPointId);
+  }
+
+  if (params?.catalogItemId) {
+    search.set('catalog_item', params.catalogItemId);
+  }
+
+  const suffix = search.toString();
   return getJson<EnterpriseContractResponse>(
-    `/api/public/enterprise/${enterpriseId}`,
+    `/api/public/enterprise/${enterpriseId}${suffix ? `?${suffix}` : ''}`,
   );
 }
 

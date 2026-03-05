@@ -22,7 +22,11 @@ export interface FeedbackCardProps {
 export interface FeedbackFiltersProps {
   filters: FeedbackFilters;
   onSearchChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  onItemChange: (e: ChangeEvent<HTMLInputElement>) => void;
   onRatingFilter: (rating: number | undefined) => void;
+  onCategoryFilter: (
+    category: 'COMPANY' | 'PRODUCT' | 'SERVICE' | 'DEPARTMENT' | undefined,
+  ) => void;
   onLimitChange: (limit: number) => void;
 }
 

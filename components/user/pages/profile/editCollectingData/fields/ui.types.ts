@@ -1,4 +1,5 @@
-import type { ChangeEvent } from 'react';
+import type { ChangeEvent, Dispatch, SetStateAction } from 'react';
+import type { CatalogItemInput } from 'lib/interfaces/entities/enterprise.entity';
 
 /**
  * Props do campo de principais produtos/serviços.
@@ -10,11 +11,40 @@ export interface FieldMainProductsProps {
 }
 
 /**
- * Props do campo de confirmação de uso dos próprios produtos.
+ * Props do campo dinâmico de itens de catálogo por categoria.
+ * Usado em: components/user/pages/profile/editCollectingData/fields/fieldCatalogItems.tsx.
+ */
+export interface FieldCatalogItemsProps {
+  title: string;
+  description: string;
+  emptyLabel: string;
+  items: CatalogItemInput[];
+  onChange: Dispatch<SetStateAction<CatalogItemInput[]>>;
+}
+
+/**
+ * Props da linha individual de item do catálogo.
+ * Usado em: components/user/pages/profile/editCollectingData/fields/fieldCatalogItems.tsx.
+ */
+export interface CatalogItemRowProps {
+  index: number;
+  item: CatalogItemInput;
+  onRemove: (index: number) => void;
+  onChangeField: (
+    index: number,
+    field: 'name' | 'description',
+    value: string,
+  ) => void;
+}
+
+/**
+ * Props do bloco de capacidades da empresa (produtos, serviços e áreas/departamentos).
  * Usado em: components/user/pages/profile/editCollectingData/fields/fieldUsesCompanyProducts.tsx.
  */
 export interface FieldUsesCompanyProductsProps {
-  checked: boolean;
+  usesCompanyProducts: boolean;
+  usesCompanyServices: boolean;
+  usesCompanyDepartments: boolean;
   onChange: (event: ChangeEvent<HTMLInputElement>) => void;
 }
 
@@ -23,8 +53,7 @@ export interface FieldUsesCompanyProductsProps {
  * Usado em: components/user/pages/profile/editCollectingData/fields/fieldBusinessSummary.tsx.
  */
 export interface FieldBusinessSummaryProps {
-  value: string;
-  onChange: (value: string) => void;
+  defaultValue: string;
 }
 
 /**
@@ -32,8 +61,7 @@ export interface FieldBusinessSummaryProps {
  * Usado em: components/user/pages/profile/editCollectingData/fields/fieldAnalyticsGoal.tsx.
  */
 export interface FieldAnalyticsGoalProps {
-  value: string;
-  onChange: (value: string) => void;
+  defaultValue: string;
 }
 
 /**
@@ -41,6 +69,5 @@ export interface FieldAnalyticsGoalProps {
  * Usado em: components/user/pages/profile/editCollectingData/fields/fieldCompanyObjective.tsx.
  */
 export interface FieldCompanyObjectiveProps {
-  value: string;
-  onChange: (value: string) => void;
+  defaultValue: string;
 }

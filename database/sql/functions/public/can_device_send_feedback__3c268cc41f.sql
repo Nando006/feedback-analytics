@@ -1,27 +1,52 @@
 -- Descrição: Verifica se um dispositivo pode enviar novo feedback no período.
--- Uso: Aplica regra de limite diário com base em tracked_devices.
+-- Uso: Aplica regra de limite diário por QR (collection_point) com fallback legado.
 
-CREATE OR REPLACE FUNCTION public.can_device_send_feedback(enterprise_id_param uuid, device_fingerprint_param text)
+CREATE OR REPLACE FUNCTION public.can_device_send_feedback(
+  enterprise_id_param uuid,
+  device_fingerprint_param text,
+  collection_point_id_param uuid DEFAULT NULL::uuid
+)
  RETURNS boolean
  LANGUAGE plpgsql
  SECURITY DEFINER
 AS $function$
 DECLARE
-  device_record RECORD;
-  feedback_limit INTEGER := 1; -- Limite de feedback por dispositivo por dia
+  tracked_device_id_var uuid;
+  day_start timestamptz := date_trunc('day', now());
+  already_sent boolean := false;
 BEGIN
-  -- A consulta agora é na tabela correta: tracked_devices
-  SELECT * INTO device_record
+  -- Dispositivo ativo da empresa
+  SELECT td.id INTO tracked_device_id_var
   FROM public.tracked_devices
-  WHERE enterprise_id = enterprise_id_param
-    AND device_fingerprint = device_fingerprint_param
-    AND is_blocked = FALSE;
+  AS td
+  WHERE td.enterprise_id = enterprise_id_param
+    AND td.device_fingerprint = device_fingerprint_param
+    AND td.is_blocked = FALSE
+  LIMIT 1;
 
-  IF NOT FOUND THEN
+  IF tracked_device_id_var IS NULL THEN
     RETURN TRUE;
   END IF;
 
-  RETURN device_record.feedback_count < feedback_limit;
+  IF collection_point_id_param IS NOT NULL THEN
+    SELECT EXISTS (
+      SELECT 1
+      FROM public.feedback f
+      WHERE f.tracked_device_id = tracked_device_id_var
+        AND f.collection_point_id = collection_point_id_param
+        AND f.created_at >= day_start
+    ) INTO already_sent;
+  ELSE
+    -- Fallback legado: limita por dispositivo no dia (qualquer QR da empresa)
+    SELECT EXISTS (
+      SELECT 1
+      FROM public.feedback f
+      WHERE f.tracked_device_id = tracked_device_id_var
+        AND f.created_at >= day_start
+    ) INTO already_sent;
+  END IF;
+
+  RETURN NOT already_sent;
 END;
 $function$
 

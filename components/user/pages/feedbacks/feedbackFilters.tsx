@@ -3,7 +3,9 @@ import type { FeedbackFiltersProps } from './ui.types';
 export default function FeedbackFilters({
   filters,
   onSearchChange,
+  onItemChange,
   onRatingFilter,
+  onCategoryFilter,
   onLimitChange,
 }: FeedbackFiltersProps) {
   return (
@@ -39,6 +41,43 @@ export default function FeedbackFilters({
             <option value="2">2 estrelas</option>
             <option value="1">1 estrela</option>
           </select>
+        </div>
+
+        {/* Filtro por categoria */}
+        <div className="flex items-center gap-2">
+          <select
+            value={filters.category || ''}
+            onChange={(e) =>
+              onCategoryFilter(
+                e.target.value
+                  ? (e.target.value as
+                      | 'COMPANY'
+                      | 'PRODUCT'
+                      | 'SERVICE'
+                      | 'DEPARTMENT')
+                  : undefined,
+              )
+            }
+            className="px-3 py-3 border border-neutral-800 bg-neutral-900/50 text-[var(--text-primary)] rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+            <option value="">Todas as categorias</option>
+            <option value="COMPANY">Empresa</option>
+            <option value="PRODUCT">Produto</option>
+            <option value="SERVICE">Serviços</option>
+            <option value="DEPARTMENT">Departamentos</option>
+          </select>
+        </div>
+
+        {/* Filtro por item */}
+        <div className="flex-1 min-w-[220px]">
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Filtrar por item (ex: Bola de couro)"
+              value={filters.item || ''}
+              onChange={onItemChange}
+              className="w-full pl-4 pr-4 py-3 border border-neutral-800 bg-neutral-900/50 text-[var(--text-primary)] rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent placeholder-[var(--text-muted)]"
+            />
+          </div>
         </div>
 
         {/* Itens por página */}

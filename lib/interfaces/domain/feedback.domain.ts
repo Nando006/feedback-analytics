@@ -33,6 +33,13 @@ export interface CollectionPoint {
   name: string;
   type: 'QR_CODE' | 'EMAIL' | 'WHATSAPP' | 'LINK_DIRETO';
   identifier: string | null;
+  catalog_item_id?: string | null;
+  catalog_item_name?: string | null;
+  catalog_item_kind?: 'PRODUCT' | 'SERVICE' | 'DEPARTMENT' | null;
+  catalog_items?: {
+    name: string;
+    kind: 'PRODUCT' | 'SERVICE' | 'DEPARTMENT';
+  } | null;
 }
 
 /**
@@ -113,7 +120,19 @@ export interface FeedbackFilters {
   limit?: number;
   rating?: number;
   search?: string;
+  category?: FeedbackCategory;
+  item?: string;
 }
+
+/**
+ * Categoria funcional para filtro de feedbacks na listagem.
+ * Usado em: src/services/serviceFeedbacks.ts, src/routes/load/loadFeedbacksAll.ts e components/user/pages/feedbacks/feedbackFilters.tsx.
+ */
+export type FeedbackCategory =
+  | 'COMPANY'
+  | 'PRODUCT'
+  | 'SERVICE'
+  | 'DEPARTMENT';
 
 /**
  * Sentimento classificado para um feedback analisado.

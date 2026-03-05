@@ -13,6 +13,8 @@ export async function ActionPublicQrCodeFeedback({
   const form = await request.formData();
 
   const enterprise_id = String(form.get('enterprise_id') ?? '');
+  const collection_point_id = String(form.get('collection_point_id') ?? '').trim();
+  const catalog_item_id = String(form.get('catalog_item_id') ?? '').trim();
   const message = String(form.get('message') ?? '').trim();
   const rating = Number(form.get('rating') ?? 0);
   const customer_name = String(form.get('customer_name') ?? '').trim();
@@ -52,6 +54,8 @@ export async function ActionPublicQrCodeFeedback({
   try {
     await ServiceSubmitQrcodeFeedback({
       enterprise_id,
+      collection_point_id: collection_point_id || undefined,
+      catalog_item_id: catalog_item_id || undefined,
       message,
       rating,
       channel: 'QRCODE',

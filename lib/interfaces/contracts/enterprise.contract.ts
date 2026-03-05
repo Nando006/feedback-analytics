@@ -5,6 +5,10 @@
 export interface EnterpriseContractResponse {
   id: string;
   name: string;
+  collection_point_id?: string | null;
+  catalog_item_id?: string | null;
+  item_name?: string | null;
+  item_kind?: 'PRODUCT' | 'SERVICE' | 'DEPARTMENT' | null;
 }
 
 /**

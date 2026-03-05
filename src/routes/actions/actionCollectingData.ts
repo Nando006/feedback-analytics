@@ -1,5 +1,91 @@
+import type { CatalogItemInput } from 'lib/interfaces/entities/enterprise.entity';
 import { ServiceUpdateCollectingDataEnterprise } from 'src/services/serviceEnterprise';
 import type { ActionFunctionArgs } from 'react-router-dom';
+
+type HttpError = Error & {
+  status?: number;
+  code?: string;
+};
+
+function isTruthyValue(value: FormDataEntryValue | null) {
+  return value === 'on' || value === 'true' || value === '1';
+}
+
+function parseLegacyProductsText(text: string) {
+  return text
+    .split('\n')
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0)
+    .map((name, index) => ({
+      name,
+      description: null,
+      sort_order: index,
+      status: 'ACTIVE' as const,
+    }));
+}
+
+function parseCatalogItemsField(
+  raw: FormDataEntryValue | null,
+): CatalogItemInput[] | undefined {
+  if (raw === null) return undefined;
+
+  const text = String(raw ?? '').trim();
+  if (!text) return [];
+
+  try {
+    const parsed = JSON.parse(text) as unknown;
+    if (!Array.isArray(parsed)) return [];
+
+    return parsed
+      .map((item, index) => {
+        if (typeof item === 'string') {
+          const name = item.trim();
+          if (!name) return null;
+          return {
+            name,
+            description: null,
+            sort_order: index,
+            status: 'ACTIVE' as const,
+          };
+        }
+
+        if (!item || typeof item !== 'object') return null;
+
+        const candidate = item as {
+          id?: unknown;
+          name?: unknown;
+          description?: unknown;
+          sort_order?: unknown;
+          status?: unknown;
+        };
+
+        const name =
+          typeof candidate.name === 'string' ? candidate.name.trim() : '';
+        if (!name) return null;
+
+        return {
+          ...(typeof candidate.id === 'string' && candidate.id.trim()
+            ? { id: candidate.id.trim() }
+            : {}),
+          name,
+          description:
+            typeof candidate.description === 'string'
+              ? candidate.description.trim() || null
+              : null,
+          sort_order:
+            typeof candidate.sort_order === 'number' &&
+            Number.isFinite(candidate.sort_order)
+              ? candidate.sort_order
+              : index,
+          status:
+            candidate.status === 'INACTIVE' ? 'INACTIVE' : ('ACTIVE' as const),
+        };
+      })
+      .filter((item): item is CatalogItemInput => item !== null);
+  } catch {
+    return [];
+  }
+}
 
 export async function ActionCollectingData({ request }: ActionFunctionArgs) {
   const form = await request.formData();
@@ -11,20 +97,35 @@ export async function ActionCollectingData({ request }: ActionFunctionArgs) {
   const main_products_or_services_text = String(
     form.get('main_products_or_services') ?? '',
   );
-  const uses_company_products_raw = form.get('uses_company_products');
-  const uses_company_products =
-    uses_company_products_raw === 'on' ||
-    uses_company_products_raw === 'true' ||
-    uses_company_products_raw === '1';
+  const uses_company_products = isTruthyValue(form.get('uses_company_products'));
+  const uses_company_services = isTruthyValue(form.get('uses_company_services'));
+  const uses_company_departments = isTruthyValue(
+    form.get('uses_company_departments'),
+  );
 
-  /* Processando o campo de texto 'main_products_or_services' recebido do formulário,
-  separando cada linha, removendo espaços em branco e filtrando linhas vazias,
-  para obter um array apenas com os produtos ou serviços preenchidos. */
+  const catalogProductsFromForm = parseCatalogItemsField(
+    form.get('catalog_products'),
+  );
+  const catalogServicesFromForm = parseCatalogItemsField(
+    form.get('catalog_services'),
+  );
+  const catalogDepartmentsFromForm = parseCatalogItemsField(
+    form.get('catalog_departments'),
+  );
+
+  const legacyProducts = parseLegacyProductsText(main_products_or_services_text);
+  const catalog_products = uses_company_products
+    ? (catalogProductsFromForm ?? legacyProducts)
+    : [];
+  const catalog_services = uses_company_services
+    ? (catalogServicesFromForm ?? [])
+    : [];
+  const catalog_departments = uses_company_departments
+    ? (catalogDepartmentsFromForm ?? [])
+    : [];
+
   const main_products_or_services = uses_company_products
-    ? main_products_or_services_text
-        .split('\n')
-        .map((s) => s.trim())
-        .filter((s) => s.length > 0)
+    ? catalog_products.map((item) => item.name).filter((name) => name.length > 0)
     : [];
 
   try {
@@ -37,15 +138,39 @@ export async function ActionCollectingData({ request }: ActionFunctionArgs) {
         ? main_products_or_services
         : null,
       uses_company_products,
+      uses_company_services,
+      uses_company_departments,
+      catalog_products,
+      catalog_services,
+      catalog_departments,
     });
 
     return new Response(JSON.stringify({ collecting }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
     });
-  } catch {
-    return new Response(JSON.stringify({ error: 'upsert_failed' }), {
-      status: 400,
+  } catch (error) {
+    const httpError = error as HttpError;
+    const status =
+      typeof httpError?.status === 'number' &&
+      httpError.status >= 400 &&
+      httpError.status <= 599
+        ? httpError.status
+        : 400;
+
+    console.error('ActionCollectingData: falha ao salvar coleta', {
+      status: httpError?.status,
+      code: httpError?.code,
+      message: httpError?.message,
+    });
+
+    return new Response(
+      JSON.stringify({
+        error: httpError?.code || 'upsert_failed',
+        message: httpError?.message || 'Falha ao salvar dados de coleta.',
+      }),
+      {
+      status,
       headers: { 'Content-Type': 'application/json' },
     });
   }

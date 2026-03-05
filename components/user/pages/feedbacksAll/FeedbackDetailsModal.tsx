@@ -6,9 +6,36 @@ export default function FeedbackDetailsModal({
   selectedFeedback,
   onClose,
 }: FeedbackDetailsModalProps) {
+  const catalogItem = Array.isArray(selectedFeedback.collection_points?.catalog_items)
+    ? (selectedFeedback.collection_points?.catalog_items[0] ?? null)
+    : (selectedFeedback.collection_points?.catalog_items ?? null);
+
+  const resolvedItemKind =
+    selectedFeedback.collection_points?.catalog_item_kind ?? catalogItem?.kind ?? null;
+
+  const normalizedItemKind = String(resolvedItemKind ?? '').toUpperCase();
+
+  const resolvedItemName =
+    selectedFeedback.collection_points?.catalog_item_name ?? catalogItem?.name ?? null;
+
+  const itemKindLabel =
+    normalizedItemKind === 'PRODUCT'
+      ? 'Produto'
+      : normalizedItemKind === 'SERVICE'
+        ? 'Serviço'
+        : normalizedItemKind === 'DEPARTMENT'
+          ? 'Departamento'
+          : 'Empresa';
+
+  const itemName = resolvedItemName;
+  const channelDisplayName =
+    selectedFeedback.collection_points?.type === 'QR_CODE'
+      ? (selectedFeedback.collection_points?.name || '').replace(/^QR Code\s*-\s*.+$/, 'QR Code')
+      : (selectedFeedback.collection_points?.name || 'N/A');
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose}>
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+      <div className="absolute inset-0 bg-black/60" />
       <div
         className="relative max-h-[85vh] w-full max-w-3xl overflow-y-auto rounded-2xl border border-neutral-800 bg-neutral-900/90 p-6 glass-card"
         onClick={(e) => e.stopPropagation()}>
@@ -46,8 +73,8 @@ export default function FeedbackDetailsModal({
             {selectedFeedback.collection_points ? (
               <div className="grid grid-cols-1 gap-2 text-[var(--text-muted)] md:grid-cols-3">
                 <div>
-                  <span className="text-[var(--text-secondary)]">Nome:</span>{' '}
-                  {selectedFeedback.collection_points.name}
+                  <span className="text-[var(--text-secondary)]">Canal:</span>{' '}
+                  {channelDisplayName}
                 </div>
                 <div>
                   <span className="text-[var(--text-secondary)]">Tipo:</span>{' '}
@@ -56,6 +83,14 @@ export default function FeedbackDetailsModal({
                 <div>
                   <span className="text-[var(--text-secondary)]">Identificador:</span>{' '}
                   {selectedFeedback.collection_points.identifier || '—'}
+                </div>
+                <div>
+                  <span className="text-[var(--text-secondary)]">Categoria:</span>{' '}
+                  {itemKindLabel}
+                </div>
+                <div className="md:col-span-2">
+                  <span className="text-[var(--text-secondary)]">Item:</span>{' '}
+                  {itemName || '—'}
                 </div>
               </div>
             ) : (
