@@ -61,6 +61,24 @@
   --seventh-color: #393939;
 }
 
+.private-user-theme {
+  --bg-primary: #0b0d11;
+  --bg-secondary: #11141a;
+  --bg-tertiary: #1a1f29;
+
+  --text-primary: #f5f7fb;
+  --text-secondary: #b8bfcb;
+  --text-tertiary: #7f8797;
+
+  --primary-color: #7c3aed;
+  --secondary-color: #6d28d9;
+  --tertiary-color: #3b82f6;
+  --quaternary-color: #a78bfa;
+  --quinary-color: #93c5fd;
+  --sixth-color: #101319;
+  --seventh-color: #161a22;
+}
+
 .public-theme,
 .private-user-theme {
   color: var(--text-primary);
