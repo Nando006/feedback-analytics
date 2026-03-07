@@ -4,11 +4,11 @@ import FormRegister from 'components/public/forms/formRegister';
 
 export default function Register() {
   return (
-    <div className="relative flex min-h-screen items-center justify-center p-4">
+    <div className="relative flex min-h-screen items-center justify-center bg-(--bg-primary) p-4">
       <div className="pointer-events-none absolute inset-0" />
 
-      <div className="relative z-10 w-full max-w-2xl">
-        <div className="rounded-[1.75rem] border border-(--quaternary-color)/12 bg-linear-to-br from-(--seventh-color) to-(--sixth-color) p-[1px]">
+      <div className="relative z-10 w-full">
+        <div className="mx-auto w-full max-w-2xl rounded-[1.75rem] border border-(--quaternary-color)/12 bg-linear-to-br from-(--seventh-color) to-(--sixth-color) p-[1px]">
           <Card
             icon={<SVGLock />}
             title="Crie sua conta"
