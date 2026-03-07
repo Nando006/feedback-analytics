@@ -128,6 +128,24 @@
     --sixth-color: #f5ebff;
     --seventh-color: #ffffff;
   }
+
+  .private-user-theme {
+    --bg-primary: #f4f7fb;
+    --bg-secondary: #ffffff;
+    --bg-tertiary: #e9eef7;
+
+    --text-primary: #101828;
+    --text-secondary: #475467;
+    --text-tertiary: #667085;
+
+    --primary-color: #6d28d9;
+    --secondary-color: #7c3aed;
+    --tertiary-color: #2563eb;
+    --quaternary-color: #8b5cf6;
+    --quinary-color: #60a5fa;
+    --sixth-color: #eef2ff;
+    --seventh-color: #ffffff;
+  }
 }
 
 .font-inter {

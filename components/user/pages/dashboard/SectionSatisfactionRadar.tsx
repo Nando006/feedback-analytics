@@ -7,6 +7,36 @@ export default function SectionSatisfactionRadar({
   neutral,
   negative,
 }: SectionSatisfactionRadarProps) {
+  const sentimentRows = [
+    {
+      key: 'positive',
+      label: 'Positivos',
+      value: positive,
+      Icon: FaSmile,
+      iconClassName: 'bg-(--positive)/12 text-(--positive)',
+      valueClassName: 'text-(--positive)',
+      borderClassName: 'border-(--positive)/22',
+    },
+    {
+      key: 'neutral',
+      label: 'Neutros',
+      value: neutral,
+      Icon: FaMeh,
+      iconClassName: 'bg-(--neutral)/12 text-(--neutral)',
+      valueClassName: 'text-(--neutral)',
+      borderClassName: 'border-(--neutral)/22',
+    },
+    {
+      key: 'negative',
+      label: 'Negativos',
+      value: negative,
+      Icon: FaFrown,
+      iconClassName: 'bg-(--negative)/12 text-(--negative)',
+      valueClassName: 'text-(--negative)',
+      borderClassName: 'border-(--negative)/22',
+    },
+  ] as const;
+
   return (
     <section className="rounded-2xl border border-(--quaternary-color)/10 bg-linear-to-br from-(--bg-secondary) to-(--sixth-color) p-6">
       <header className="flex items-center justify-between gap-3">
@@ -19,33 +49,24 @@ export default function SectionSatisfactionRadar({
       </header>
 
       <div className="mt-6 space-y-4">
-        <div className="flex items-center justify-between rounded-xl border border-green-500/20 bg-green-500/10 px-4 py-3 text-sm text-green-200">
-          <div className="flex items-center gap-2">
-            <FaSmile />
-            Positivos
+        {sentimentRows.map((row) => (
+          <div
+            key={row.key}
+            className={`flex items-center justify-between rounded-xl border bg-(--seventh-color) px-4 py-3 text-sm ${row.borderClassName}`}>
+            <div className="flex items-center gap-3">
+              <div className={`flex h-9 w-9 items-center justify-center rounded-full ${row.iconClassName}`}>
+                <row.Icon className="text-sm" />
+              </div>
+              <div>
+                <div className="font-medium text-(--text-primary)">{row.label}</div>
+                <div className="text-xs text-(--text-tertiary)">Sentimentos mapeados no período</div>
+              </div>
+            </div>
+            <span className={`text-lg font-semibold ${row.valueClassName}`}>
+              {FormatToCurrencyReal(row.value)}
+            </span>
           </div>
-          <span className="font-semibold text-green-100">
-            {FormatToCurrencyReal(positive)}
-          </span>
-        </div>
-        <div className="flex items-center justify-between rounded-xl border border-yellow-500/20 bg-yellow-500/10 px-4 py-3 text-sm text-yellow-200">
-          <div className="flex items-center gap-2">
-            <FaMeh />
-            Neutros
-          </div>
-          <span className="font-semibold text-yellow-100">
-            {FormatToCurrencyReal(neutral)}
-          </span>
-        </div>
-        <div className="flex items-center justify-between rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-200">
-          <div className="flex items-center gap-2">
-            <FaFrown />
-            Negativos
-          </div>
-          <span className="font-semibold text-red-100">
-            {FormatToCurrencyReal(negative)}
-          </span>
-        </div>
+        ))}
       </div>
     </section>
   );

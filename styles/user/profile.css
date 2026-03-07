@@ -50,7 +50,7 @@
   height: 50px;
   border-radius: 10px;
   background: linear-gradient(180deg, var(--primary-color), var(--secondary-color));
-  color: var(--text-primary);
+  color: #f8fafc;
   font-weight: 600;
   padding: 10px 14px;
   border: 1px solid color-mix(in srgb, var(--primary-color) 55%, transparent);
@@ -63,6 +63,10 @@
 }
 .btn-primary:active {
   transform: translateY(0);
+}
+
+.btn-primary svg {
+  color: currentColor;
 }
 
 .btn-ghost {
