@@ -8,7 +8,7 @@ export default function SectionSatisfactionRadar({
   negative,
 }: SectionSatisfactionRadarProps) {
   return (
-    <section className="rounded-2xl border border-neutral-800 bg-neutral-900/60 p-6 shadow-[var(--shadow-primary)]">
+    <section className="rounded-2xl border border-neutral-800 bg-neutral-900/60 p-6">
       <header className="flex items-center justify-between gap-3">
         <div>
           <h2 className="text-lg font-semibold text-neutral-100">Radar de satisfação</h2>

@@ -12,7 +12,7 @@ export default function FieldRemember({
         id={id}
         name={name}
         type="checkbox"
-        className="w-4 h-4 bg-(--bg-secondary) rounded border border-(--bg-tertiary) cursor-pointer text-(--primary-color) focus:ring-(--primary-color) hover:bg-(--bg-secondary) duration-200"
+          className="h-4 w-4 cursor-pointer rounded border border-(--quaternary-color)/18 bg-(--seventh-color) text-(--primary-color) transition-colors duration-200 hover:border-(--quaternary-color)/30 focus:ring-(--primary-color)"
         {...register}
       />
       <label

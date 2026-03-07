@@ -95,7 +95,7 @@ export default function FeedbackCard({ feedback, onClick }: FeedbackCardProps) {
             {renderStars(feedback.rating)}
           </div>
         </div>
-        <div className="text-sm text-[var(--text-muted)]">
+        <div className="text-sm text-[var(--text-tertiary)]">
           {formatDate(feedback.created_at)}
         </div>
       </div>
@@ -109,7 +109,7 @@ export default function FeedbackCard({ feedback, onClick }: FeedbackCardProps) {
 
       {/* Informações adicionais */}
       <div className="flex justify-between items-center text-sm">
-        <div className="flex items-center gap-4 text-[var(--text-muted)]">
+        <div className="flex items-center gap-4 text-[var(--text-tertiary)]">
           <span>
             <strong className="text-[var(--text-secondary)]">Canal:</strong>{' '}
             {channelDisplayName}
@@ -134,7 +134,7 @@ export default function FeedbackCard({ feedback, onClick }: FeedbackCardProps) {
               {feedback.tracked_devices.customer.name || 'Cliente anônimo'}
             </div>
             {feedback.tracked_devices.customer.email && (
-              <div className="text-[var(--text-muted)] text-xs">
+              <div className="text-[var(--text-tertiary)] text-xs">
                 {feedback.tracked_devices.customer.email}
               </div>
             )}

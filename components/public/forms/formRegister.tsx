@@ -71,7 +71,7 @@ export default function FormRegister() {
         <div
           role="status"
           aria-live="polite"
-          className="rounded-lg border border-green-600/40 bg-green-500/10 p-4 text-green-200">
+          className="rounded-lg border border-(--positive)/30 bg-(--positive)/10 p-4 text-(--text-primary)">
           <div className="text-sm font-work-sans ">
             Conta criada! Enviamos um e-mail de confirmação. Verifique sua caixa
             de entrada e confirme para ativar seu acesso.
@@ -79,7 +79,7 @@ export default function FormRegister() {
           <div className="mt-3">
             <Link
               to="/login"
-              className="inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium bg-(--primary-color) hover:bg-(--primary-color-hover) transition-colors">
+              className="inline-flex items-center justify-center rounded-md bg-(--primary-color) px-4 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90">
               Ir para o login
             </Link>
           </div>
@@ -89,7 +89,7 @@ export default function FormRegister() {
       {actionData?.error && !isSuccess && (
         <div
           role="alert"
-          className="rounded-lg border border-(--negative)/40 bg-red-500/10 p-4 text-red-200">
+          className="rounded-lg border border-(--negative)/30 bg-(--negative)/10 p-4 text-(--text-primary)">
           <div className="text-sm font-work-sans">
             Não foi possível criar sua conta.{' '}
             {actionData.message ?? 'Verifique os campos e tente novamente.'}
@@ -174,7 +174,7 @@ export default function FormRegister() {
           error={errors.terms?.message as string | undefined}
         />
         <button
-          className="h-12 w-full bg-gradient-to-r from-(--primary-color) to-(--terciary-color-dark) hover:from-(--terciary-color-dark) hover:to-(--primary-color) transition rounded-lg cursor-pointer font-poppins disabled:cursor-not-allowed disabled:opacity-80 flex items-center justify-center gap-2 text-gray-100 font-semibold"
+          className="flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-(--primary-color) to-(--tertiary-color) font-poppins font-semibold text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-80"
           disabled={isSubmitting}
           aria-busy={isSubmitting}>
           {isSubmitting ? (

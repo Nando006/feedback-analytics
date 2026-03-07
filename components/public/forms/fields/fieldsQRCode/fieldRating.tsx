@@ -23,7 +23,7 @@ export default function FieldRating({ rating, onRatingChange }: FieldRatingProps
             className={`w-12 h-12 rounded-full transition-all duration-200 ${
               star <= rating
                 ? 'bg-(--neutral) text-white scale-110'
-                : 'bg-(--container-border) text-(--text-secondary) hover:bg-(--container-secondary)'
+                : 'bg-(--bg-tertiary) text-(--text-secondary) hover:bg-(--bg-secondary)'
             }`}>
             <svg
               className="w-6 h-6 mx-auto"

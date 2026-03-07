@@ -2,7 +2,7 @@ import type { MetricCardProps } from './ui.types';
 
 export default function MetricCard({ title, value, helper, icon: Icon }: MetricCardProps) {
   return (
-    <div className="rounded-2xl border border-neutral-800 bg-neutral-900/60 p-6 shadow-[var(--shadow-primary)]">
+    <div className="rounded-2xl border border-neutral-800 bg-neutral-900/60 p-6">
       <div className="flex items-center justify-between gap-4">
         <div>
           <p className="text-sm text-neutral-400">{title}</p>

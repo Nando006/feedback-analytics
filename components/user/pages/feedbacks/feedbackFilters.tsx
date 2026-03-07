@@ -19,7 +19,7 @@ export default function FeedbackFilters({
               placeholder="🔍 Buscar por mensagem..."
               value={filters.search}
               onChange={onSearchChange}
-              className="w-full pl-4 pr-4 py-3 border border-neutral-800 bg-neutral-900/50 text-[var(--text-primary)] rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent placeholder-[var(--text-muted)]"
+              className="w-full pl-4 pr-4 py-3 border border-neutral-800 bg-neutral-900/50 text-[var(--text-primary)] rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent placeholder-[var(--text-tertiary)]"
             />
           </div>
         </div>
@@ -75,14 +75,14 @@ export default function FeedbackFilters({
               placeholder="Filtrar por item (ex: Bola de couro)"
               value={filters.item || ''}
               onChange={onItemChange}
-              className="w-full pl-4 pr-4 py-3 border border-neutral-800 bg-neutral-900/50 text-[var(--text-primary)] rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent placeholder-[var(--text-muted)]"
+              className="w-full pl-4 pr-4 py-3 border border-neutral-800 bg-neutral-900/50 text-[var(--text-primary)] rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent placeholder-[var(--text-tertiary)]"
             />
           </div>
         </div>
 
         {/* Itens por página */}
         <div className="flex items-center gap-2">
-          <span className="text-sm text-[var(--text-muted)]">Por página:</span>
+          <span className="text-sm text-[var(--text-tertiary)]">Por página:</span>
           <select
             value={filters.limit}
             onChange={(e) => onLimitChange(parseInt(e.target.value))}

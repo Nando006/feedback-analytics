@@ -8,14 +8,14 @@ export default function AnalyticsAllSummarySection({
       <h2 className="mb-2 text-lg font-semibold text-[var(--text-primary)]">
         Visão geral dos feedbacks analisados pela IA
       </h2>
-      <p className="mb-4 text-sm text-[var(--text-muted)]">
+      <p className="mb-4 text-sm text-[var(--text-tertiary)]">
         Resumo automático gerado a partir dos feedbacks e da categorização de
         sentimentos.
       </p>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         <div className="space-y-1">
-          <div className="text-xs uppercase tracking-wide text-[var(--text-muted)]">
+          <div className="text-xs uppercase tracking-wide text-[var(--text-tertiary)]">
             Total analisados
           </div>
           <div className="text-2xl font-semibold text-[var(--text-primary)]">
@@ -24,7 +24,7 @@ export default function AnalyticsAllSummarySection({
         </div>
 
         <div className="space-y-2">
-          <div className="text-xs uppercase tracking-wide text-[var(--text-muted)]">
+          <div className="text-xs uppercase tracking-wide text-[var(--text-tertiary)]">
             Sentimentos
           </div>
           <div className="flex flex-wrap gap-2 text-xs">
@@ -41,7 +41,7 @@ export default function AnalyticsAllSummarySection({
         </div>
 
         <div className="space-y-2">
-          <div className="text-xs uppercase tracking-wide text-[var(--text-muted)]">
+          <div className="text-xs uppercase tracking-wide text-[var(--text-tertiary)]">
             Principais categorias
           </div>
           <div className="flex flex-wrap gap-2 text-xs">
@@ -53,7 +53,7 @@ export default function AnalyticsAllSummarySection({
               </span>
             ))}
             {summary.topCategories.length === 0 && (
-              <span className="text-[var(--text-muted)]">
+              <span className="text-[var(--text-tertiary)]">
                 Nenhuma categoria identificada.
               </span>
             )}

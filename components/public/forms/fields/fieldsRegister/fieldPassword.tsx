@@ -33,7 +33,7 @@ export default function FieldPasswordRegister({
           type={show ? 'text' : 'password'}
           aria-invalid={error ? true : undefined}
           autoComplete="new-password"
-          className="h-12 w-full rounded-lg bg-(--container-secondary) border border-(--container-border) pl-4 pr-12 outline-none focus:border-(--primary-color) transition-colors font-poppins"
+          className="h-12 w-full rounded-lg border border-(--quaternary-color)/18 bg-(--seventh-color) pl-4 pr-12 font-poppins text-(--text-primary) outline-none transition-colors hover:border-(--quaternary-color)/30 focus:border-(--primary-color)"
           {...register}
           onChange={(e) => {
             register?.onChange?.(e);
@@ -43,7 +43,7 @@ export default function FieldPasswordRegister({
         <button
           type="button"
           aria-label={show ? 'Ocultar senha' : 'Mostrar senha'}
-          className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-md text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--container-border) focus:outline-none focus:ring-2 focus:ring-(--primary-color)"
+          className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-2 text-(--text-secondary) focus:outline-none focus:ring-2 focus:ring-(--primary-color) hover:bg-(--seventh-color) hover:text-(--text-primary)"
           onClick={() => setShow((s) => !s)}>
           {show ? (
             <svg
@@ -66,13 +66,13 @@ export default function FieldPasswordRegister({
       </div>
       {strength.showBar && (
         <div className="mt-2">
-          <div className="w-full h-2 rounded-full overflow-hidden bg-(--container-secondary)">
+          <div className="h-2 w-full overflow-hidden rounded-full bg-(--seventh-color)">
             <div
               className={`h-full ${strength.color}`}
               style={{ width: `${strength.percent}%` }}
             />
           </div>
-          <div className="mt-1 text-[11px] flex items-center justify-between text-(--text-muted) font-work-sans">
+          <div className="mt-1 flex items-center justify-between text-(--text-tertiary) font-work-sans text-[11px]">
             <span>Força da senha</span>
             <span className="text-(--text-secondary)">{strength.label}</span>
           </div>

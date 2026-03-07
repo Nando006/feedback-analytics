@@ -10,10 +10,10 @@ export default function Card({
   linkLogin,
 }: CardProps) {
   return (
-    <div className="bg-(--container-secondary)/80 border border-(--bg-secondary) rounded-2xl shadow-2xl p-8">
+    <div className="rounded-2xl border border-(--bg-tertiary) bg-(--bg-secondary) p-8">
       <div className="text-center mb-8">
         {icon && (
-          <div className="w-16 h-16 p-2 bg-gradient-to-br from-(--primary-color) to-(--terciary-color-dark) rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-(--primary-color) to-(--tertiary-color) p-2">
             {icon}
           </div>
         )}
@@ -30,7 +30,7 @@ export default function Card({
             Não tem uma conta?{' '}
             <Link
               to={linkRegister}
-              className="text-(--secondary-color) hover:text-(--secondary-color-dark) transition-colors font-medium font-poppins">
+              className="font-poppins font-medium text-(--secondary-color) transition-opacity hover:opacity-80">
               Cadastre-se aqui
             </Link>
           </p>
@@ -43,7 +43,7 @@ export default function Card({
             Já tem uma conta?{' '}
             <Link
               to={linkLogin}
-              className="text-(--secondary-color) hover:text-(--secondary-color-dark) transition-colors font-medium font-poppins">
+              className="font-poppins font-medium text-(--secondary-color) transition-opacity hover:opacity-80">
               Entrar
             </Link>
           </p>

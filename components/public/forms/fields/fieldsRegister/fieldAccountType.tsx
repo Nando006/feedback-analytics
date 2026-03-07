@@ -19,7 +19,7 @@ export default function FieldAccountTypeRegister({
             {...register}
             className="peer sr-only"
           />
-          <span className="px-3 py-2 rounded-md border border-neutral-700/60 bg-(--container-secondary) peer-checked:border-(--primary-color)">
+          <span className="rounded-md border border-(--quaternary-color)/18 bg-(--seventh-color) px-3 py-2 text-(--text-secondary) transition-colors hover:border-(--quaternary-color)/30 peer-checked:border-(--primary-color) peer-checked:bg-(--primary-color)/10 peer-checked:text-(--text-primary)">
             CPF
           </span>
         </label>
@@ -32,7 +32,7 @@ export default function FieldAccountTypeRegister({
             {...register}
             className="peer sr-only"
           />
-          <span className="px-3 py-2 rounded-md border border-neutral-700/60 bg-(--container-secondary) peer-checked:border-(--primary-color)">
+          <span className="rounded-md border border-(--quaternary-color)/18 bg-(--seventh-color) px-3 py-2 text-(--text-secondary) transition-colors hover:border-(--quaternary-color)/30 peer-checked:border-(--primary-color) peer-checked:bg-(--primary-color)/10 peer-checked:text-(--text-primary)">
             CNPJ
           </span>
         </label>

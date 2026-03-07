@@ -35,7 +35,7 @@ export default function InsightsReportMoodSection({
           Clima emocional geral
         </div>
         <div className={`text-xl font-semibold ${tone.text}`}>{mood.label}</div>
-        <p className="max-w-xl text-xs text-[var(--text-muted)]">{mood.description}</p>
+        <p className="max-w-xl text-xs text-[var(--text-tertiary)]">{mood.description}</p>
       </div>
       {summary && summary.totalAnalyzed > 0 && (
         <div className="w-full space-y-2 md:w-1/2">
@@ -44,7 +44,7 @@ export default function InsightsReportMoodSection({
             <div style={{ width: `${neutralPct}%` }} className="h-full bg-amber-500/70" />
             <div style={{ width: `${negativePct}%` }} className="h-full bg-rose-500/70" />
           </div>
-          <div className="flex justify-between text-[10px] text-[var(--text-muted)]">
+          <div className="flex justify-between text-[10px] text-[var(--text-tertiary)]">
             <span>Positivos: {positivePct}%</span>
             <span>Neutros: {neutralPct}%</span>
             <span>Negativos: {negativePct}%</span>

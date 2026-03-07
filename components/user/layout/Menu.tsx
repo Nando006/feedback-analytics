@@ -73,7 +73,7 @@ function Item({ item }: { item: MenuItem }) {
       </div>
 
       <div className="submenu pointer-events-none absolute left-full -top-1.5 z-40 ml-2 origin-left scale-95 opacity-0 transition-all duration-150 ease-out">
-        <ul className="min-w-48 max-h-[calc(100vh-64px-16px)] space-y-1 rounded-md border border-neutral-800/50 bg-neutral-900 p-2 shadow-[var(--shadow-primary)] ring-1 ring-neutral-800/50">
+        <ul className="min-w-48 max-h-[calc(100vh-64px-16px)] space-y-1 rounded-md border border-neutral-800/50 bg-neutral-900 p-2 ring-1 ring-neutral-800/50">
           {item.children!.map((child) => (
             <Item
               key={child.label}

@@ -9,7 +9,7 @@ export default function Header() {
           <h1 className="text-2xl font-semibold tracking-tight md:text-3xl">
             Editar perfil
           </h1>
-          <p className="mt-1 text-sm text-[var(--text-muted)]">
+          <p className="mt-1 text-sm text-[var(--text-tertiary)]">
             Ajuste suas informações pessoais e preferências. Campos e lógica
             serão adicionados posteriormente.
           </p>

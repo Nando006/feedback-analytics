@@ -13,7 +13,7 @@ export default function FieldCustomerGender({ gender, onGenderChange }: FieldCus
         id="customer_gender"
         value={gender || ''}
         onChange={(e) => onGenderChange(e.target.value as CustomerData['customer_gender'])}
-        className="font-poppins w-full px-4 py-3 border border-(--container-border) rounded-lg bg-(--container-secondary) text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-(--primary-color) focus:border-transparent transition-all">
+        className="font-poppins w-full rounded-lg border border-(--bg-tertiary) bg-(--bg-secondary) px-4 py-3 text-(--text-primary) transition-all focus:border-transparent focus:outline-none focus:ring-2 focus:ring-(--primary-color)">
         <option value="">Selecione...</option>
         <option value="masculino">Masculino</option>
         <option value="feminino">Feminino</option>

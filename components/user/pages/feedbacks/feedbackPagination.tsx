@@ -7,7 +7,7 @@ export default function FeedbackPagination({
   return (
     <div className="relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900/50 p-6 glass-card">
       <div className="flex justify-between items-center">
-        <div className="text-sm text-[var(--text-muted)]">
+        <div className="text-sm text-[var(--text-tertiary)]">
           Mostrando {(pagination.currentPage - 1) * pagination.itemsPerPage + 1}{' '}
           a{' '}
           {Math.min(

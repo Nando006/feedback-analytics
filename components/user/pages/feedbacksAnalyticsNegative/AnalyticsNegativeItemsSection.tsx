@@ -15,7 +15,7 @@ export default function AnalyticsNegativeItemsSection({
             key={item.id}
             className="space-y-2 rounded-xl border border-neutral-800 bg-neutral-900/80 p-4">
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <span className="text-xs text-[var(--text-muted)]">
+              <span className="text-xs text-[var(--text-tertiary)]">
                 {new Date(item.created_at).toLocaleString('pt-BR')}
               </span>
               <div className="flex flex-wrap items-center gap-2">
@@ -36,7 +36,7 @@ export default function AnalyticsNegativeItemsSection({
               <div className="mt-2 flex flex-wrap gap-3 text-[10px]">
                 {item.categories.length > 0 && (
                   <div className="flex flex-wrap items-center gap-1">
-                    <span className="uppercase tracking-wide text-[var(--text-muted)]">
+                    <span className="uppercase tracking-wide text-[var(--text-tertiary)]">
                       Categorias:
                     </span>
                     {item.categories.map((cat) => (
@@ -51,7 +51,7 @@ export default function AnalyticsNegativeItemsSection({
 
                 {item.keywords.length > 0 && (
                   <div className="flex flex-wrap items-center gap-1">
-                    <span className="uppercase tracking-wide text-[var(--text-muted)]">
+                    <span className="uppercase tracking-wide text-[var(--text-tertiary)]">
                       Palavras-chave:
                     </span>
                     {item.keywords.map((kw) => (

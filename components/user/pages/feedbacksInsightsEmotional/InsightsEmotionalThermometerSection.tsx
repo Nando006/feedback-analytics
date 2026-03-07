@@ -11,7 +11,7 @@ export default function InsightsEmotionalThermometerSection({
       <h2 className="text-lg font-semibold text-[var(--text-primary)]">
         Termômetro emocional dos clientes
       </h2>
-      <p className="max-w-2xl text-sm text-[var(--text-muted)]">
+      <p className="max-w-2xl text-sm text-[var(--text-tertiary)]">
         Visualização da intensidade emocional dos feedbacks, destacando onde os
         clientes estão mais satisfeitos e onde sentem maior frustração.
       </p>
@@ -24,7 +24,7 @@ export default function InsightsEmotionalThermometerSection({
 
       <div className="mt-2 grid grid-cols-1 gap-4 text-sm md:grid-cols-3">
         <div>
-          <div className="text-xs uppercase tracking-wide text-[var(--text-muted)]">
+          <div className="text-xs uppercase tracking-wide text-[var(--text-tertiary)]">
             Positivos
           </div>
           <div className="text-xl font-semibold text-emerald-300">
@@ -32,7 +32,7 @@ export default function InsightsEmotionalThermometerSection({
           </div>
         </div>
         <div>
-          <div className="text-xs uppercase tracking-wide text-[var(--text-muted)]">
+          <div className="text-xs uppercase tracking-wide text-[var(--text-tertiary)]">
             Neutros
           </div>
           <div className="text-xl font-semibold text-amber-300">
@@ -40,7 +40,7 @@ export default function InsightsEmotionalThermometerSection({
           </div>
         </div>
         <div>
-          <div className="text-xs uppercase tracking-wide text-[var(--text-muted)]">
+          <div className="text-xs uppercase tracking-wide text-[var(--text-tertiary)]">
             Negativos
           </div>
           <div className="text-xl font-semibold text-rose-300">

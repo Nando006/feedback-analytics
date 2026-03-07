@@ -19,7 +19,7 @@ export default function Info({
               {collecting?.business_summary ?? 'Conte sobre sua empresa...'}
             </p>
           </div>
-          <p className="text-sm text-[var(--text-muted)]">
+          <p className="text-sm text-[var(--text-tertiary)]">
             Usa produtos próprios?{' '}
             {collecting?.uses_company_products ? 'Sim' : 'Não informado'}
           </p>
@@ -32,17 +32,17 @@ export default function Info({
             </h2>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div className="rounded-xl border border-neutral-800 bg-neutral-900/40 p-4">
-                <p className="text-xs text-[var(--text-muted)]">Email</p>
+                <p className="text-xs text-[var(--text-tertiary)]">Email</p>
                 <p className="mt-1 font-medium">{enterprise?.email ?? ''}</p>
               </div>
               <div className="rounded-xl border border-neutral-800 bg-neutral-900/40 p-4">
-                <p className="text-xs text-[var(--text-muted)]">Telefone</p>
+                <p className="text-xs text-[var(--text-tertiary)]">Telefone</p>
                 <p className="mt-1 font-medium">
                   {formatPhone(enterprise?.phone ?? '') ?? ''}
                 </p>
               </div>
               <div className="rounded-xl border border-neutral-800 bg-neutral-900/40 p-4">
-                <p className="text-xs text-[var(--text-muted)]">
+                <p className="text-xs text-[var(--text-tertiary)]">
                   {enterprise?.account_type ?? 'Documento'}
                 </p>
                 <p className="mt-1 font-medium">
@@ -53,7 +53,7 @@ export default function Info({
                 </p>
               </div>
               <div className="rounded-xl border border-neutral-800 bg-neutral-900/40 p-4">
-                <p className="text-xs text-[var(--text-muted)]">
+                <p className="text-xs text-[var(--text-tertiary)]">
                   Data de Criação
                 </p>
                 <p className="mt-1 font-medium">

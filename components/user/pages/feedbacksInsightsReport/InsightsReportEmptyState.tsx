@@ -12,7 +12,7 @@ export default function InsightsReportEmptyState({
             <h2 className="text-lg font-semibold text-[var(--text-primary)]">
               Relatório de Insights da IA
             </h2>
-            <p className="text-sm text-[var(--text-muted)]">
+            <p className="text-sm text-[var(--text-tertiary)]">
               Gere um relatório inteligente a partir dos feedbacks já analisados
               pela IA.
             </p>
@@ -26,7 +26,7 @@ export default function InsightsReportEmptyState({
           </button>
         </div>
 
-        <div className="mt-2 text-sm text-[var(--text-muted)]">
+        <div className="mt-2 text-sm text-[var(--text-tertiary)]">
           Ainda não há um relatório gerado. Clique em{' '}
           <span className="font-medium text-[var(--text-secondary)]">
             &quot;Gerar relatório com IA&quot;

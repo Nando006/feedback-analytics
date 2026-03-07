@@ -10,13 +10,13 @@ export default function InsightsEmotionalClustersSection({
       <h3 className="text-base font-semibold text-[var(--text-primary)]">
         Momentos emocionais que mais se repetem
       </h3>
-      <p className="mb-2 max-w-2xl text-sm text-[var(--text-muted)]">
+      <p className="mb-2 max-w-2xl text-sm text-[var(--text-tertiary)]">
         Explore exemplos reais de feedbacks que representam emoções mais fortes
         dos seus clientes — tanto positivas quanto negativas.
       </p>
 
       {clusters.length === 0 ? (
-        <div className="text-sm text-[var(--text-muted)]">
+        <div className="text-sm text-[var(--text-tertiary)]">
           Ainda não há clusters emocionais suficientes para exibir.
         </div>
       ) : (
@@ -29,7 +29,7 @@ export default function InsightsEmotionalClustersSection({
                 <h4 className="mb-1 text-sm font-semibold text-[var(--text-primary)]">
                   {cluster.title}
                 </h4>
-                <p className="text-xs text-[var(--text-muted)]">{cluster.description}</p>
+                <p className="text-xs text-[var(--text-tertiary)]">{cluster.description}</p>
               </div>
 
               <div className="max-h-64 space-y-2 overflow-y-auto pr-1">
@@ -37,7 +37,7 @@ export default function InsightsEmotionalClustersSection({
                   <div
                     key={item.id}
                     className="space-y-1 rounded-lg border border-neutral-800 bg-neutral-950/60 p-3">
-                    <div className="flex items-center justify-between text-[10px] text-[var(--text-muted)]">
+                    <div className="flex items-center justify-between text-[10px] text-[var(--text-tertiary)]">
                       <span>
                         {new Date(item.created_at).toLocaleDateString('pt-BR', {
                           day: '2-digit',

@@ -9,7 +9,7 @@ export default function AnalyticsAllKeywordsSection({
         Palavras-chave mais recorrentes
       </h3>
       {summary.topKeywords.length === 0 ? (
-        <div className="text-sm text-[var(--text-muted)]">
+        <div className="text-sm text-[var(--text-tertiary)]">
           Nenhuma palavra-chave identificada até o momento.
         </div>
       ) : (

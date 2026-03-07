@@ -9,7 +9,7 @@ export default function FeedbackHeader({ stats }: FeedbackHeaderProps) {
             Feedbacks
           </h1>
           {stats && (
-            <div className="mt-2 text-sm text-[var(--text-muted)]">
+            <div className="mt-2 text-sm text-[var(--text-tertiary)]">
               Total: {stats.totalFeedbacks} feedbacks | Média:{' '}
               {stats.averageRating}/5
             </div>
@@ -22,19 +22,19 @@ export default function FeedbackHeader({ stats }: FeedbackHeaderProps) {
               <div className="text-2xl font-bold text-green-400">
                 {stats.sentimentBreakdown.positive}
               </div>
-              <div className="text-xs text-[var(--text-muted)]">Positivos</div>
+              <div className="text-xs text-[var(--text-tertiary)]">Positivos</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-yellow-400">
                 {stats.sentimentBreakdown.neutral}
               </div>
-              <div className="text-xs text-[var(--text-muted)]">Neutros</div>
+              <div className="text-xs text-[var(--text-tertiary)]">Neutros</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-red-400">
                 {stats.sentimentBreakdown.negative}
               </div>
-              <div className="text-xs text-[var(--text-muted)]">Negativos</div>
+              <div className="text-xs text-[var(--text-tertiary)]">Negativos</div>
             </div>
           </div>
         )}

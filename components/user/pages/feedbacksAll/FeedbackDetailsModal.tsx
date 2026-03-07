@@ -54,11 +54,11 @@ export default function FeedbackDetailsModal({
               <span className="rounded-full border border-neutral-700 bg-neutral-800 px-3 py-1 text-xs font-medium text-[var(--text-secondary)]">
                 Rating: {selectedFeedback.rating}
               </span>
-              <span className="text-[var(--text-muted)]">
+              <span className="text-[var(--text-tertiary)]">
                 Criado: {formatDateTime(selectedFeedback.created_at)}
               </span>
               {selectedFeedback.updated_at && (
-                <span className="text-[var(--text-muted)]">
+                <span className="text-[var(--text-tertiary)]">
                   Atualizado: {formatDateTime(selectedFeedback.updated_at)}
                 </span>
               )}
@@ -71,7 +71,7 @@ export default function FeedbackDetailsModal({
           <div className="space-y-2 rounded-xl border border-neutral-800 bg-neutral-900/60 p-4">
             <h3 className="text-sm font-medium text-[var(--text-secondary)]">Ponto de Coleta</h3>
             {selectedFeedback.collection_points ? (
-              <div className="grid grid-cols-1 gap-2 text-[var(--text-muted)] md:grid-cols-3">
+              <div className="grid grid-cols-1 gap-2 text-[var(--text-tertiary)] md:grid-cols-3">
                 <div>
                   <span className="text-[var(--text-secondary)]">Canal:</span>{' '}
                   {channelDisplayName}
@@ -94,7 +94,7 @@ export default function FeedbackDetailsModal({
                 </div>
               </div>
             ) : (
-              <div className="text-sm text-[var(--text-muted)]">
+              <div className="text-sm text-[var(--text-tertiary)]">
                 Nenhuma informação de ponto de coleta.
               </div>
             )}
@@ -103,7 +103,7 @@ export default function FeedbackDetailsModal({
           <div className="space-y-2 rounded-xl border border-neutral-800 bg-neutral-900/60 p-4">
             <h3 className="text-sm font-medium text-[var(--text-secondary)]">Dispositivo</h3>
             {selectedFeedback.tracked_devices ? (
-              <div className="grid grid-cols-1 gap-2 text-[var(--text-muted)] md:grid-cols-2">
+              <div className="grid grid-cols-1 gap-2 text-[var(--text-tertiary)] md:grid-cols-2">
                 <div>
                   <span className="text-[var(--text-secondary)]">Fingerprint:</span>{' '}
                   {selectedFeedback.tracked_devices.device_fingerprint || '—'}
@@ -126,7 +126,7 @@ export default function FeedbackDetailsModal({
                 </div>
               </div>
             ) : (
-              <div className="text-sm text-[var(--text-muted)]">
+              <div className="text-sm text-[var(--text-tertiary)]">
                 Nenhuma informação de dispositivo.
               </div>
             )}
@@ -135,7 +135,7 @@ export default function FeedbackDetailsModal({
           <div className="space-y-2 rounded-xl border border-neutral-800 bg-neutral-900/60 p-4">
             <h3 className="text-sm font-medium text-[var(--text-secondary)]">Cliente</h3>
             {selectedFeedback.tracked_devices?.customer ? (
-              <div className="grid grid-cols-1 gap-2 text-[var(--text-muted)] md:grid-cols-2">
+              <div className="grid grid-cols-1 gap-2 text-[var(--text-tertiary)] md:grid-cols-2">
                 <div>
                   <span className="text-[var(--text-secondary)]">Nome:</span>{' '}
                   {selectedFeedback.tracked_devices.customer.name || '—'}
@@ -150,7 +150,7 @@ export default function FeedbackDetailsModal({
                 </div>
               </div>
             ) : (
-              <div className="text-sm text-[var(--text-muted)]">
+              <div className="text-sm text-[var(--text-tertiary)]">
                 Nenhuma informação de cliente foi cadastrada.
               </div>
             )}
