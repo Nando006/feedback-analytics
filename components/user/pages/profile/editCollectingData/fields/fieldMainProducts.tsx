@@ -2,11 +2,11 @@ import type { FieldMainProductsProps } from './ui.types';
 
 export default function FieldMainProducts({ value, onChange }: FieldMainProductsProps) {
   return (
-    <div className="animate-fadeIn group overflow-hidden rounded-xl border border-purple-500/30 bg-gradient-to-br from-purple-500/5 to-transparent p-6">
+    <div className="animate-fadeIn group overflow-hidden rounded-xl border border-(--primary-color)/18 bg-gradient-to-br from-(--primary-color)/8 to-(--bg-secondary) p-6">
       <div className="mb-4 flex items-start gap-3">
-        <div className="rounded-lg bg-purple-500/10 p-2">
+        <div className="rounded-lg bg-(--primary-color)/10 p-2">
           <svg
-            className="h-5 w-5 text-purple-400"
+            className="h-5 w-5 text-(--quaternary-color)"
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
             fill="none"
@@ -26,10 +26,10 @@ export default function FieldMainProducts({ value, onChange }: FieldMainProducts
         <div className="flex-1">
           <label
             htmlFor="main_products_or_services"
-            className="block text-sm font-medium text-neutral-200">
+            className="block text-sm font-medium text-(--text-primary)">
             Produtos ou Serviços Principais
           </label>
-          <p className="mt-1 text-xs text-neutral-400">
+          <p className="mt-1 text-xs text-(--text-tertiary)">
             Liste um produto ou serviço por linha
           </p>
         </div>
@@ -38,16 +38,16 @@ export default function FieldMainProducts({ value, onChange }: FieldMainProducts
       <textarea
         id="main_products_or_services"
         name="main_products_or_services"
-        className="w-full rounded-lg border border-purple-500/30 bg-neutral-900 px-4 py-3 font-mono text-sm text-neutral-100 outline-none transition-all duration-200 placeholder:text-neutral-600 focus:border-purple-400 focus:ring-2 focus:ring-purple-500/20"
+        className="w-full rounded-lg border border-(--primary-color)/18 bg-(--seventh-color) px-4 py-3 font-mono text-sm text-(--text-primary) outline-none transition-all duration-200 placeholder:text-(--text-tertiary) focus:border-(--primary-color) focus:ring-2 focus:ring-(--primary-color)/20"
         rows={5}
         value={value}
         onChange={(event) => onChange(event.target.value)}
         placeholder="Sistema de Gestão Empresarial&#10;Consultoria em TI&#10;Suporte Técnico Premium&#10;Desenvolvimento de Software"
       />
 
-      <div className="mt-3 flex items-center gap-2 rounded-lg bg-purple-500/10 px-3 py-2">
+      <div className="mt-3 flex items-center gap-2 rounded-lg bg-(--primary-color)/10 px-3 py-2">
         <svg
-          className="h-4 w-4 flex-shrink-0 text-purple-400"
+          className="h-4 w-4 flex-shrink-0 text-(--quaternary-color)"
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
           fill="none"
@@ -70,7 +70,7 @@ export default function FieldMainProducts({ value, onChange }: FieldMainProducts
             x2="12.01"
             y2="8"></line>
         </svg>
-        <p className="text-xs text-purple-300">
+        <p className="text-xs text-(--text-secondary)">
           Esses itens serão utilizados para direcionar e categorizar os
           feedbacks recebidos
         </p>

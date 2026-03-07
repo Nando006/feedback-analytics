@@ -14,7 +14,7 @@ export default function Information({
   return (
     <CardSimple>
       <div className="w-full">
-        <h2 className="mb-4 text-lg font-semibold">Informações básicas</h2>
+        <h2 className="mb-4 text-lg font-semibold text-(--text-primary)">Informações básicas</h2>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 w-full">
           <FormNameUser defaultFullName={defaultFullName} />
 
@@ -22,7 +22,7 @@ export default function Information({
 
           <div className="space-y-6 sm:col-span-2">
             <div>
-              <p className="text-xs text-neutral-400">
+              <p className="text-xs text-(--text-tertiary)">
                 Etapas: alterar telefone e depois confirmar com o código SMS.
               </p>
             </div>

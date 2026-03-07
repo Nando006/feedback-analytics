@@ -38,11 +38,11 @@ export default function FormPhoneVerifyUser() {
       className="grid grid-cols-1 gap-3 sm:grid-cols-2"
       noValidate>
       <div>
-        <label className="mb-1 block text-sm text-neutral-300">
+        <label className="mb-1 block text-sm text-(--text-secondary)">
           Código de Verificação (SMS)
         </label>
         <input
-          className="w-full rounded-md border border-neutral-700 bg-neutral-900 px-3 py-2 text-neutral-100 outline-none focus:border-neutral-500"
+          className="w-full rounded-md border border-(--quaternary-color)/14 bg-(--seventh-color) px-3 py-2 text-(--text-primary) outline-none placeholder:text-(--text-tertiary) focus:border-(--primary-color) focus:ring-2 focus:ring-(--primary-color)/20"
           type="text"
           {...register('token')}
           placeholder="Informe o código recebido"
@@ -53,7 +53,7 @@ export default function FormPhoneVerifyUser() {
       </div>
       <div className="flex items-end">
         <button
-          className="h-11 w-full rounded-md border border-neutral-700 bg-neutral-800 px-4 text-sm font-medium text-neutral-100 hover:bg-neutral-700 cursor-pointer"
+          className="btn-primary h-11 w-full cursor-pointer px-4 text-sm"
           type="submit">
           Confirmar telefone
         </button>

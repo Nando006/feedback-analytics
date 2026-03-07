@@ -214,11 +214,11 @@ export default function FormCollectingDataEnterprise() {
         )}
       </div>
 
-      <div className="flex items-center justify-end gap-4 border-t border-neutral-800 pt-6">
+      <div className="flex items-center justify-end gap-4 border-t border-(--quaternary-color)/10 pt-6">
         <button
           type="button"
           onClick={() => window.history.back()}
-          className="rounded-xl border border-neutral-700 bg-transparent px-6 py-3 text-sm font-semibold text-neutral-300 transition-all duration-200 hover:border-neutral-600 hover:bg-neutral-800/50">
+          className="btn-ghost px-6 py-3 text-sm">
           Cancelar
         </button>
         <button

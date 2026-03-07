@@ -42,11 +42,11 @@ export default function FormPhoneStartUser({
       className="grid grid-cols-1 gap-2"
       noValidate>
       <div>
-        <label className="mb-1 block text-sm text-neutral-300">
+        <label className="mb-1 block text-sm text-(--text-secondary)">
           Phone (+55DDXXXXXXXXX)
         </label>
         <input
-          className="w-full rounded-md border border-neutral-700 bg-neutral-900 px-3 py-2 text-neutral-100 outline-none focus:border-neutral-500"
+          className="w-full rounded-md border border-(--quaternary-color)/14 bg-(--seventh-color) px-3 py-2 text-(--text-primary) outline-none placeholder:text-(--text-tertiary) focus:border-(--primary-color) focus:ring-2 focus:ring-(--primary-color)/20"
           type="tel"
           {...register('phone')}
           placeholder="+55DDXXXXXXXXX"
@@ -54,13 +54,13 @@ export default function FormPhoneStartUser({
         {errors.phone?.message && (
           <p className="mt-1 text-xs text-red-400">{errors.phone.message}</p>
         )}
-        <p className="mt-1 text-xs text-neutral-400">
+        <p className="mt-1 text-xs text-(--text-tertiary)">
           Enviaremos um código (SMS) para confirmação.
         </p>
       </div>
       <div>
         <button
-          className="h-11 cursor-pointer rounded-md border border-neutral-700 bg-neutral-800 px-4 text-sm font-medium text-neutral-100 hover:bg-neutral-700"
+          className="btn-primary h-11 cursor-pointer px-4 text-sm"
           type="submit">
           Enviar código SMS
         </button>
