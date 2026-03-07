@@ -2,18 +2,18 @@ import type { MetricCardProps } from './ui.types';
 
 export default function MetricCard({ title, value, helper, icon: Icon }: MetricCardProps) {
   return (
-    <div className="rounded-2xl border border-neutral-800 bg-neutral-900/60 p-6">
+    <div className="rounded-2xl border border-(--quaternary-color)/10 bg-linear-to-br from-(--bg-secondary) to-(--sixth-color) p-6">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <p className="text-sm text-neutral-400">{title}</p>
-          <p className="mt-3 text-3xl font-semibold text-neutral-100">{value}</p>
+          <p className="text-sm text-(--text-tertiary)">{title}</p>
+          <p className="mt-3 text-3xl font-semibold text-(--text-primary)">{value}</p>
         </div>
-        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-neutral-800/70 text-neutral-200">
+        <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-(--quaternary-color)/10 bg-(--seventh-color) text-(--text-secondary)">
           <Icon size={20} />
         </div>
       </div>
       {helper ? (
-        <p className="mt-3 text-xs text-neutral-500">{helper}</p>
+        <p className="mt-3 text-xs text-(--text-tertiary)">{helper}</p>
       ) : null}
     </div>
   );

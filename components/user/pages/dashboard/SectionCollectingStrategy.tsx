@@ -6,20 +6,20 @@ export default function SectionCollectingStrategy({
   collecting,
 }: SectionCollectingStrategyProps) {
   return (
-    <section className="rounded-2xl border border-neutral-800 bg-neutral-900/60 p-6">
+    <section className="rounded-2xl border border-(--quaternary-color)/10 bg-linear-to-br from-(--bg-secondary) to-(--sixth-color) p-6">
       <header className="flex items-center justify-between gap-3">
         <div>
-          <h2 className="text-lg font-semibold text-neutral-100">Estratégia de coleta</h2>
-          <p className="text-sm text-neutral-400">
+          <h2 className="text-lg font-semibold text-(--text-primary)">Estratégia de coleta</h2>
+          <p className="text-sm text-(--text-tertiary)">
             Informações configuradas para orientar o time
           </p>
         </div>
-        <FaMeh className="text-neutral-400" size={18} />
+        <FaMeh className="text-(--text-tertiary)" size={18} />
       </header>
 
-      <div className="mt-6 space-y-5 text-sm text-neutral-300">
+      <div className="mt-6 space-y-5 text-sm text-(--text-secondary)">
         <div>
-          <p className="text-xs uppercase tracking-wide text-neutral-500">
+          <p className="text-xs uppercase tracking-wide text-(--text-tertiary)">
             Objetivo da empresa
           </p>
           <p className="mt-1 leading-relaxed">
@@ -27,7 +27,7 @@ export default function SectionCollectingStrategy({
           </p>
         </div>
         <div>
-          <p className="text-xs uppercase tracking-wide text-neutral-500">
+          <p className="text-xs uppercase tracking-wide text-(--text-tertiary)">
             Objetivo analítico
           </p>
           <p className="mt-1 leading-relaxed">
@@ -35,7 +35,7 @@ export default function SectionCollectingStrategy({
           </p>
         </div>
         <div>
-          <p className="text-xs uppercase tracking-wide text-neutral-500">
+          <p className="text-xs uppercase tracking-wide text-(--text-tertiary)">
             Resumo do negócio
           </p>
           <p className="mt-1 leading-relaxed">
@@ -43,22 +43,22 @@ export default function SectionCollectingStrategy({
           </p>
         </div>
         <div>
-          <p className="text-xs uppercase tracking-wide text-neutral-500">
+          <p className="text-xs uppercase tracking-wide text-(--text-tertiary)">
             Produtos/Serviços monitorados
           </p>
           {collecting?.uses_company_products &&
           collecting?.main_products_or_services?.length ? (
-            <ul className="mt-1 space-y-1 text-neutral-200">
+            <ul className="mt-1 space-y-1 text-(--text-primary)">
               {collecting.main_products_or_services.map((item) => (
                 <li
                   key={item}
-                  className="rounded-md border border-neutral-800/80 bg-neutral-900/70 px-3 py-2 text-xs">
+                  className="rounded-md border border-(--quaternary-color)/10 bg-(--seventh-color) px-3 py-2 text-xs">
                   {item}
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="mt-1 leading-relaxed text-neutral-400">
+            <p className="mt-1 leading-relaxed text-(--text-tertiary)">
               Nenhum item configurado. Aproveite para mapear os produtos que devem
               receber feedback.
             </p>
@@ -68,7 +68,7 @@ export default function SectionCollectingStrategy({
 
       <Link
         to="/user/edit/collecting-data-enterprise"
-        className="mt-6 inline-flex items-center gap-2 text-sm text-neutral-300 transition-colors hover:text-neutral-100">
+        className="mt-6 inline-flex items-center gap-2 text-sm text-(--text-secondary) transition-colors hover:text-(--text-primary)">
         Ajustar informações de coleta
         <FaArrowRight className="text-xs" />
       </Link>

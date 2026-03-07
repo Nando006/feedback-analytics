@@ -2,8 +2,8 @@
 .glass-card {
   background: linear-gradient(
     to bottom right,
-    rgba(38, 38, 38, 0.65),
-    rgba(23, 23, 23, 0.65)
+    color-mix(in srgb, var(--bg-secondary) 88%, transparent),
+    color-mix(in srgb, var(--sixth-color) 94%, transparent)
   );
 }
 
@@ -13,12 +13,12 @@
   pointer-events: none;
   background: radial-gradient(
       1200px 400px at right -30% top -20%,
-      rgba(147, 51, 234, 0.15),
+      color-mix(in srgb, var(--primary-color) 18%, transparent),
       transparent 60%
     ),
     radial-gradient(
       800px 300px at left -20% bottom -30%,
-      rgba(59, 130, 246, 0.15),
+      color-mix(in srgb, var(--tertiary-color) 16%, transparent),
       transparent 60%
     );
   mask: linear-gradient(black, black) content-box, linear-gradient(black, black);
@@ -49,12 +49,12 @@
   justify-content: center;
   height: 50px;
   border-radius: 10px;
-  background: linear-gradient(180deg, #7c3aed, #6d28d9);
-  color: white;
+  background: linear-gradient(180deg, var(--primary-color), var(--secondary-color));
+  color: var(--text-primary);
   font-weight: 600;
   padding: 10px 14px;
-  border: 1px solid rgba(124, 58, 237, 0.6);
-  box-shadow: 0 10px 24px rgba(124, 58, 237, 0.25);
+  border: 1px solid color-mix(in srgb, var(--primary-color) 55%, transparent);
+  box-shadow: 0 10px 24px color-mix(in srgb, var(--primary-color) 26%, transparent);
   transition: transform 120ms ease, filter 120ms ease, box-shadow 120ms ease;
 }
 .btn-primary:hover {
@@ -74,10 +74,10 @@
   color: var(--text-secondary);
   font-weight: 600;
   padding: 10px 14px;
-  border: 1px solid rgba(82, 82, 91, 0.6);
+  border: 1px solid color-mix(in srgb, var(--quaternary-color) 22%, transparent);
   transition: background-color 120ms ease, border-color 120ms ease;
 }
 .btn-ghost:hover {
-  background: rgba(63, 63, 70, 0.35);
-  border-color: rgba(113, 113, 122, 0.7);
+  background: color-mix(in srgb, var(--seventh-color) 88%, transparent);
+  border-color: color-mix(in srgb, var(--quaternary-color) 32%, transparent);
 }

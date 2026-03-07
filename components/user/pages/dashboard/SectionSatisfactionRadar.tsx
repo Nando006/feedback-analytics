@@ -8,11 +8,11 @@ export default function SectionSatisfactionRadar({
   negative,
 }: SectionSatisfactionRadarProps) {
   return (
-    <section className="rounded-2xl border border-neutral-800 bg-neutral-900/60 p-6">
+    <section className="rounded-2xl border border-(--quaternary-color)/10 bg-linear-to-br from-(--bg-secondary) to-(--sixth-color) p-6">
       <header className="flex items-center justify-between gap-3">
         <div>
-          <h2 className="text-lg font-semibold text-neutral-100">Radar de satisfação</h2>
-          <p className="text-sm text-neutral-400">
+          <h2 className="text-lg font-semibold text-(--text-primary)">Radar de satisfação</h2>
+          <p className="text-sm text-(--text-tertiary)">
             Panorama resumido dos sentimentos capturados
           </p>
         </div>

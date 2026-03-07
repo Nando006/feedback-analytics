@@ -9,17 +9,17 @@ export default function SectionLatestFeedbacks({
   latestLimit,
 }: LatestFeedbacksProps) {
   return (
-    <section className="rounded-2xl border border-neutral-800 bg-neutral-900/60 p-6">
+    <section className="rounded-2xl border border-(--quaternary-color)/10 bg-linear-to-br from-(--bg-secondary) to-(--sixth-color) p-6">
       <header className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
         <div>
-          <h2 className="text-lg font-semibold text-neutral-100">Feedbacks recentes</h2>
-          <p className="text-sm text-neutral-400">
+          <h2 className="text-lg font-semibold text-(--text-primary)">Feedbacks recentes</h2>
+          <p className="text-sm text-(--text-tertiary)">
             Últimos {latestLimit} retornos enviados pelos clientes
           </p>
         </div>
         <Link
           to="/user/feedbacks/all"
-          className="inline-flex items-center gap-2 text-sm text-neutral-300 transition-colors hover:text-neutral-100">
+          className="inline-flex items-center gap-2 text-sm text-(--text-secondary) transition-colors hover:text-(--text-primary)">
           Ver todos
           <FaArrowRight className="text-xs" />
         </Link>
@@ -27,16 +27,16 @@ export default function SectionLatestFeedbacks({
 
       <div className="mt-6 space-y-4">
         {latestFeedbacks.length === 0 ? (
-          <div className="rounded-xl border border-neutral-800/60 bg-neutral-900/70 p-6 text-center text-sm text-neutral-400">
+          <div className="rounded-xl border border-(--quaternary-color)/10 bg-(--seventh-color) p-6 text-center text-sm text-(--text-tertiary)">
             Nenhum feedback foi recebido até o momento.
           </div>
         ) : (
           latestFeedbacks.map((feedback) => (
             <article
               key={feedback.id}
-              className="space-y-2 rounded-xl border border-neutral-800/60 bg-neutral-900/80 p-4">
-              <div className="flex items-center gap-3 text-sm text-neutral-300">
-                <span className="inline-flex items-center gap-1 rounded-full border border-neutral-700 px-2 py-1 text-xs uppercase tracking-wide text-neutral-400">
+              className="space-y-2 rounded-xl border border-(--quaternary-color)/10 bg-(--seventh-color) p-4">
+              <div className="flex items-center gap-3 text-sm text-(--text-secondary)">
+                <span className="inline-flex items-center gap-1 rounded-full border border-(--quaternary-color)/12 bg-(--bg-secondary) px-2 py-1 text-xs uppercase tracking-wide text-(--text-tertiary)">
                   {feedback.collection_points?.type ?? 'N/A'}
                 </span>
                 <div className="flex items-center gap-1 text-yellow-400">
@@ -44,17 +44,17 @@ export default function SectionLatestFeedbacks({
                     <FaStar key={starIndex} size={12} />
                   ))}
                 </div>
-                <span className="text-xs text-neutral-500">
+                <span className="text-xs text-(--text-tertiary)">
                   {formatDateTime(feedback.created_at)}
                 </span>
               </div>
-              <p className="text-sm leading-relaxed text-neutral-200">
+              <p className="text-sm leading-relaxed text-(--text-primary)">
                 {truncateMessage(feedback.message)}
               </p>
               {feedback.tracked_devices?.customer ? (
-                <p className="text-xs text-neutral-500">
+                <p className="text-xs text-(--text-tertiary)">
                   Cliente:{' '}
-                  <span className="text-neutral-300">
+                  <span className="text-(--text-secondary)">
                     {feedback.tracked_devices.customer.name ?? 'Não identificado'}
                   </span>
                 </p>

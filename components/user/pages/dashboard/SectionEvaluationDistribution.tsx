@@ -18,38 +18,38 @@ export default function SectionEvaluationDistribution({ stats }: EvaluationDistr
   }, [stats]);
 
   return (
-    <section className="rounded-2xl border border-neutral-800 bg-neutral-900/60 p-6">
+    <section className="rounded-2xl border border-(--quaternary-color)/10 bg-linear-to-br from-(--bg-secondary) to-(--sixth-color) p-6">
       <header className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
         <div>
-          <h2 className="text-lg font-semibold text-neutral-100">
+          <h2 className="text-lg font-semibold text-(--text-primary)">
             Distribuição das avaliações
           </h2>
-          <p className="text-sm text-neutral-400">
+          <p className="text-sm text-(--text-tertiary)">
             Percentual de feedbacks por nota nos últimos registros
           </p>
         </div>
-        <FaChartLine className="text-neutral-400" size={20} />
+        <FaChartLine className="text-(--text-tertiary)" size={20} />
       </header>
 
       <div className="mt-6 space-y-4">
         {distribution.length === 0 ? (
-          <div className="rounded-xl border border-neutral-800/60 bg-neutral-900/70 p-6 text-center text-sm text-neutral-400">
+          <div className="rounded-xl border border-(--quaternary-color)/10 bg-(--seventh-color) p-6 text-center text-sm text-(--text-tertiary)">
             Ainda não há avaliações suficientes para compor a distribuição.
           </div>
         ) : (
           distribution.map(({ rating, count, percent }) => (
             <div key={rating} className="flex items-center gap-3">
-              <div className="flex w-12 items-center gap-1 text-sm text-neutral-300">
+              <div className="flex w-12 items-center gap-1 text-sm text-(--text-secondary)">
                 <FaStar className="text-yellow-400" size={12} />
                 <span>{rating}</span>
               </div>
-              <div className="relative h-2 flex-1 overflow-hidden rounded-full bg-neutral-800">
+              <div className="relative h-2 flex-1 overflow-hidden rounded-full bg-(--seventh-color)">
                 <div
-                  className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-purple-500 to-blue-500"
+                  className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-(--primary-color) to-(--tertiary-color)"
                   style={{ width: `${percent}%` }}
                 />
               </div>
-              <div className="w-16 text-right text-xs text-neutral-400">
+              <div className="w-16 text-right text-xs text-(--text-tertiary)">
                 {percent}% · {count}
               </div>
             </div>
