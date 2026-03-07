@@ -9,25 +9,25 @@ const FieldBusinessSummary = memo(function FieldBusinessSummary({ defaultValue }
     <div className="group">
       <label
         htmlFor="business_summary"
-        className="mb-2 block text-sm font-medium text-neutral-300 transition-colors group-focus-within:text-emerald-400">
+        className="mb-2 block text-sm font-medium text-(--text-secondary) transition-colors group-focus-within:text-(--quinary-color)">
         Resumo do Negócio
-        <span className="ml-1 text-xs text-neutral-500">(opcional)</span>
+        <span className="ml-1 text-xs text-(--text-tertiary)">(opcional)</span>
       </label>
       <div className="relative">
         <textarea
           id="business_summary"
           name="business_summary"
-          className="w-full rounded-xl border border-neutral-700 bg-neutral-900 px-4 py-3 text-neutral-100 outline-none transition-all duration-200 placeholder:text-neutral-600 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
+          className="w-full rounded-xl border border-(--quaternary-color)/14 bg-(--seventh-color) px-4 py-3 text-(--text-primary) outline-none transition-all duration-200 placeholder:text-(--text-tertiary) focus:border-(--quinary-color) focus:ring-2 focus:ring-(--quinary-color)/20"
           rows={5}
           defaultValue={defaultValue}
           onInput={(event) => setCharacterCount(event.currentTarget.value.length)}
           placeholder="Ex: Atuamos há 5 anos no mercado de software, oferecendo sistemas de gestão..."
         />
         <div className="mt-1.5 flex items-center justify-between">
-          <p className="text-xs text-neutral-500">
+          <p className="text-xs text-(--text-tertiary)">
             Conte brevemente sobre a empresa e seu funcionamento
           </p>
-          <span className="text-xs text-neutral-600">
+          <span className="text-xs text-(--text-tertiary)">
             {characterCount} caracteres
           </span>
         </div>

@@ -12,7 +12,7 @@ export default function FieldText({
     <div className="space-y-1 relative">
       <label
         htmlFor={name}
-        className="flex flex-row pl-2 space-x-2 cursor-pointer">
+        className="flex flex-row pl-2 space-x-2 cursor-pointer text-(--text-secondary) font-work-sans">
         <span>{icon}</span>
         <p className="text-sm">{label}</p>
       </label>
@@ -21,7 +21,7 @@ export default function FieldText({
         id={id}
         name={name}
         aria-invalid={error ? true : undefined}
-        className="h-12 w-full pl-5 bg-(--bg-primary) rounded-lg border border-(--bg-tertiary) outline-none hover:border-(--bg-secondary) focus:border-(--primary-color) duration-200"
+          className="h-12 w-full rounded-lg border border-(--quaternary-color)/18 bg-(--seventh-color) pl-5 text-(--text-primary) outline-none transition-colors duration-200 placeholder-(--text-tertiary) hover:border-(--quaternary-color)/30 focus:border-(--primary-color)"
         {...register}
       />
       {error && (

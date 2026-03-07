@@ -25,7 +25,7 @@ export default function FieldPhoneRegister({
         name={name}
         inputMode="tel"
         aria-invalid={error ? true : undefined}
-        className="h-12 w-full rounded-lg bg-(--container-secondary) border border-(--container-border) px-4 outline-none focus:border-(--primary-color) transition-colors font-poppins"
+        className="h-12 w-full rounded-lg border border-(--quaternary-color)/18 bg-(--seventh-color) px-4 font-poppins text-(--text-primary) outline-none transition-colors hover:border-(--quaternary-color)/30 focus:border-(--primary-color)"
         {...register}
         value={display}
         onChange={(e) => {

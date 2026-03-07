@@ -6,7 +6,13 @@
   width: 72px;
   height: 72px;
   border-radius: 9999px;
-  background: conic-gradient(from 180deg, #a855f7, #3b82f6, #10b981, #a855f7);
+  background: conic-gradient(
+    from 180deg,
+    var(--primary-color),
+    var(--tertiary-color),
+    var(--quinary-color),
+    var(--primary-color)
+  );
   padding: 2px;
 }
 
@@ -23,8 +29,8 @@
   border-radius: inherit;
   background: linear-gradient(
     180deg,
-    rgba(24, 24, 27, 0.9),
-    rgba(39, 39, 42, 0.9)
+    color-mix(in srgb, var(--bg-secondary) 92%, transparent),
+    color-mix(in srgb, var(--sixth-color) 96%, transparent)
   );
   color: var(--text-secondary);
   font-weight: 600;

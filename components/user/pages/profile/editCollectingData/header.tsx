@@ -6,20 +6,20 @@ export default function Header() {
     <CardSimple
       type="header"
       disableGlass>
-      <div className="flex justify-between items-center w-full">
+      <div className="flex w-full flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight md:text-3xl">
+          <h1 className="text-2xl font-semibold tracking-tight text-(--text-primary) md:text-3xl">
             Informações da Empresa
           </h1>
-          <p className="mt-1 text-sm text-[var(--text-muted)]">
+          <p className="mt-1 text-sm text-[var(--text-tertiary)]">
             Ajuste suas informações pessoais e preferências. Campos e lógica
             serão adicionados posteriormente.
           </p>
         </div>
-        <div className="space-x-4">
+        <div className="flex flex-wrap gap-3">
           <Link
             to="/user/profile"
-            className="btn-primary">
+            className="btn-ghost">
             Perfil
           </Link>
           <Link

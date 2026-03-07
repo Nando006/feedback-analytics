@@ -4,18 +4,18 @@ export default function AnalyticsNegativeSummarySection({
   summary,
 }: AnalyticsNegativeSummarySectionProps) {
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900/60 p-6 glass-card">
+    <div className="relative overflow-hidden rounded-2xl border border-(--quaternary-color)/10 bg-gradient-to-br from-(--bg-secondary) to-(--sixth-color) p-6 glass-card">
       <h2 className="mb-2 text-lg font-semibold text-[var(--text-primary)]">
         Pontos de atenção e oportunidades de melhoria
       </h2>
-      <p className="mb-4 text-sm text-[var(--text-muted)]">
+      <p className="mb-4 text-sm text-[var(--text-tertiary)]">
         Feedbacks com sentimento negativo ajudam a identificar gargalos na jornada
         do cliente e oportunidades claras de ação.
       </p>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         <div className="space-y-1">
-          <div className="text-xs uppercase tracking-wide text-[var(--text-muted)]">
+          <div className="text-xs uppercase tracking-wide text-[var(--text-tertiary)]">
             Total negativos
           </div>
           <div className="text-2xl font-semibold text-rose-300">
@@ -24,7 +24,7 @@ export default function AnalyticsNegativeSummarySection({
         </div>
 
         <div className="space-y-2 md:col-span-2">
-          <div className="text-xs uppercase tracking-wide text-[var(--text-muted)]">
+          <div className="text-xs uppercase tracking-wide text-[var(--text-tertiary)]">
             Principais problemas apontados
           </div>
           <div className="flex flex-wrap gap-2 text-xs">
@@ -36,7 +36,7 @@ export default function AnalyticsNegativeSummarySection({
               </span>
             ))}
             {summary.topCategories.length === 0 && (
-              <span className="text-[var(--text-muted)]">
+              <span className="text-[var(--text-tertiary)]">
                 Nenhum problema recorrente identificado ainda.
               </span>
             )}

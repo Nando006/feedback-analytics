@@ -7,16 +7,16 @@ export default function InsightsEmotionalThermometerSection({
   negativePct,
 }: InsightsEmotionalThermometerSectionProps) {
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900/60 p-6 glass-card space-y-4">
+    <div className="relative overflow-hidden rounded-2xl border border-(--quaternary-color)/10 bg-gradient-to-br from-(--bg-secondary) to-(--sixth-color) p-6 glass-card space-y-4">
       <h2 className="text-lg font-semibold text-[var(--text-primary)]">
         Termômetro emocional dos clientes
       </h2>
-      <p className="max-w-2xl text-sm text-[var(--text-muted)]">
+      <p className="max-w-2xl text-sm text-[var(--text-tertiary)]">
         Visualização da intensidade emocional dos feedbacks, destacando onde os
         clientes estão mais satisfeitos e onde sentem maior frustração.
       </p>
 
-      <div className="flex h-3 w-full overflow-hidden rounded-full bg-neutral-800">
+      <div className="flex h-3 w-full overflow-hidden rounded-full bg-(--seventh-color)">
         <div style={{ width: `${positivePct}%` }} className="h-full bg-emerald-500/70" />
         <div style={{ width: `${neutralPct}%` }} className="h-full bg-amber-500/70" />
         <div style={{ width: `${negativePct}%` }} className="h-full bg-rose-500/70" />
@@ -24,7 +24,7 @@ export default function InsightsEmotionalThermometerSection({
 
       <div className="mt-2 grid grid-cols-1 gap-4 text-sm md:grid-cols-3">
         <div>
-          <div className="text-xs uppercase tracking-wide text-[var(--text-muted)]">
+          <div className="text-xs uppercase tracking-wide text-[var(--text-tertiary)]">
             Positivos
           </div>
           <div className="text-xl font-semibold text-emerald-300">
@@ -32,7 +32,7 @@ export default function InsightsEmotionalThermometerSection({
           </div>
         </div>
         <div>
-          <div className="text-xs uppercase tracking-wide text-[var(--text-muted)]">
+          <div className="text-xs uppercase tracking-wide text-[var(--text-tertiary)]">
             Neutros
           </div>
           <div className="text-xl font-semibold text-amber-300">
@@ -40,7 +40,7 @@ export default function InsightsEmotionalThermometerSection({
           </div>
         </div>
         <div>
-          <div className="text-xs uppercase tracking-wide text-[var(--text-muted)]">
+          <div className="text-xs uppercase tracking-wide text-[var(--text-tertiary)]">
             Negativos
           </div>
           <div className="text-xl font-semibold text-rose-300">

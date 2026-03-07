@@ -70,8 +70,8 @@ export default function User() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)]">
-      <header className="sticky top-0 z-50 h-16 border-b border-neutral-800/50 bg-neutral-900/90">
+    <div className="private-user-theme min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)]">
+      <header className="sticky top-0 z-50 h-16 border-b border-(--quaternary-color)/10 bg-linear-to-r from-(--bg-secondary) to-(--sixth-color)">
         <Header
           isOverlayMode={isOverlayMode}
           isSidebarOpen={isSidebarOpen}
@@ -93,7 +93,7 @@ export default function User() {
         />
       </header>
 
-      <div className={isOverlayMode ? 'relative' : 'flex'}>
+      <div className={isOverlayMode ? 'relative bg-(--bg-primary)' : 'flex bg-(--bg-primary)'}>
         {isOverlayMode && (
           <div
             className="fixed left-0 top-16 z-30 h-[calc(100vh-64px)] w-2"
@@ -123,7 +123,7 @@ export default function User() {
           className={`min-w-0 flex-1 ${
             !isOverlayMode && isSidebarOpen ? 'pl-72' : 'pl-0'
           }`}>
-          <div className="p-4">
+          <div className="bg-(--bg-primary) p-4 md:p-5">
             <Outlet />
           </div>
         </main>

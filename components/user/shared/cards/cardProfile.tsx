@@ -19,12 +19,11 @@ export default function CardProfile({
   }
 
   return (
-    // From Uiverse.io by aadium
     <Link
       to="/user/profile"
       title="Ver perfil"
       aria-label="Ver perfil"
-      className="w-full h-[240px] p-2.5 bg-neutral-900 shadow-inner shadow-neutral-900/60 hover:bg-neutral-800/5 duration-200">
+      className="h-[240px] w-full border-t border-(--quaternary-color)/8 bg-linear-to-b from-(--bg-secondary) to-(--sixth-color) p-2.5 shadow-inner shadow-black/20 transition-colors duration-200 hover:bg-(--bg-secondary)">
       <div className="flex flex-col items-center h-full justify-between">
         <div className="flex flex-col items-center">
           <div className="profileimage">
@@ -41,8 +40,8 @@ export default function CardProfile({
             disabled={isSigningOut}
             title="Sair"
             aria-label="Sair"
-            className="text-2xl cursor-pointer group disabled:opacity-60">
-            <FaSignOutAlt className="text-red-400 group-hover:text-red-500 duration-200" />
+            className="group cursor-pointer text-2xl disabled:opacity-60">
+            <FaSignOutAlt className="text-(--negative) transition-colors duration-200 group-hover:text-red-400" />
           </button>
         </div>
       </div>

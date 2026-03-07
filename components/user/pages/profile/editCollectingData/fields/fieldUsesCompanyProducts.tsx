@@ -22,7 +22,7 @@ const CheckboxItem = memo(function CheckboxItem({
           name={name}
           checked={checked}
           onChange={onChange}
-          className="peer h-5 w-5 cursor-pointer appearance-none rounded-md border-2 border-neutral-600 bg-neutral-800 transition-all checked:border-purple-500 checked:bg-purple-500 focus:ring-2 focus:ring-purple-500/30"
+          className="peer h-5 w-5 cursor-pointer appearance-none rounded-md border-2 border-(--quaternary-color)/18 bg-(--seventh-color) transition-all checked:border-(--primary-color) checked:bg-(--primary-color) focus:ring-2 focus:ring-(--primary-color)/30"
         />
         <svg
           className="pointer-events-none absolute left-0.5 top-0.5 h-4 w-4 text-white opacity-0 transition-opacity peer-checked:opacity-100"
@@ -37,8 +37,8 @@ const CheckboxItem = memo(function CheckboxItem({
         </svg>
       </div>
       <div className="flex-1">
-        <span className="block text-sm font-medium text-neutral-200">{title}</span>
-        <p className="mt-1 text-xs leading-relaxed text-neutral-500">{description}</p>
+        <span className="block text-sm font-medium text-(--text-primary)">{title}</span>
+        <p className="mt-1 text-xs leading-relaxed text-(--text-tertiary)">{description}</p>
       </div>
     </label>
   );
@@ -51,10 +51,10 @@ const FieldUsesCompanyProducts = memo(function FieldUsesCompanyProducts({
   onChange,
 }: FieldUsesCompanyProductsProps) {
   return (
-    <div className="space-y-4 rounded-xl border border-neutral-800 bg-neutral-900/50 p-5 transition-all duration-200 hover:border-neutral-700">
+    <div className="space-y-4 rounded-xl border border-(--quaternary-color)/10 bg-linear-to-br from-(--bg-secondary) to-(--sixth-color) p-5 transition-all duration-200 hover:border-(--quaternary-color)/18">
       <div>
-        <h3 className="text-sm font-semibold text-neutral-200">Escopo da operação</h3>
-        <p className="mt-1 text-xs leading-relaxed text-neutral-500">
+        <h3 className="text-sm font-semibold text-(--text-primary)">Escopo da operação</h3>
+        <p className="mt-1 text-xs leading-relaxed text-(--text-tertiary)">
           Marque os tipos utilizados na sua operação para habilitar os QR Codes específicos.
         </p>
       </div>

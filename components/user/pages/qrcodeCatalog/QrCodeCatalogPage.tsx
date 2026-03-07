@@ -52,7 +52,7 @@ const QrPreviewImage = memo(function QrPreviewImage({
   return (
     <div
       ref={containerRef}
-      className="mb-4 flex min-h-52 items-center justify-center rounded-xl border border-neutral-800 bg-neutral-950/60 p-4"
+      className="mb-4 flex min-h-52 items-center justify-center rounded-xl border border-(--quaternary-color)/10 bg-(--bg-tertiary) p-4"
     >
       {isVisible ? (
         <img
@@ -63,7 +63,7 @@ const QrPreviewImage = memo(function QrPreviewImage({
           decoding="async"
         />
       ) : (
-        <div className="h-44 w-44 animate-pulse rounded-lg bg-neutral-900" />
+        <div className="h-44 w-44 animate-pulse rounded-lg bg-(--seventh-color)" />
       )}
     </div>
   );
@@ -94,20 +94,20 @@ const QrCatalogItemCard = memo(function QrCatalogItemCard({
 
   return (
     <article
-      className="rounded-2xl border border-neutral-800 bg-neutral-900/60 p-5"
+      className="rounded-2xl border border-(--quaternary-color)/10 bg-gradient-to-br from-(--bg-secondary) to-(--sixth-color) p-5 glass-card"
     >
       <div className="mb-4 flex items-start justify-between gap-3">
         <div>
-          <h2 className="text-base font-semibold text-neutral-100">{item.name}</h2>
-          <p className="mt-1 text-xs text-neutral-400">
+          <h2 className="text-base font-semibold text-(--text-primary)">{item.name}</h2>
+          <p className="mt-1 text-xs text-(--text-tertiary)">
             {item.description || 'Sem descrição'}
           </p>
         </div>
         <span
-          className={`rounded-full px-2 py-1 text-[11px] font-semibold ${
+          className={`rounded-full border px-2 py-1 text-[11px] font-semibold ${
             item.active
-              ? 'bg-emerald-500/15 text-emerald-300'
-              : 'bg-neutral-700/60 text-neutral-300'
+              ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300'
+              : 'border-(--quaternary-color)/14 bg-(--seventh-color) text-(--text-secondary)'
           }`}
         >
           {item.active ? 'Ativo' : 'Inativo'}
@@ -120,13 +120,13 @@ const QrCatalogItemCard = memo(function QrCatalogItemCard({
           alt={`QR Code de ${item.name}`}
         />
       ) : (
-        <div className="mb-4 rounded-xl border border-dashed border-neutral-700 bg-neutral-950/40 p-4 text-center text-xs text-neutral-500">
+        <div className="mb-4 rounded-xl border border-dashed border-(--quaternary-color)/14 bg-(--bg-tertiary) p-4 text-center text-xs text-(--text-tertiary)">
           Ative o QR Code para gerar o link e a imagem deste item.
         </div>
       )}
 
       {item.active && feedbackUrl && (
-        <div className="mb-4 rounded-lg border border-neutral-800 bg-neutral-950/60 px-3 py-2 text-xs text-neutral-300 break-all">
+        <div className="mb-4 break-all rounded-lg border border-(--quaternary-color)/14 bg-(--bg-tertiary) px-3 py-2 text-xs text-(--text-secondary)">
           {feedbackUrl}
         </div>
       )}
@@ -135,7 +135,11 @@ const QrCatalogItemCard = memo(function QrCatalogItemCard({
         type="button"
         onClick={() => onToggle(item.catalog_item_id, item.active)}
         disabled={isPending}
-        className="w-full rounded-lg border border-neutral-700 px-3 py-2 text-sm font-medium text-neutral-100 transition-colors hover:border-neutral-500 hover:bg-neutral-800 disabled:cursor-not-allowed disabled:opacity-60"
+        className={`w-full rounded-lg border px-3 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60 ${
+          item.active
+            ? 'border-rose-500/30 bg-rose-500/10 text-rose-200 hover:bg-rose-500/15'
+            : 'border-(--primary-color) bg-(--primary-color) text-white hover:bg-(--secondary-color)'
+        }`}
       >
         {isPending
           ? 'Atualizando...'
@@ -205,20 +209,20 @@ export default function QrCodeCatalogPage({
   }, [fetcher]);
 
   return (
-    <div className="space-y-6">
-      <header className="rounded-2xl border border-neutral-800 bg-neutral-900/60 p-6">
-        <h1 className="text-xl font-semibold text-neutral-100">{title}</h1>
-        <p className="mt-2 text-sm text-neutral-400">{subtitle}</p>
+    <div className="font-inter space-y-6 pb-8">
+      <header className="rounded-2xl border border-(--quaternary-color)/10 bg-gradient-to-br from-(--bg-secondary) to-(--sixth-color) p-6 glass-card">
+        <h1 className="text-xl font-semibold text-(--text-primary)">{title}</h1>
+        <p className="mt-2 text-sm text-(--text-tertiary)">{subtitle}</p>
       </header>
 
       {data.error && (
-        <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+        <div className="rounded-xl border border-rose-500/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">
           {data.error}
         </div>
       )}
 
       {fetcher.data?.error && (
-        <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+        <div className="rounded-xl border border-rose-500/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">
           {fetcher.data.error}
         </div>
       )}
@@ -240,7 +244,7 @@ export default function QrCodeCatalogPage({
           })}
         </div>
       ) : (
-        <div className="rounded-2xl border border-dashed border-neutral-700 bg-neutral-900/40 p-6 text-sm text-neutral-400">
+        <div className="rounded-2xl border border-dashed border-(--quaternary-color)/14 bg-gradient-to-br from-(--bg-secondary) to-(--sixth-color) p-6 text-sm text-(--text-tertiary) glass-card">
           Nenhum item ativo encontrado nessa categoria. Cadastre itens na tela de coleta para gerar QR Codes.
         </div>
       )}

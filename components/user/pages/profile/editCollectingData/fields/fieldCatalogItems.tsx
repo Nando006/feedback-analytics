@@ -43,10 +43,10 @@ const CatalogItemRow = memo(function CatalogItemRow({
 
   return (
     <div
-      className="rounded-lg border border-neutral-800 bg-neutral-950/50 p-3"
+      className="rounded-lg border border-(--quaternary-color)/10 bg-(--seventh-color) p-3"
     >
       <div className="mb-3 flex items-center justify-between gap-3">
-        <span className="text-xs text-neutral-500">Item {index + 1}</span>
+        <span className="text-xs text-(--text-tertiary)">Item {index + 1}</span>
         <button
           type="button"
           onClick={() => onRemove(index)}
@@ -58,25 +58,25 @@ const CatalogItemRow = memo(function CatalogItemRow({
 
       <div className="grid gap-3">
         <div>
-          <label className="mb-1 block text-xs text-neutral-300">Nome</label>
+          <label className="mb-1 block text-xs text-(--text-secondary)">Nome</label>
           <input
             type="text"
             value={draftName}
             onChange={(event) => setDraftName(event.target.value)}
             onBlur={handleNameBlur}
-            className="w-full rounded-lg border border-neutral-700 bg-neutral-900 px-3 py-2 text-sm text-neutral-100 outline-none transition-all placeholder:text-neutral-600 focus:border-neutral-500"
+            className="w-full rounded-lg border border-(--quaternary-color)/14 bg-(--bg-secondary) px-3 py-2 text-sm text-(--text-primary) outline-none transition-all placeholder:text-(--text-tertiary) focus:border-(--primary-color)"
             placeholder="Ex.: Atendimento Premium"
           />
         </div>
 
         <div>
-          <label className="mb-1 block text-xs text-neutral-300">Descrição</label>
+          <label className="mb-1 block text-xs text-(--text-secondary)">Descrição</label>
           <input
             type="text"
             value={draftDescription}
             onChange={(event) => setDraftDescription(event.target.value)}
             onBlur={handleDescriptionBlur}
-            className="w-full rounded-lg border border-neutral-700 bg-neutral-900 px-3 py-2 text-sm text-neutral-100 outline-none transition-all placeholder:text-neutral-600 focus:border-neutral-500"
+            className="w-full rounded-lg border border-(--quaternary-color)/14 bg-(--bg-secondary) px-3 py-2 text-sm text-(--text-primary) outline-none transition-all placeholder:text-(--text-tertiary) focus:border-(--primary-color)"
             placeholder="Detalhe opcional"
           />
         </div>
@@ -194,23 +194,23 @@ const FieldCatalogItems = memo(function FieldCatalogItems({
   }, [items.length]);
 
   return (
-    <div className="rounded-xl border border-neutral-800 bg-neutral-900/60 p-5">
+    <div className="rounded-xl border border-(--quaternary-color)/10 bg-linear-to-br from-(--bg-secondary) to-(--sixth-color) p-5">
       <div className="mb-4 flex items-center justify-between gap-3">
         <div>
-          <h3 className="text-sm font-semibold text-neutral-100">{title}</h3>
-          <p className="mt-1 text-xs text-neutral-400">{description}</p>
+          <h3 className="text-sm font-semibold text-(--text-primary)">{title}</h3>
+          <p className="mt-1 text-xs text-(--text-tertiary)">{description}</p>
         </div>
         <button
           type="button"
           onClick={handleAddItem}
-          className="rounded-lg border border-neutral-700 px-3 py-2 text-xs font-medium text-neutral-200 transition-colors hover:border-neutral-500 hover:bg-neutral-800"
+          className="btn-ghost px-3 py-2 text-xs"
         >
           Adicionar
         </button>
       </div>
 
       {items.length === 0 ? (
-        <p className="rounded-lg border border-dashed border-neutral-700 px-3 py-4 text-xs text-neutral-400">
+        <p className="rounded-lg border border-dashed border-(--quaternary-color)/14 px-3 py-4 text-xs text-(--text-tertiary)">
           {emptyLabel}
         </p>
       ) : (
@@ -226,14 +226,14 @@ const FieldCatalogItems = memo(function FieldCatalogItems({
           ))}
 
           {hiddenItemsCount > 0 && (
-            <div className="rounded-lg border border-dashed border-neutral-700 bg-neutral-950/40 p-3 text-center">
-              <p className="mb-2 text-xs text-neutral-400">
+            <div className="rounded-lg border border-dashed border-(--quaternary-color)/14 bg-(--bg-secondary) p-3 text-center">
+              <p className="mb-2 text-xs text-(--text-tertiary)">
                 {hiddenItemsCount} itens ocultos para manter a tela fluida.
               </p>
               <button
                 type="button"
                 onClick={handleShowMore}
-                className="rounded-lg border border-neutral-700 px-3 py-2 text-xs font-medium text-neutral-200 transition-colors hover:border-neutral-500 hover:bg-neutral-800"
+                className="btn-ghost px-3 py-2 text-xs"
               >
                 Mostrar mais {Math.min(VISIBLE_ITEMS_STEP, hiddenItemsCount)} itens
               </button>

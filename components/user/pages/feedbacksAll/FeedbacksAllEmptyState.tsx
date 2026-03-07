@@ -4,10 +4,10 @@ export default function FeedbacksAllEmptyState({
   hasFilters,
 }: FeedbacksAllEmptyStateProps) {
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900/50 p-12 glass-card">
+    <div className="relative overflow-hidden rounded-2xl border border-(--quaternary-color)/10 bg-gradient-to-br from-(--bg-secondary) to-(--sixth-color) p-12 glass-card">
       <div className="text-center">
-        <div className="mb-2 text-lg text-[var(--text-primary)]">Nenhum feedback encontrado</div>
-        <div className="text-sm text-[var(--text-muted)]">
+        <div className="mb-2 text-lg text-(--text-primary)">Nenhum feedback encontrado</div>
+        <div className="text-sm text-(--text-tertiary)">
           {hasFilters
             ? 'Tente ajustar os filtros de busca'
             : 'Ainda não há feedbacks registrados'}

@@ -9,7 +9,7 @@ export default function FeedbackFilters({
   onLimitChange,
 }: FeedbackFiltersProps) {
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900/50 p-6 glass-card">
+    <div className="relative overflow-hidden rounded-2xl border border-(--quaternary-color)/10 bg-gradient-to-br from-(--bg-secondary) to-(--sixth-color) p-6 glass-card">
       <div className="flex flex-col gap-4 md:flex-row md:items-center">
         {/* Busca */}
         <div className="flex-1">
@@ -19,7 +19,7 @@ export default function FeedbackFilters({
               placeholder="🔍 Buscar por mensagem..."
               value={filters.search}
               onChange={onSearchChange}
-              className="w-full pl-4 pr-4 py-3 border border-neutral-800 bg-neutral-900/50 text-[var(--text-primary)] rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent placeholder-[var(--text-muted)]"
+              className="w-full rounded-xl border border-(--quaternary-color)/14 bg-(--seventh-color) px-4 py-3 text-(--text-primary) outline-none placeholder:text-(--text-tertiary) focus:border-(--primary-color) focus:ring-2 focus:ring-(--primary-color)/20"
             />
           </div>
         </div>
@@ -33,7 +33,7 @@ export default function FeedbackFilters({
                 e.target.value ? parseInt(e.target.value) : undefined,
               )
             }
-            className="px-3 py-3 border border-neutral-800 bg-neutral-900/50 text-[var(--text-primary)] rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+            className="rounded-xl border border-(--quaternary-color)/14 bg-(--seventh-color) px-3 py-3 text-(--text-primary) outline-none focus:border-(--primary-color) focus:ring-2 focus:ring-(--primary-color)/20">
             <option value="">Todos os ratings</option>
             <option value="5">5 estrelas</option>
             <option value="4">4 estrelas</option>
@@ -58,7 +58,7 @@ export default function FeedbackFilters({
                   : undefined,
               )
             }
-            className="px-3 py-3 border border-neutral-800 bg-neutral-900/50 text-[var(--text-primary)] rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+            className="rounded-xl border border-(--quaternary-color)/14 bg-(--seventh-color) px-3 py-3 text-(--text-primary) outline-none focus:border-(--primary-color) focus:ring-2 focus:ring-(--primary-color)/20">
             <option value="">Todas as categorias</option>
             <option value="COMPANY">Empresa</option>
             <option value="PRODUCT">Produto</option>
@@ -75,18 +75,18 @@ export default function FeedbackFilters({
               placeholder="Filtrar por item (ex: Bola de couro)"
               value={filters.item || ''}
               onChange={onItemChange}
-              className="w-full pl-4 pr-4 py-3 border border-neutral-800 bg-neutral-900/50 text-[var(--text-primary)] rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent placeholder-[var(--text-muted)]"
+              className="w-full rounded-xl border border-(--quaternary-color)/14 bg-(--seventh-color) px-4 py-3 text-(--text-primary) outline-none placeholder:text-(--text-tertiary) focus:border-(--primary-color) focus:ring-2 focus:ring-(--primary-color)/20"
             />
           </div>
         </div>
 
         {/* Itens por página */}
         <div className="flex items-center gap-2">
-          <span className="text-sm text-[var(--text-muted)]">Por página:</span>
+          <span className="text-sm text-[var(--text-tertiary)]">Por página:</span>
           <select
             value={filters.limit}
             onChange={(e) => onLimitChange(parseInt(e.target.value))}
-            className="px-3 py-3 border border-neutral-800 bg-neutral-900/50 text-[var(--text-primary)] rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+            className="rounded-xl border border-(--quaternary-color)/14 bg-(--seventh-color) px-3 py-3 text-(--text-primary) outline-none focus:border-(--primary-color) focus:ring-2 focus:ring-(--primary-color)/20">
             <option value={5}>5</option>
             <option value={10}>10</option>
             <option value={20}>20</option>

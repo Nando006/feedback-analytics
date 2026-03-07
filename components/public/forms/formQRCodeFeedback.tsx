@@ -29,7 +29,7 @@ export default function FormQRCodeFeedback({
         onMessageChange={(message) => onFormDataChange({ message })}
       />
 
-      <div className="border-t border-(--container-border) pt-4">
+      <div className="border-t border-(--bg-tertiary) pt-4">
         <button
           type="button"
           onClick={onToggleOptionalFields}
@@ -49,18 +49,18 @@ export default function FormQRCodeFeedback({
             />
           </svg>
         </button>
-        <p className="text-xs text-(--text-muted) font-work-sans mt-1">
+        <p className="mt-1 text-xs text-(--text-tertiary) font-work-sans">
           Compartilhe suas informações para nos ajudar a melhorar nossos
           serviços
         </p>
       </div>
 
       {showOptionalFields && (
-        <div className="space-y-4 bg-(--container-secondary)/50 p-6 rounded-xl border border-(--container-border)">
+        <div className="space-y-4 rounded-xl border border-(--bg-tertiary) bg-(--bg-secondary) p-6">
           <div className="flex items-center mb-4 gap-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-(--primary-color) to-(--terciary-color-dark) rounded-lg flex items-center justify-center">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-(--primary-color) to-(--tertiary-color)">
               <svg
-                className="w-4 h-4 text-white"
+                className="h-4 w-4 text-white"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24">
@@ -94,18 +94,18 @@ export default function FormQRCodeFeedback({
       )}
 
       {error && (
-        <div className="bg-red-600/10 border border-red-600/20 rounded-lg p-3">
-          <p className="text-red-400 text-sm">{error}</p>
+        <div className="rounded-lg border border-(--negative)/30 bg-(--negative)/10 p-3">
+          <p className="text-(--negative) text-sm">{error}</p>
         </div>
       )}
 
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full bg-gradient-to-r from-(--primary-color) to-(--tertiary-color-dark) hover:from-(--tertiary-color-dark) hover:to-(--primary-color) disabled:bg-neutral-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors disabled:cursor-not-allowed font-poppins cursor-pointer">
+        className="w-full cursor-pointer rounded-lg bg-gradient-to-r from-(--primary-color) to-(--tertiary-color) px-6 py-3 font-poppins font-semibold text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:bg-(--bg-tertiary) disabled:text-(--text-secondary)">
         {isSubmitting ? (
           <>
-            <FaSpinner className="animate-spin text-gray-100 mx-auto" aria-hidden="true" />
+            <FaSpinner className="mx-auto animate-spin text-white" aria-hidden="true" />
           </>
         ) : (
           'Enviar Feedback'

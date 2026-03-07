@@ -3,14 +3,14 @@ import SVGImageProfile from 'components/svg/imageProfile';
 
 export default function StateLoading() {
   return (
-    <div className="min-h-screen bg-(--container-secondary) flex items-center justify-center p-4">
+    <div className="min-h-screen bg-(--bg-primary) flex items-center justify-center p-4">
       <Card
         title="Validando..."
         text="Verificando informações da empresa"
         icon={<SVGImageProfile />}
         children={
           <div className="text-center">
-            <div className="w-16 h-16 bg-(--container-secondary) rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-(--bg-secondary)">
               <svg
                 className="w-8 h-8 text-(--primary-color) animate-spin"
                 fill="none"

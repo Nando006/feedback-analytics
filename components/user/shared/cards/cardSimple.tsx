@@ -10,8 +10,8 @@ export default function CardSimple({
   disableGlass?: boolean;
 }) {
   const baseClass = disableGlass
-    ? 'relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900/50 p-6 md:p-8'
-    : 'relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900/50 p-6 md:p-8 glass-card';
+    ? 'relative overflow-hidden rounded-2xl border border-(--quaternary-color)/10 bg-linear-to-br from-(--bg-secondary) to-(--sixth-color) p-6 md:p-8'
+    : 'relative overflow-hidden rounded-2xl border border-(--quaternary-color)/10 bg-linear-to-br from-(--bg-secondary) to-(--sixth-color) p-6 md:p-8 glass-card';
 
   switch (type) {
     case 'header':

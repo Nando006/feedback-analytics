@@ -6,17 +6,17 @@ export default function InsightsEmotionalClustersSection({
   clusters,
 }: InsightsEmotionalClustersSectionProps) {
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900/60 p-6 glass-card space-y-6">
+    <div className="relative overflow-hidden rounded-2xl border border-(--quaternary-color)/10 bg-gradient-to-br from-(--bg-secondary) to-(--sixth-color) p-6 glass-card space-y-6">
       <h3 className="text-base font-semibold text-[var(--text-primary)]">
         Momentos emocionais que mais se repetem
       </h3>
-      <p className="mb-2 max-w-2xl text-sm text-[var(--text-muted)]">
+      <p className="mb-2 max-w-2xl text-sm text-[var(--text-tertiary)]">
         Explore exemplos reais de feedbacks que representam emoções mais fortes
         dos seus clientes — tanto positivas quanto negativas.
       </p>
 
       {clusters.length === 0 ? (
-        <div className="text-sm text-[var(--text-muted)]">
+        <div className="text-sm text-[var(--text-tertiary)]">
           Ainda não há clusters emocionais suficientes para exibir.
         </div>
       ) : (
@@ -24,20 +24,20 @@ export default function InsightsEmotionalClustersSection({
           {clusters.map((cluster) => (
             <div
               key={cluster.title}
-              className="space-y-3 rounded-xl border border-neutral-800 bg-neutral-900/80 p-4">
+              className="space-y-3 rounded-xl border border-(--quaternary-color)/10 bg-(--seventh-color) p-4">
               <div>
                 <h4 className="mb-1 text-sm font-semibold text-[var(--text-primary)]">
                   {cluster.title}
                 </h4>
-                <p className="text-xs text-[var(--text-muted)]">{cluster.description}</p>
+                <p className="text-xs text-[var(--text-tertiary)]">{cluster.description}</p>
               </div>
 
               <div className="max-h-64 space-y-2 overflow-y-auto pr-1">
                 {cluster.items.map((item) => (
                   <div
                     key={item.id}
-                    className="space-y-1 rounded-lg border border-neutral-800 bg-neutral-950/60 p-3">
-                    <div className="flex items-center justify-between text-[10px] text-[var(--text-muted)]">
+                    className="space-y-1 rounded-lg border border-(--quaternary-color)/10 bg-(--bg-tertiary) p-3">
+                    <div className="flex items-center justify-between text-[10px] text-[var(--text-tertiary)]">
                       <span>
                         {new Date(item.created_at).toLocaleDateString('pt-BR', {
                           day: '2-digit',
