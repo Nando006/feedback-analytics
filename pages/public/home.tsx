@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from "react-router-dom";
+import { Link } from 'react-router-dom';
 
 export default function Home() {
   const [showVideo, setShowVideo] = useState(false);
@@ -21,8 +21,8 @@ export default function Home() {
                 </h1>
                 <p className="text-lg text-(--text-secondary) md:text-xl font-work-sans">
                   Colete, interprete e transforme feedbacks em decisões
-                  concretas. Acompanhe sentimentos, tendências e recomendações da
-                  IA em um só lugar.
+                  concretas. Acompanhe sentimentos, tendências e recomendações
+                  da IA em um só lugar.
                 </p>
                 <div className="flex flex-wrap gap-3">
                   <Link
@@ -49,7 +49,9 @@ export default function Home() {
                 <div className="relative rounded-2xl border border-(--container-border) bg-(--container-primary)/60 p-6 shadow-lg">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-(--text-muted) font-work-sans">Clima geral</p>
+                      <p className="text-sm text-(--text-muted) font-work-sans">
+                        Clima geral
+                      </p>
                       <p className="font-work-sans text-2xl font-semibold text-(--positive)">
                         Positivo
                       </p>
@@ -102,8 +104,12 @@ export default function Home() {
                     </p>
                     <ul className="mt-3 space-y-2 text-sm text-(--text-secondary) font-work-sans">
                       <li>• Reforce canais que receberam elogios recentes.</li>
-                      <li>• Aja rápido em filas de atendimento mais citadas.</li>
-                      <li>• Monitore produtos com menções neutras para melhorar.</li>
+                      <li>
+                        • Aja rápido em filas de atendimento mais citadas.
+                      </li>
+                      <li>
+                        • Monitore produtos com menções neutras para melhorar.
+                      </li>
                     </ul>
                   </div>
                 </div>
@@ -135,7 +141,9 @@ export default function Home() {
                 <h3 className="text-lg font-semibold text-(--text-primary) font-montserrat">
                   {item.title}
                 </h3>
-                <p className="mt-2 text-sm text-(--text-secondary) font-work-sans">{item.desc}</p>
+                <p className="mt-2 text-sm text-(--text-secondary) font-work-sans">
+                  {item.desc}
+                </p>
               </div>
             ))}
           </div>
