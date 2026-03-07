@@ -4,7 +4,7 @@ export default function AnalyticsPositiveSummarySection({
   summary,
 }: AnalyticsPositiveSummarySectionProps) {
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900/60 p-6 glass-card">
+    <div className="relative overflow-hidden rounded-2xl border border-(--quaternary-color)/10 bg-gradient-to-br from-(--bg-secondary) to-(--sixth-color) p-6 glass-card">
       <h2 className="mb-2 text-lg font-semibold text-[var(--text-primary)]">
         Forças e destaques percebidos pelos clientes
       </h2>

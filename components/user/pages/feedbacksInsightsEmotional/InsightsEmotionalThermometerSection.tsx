@@ -7,7 +7,7 @@ export default function InsightsEmotionalThermometerSection({
   negativePct,
 }: InsightsEmotionalThermometerSectionProps) {
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900/60 p-6 glass-card space-y-4">
+    <div className="relative overflow-hidden rounded-2xl border border-(--quaternary-color)/10 bg-gradient-to-br from-(--bg-secondary) to-(--sixth-color) p-6 glass-card space-y-4">
       <h2 className="text-lg font-semibold text-[var(--text-primary)]">
         Termômetro emocional dos clientes
       </h2>
@@ -16,7 +16,7 @@ export default function InsightsEmotionalThermometerSection({
         clientes estão mais satisfeitos e onde sentem maior frustração.
       </p>
 
-      <div className="flex h-3 w-full overflow-hidden rounded-full bg-neutral-800">
+      <div className="flex h-3 w-full overflow-hidden rounded-full bg-(--seventh-color)">
         <div style={{ width: `${positivePct}%` }} className="h-full bg-emerald-500/70" />
         <div style={{ width: `${neutralPct}%` }} className="h-full bg-amber-500/70" />
         <div style={{ width: `${negativePct}%` }} className="h-full bg-rose-500/70" />

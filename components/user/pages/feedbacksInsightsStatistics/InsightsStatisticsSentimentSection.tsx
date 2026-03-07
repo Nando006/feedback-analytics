@@ -7,7 +7,7 @@ export default function InsightsStatisticsSentimentSection({
   negativePct,
 }: InsightsStatisticsSentimentSectionProps) {
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900/60 p-6 glass-card">
+    <div className="relative overflow-hidden rounded-2xl border border-(--quaternary-color)/10 bg-gradient-to-br from-(--bg-secondary) to-(--sixth-color) p-6 glass-card">
       <h2 className="mb-2 text-lg font-semibold text-[var(--text-primary)]">
         Distribuição de sentimentos nos feedbacks
       </h2>
@@ -17,7 +17,7 @@ export default function InsightsStatisticsSentimentSection({
       </p>
 
       <div className="space-y-4">
-        <div className="flex h-3 w-full overflow-hidden rounded-full bg-neutral-800">
+        <div className="flex h-3 w-full overflow-hidden rounded-full bg-(--seventh-color)">
           <div style={{ width: `${positivePct}%` }} className="h-full bg-emerald-500/70" />
           <div style={{ width: `${neutralPct}%` }} className="h-full bg-amber-500/70" />
           <div style={{ width: `${negativePct}%` }} className="h-full bg-rose-500/70" />

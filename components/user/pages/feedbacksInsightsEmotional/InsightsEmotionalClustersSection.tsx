@@ -6,7 +6,7 @@ export default function InsightsEmotionalClustersSection({
   clusters,
 }: InsightsEmotionalClustersSectionProps) {
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900/60 p-6 glass-card space-y-6">
+    <div className="relative overflow-hidden rounded-2xl border border-(--quaternary-color)/10 bg-gradient-to-br from-(--bg-secondary) to-(--sixth-color) p-6 glass-card space-y-6">
       <h3 className="text-base font-semibold text-[var(--text-primary)]">
         Momentos emocionais que mais se repetem
       </h3>
@@ -24,7 +24,7 @@ export default function InsightsEmotionalClustersSection({
           {clusters.map((cluster) => (
             <div
               key={cluster.title}
-              className="space-y-3 rounded-xl border border-neutral-800 bg-neutral-900/80 p-4">
+              className="space-y-3 rounded-xl border border-(--quaternary-color)/10 bg-(--seventh-color) p-4">
               <div>
                 <h4 className="mb-1 text-sm font-semibold text-[var(--text-primary)]">
                   {cluster.title}
@@ -36,7 +36,7 @@ export default function InsightsEmotionalClustersSection({
                 {cluster.items.map((item) => (
                   <div
                     key={item.id}
-                    className="space-y-1 rounded-lg border border-neutral-800 bg-neutral-950/60 p-3">
+                    className="space-y-1 rounded-lg border border-(--quaternary-color)/10 bg-(--bg-tertiary) p-3">
                     <div className="flex items-center justify-between text-[10px] text-[var(--text-tertiary)]">
                       <span>
                         {new Date(item.created_at).toLocaleDateString('pt-BR', {

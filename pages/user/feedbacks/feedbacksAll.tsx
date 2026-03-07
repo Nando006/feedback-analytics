@@ -162,7 +162,7 @@ export default function FeedbacksAll() {
   }
 
   return (
-    <div className="font-inter space-y-6">
+    <div className="font-inter space-y-6 pb-8">
       {/* Header com estatísticas */}
       <FeedbackHeader stats={stats} />
 

@@ -112,8 +112,8 @@ export default function FeedbacksInsightsReport() {
     total > 0 ? Math.round((summary!.sentiments.negative / total) * 100) : 0;
 
   return (
-    <div className="font-inter space-y-6">
-      <div className="relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900/60 p-6 glass-card space-y-6">
+    <div className="font-inter space-y-6 pb-8">
+      <div className="relative overflow-hidden rounded-2xl border border-(--quaternary-color)/10 bg-gradient-to-br from-(--bg-secondary) to-(--sixth-color) p-6 glass-card space-y-6">
         <InsightsReportHeaderSection
           updatedLabel={updatedLabel}
           refreshing={refreshing}

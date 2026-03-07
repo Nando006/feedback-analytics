@@ -4,7 +4,7 @@ export default function AnalyticsAllSummarySection({
   summary,
 }: AnalyticsAllSummarySectionProps) {
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900/60 p-6 glass-card">
+    <div className="relative overflow-hidden rounded-2xl border border-(--quaternary-color)/10 bg-gradient-to-br from-(--bg-secondary) to-(--sixth-color) p-6 glass-card">
       <h2 className="mb-2 text-lg font-semibold text-[var(--text-primary)]">
         Visão geral dos feedbacks analisados pela IA
       </h2>
@@ -48,7 +48,7 @@ export default function AnalyticsAllSummarySection({
             {summary.topCategories.slice(0, 3).map((cat) => (
               <span
                 key={cat.name}
-                className="rounded-full border border-neutral-700 bg-neutral-800 px-3 py-1 text-[var(--text-secondary)]">
+                className="rounded-full border border-(--quaternary-color)/14 bg-(--seventh-color) px-3 py-1 text-(--text-secondary)">
                 {cat.name} ({cat.count})
               </span>
             ))}
