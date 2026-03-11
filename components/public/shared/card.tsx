@@ -10,8 +10,9 @@ export default function Card({
   linkLogin,
 }: CardProps) {
   return (
-    <div className="rounded-2xl border border-(--bg-tertiary) bg-(--bg-secondary) p-8">
-      <div className="text-center mb-8">
+    <div className="rounded-3xl border border-(--bg-tertiary) bg-(--seventh-color)/14 relative overflow-hidden p-8">
+      <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-(--primary-color) via-(--secondary-color) to-(--tertiary-color)" />
+      <div className="text-center mb-8 overflow-hidden">
         {icon && (
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-(--primary-color) to-(--tertiary-color) p-2">
             {icon}
