@@ -54,8 +54,8 @@ function Item({ item }: { item: MenuItem }) {
       <li>
         <NavLink
           to={item.to || '#'}
-          className="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-neutral-200 transition-colors hover:bg-neutral-800/70 hover:text-neutral-100">
-          <FaBuffer className="h-3.5 w-3.5 text-neutral-500" />
+          className="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-(--text-secondary) transition-colors hover:bg-(--seventh-color) hover:text-(--text-primary)">
+          <FaBuffer className="h-3.5 w-3.5 text-(--text-tertiary)" />
           <span>{item.label}</span>
         </NavLink>
       </li>
@@ -64,16 +64,16 @@ function Item({ item }: { item: MenuItem }) {
 
   return (
     <li className="relative menu-item group">
-      <div className="flex cursor-pointer items-center justify-between gap-3 rounded-md px-3 py-2 text-sm text-neutral-300 transition-colors hover:bg-neutral-800/70 hover:text-neutral-100">
+      <div className="flex cursor-pointer items-center justify-between gap-3 rounded-md px-3 py-2 text-sm text-(--text-secondary) transition-colors hover:bg-(--seventh-color) hover:text-(--text-primary)">
         <div className="flex items-center gap-2">
-          <FaAlignLeft className="h-3.5 w-3.5 text-neutral-500 group-hover:text-neutral-200" />
+          <FaAlignLeft className="h-3.5 w-3.5 text-(--text-tertiary) group-hover:text-(--text-secondary)" />
           <span>{item.label}</span>
         </div>
-        <FaChevronRight className="h-3.5 w-3.5 text-neutral-500 transition-transform group-hover:translate-x-0.5 group-hover:text-neutral-200" />
+        <FaChevronRight className="h-3.5 w-3.5 text-(--text-tertiary) transition-transform group-hover:translate-x-0.5 group-hover:text-(--text-secondary)" />
       </div>
 
       <div className="submenu pointer-events-none absolute left-full -top-1.5 z-40 ml-2 origin-left scale-95 opacity-0 transition-all duration-150 ease-out">
-        <ul className="min-w-48 max-h-[calc(100vh-64px-16px)] space-y-1 rounded-md border border-neutral-800/50 bg-neutral-900 p-2 shadow-[var(--shadow-primary)] ring-1 ring-neutral-800/50">
+        <ul className="min-w-48 max-h-[calc(100vh-64px-16px)] space-y-1 rounded-md border border-(--quaternary-color)/12 bg-(--bg-secondary) p-2 ring-1 ring-(--quaternary-color)/10">
           {item.children!.map((child) => (
             <Item
               key={child.label}
@@ -103,7 +103,7 @@ export default function Menu({
 
   return (
     <nav>
-      <ul className="space-y-1 p-2">
+      <ul className="space-y-1 p-2.5">
         {items.map((item) => (
           <Item
             key={item.label}

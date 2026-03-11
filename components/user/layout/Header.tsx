@@ -15,7 +15,7 @@ export default function Header({
           type="button"
           aria-label={isSidebarOpen ? 'Fechar' : 'Abrir'}
           title={isSidebarOpen ? 'Fechar' : 'Abrir'}
-          className="inline-flex cursor-pointer h-9 w-9 items-center justify-center rounded-md border border-neutral-700 bg-neutral-800 text-neutral-100 transition-colors hover:bg-neutral-700"
+          className="inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-md border border-(--quaternary-color)/14 bg-(--seventh-color) text-(--text-primary) transition-colors hover:border-(--quaternary-color)/22 hover:bg-(--bg-tertiary)"
           onClick={onToggleSidebar}>
           <FaBars className="h-4 w-4" />
         </button>
@@ -25,8 +25,8 @@ export default function Header({
           title={isOverlayMode ? 'Sobrepondo' : 'Empurra'}
           className={`inline-flex cursor-pointer h-9 w-9 items-center justify-center rounded-md border transition-colors ${
             isOverlayMode
-              ? 'border-neutral-600 bg-neutral-800 text-neutral-100'
-              : 'border-neutral-800 bg-neutral-900 text-neutral-300 hover:bg-neutral-800'
+              ? 'border-(--primary-color)/40 bg-(--primary-color)/14 text-(--text-primary)'
+              : 'border-(--quaternary-color)/12 bg-(--bg-secondary) text-(--text-secondary) hover:border-(--quaternary-color)/20 hover:bg-(--seventh-color) hover:text-(--text-primary)'
           }`}
           onClick={() => (isOverlayMode ? onSetPush() : onSetOverlay())}>
           <FaLayerGroup className="h-4 w-4" />

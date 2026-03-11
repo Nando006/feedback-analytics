@@ -32,7 +32,7 @@ li.group > div + div::before {
 }
 
 li.group:hover > div:first-child {
-  background-color: rgba(38, 38, 38, 0.7) !important;
+  background-color: color-mix(in srgb, var(--seventh-color) 92%, transparent) !important;
   color: var(--text-primary) !important;
   position: relative;
 }
@@ -45,12 +45,12 @@ li.group:hover > div:first-child::before {
   bottom: 6px;
   width: 3px;
   border-radius: 9999px;
-  background-color: var(--text-secondary);
+  background-color: var(--primary-color);
 }
 
 aside nav a[aria-current='page'] {
   color: var(--text-primary) !important;
-  background-color: rgba(38, 38, 38, 0.6) !important;
+  background-color: color-mix(in srgb, var(--seventh-color) 88%, transparent) !important;
   position: relative;
 }
 aside nav a[aria-current='page']::after {
@@ -62,11 +62,12 @@ aside nav a[aria-current='page']::after {
   width: 12px;
   height: 12px;
   font-size: 12px;
-  color: #c084fc;
-  text-shadow: 0 0 8px rgba(147, 51, 234, 1), 0 0 16px rgba(147, 51, 234, 0.8),
-    0 0 24px rgba(147, 51, 234, 0.6);
-  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.4))
-    drop-shadow(0 0 12px rgba(192, 132, 252, 0.6));
+  color: var(--quaternary-color);
+  text-shadow: 0 0 8px color-mix(in srgb, var(--primary-color) 90%, transparent),
+    0 0 16px color-mix(in srgb, var(--primary-color) 70%, transparent),
+    0 0 24px color-mix(in srgb, var(--primary-color) 45%, transparent);
+  filter: drop-shadow(0 0 6px color-mix(in srgb, white 35%, transparent))
+    drop-shadow(0 0 12px color-mix(in srgb, var(--quaternary-color) 55%, transparent));
   animation: pulse-glow 2s ease-in-out infinite;
 }
 
@@ -86,11 +87,11 @@ aside nav a[aria-current='page']::after {
 }
 
 li.group:has(a[aria-current='page']) > div:first-child {
-  background-color: rgba(38, 38, 38, 0.7) !important;
+  background-color: color-mix(in srgb, var(--seventh-color) 92%, transparent) !important;
   color: var(--text-primary) !important;
 }
 li.group:has(a[aria-current='page']) > div:first-child svg {
-  color: #e9d5ff !important; /* violet-200 */
+  color: var(--quaternary-color) !important;
 }
 li.group:has(a[aria-current='page']) > div:first-child {
   position: relative;
@@ -104,26 +105,29 @@ li.group:has(a[aria-current='page']) > div:first-child span::after {
   width: 12px;
   height: 12px;
   font-size: 12px;
-  color: #c084fc;
-  text-shadow: 0 0 8px rgba(147, 51, 234, 1), 0 0 16px rgba(147, 51, 234, 0.8),
-    0 0 24px rgba(147, 51, 234, 0.6);
-  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.4))
-    drop-shadow(0 0 12px rgba(192, 132, 252, 0.6));
+  color: var(--quaternary-color);
+  text-shadow: 0 0 8px color-mix(in srgb, var(--primary-color) 90%, transparent),
+    0 0 16px color-mix(in srgb, var(--primary-color) 70%, transparent),
+    0 0 24px color-mix(in srgb, var(--primary-color) 45%, transparent);
+  filter: drop-shadow(0 0 6px color-mix(in srgb, white 35%, transparent))
+    drop-shadow(0 0 12px color-mix(in srgb, var(--quaternary-color) 55%, transparent));
   animation: pulse-glow 2s ease-in-out infinite;
 }
 
 @keyframes pulse-glow {
   0%,
   100% {
-    text-shadow: 0 0 8px rgba(147, 51, 234, 1), 0 0 16px rgba(147, 51, 234, 0.8),
-      0 0 24px rgba(147, 51, 234, 0.6);
-    filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.4))
-      drop-shadow(0 0 12px rgba(192, 132, 252, 0.6));
+    text-shadow: 0 0 8px color-mix(in srgb, var(--primary-color) 90%, transparent),
+      0 0 16px color-mix(in srgb, var(--primary-color) 70%, transparent),
+      0 0 24px color-mix(in srgb, var(--primary-color) 45%, transparent);
+    filter: drop-shadow(0 0 6px color-mix(in srgb, white 35%, transparent))
+      drop-shadow(0 0 12px color-mix(in srgb, var(--quaternary-color) 55%, transparent));
   }
   50% {
-    text-shadow: 0 0 12px rgba(147, 51, 234, 1),
-      0 0 24px rgba(147, 51, 234, 0.9), 0 0 36px rgba(147, 51, 234, 0.8);
-    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.6))
-      drop-shadow(0 0 20px rgba(192, 132, 252, 0.8));
+    text-shadow: 0 0 12px color-mix(in srgb, var(--primary-color) 100%, transparent),
+      0 0 24px color-mix(in srgb, var(--primary-color) 85%, transparent),
+      0 0 36px color-mix(in srgb, var(--primary-color) 65%, transparent);
+    filter: drop-shadow(0 0 10px color-mix(in srgb, white 45%, transparent))
+      drop-shadow(0 0 20px color-mix(in srgb, var(--quaternary-color) 70%, transparent));
   }
 }

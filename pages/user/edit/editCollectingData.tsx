@@ -10,11 +10,11 @@ export default function EditCollectingData() {
       
       <CardSimple disableGlass>
         <div className="w-full">
-          <div className="mb-6 border-b border-neutral-800 pb-4">
-            <h2 className="text-xl font-semibold text-neutral-100">
+          <div className="mb-6 border-b border-(--quaternary-color)/10 pb-4">
+            <h2 className="text-xl font-semibold text-(--text-primary)">
               Configuração de Coleta de Dados
             </h2>
-            <p className="mt-2 text-sm text-neutral-400">
+            <p className="mt-2 text-sm text-(--text-tertiary)">
               Configure como sua empresa irá coletar e utilizar os feedbacks dos clientes.
             </p>
           </div>

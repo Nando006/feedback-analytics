@@ -19,7 +19,7 @@ export default function FeedbackCard({ feedback, onClick }: FeedbackCardProps) {
       <span
         key={index}
         className={`text-lg ${
-          index < rating ? 'text-yellow-400' : 'text-neutral-500'
+          index < rating ? 'text-amber-300' : 'text-(--text-tertiary)'
         }`}>
         ★
       </span>
@@ -39,10 +39,10 @@ export default function FeedbackCard({ feedback, onClick }: FeedbackCardProps) {
 
   // Função para obter cor do rating
   const getRatingColor = (rating: number) => {
-    if (rating >= 4) return 'text-green-400 bg-green-900/30 border-green-800';
+    if (rating >= 4) return 'text-emerald-300 bg-emerald-500/10 border-emerald-500/30';
     if (rating >= 3)
-      return 'text-yellow-400 bg-yellow-900/30 border-yellow-800';
-    return 'text-red-400 bg-red-900/30 border-red-800';
+      return 'text-amber-300 bg-amber-500/10 border-amber-500/30';
+    return 'text-rose-300 bg-rose-500/10 border-rose-500/30';
   };
 
   // Função para obter texto do rating
@@ -74,9 +74,9 @@ export default function FeedbackCard({ feedback, onClick }: FeedbackCardProps) {
 
   return (
     <div
-      className={`relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900/50 p-6 glass-card ${
+      className={`relative overflow-hidden rounded-2xl border border-(--quaternary-color)/10 bg-gradient-to-br from-(--bg-secondary) to-(--sixth-color) p-6 glass-card ${
         onClick
-          ? 'cursor-pointer hover:border-neutral-700 transition-colors'
+          ? 'cursor-pointer transition-colors hover:border-(--quaternary-color)/20'
           : ''
       }`}
       onClick={onClick}
@@ -95,7 +95,7 @@ export default function FeedbackCard({ feedback, onClick }: FeedbackCardProps) {
             {renderStars(feedback.rating)}
           </div>
         </div>
-        <div className="text-sm text-[var(--text-muted)]">
+        <div className="text-sm text-[var(--text-tertiary)]">
           {formatDate(feedback.created_at)}
         </div>
       </div>
@@ -109,7 +109,7 @@ export default function FeedbackCard({ feedback, onClick }: FeedbackCardProps) {
 
       {/* Informações adicionais */}
       <div className="flex justify-between items-center text-sm">
-        <div className="flex items-center gap-4 text-[var(--text-muted)]">
+        <div className="flex items-center gap-4 text-[var(--text-tertiary)]">
           <span>
             <strong className="text-[var(--text-secondary)]">Canal:</strong>{' '}
             {channelDisplayName}
@@ -134,7 +134,7 @@ export default function FeedbackCard({ feedback, onClick }: FeedbackCardProps) {
               {feedback.tracked_devices.customer.name || 'Cliente anônimo'}
             </div>
             {feedback.tracked_devices.customer.email && (
-              <div className="text-[var(--text-muted)] text-xs">
+              <div className="text-[var(--text-tertiary)] text-xs">
                 {feedback.tracked_devices.customer.email}
               </div>
             )}

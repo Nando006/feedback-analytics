@@ -3,7 +3,7 @@ import SVGImageProfile from 'components/svg/imageProfile';
 
 export default function StateError({ error }: { error: string }) {
   return (
-    <div className="min-h-screen bg-(--container-tertiary) flex items-center justify-center p-4">
+    <div className="min-h-screen bg-(--bg-primary) flex items-center justify-center p-4">
       <Card
         title="Erro"
         text="Não foi possível carregar o formulário"
@@ -27,7 +27,7 @@ export default function StateError({ error }: { error: string }) {
             <p className="text-(--negative) mb-6">{error}</p>
             <button
               onClick={() => window.location.reload()}
-              className="w-full bg-(--negative) hover:bg-(--negative-hover) text-white font-semibold py-3 px-6 rounded-lg transition-colors">
+              className="w-full rounded-lg bg-(--negative) px-6 py-3 font-semibold text-white transition-opacity hover:opacity-90">
               Tentar Novamente
             </button>
           </div>

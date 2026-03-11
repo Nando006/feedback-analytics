@@ -7,17 +7,17 @@ export default function InsightsStatisticsSentimentSection({
   negativePct,
 }: InsightsStatisticsSentimentSectionProps) {
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900/60 p-6 glass-card">
+    <div className="relative overflow-hidden rounded-2xl border border-(--quaternary-color)/10 bg-gradient-to-br from-(--bg-secondary) to-(--sixth-color) p-6 glass-card">
       <h2 className="mb-2 text-lg font-semibold text-[var(--text-primary)]">
         Distribuição de sentimentos nos feedbacks
       </h2>
-      <p className="mb-4 text-sm text-[var(--text-muted)]">
+      <p className="mb-4 text-sm text-[var(--text-tertiary)]">
         Visão estatística da percepção geral dos clientes com base nos feedbacks
         analisados pela IA.
       </p>
 
       <div className="space-y-4">
-        <div className="flex h-3 w-full overflow-hidden rounded-full bg-neutral-800">
+        <div className="flex h-3 w-full overflow-hidden rounded-full bg-(--seventh-color)">
           <div style={{ width: `${positivePct}%` }} className="h-full bg-emerald-500/70" />
           <div style={{ width: `${neutralPct}%` }} className="h-full bg-amber-500/70" />
           <div style={{ width: `${negativePct}%` }} className="h-full bg-rose-500/70" />
@@ -25,7 +25,7 @@ export default function InsightsStatisticsSentimentSection({
 
         <div className="grid grid-cols-1 gap-4 text-sm md:grid-cols-3">
           <div className="space-y-1">
-            <div className="text-xs uppercase tracking-wide text-[var(--text-muted)]">
+            <div className="text-xs uppercase tracking-wide text-[var(--text-tertiary)]">
               Positivos
             </div>
             <div className="text-xl font-semibold text-emerald-300">
@@ -33,7 +33,7 @@ export default function InsightsStatisticsSentimentSection({
             </div>
           </div>
           <div className="space-y-1">
-            <div className="text-xs uppercase tracking-wide text-[var(--text-muted)]">
+            <div className="text-xs uppercase tracking-wide text-[var(--text-tertiary)]">
               Neutros
             </div>
             <div className="text-xl font-semibold text-amber-300">
@@ -41,7 +41,7 @@ export default function InsightsStatisticsSentimentSection({
             </div>
           </div>
           <div className="space-y-1">
-            <div className="text-xs uppercase tracking-wide text-[var(--text-muted)]">
+            <div className="text-xs uppercase tracking-wide text-[var(--text-tertiary)]">
               Negativos
             </div>
             <div className="text-xl font-semibold text-rose-300">

@@ -37,11 +37,11 @@ export default function Dashboard() {
     <div className="font-inter space-y-6">
       <CardSimple type="header">
         <div className="flex-1 space-y-2">
-          <p className="text-sm uppercase tracking-wide text-neutral-400">Visão Geral</p>
-          <h1 className="text-3xl font-semibold text-neutral-100 md:text-4xl">
+          <p className="text-sm uppercase tracking-wide text-(--text-tertiary)">Visão Geral</p>
+          <h1 className="text-3xl font-semibold text-(--text-primary) md:text-4xl">
             Olá, {displayName}
           </h1>
-          <p className="text-sm text-neutral-300 md:text-base">
+          <p className="text-sm text-(--text-secondary) md:text-base">
             Acompanhe o desempenho dos seus feedbacks, veja tendências e monitore como os
             clientes estão interagindo com a sua empresa.
           </p>
@@ -55,7 +55,7 @@ export default function Dashboard() {
           </Link>
           <Link
             to="/user/qrcode/enterprise"
-            className="inline-flex items-center gap-2 text-sm text-neutral-300 transition-colors hover:text-neutral-100">
+            className="inline-flex items-center gap-2 text-sm text-(--text-secondary) transition-colors hover:text-(--text-primary)">
             Compartilhar formulário de feedback
             <FaArrowRight className="text-xs" />
           </Link>
@@ -63,7 +63,7 @@ export default function Dashboard() {
       </CardSimple>
 
       {error ? (
-        <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+        <div className="rounded-xl border border-(--negative)/30 bg-(--negative)/10 px-4 py-3 text-sm text-(--text-primary)">
           {error}
         </div>
       ) : null}

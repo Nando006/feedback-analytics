@@ -2,10 +2,10 @@ import { Link } from 'react-router-dom';
 
 export default function Header() {
   return (
-    <nav className="p-5 flex items-center justify-between shadow-md bg-(--header-color) border-b border-(--secondary-color)">
+    <nav className="flex items-center justify-between border-b border-(--bg-tertiary) bg-[var(--bg-secondary)] shadow-md p-5">
       <div>
         <Link to="/">
-          <h1 className="font-montserrat text-2xl text-white font-semibold">
+          <h1 className="font-montserrat text-2xl text-(--text-primary) font-semibold">
             Feedback Analytics
           </h1>
         </Link>
@@ -15,14 +15,14 @@ export default function Header() {
           <li>
             <Link
               to="/register"
-              className="font-poppins text-sm font-medium px-6 py-2 md:px-10 rounded-lg border border-(--primary-color) text-white hover:bg-(--primary-color) transition-colors">
+              className="font-poppins rounded-lg border border-(--primary-color) px-6 py-2 text-sm font-medium text-(--text-primary) transition-colors hover:bg-(--primary-color)/12 md:px-10">
               Registrar
             </Link>
           </li>
           <li>
             <Link
               to="/login"
-              className="font-poppins text-sm font-medium px-6 py-2 md:px-10 rounded-lg bg-(--primary-color) text-white hover:bg-(--primary-color-dark) transition-colors">
+              className="font-poppins rounded-lg bg-(--primary-color) px-6 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90 md:px-10">
               Login
             </Link>
           </li>

@@ -22,7 +22,7 @@ export default function FieldPassword({
     <div className="space-y-1 relative">
       <label
         htmlFor={name}
-        className="flex flex-row pl-2 space-x-2 cursor-pointer">
+        className="flex flex-row pl-2 space-x-2 cursor-pointer text-(--text-secondary) font-work-sans">
         <span>{icon}</span>
         <p className="text-sm">{label}</p>
       </label>
@@ -32,7 +32,7 @@ export default function FieldPassword({
           id={id}
           name={name}
           aria-invalid={error ? true : undefined}
-          className="h-12 w-full pl-5 bg-(--bg-primary) rounded-lg border border-(--bg-tertiary) outline-none hover:border-(--bg-secondary) focus:border-(--primary-color) duration-200"
+            className="h-12 w-full rounded-lg border border-(--quaternary-color)/18 bg-(--seventh-color) pl-5 pr-12 text-(--text-primary) outline-none transition-colors duration-200 placeholder-(--text-tertiary) hover:border-(--quaternary-color)/30 focus:border-(--primary-color)"
           {...register}
           onChange={(e) => {
             register?.onChange?.(e);
@@ -42,7 +42,7 @@ export default function FieldPassword({
         <button
           type="button"
           aria-label={show ? 'Ocultar senha' : 'Mostrar senha'}
-          className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-md text-(--text-primary) hover:text-(--text-tertiary) hover:bg-(--bg-secondary) focus:outline-none focus:ring-2 focus:ring-(--primary-color) cursor-pointer"
+          className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer rounded-md p-2 text-(--text-secondary) hover:bg-(--seventh-color) hover:text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-(--primary-color)"
           onClick={() => setShow((s) => !s)}>
           {show ? (
             <svg
@@ -65,7 +65,7 @@ export default function FieldPassword({
       </div>
       {strength.showBar && (
         <div className="mt-2">
-          <div className="w-full h-2 rounded-full overflow-hidden bg-(--bg-tertiary)">
+          <div className="w-full h-2 rounded-full overflow-hidden bg-(--seventh-color)">
             <div
               className={`h-full transition-[width] duration-200 ease-in-out ${strength.color}`}
               style={{ width: `${strength.percent}%` }}

@@ -130,7 +130,7 @@ export default function FeedbackQRCodeEnterprise() {
   }
 
   return (
-    <div className="min-h-screen bg-(--container-primary) flex items-center justify-center p-4">
+    <div className="min-h-screen bg-(--bg-primary) flex items-center justify-center p-4">
       <Card
         title="Compartilhe sua Experiência"
         text={

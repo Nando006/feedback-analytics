@@ -15,7 +15,7 @@ export default function FieldCustomerName({ name, onNameChange }: FieldCustomerN
         value={name}
         onChange={(e) => onNameChange(e.target.value)}
         placeholder="Seu nome"
-        className="font-work-sans w-full px-4 py-3 border border-(--container-border) rounded-lg bg-(--container-secondary) text-(--text-primary) placeholder-(--text-secondary) focus:outline-none focus:ring-2 focus:ring-(--primary-color) focus:border-transparent transition-all"
+        className="font-work-sans w-full rounded-lg border border-(--bg-tertiary) bg-(--bg-secondary) px-4 py-3 text-(--text-primary) placeholder-(--text-secondary) transition-all focus:border-transparent focus:outline-none focus:ring-2 focus:ring-(--primary-color)"
       />
     </div>
   );

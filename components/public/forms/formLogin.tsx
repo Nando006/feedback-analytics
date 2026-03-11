@@ -74,7 +74,7 @@ export default function FormLogin() {
         />
         <Link
           to="/register"
-          className="text-sm text-(--secondary-color) transition-colors hover:text-(--secondary-color-dark) duration-200 font-work-sans">
+          className="text-sm text-(--secondary-color) transition-opacity duration-200 hover:opacity-80 font-work-sans">
           Esqueceu a senha ?
         </Link>
       </div>
@@ -83,7 +83,7 @@ export default function FormLogin() {
         type="submit"
         disabled={isSubmitting}
         aria-busy={isSubmitting}
-        className="h-12 w-full bg-gradient-to-r from-(--primary-color) to-(--terciary-color-dark) hover:from-(--terciary-color-dark) hover:to-(--primary-color) transition rounded-lg cursor-pointer font-poppins disabled:cursor-not-allowed disabled:opacity-80 flex items-center justify-center gap-2 text-gray-100 font-semibold">
+        className="flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-(--primary-color) to-(--tertiary-color) font-poppins font-semibold text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-80">
         {isSubmitting ? (
           <>
             <FaSpinner className="animate-spin text-(--text-primary)" aria-hidden="true" />

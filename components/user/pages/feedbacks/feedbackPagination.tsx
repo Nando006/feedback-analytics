@@ -5,9 +5,9 @@ export default function FeedbackPagination({
   onPageChange,
 }: FeedbackPaginationProps) {
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900/50 p-6 glass-card">
+    <div className="relative overflow-hidden rounded-2xl border border-(--quaternary-color)/10 bg-gradient-to-br from-(--bg-secondary) to-(--sixth-color) p-6 glass-card">
       <div className="flex justify-between items-center">
-        <div className="text-sm text-[var(--text-muted)]">
+        <div className="text-sm text-[var(--text-tertiary)]">
           Mostrando {(pagination.currentPage - 1) * pagination.itemsPerPage + 1}{' '}
           a{' '}
           {Math.min(
@@ -21,7 +21,7 @@ export default function FeedbackPagination({
           <button
             onClick={() => onPageChange(pagination.currentPage - 1)}
             disabled={!pagination.hasPreviousPage}
-            className="p-2 rounded-xl border border-neutral-800 bg-neutral-900/50 text-[var(--text-primary)] disabled:opacity-50 disabled:cursor-not-allowed hover:bg-neutral-800/50 transition-colors">
+            className="rounded-xl border border-(--quaternary-color)/14 bg-(--seventh-color) p-2 text-(--text-primary) transition-colors hover:border-(--quaternary-color)/20 hover:bg-(--bg-tertiary) disabled:cursor-not-allowed disabled:opacity-50">
             ←
           </button>
 
@@ -38,8 +38,8 @@ export default function FeedbackPagination({
                     onClick={() => onPageChange(page)}
                     className={`px-3 py-2 rounded-xl text-sm font-medium transition-colors ${
                       isActive
-                        ? 'bg-purple-600 text-white'
-                        : 'text-[var(--text-secondary)] hover:bg-neutral-800/50 border border-neutral-800'
+                        ? 'border border-(--primary-color) bg-(--primary-color) text-white'
+                        : 'border border-(--quaternary-color)/14 bg-(--seventh-color) text-(--text-secondary) hover:border-(--quaternary-color)/20 hover:bg-(--bg-tertiary)'
                     }`}>
                     {page}
                   </button>
@@ -51,7 +51,7 @@ export default function FeedbackPagination({
           <button
             onClick={() => onPageChange(pagination.currentPage + 1)}
             disabled={!pagination.hasNextPage}
-            className="p-2 rounded-xl border border-neutral-800 bg-neutral-900/50 text-[var(--text-primary)] disabled:opacity-50 disabled:cursor-not-allowed hover:bg-neutral-800/50 transition-colors">
+            className="rounded-xl border border-(--quaternary-color)/14 bg-(--seventh-color) p-2 text-(--text-primary) transition-colors hover:border-(--quaternary-color)/20 hover:bg-(--bg-tertiary) disabled:cursor-not-allowed disabled:opacity-50">
             →
           </button>
         </div>

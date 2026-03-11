@@ -118,7 +118,7 @@ export default function QRCodeEnterprise() {
   }, [qrActive, qrFetcher]);
 
   return (
-    <div className="font-inter space-y-8">
+    <div className="font-inter space-y-8 pb-8">
       <SectionQrHeader
         enterpriseName={enterprise.full_name}
         qrActive={qrActive}

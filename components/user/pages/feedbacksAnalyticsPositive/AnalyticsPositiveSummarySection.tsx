@@ -4,18 +4,18 @@ export default function AnalyticsPositiveSummarySection({
   summary,
 }: AnalyticsPositiveSummarySectionProps) {
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900/60 p-6 glass-card">
+    <div className="relative overflow-hidden rounded-2xl border border-(--quaternary-color)/10 bg-gradient-to-br from-(--bg-secondary) to-(--sixth-color) p-6 glass-card">
       <h2 className="mb-2 text-lg font-semibold text-[var(--text-primary)]">
         Forças e destaques percebidos pelos clientes
       </h2>
-      <p className="mb-4 text-sm text-[var(--text-muted)]">
+      <p className="mb-4 text-sm text-[var(--text-tertiary)]">
         Feedbacks com sentimento positivo ajudam a entender o que está funcionando
         bem na experiência do cliente.
       </p>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         <div className="space-y-1">
-          <div className="text-xs uppercase tracking-wide text-[var(--text-muted)]">
+          <div className="text-xs uppercase tracking-wide text-[var(--text-tertiary)]">
             Total positivos
           </div>
           <div className="text-2xl font-semibold text-emerald-300">
@@ -24,7 +24,7 @@ export default function AnalyticsPositiveSummarySection({
         </div>
 
         <div className="space-y-2 md:col-span-2">
-          <div className="text-xs uppercase tracking-wide text-[var(--text-muted)]">
+          <div className="text-xs uppercase tracking-wide text-[var(--text-tertiary)]">
             Principais temas elogiados
           </div>
           <div className="flex flex-wrap gap-2 text-xs">
@@ -36,7 +36,7 @@ export default function AnalyticsPositiveSummarySection({
               </span>
             ))}
             {summary.topCategories.length === 0 && (
-              <span className="text-[var(--text-muted)]">
+              <span className="text-[var(--text-tertiary)]">
                 Nenhum tema recorrente identificado ainda.
               </span>
             )}

@@ -13,7 +13,7 @@ export default function AuthSuccess() {
     return () => clearTimeout(id);
   }, [params, navigate]);
   return (
-    <div className="min-h-screen bg-gradient-to-b from-neutral-900 to-neutral-800 flex items-center justify-center p-4 relative">
+    <div className="relative flex min-h-screen items-center justify-center bg-(--bg-primary) p-4">
       <div className="w-full max-w-2xl">
         <Card
           icon={<SVGLock />}
@@ -23,7 +23,7 @@ export default function AuthSuccess() {
             <div className="mt-6">
               <Link
                 to={params.get('next') ?? '/user/dashboard'}
-                className="h-12 w-full rounded-lg font-medium shadow-md bg-gradient-to-r from-purple-600 to-purple-700 border border-purple-300/60 text-neutral-50 transition-all duration-150 hover:brightness-105 active:translate-y-px flex items-center justify-center">
+                className="flex h-12 w-full items-center justify-center rounded-lg border border-(--primary-color)/40 bg-gradient-to-r from-(--primary-color) to-(--tertiary-color) font-medium text-white transition-opacity duration-150 hover:opacity-90 active:translate-y-px">
                 Ir agora
               </Link>
             </div>
@@ -32,9 +32,9 @@ export default function AuthSuccess() {
         />
       </div>
       <div className="absolute inset-0 -z-10 overflow-hidden">
-        <div className="absolute -top-40 -right-32 w-80 h-80 bg-purple-500/10 rounded-full" />
-        <div className="absolute -bottom-40 -left-32 w-80 h-80 bg-blue-500/10 rounded-full" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-purple-500/5 rounded-full" />
+        <div className="absolute -top-40 -right-32 h-80 w-80 rounded-full bg-(--primary-color)/10" />
+        <div className="absolute -bottom-40 -left-32 h-80 w-80 rounded-full bg-(--secondary-color)/10" />
+        <div className="absolute top-1/2 left-1/2 h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full bg-(--tertiary-color)/8" />
       </div>
     </div>
   );

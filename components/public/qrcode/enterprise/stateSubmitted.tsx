@@ -7,7 +7,7 @@ export default function StateSubmitted({
   enterpriseName: string;
 }) {
   return (
-    <div className="min-h-screen bg-(--container-primary) flex items-center justify-center p-4">
+    <div className="min-h-screen bg-(--bg-primary) flex items-center justify-center p-4">
       <Card
         title="Feedback Enviado!"
         text="Obrigado por compartilhar sua experiência conosco"

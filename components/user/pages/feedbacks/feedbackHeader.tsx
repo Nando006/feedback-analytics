@@ -2,14 +2,14 @@ import type { FeedbackHeaderProps } from './ui.types';
 
 export default function FeedbackHeader({ stats }: FeedbackHeaderProps) {
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900/50 p-6 md:p-8 glass-card">
+    <div className="relative overflow-hidden rounded-2xl border border-(--quaternary-color)/10 bg-gradient-to-br from-(--bg-secondary) to-(--sixth-color) p-6 md:p-8 glass-card">
       <div className="flex flex-col gap-6 md:flex-row md:items-center">
         <div className="min-w-0 flex-1">
           <h1 className="text-2xl font-semibold tracking-tight text-[var(--text-primary)] md:text-3xl">
             Feedbacks
           </h1>
           {stats && (
-            <div className="mt-2 text-sm text-[var(--text-muted)]">
+            <div className="mt-2 text-sm text-[var(--text-tertiary)]">
               Total: {stats.totalFeedbacks} feedbacks | Média:{' '}
               {stats.averageRating}/5
             </div>
@@ -19,22 +19,22 @@ export default function FeedbackHeader({ stats }: FeedbackHeaderProps) {
         {stats && (
           <div className="flex gap-4">
             <div className="text-center">
-              <div className="text-2xl font-bold text-green-400">
+              <div className="text-2xl font-bold text-emerald-300">
                 {stats.sentimentBreakdown.positive}
               </div>
-              <div className="text-xs text-[var(--text-muted)]">Positivos</div>
+              <div className="text-xs text-[var(--text-tertiary)]">Positivos</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-yellow-400">
+              <div className="text-2xl font-bold text-amber-300">
                 {stats.sentimentBreakdown.neutral}
               </div>
-              <div className="text-xs text-[var(--text-muted)]">Neutros</div>
+              <div className="text-xs text-[var(--text-tertiary)]">Neutros</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-red-400">
+              <div className="text-2xl font-bold text-rose-300">
                 {stats.sentimentBreakdown.negative}
               </div>
-              <div className="text-xs text-[var(--text-muted)]">Negativos</div>
+              <div className="text-xs text-[var(--text-tertiary)]">Negativos</div>
             </div>
           </div>
         )}
