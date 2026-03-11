@@ -121,12 +121,12 @@
     --text-tertiary: #737373;
 
     --primary-color: #13bac7;
-    --secondary-color: #1395a7;
-    --tertiary-color: #167788;
-    --quaternary-color: #1b616f;
+    --secondary-color: #3ed9e3;
+    --tertiary-color: #6ab6c4;
+    --quaternary-color: #3ed9e3;
     --quinary-color: #167788;
     --sixth-color: #edfefe;
-    --seventh-color: #d2fafb;
+    --seventh-color: #ffffff;
   }
 
   .private-user-theme {
