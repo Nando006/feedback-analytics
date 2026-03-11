@@ -8,7 +8,7 @@ export default function Register() {
       <div className="pointer-events-none absolute inset-0" />
 
       <div className="relative z-10 w-full">
-        <div className="mx-auto w-full max-w-2xl rounded-[1.75rem] border border-(--quaternary-color)/12 bg-linear-to-br from-(--seventh-color) to-(--sixth-color) p-[1px]">
+        <div className="mx-auto w-full max-w-2xl rounded-[1.75rem] border border-(--quaternary-color)/60 dark:border-(--quaternary-color)/12 bg-linear-to-br from-(--seventh-color) to-(--sixth-color) p-[1px]">
           <Card
             icon={<SVGLock />}
             title="Crie sua conta"

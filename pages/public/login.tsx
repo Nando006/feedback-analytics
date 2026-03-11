@@ -8,7 +8,7 @@ export default function Login() {
       <div className="pointer-events-none absolute inset-0" />
 
       <div className="relative z-10 w-full max-w-md">
-        <div className="w-full max-w-md rounded-[1.75rem] border border-(--quaternary-color)/12 bg-linear-to-br from-(--seventh-color) to-(--sixth-color) p-[1px]">
+        <div className="w-full max-w-md rounded-[1.75rem] border border-(--quaternary-color)/60 dark:border-(--quaternary-color)/12 bg-linear-to-br from-(--seventh-color) to-(--sixth-color) p-[1px]">
           <Card
             title="Bem-vindo de volta"
             text="Entre na sua conta para continuar"

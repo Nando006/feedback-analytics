@@ -10,7 +10,7 @@ export default function Card({
   linkLogin,
 }: CardProps) {
   return (
-    <div className="rounded-3xl border border-(--bg-tertiary) bg-(--seventh-color)/14 relative overflow-hidden p-8">
+    <div className="rounded-3xl shadow-md border border-(--quaternary-color)/60  dark:border-(--quaternary-color)/14 bg-linear-to-br from-(--sixth-color) to-(--seventh-color) relative overflow-hidden p-8">
       <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-(--primary-color) via-(--secondary-color) to-(--tertiary-color)" />
       <div className="text-center mb-8 overflow-hidden">
         {icon && (
