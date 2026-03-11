@@ -56,7 +56,7 @@ export default function FormQRCodeFeedback({
       </div>
 
       {showOptionalFields && (
-        <div className="space-y-4 rounded-xl border border-(--bg-tertiary) bg-(--bg-secondary) p-6">
+        <div className="space-y-4 rounded-xl border border-(--bg-tertiary) bg-(--seventh-color) p-6">
           <div className="flex items-center mb-4 gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-(--primary-color) to-(--tertiary-color)">
               <svg
