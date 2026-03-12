@@ -6,12 +6,12 @@ export default function InsightsReportHeaderSection({
   onRefresh,
 }: InsightsReportHeaderSectionProps) {
   return (
-    <div className="mb-4 flex flex-col md:flex-row items-start justify-between gap-4">
+    <div className="font-work-sans mb-4 flex flex-col md:flex-row items-start justify-between gap-4">
       <div>
         <h2 className="mb-1 text-lg font-montserrat font-semibold text-[var(--text-primary)]">
           Relatório de Insights da IA
         </h2>
-        <p className="max-w-2xl font-work-sans text-sm text-[var(--text-tertiary)]">
+        <p className="max-w-2xl text-sm text-[var(--text-tertiary)]">
           Resumo estratégico gerado automaticamente a partir dos feedbacks,
           sentimentos e categorias identificadas pela IA, com foco em
           oportunidades de melhoria e pontos fortes da experiência do cliente.
@@ -19,7 +19,7 @@ export default function InsightsReportHeaderSection({
       </div>
       <div className="flex flex-col items-end gap-2">
         {updatedLabel && (
-          <span className="font-work-sans text-[10px] uppercase tracking-wide text-[var(--text-tertiary)]">
+          <span className="text-[10px] uppercase tracking-wide text-[var(--text-tertiary)]">
             Última atualização: {updatedLabel}
           </span>
         )}

@@ -13,8 +13,8 @@ export default function Information({
 }: InformationProps) {
   return (
     <CardSimple>
-      <div className="w-full">
-        <h2 className="mb-4 text-lg font-semibold text-(--text-primary)">Informações básicas</h2>
+      <div className="font-work-sans w-full">
+        <h2 className="mb-4 font-montserrat text-lg font-semibold text-(--text-primary)">Informações básicas</h2>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 w-full">
           <FormNameUser defaultFullName={defaultFullName} />
 

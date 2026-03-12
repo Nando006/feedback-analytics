@@ -7,11 +7,11 @@ export default function InsightsStatisticsSentimentSection({
   negativePct,
 }: InsightsStatisticsSentimentSectionProps) {
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-(--quaternary-color)/10 bg-gradient-to-br from-(--bg-secondary) to-(--sixth-color) p-6 glass-card">
+    <div className="font-work-sans relative overflow-hidden rounded-2xl border border-(--quaternary-color)/10 bg-gradient-to-br from-(--bg-secondary) to-(--sixth-color) p-6 glass-card">
       <h2 className="mb-2 text-lg font-semibold text-[var(--text-primary)] font-montserrat">
         Distribuição de sentimentos nos feedbacks
       </h2>
-      <p className="mb-4 font-work-sans text-sm text-[var(--text-tertiary)]">
+      <p className="mb-4 text-sm text-[var(--text-tertiary)]">
         Visão estatística da percepção geral dos clientes com base nos feedbacks
         analisados pela IA.
       </p>
@@ -25,7 +25,7 @@ export default function InsightsStatisticsSentimentSection({
 
         <div className="grid grid-cols-1 gap-4 text-sm md:grid-cols-3">
           <div className="space-y-1">
-            <div className="text-xs uppercase tracking-wide text-[var(--text-tertiary)] font-work-sans">
+            <div className="text-xs uppercase tracking-wide text-[var(--text-tertiary)]">
               Positivos
             </div>
             <div className="text-xl font-semibold text-(--positive)">
@@ -33,18 +33,18 @@ export default function InsightsStatisticsSentimentSection({
             </div>
           </div>
           <div className="space-y-1">
-            <div className="text-xs uppercase tracking-wide text-[var(--text-tertiary)] font-work-sans">
+            <div className="text-xs uppercase tracking-wide text-[var(--text-tertiary)]">
               Neutros
             </div>
-            <div className="text-xl font-semibold text-(--neutral) font-work-sans">
+            <div className="text-xl font-semibold text-(--neutral)">
               {summary.sentiments.neutral} ({neutralPct}%)
             </div>
           </div>
           <div className="space-y-1">
-            <div className="text-xs uppercase tracking-wide text-[var(--text-tertiary)] font-work-sans">
+            <div className="text-xs uppercase tracking-wide text-[var(--text-tertiary)]">
               Negativos
             </div>
-            <div className="text-xl font-semibold text-(--negative) font-work-sans">
+            <div className="text-xl font-semibold text-(--negative)">
               {summary.sentiments.negative} ({negativePct}%)
             </div>
           </div>

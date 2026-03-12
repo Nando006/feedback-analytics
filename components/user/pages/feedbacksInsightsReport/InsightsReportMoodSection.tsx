@@ -29,9 +29,9 @@ export default function InsightsReportMoodSection({
 
   return (
     <div
-      className={`flex flex-col gap-4 rounded-2xl border p-4 md:flex-row md:items-center md:justify-between ${tone.border} ${tone.bg}`}>
+      className={`font-work-sans flex flex-col gap-4 rounded-2xl border p-4 md:flex-row md:items-center md:justify-between ${tone.border} ${tone.bg}`}>
       <div className="space-y-1">
-        <div className={`text-xs font-work-sans uppercase tracking-wide ${tone.text}`}>
+        <div className={`text-xs uppercase tracking-wide ${tone.text}`}>
           Clima emocional geral
         </div>
         <div className={`text-xl font-semibold ${tone.text}`}>{mood.label}</div>
@@ -39,12 +39,12 @@ export default function InsightsReportMoodSection({
       </div>
       {summary && summary.totalAnalyzed > 0 && (
         <div className="w-full space-y-2 md:w-1/2">
-          <div className="font-work-sans flex h-2 w-full overflow-hidden rounded-full bg-(--seventh-color)">
+          <div className="flex h-2 w-full overflow-hidden rounded-full bg-(--seventh-color)">
             <div style={{ width: `${positivePct}%` }} className="h-full bg-(--positive)/70" />
             <div style={{ width: `${neutralPct}%` }} className="h-full bg-(--neutral)/70" />
             <div style={{ width: `${negativePct}%` }} className="h-full bg-(--negative)/70" />
           </div>
-          <div className="flex font-work-sans justify-between text-[10px] text-(--text-tertiary)">
+          <div className="flex justify-between text-[10px] text-(--text-tertiary)">
             <span>Positivos: {positivePct}%</span>
             <span>Neutros: {neutralPct}%</span>
             <span>Negativos: {negativePct}%</span>

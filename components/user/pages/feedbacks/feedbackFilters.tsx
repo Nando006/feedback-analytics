@@ -9,7 +9,7 @@ export default function FeedbackFilters({
   onLimitChange,
 }: FeedbackFiltersProps) {
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-(--quaternary-color)/10 bg-gradient-to-br from-(--bg-secondary) to-(--sixth-color) p-6 glass-card">
+    <div className="font-work-sans relative overflow-hidden rounded-2xl border border-(--quaternary-color)/10 bg-gradient-to-br from-(--bg-secondary) to-(--sixth-color) p-6 glass-card">
       <div className="flex flex-col gap-4 md:flex-row md:items-center">
         {/* Busca */}
         <div className="flex-1">
@@ -19,7 +19,7 @@ export default function FeedbackFilters({
               placeholder="🔍 Buscar por mensagem..."
               value={filters.search}
               onChange={onSearchChange}
-              className="w-full rounded-xl border border-(--quaternary-color)/14 bg-(--seventh-color) px-4 py-3 font-work-sans text-(--text-primary) outline-none placeholder:text-(--text-tertiary) focus:border-(--primary-color) focus:ring-2 focus:ring-(--primary-color)/20"
+              className="w-full rounded-xl border border-(--quaternary-color)/14 bg-(--seventh-color) px-4 py-3 text-(--text-primary) outline-none placeholder:text-(--text-tertiary) focus:border-(--primary-color) focus:ring-2 focus:ring-(--primary-color)/20"
             />
           </div>
         </div>
@@ -51,10 +51,10 @@ export default function FeedbackFilters({
               onCategoryFilter(
                 e.target.value
                   ? (e.target.value as
-                      | 'COMPANY'
-                      | 'PRODUCT'
-                      | 'SERVICE'
-                      | 'DEPARTMENT')
+                    | 'COMPANY'
+                    | 'PRODUCT'
+                    | 'SERVICE'
+                    | 'DEPARTMENT')
                   : undefined,
               )
             }
@@ -75,14 +75,14 @@ export default function FeedbackFilters({
               placeholder="Filtrar por item (ex: Bola de couro)"
               value={filters.item || ''}
               onChange={onItemChange}
-              className="w-full rounded-xl border border-(--quaternary-color)/14 bg-(--seventh-color) px-4 py-3 font-work-sans text-(--text-primary) outline-none placeholder:text-(--text-tertiary) focus:border-(--primary-color) focus:ring-2 focus:ring-(--primary-color)/20"
+              className="w-full rounded-xl border border-(--quaternary-color)/14 bg-(--seventh-color) px-4 py-3 text-(--text-primary) outline-none placeholder:text-(--text-tertiary) focus:border-(--primary-color) focus:ring-2 focus:ring-(--primary-color)/20"
             />
           </div>
         </div>
 
         {/* Itens por página */}
         <div className="flex items-center gap-2">
-          <span className="font-work-sans text-sm text-[var(--text-tertiary)]">Por página:</span>
+          <span className="text-sm text-[var(--text-tertiary)]">Por página:</span>
           <select
             value={filters.limit}
             onChange={(e) => onLimitChange(parseInt(e.target.value))}

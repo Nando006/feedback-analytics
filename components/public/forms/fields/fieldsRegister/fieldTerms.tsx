@@ -13,7 +13,7 @@ export default function FieldTermsRegister({
         id={id}
         name={name}
         type="checkbox"
-          className="h-4 w-4 cursor-pointer rounded border border-(--quaternary-color)/18 bg-(--seventh-color) text-(--primary-color) transition-colors hover:border-(--quaternary-color)/30 focus:ring-(--primary-color)"
+        className="h-4 w-4 cursor-pointer rounded border border-(--quaternary-color)/18 bg-(--seventh-color) text-(--primary-color) transition-colors hover:border-(--quaternary-color)/30 focus:ring-(--primary-color)"
         {...register}
       />
       <label

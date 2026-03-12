@@ -6,17 +6,17 @@ export default function InsightsEmotionalClustersSection({
   clusters,
 }: InsightsEmotionalClustersSectionProps) {
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-(--quaternary-color)/10 bg-gradient-to-br from-(--bg-secondary) to-(--sixth-color) p-6 glass-card space-y-6">
+    <div className="font-work-sans relative overflow-hidden rounded-2xl border border-(--quaternary-color)/10 bg-gradient-to-br from-(--bg-secondary) to-(--sixth-color) p-6 glass-card space-y-6">
       <h3 className="text-base font-montserrat font-semibold text-[var(--text-primary)]">
         Momentos emocionais que mais se repetem
       </h3>
-      <p className="mb-2 max-w-2xl text-sm font-work-sans text-[var(--text-tertiary)]">
+      <p className="mb-2 max-w-2xl text-sm text-[var(--text-tertiary)]">
         Explore exemplos reais de feedbacks que representam emoções mais fortes
         dos seus clientes — tanto positivas quanto negativas.
       </p>
 
       {clusters.length === 0 ? (
-        <div className="text-sm font-work-sans text-[var(--text-tertiary)]">
+        <div className="text-sm text-[var(--text-tertiary)]">
           Ainda não há clusters emocionais suficientes para exibir.
         </div>
       ) : (
@@ -29,7 +29,7 @@ export default function InsightsEmotionalClustersSection({
                 <h4 className="font-montserrat mb-1 text-sm font-semibold text-[var(--text-primary)]">
                   {cluster.title}
                 </h4>
-                <p className="font-work-sans text-xs text-[var(--text-tertiary)]">{cluster.description}</p>
+                <p className="text-xs text-[var(--text-tertiary)]">{cluster.description}</p>
               </div>
 
               <div className="max-h-64 space-y-2 overflow-y-auto pr-1">
@@ -38,18 +38,18 @@ export default function InsightsEmotionalClustersSection({
                     key={item.id}
                     className="space-y-1 rounded-lg border border-(--quaternary-color)/10 bg-(--bg-tertiary) p-3">
                     <div className="flex items-center justify-between text-[10px] text-[var(--text-tertiary)]">
-                      <span className="font-work-sans">
+                      <span>
                         {new Date(item.created_at).toLocaleDateString('pt-BR', {
                           day: '2-digit',
                           month: '2-digit',
                           year: '2-digit',
                         })}
                       </span>
-                      <span className="font-work-sans">
+                      <span>
                         Rating: {item.rating ?? '—'} · {sentimentLabel(item.sentiment)}
                       </span>
                     </div>
-                    <p className="font-work-sans whitespace-pre-wrap text-xs text-[var(--text-primary)]">
+                    <p className="whitespace-pre-wrap text-xs text-[var(--text-primary)]">
                       {item.message}
                     </p>
                   </div>

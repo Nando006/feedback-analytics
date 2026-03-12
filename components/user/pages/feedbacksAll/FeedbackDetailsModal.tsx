@@ -48,22 +48,22 @@ export default function FeedbackDetailsModal({
           </button>
         </div>
 
-        <div className="space-y-6 text-sm">
+        <div className="font-work-sans space-y-6 text-sm">
           <div className="space-y-2">
             <div className="flex flex-wrap items-center gap-4">
               <span className="rounded-full border border-(--quaternary-color)/14 bg-(--seventh-color) px-3 py-1 font-poppins text-xs font-medium text-(--text-secondary)">
                 Rating: {selectedFeedback.rating}
               </span>
-              <span className="font-work-sans text-(--text-tertiary)">
+              <span className="text-(--text-tertiary)">
                 Criado: {formatDateTime(selectedFeedback.created_at)}
               </span>
               {selectedFeedback.updated_at && (
-                <span className="font-work-sans text-(--text-tertiary)">
+                <span className="text-(--text-tertiary)">
                   Atualizado: {formatDateTime(selectedFeedback.updated_at)}
                 </span>
               )}
             </div>
-            <p className="whitespace-pre-wrap leading-relaxed font-work-sans text-(--text-primary)">
+            <p className="whitespace-pre-wrap leading-relaxed text-(--text-primary)">
               {selectedFeedback.message}
             </p>
           </div>
@@ -73,23 +73,23 @@ export default function FeedbackDetailsModal({
             {selectedFeedback.collection_points ? (
               <div className="grid grid-cols-1 gap-2 text-(--text-tertiary) md:grid-cols-3">
                 <div>
-                  <span className="font-work-sans text-(--text-secondary)">Canal:</span>{' '}
+                  <span className="text-(--text-secondary)">Canal:</span>{' '}
                   {channelDisplayName}
                 </div>
                 <div>
-                  <span className="font-work-sans text-(--text-secondary)">Tipo:</span>{' '}
+                  <span className="text-(--text-secondary)">Tipo:</span>{' '}
                   {selectedFeedback.collection_points.type}
                 </div>
                 <div>
-                  <span className="font-work-sans text-(--text-secondary)">Identificador:</span>{' '}
+                  <span className="text-(--text-secondary)">Identificador:</span>{' '}
                   {selectedFeedback.collection_points.identifier || '—'}
                 </div>
                 <div>
-                  <span className="font-work-sans text-(--text-secondary)">Categoria:</span>{' '}
+                  <span className="text-(--text-secondary)">Categoria:</span>{' '}
                   {itemKindLabel}
                 </div>
                 <div className="md:col-span-2">
-                  <span className="font-work-sans text-(--text-secondary)">Item:</span>{' '}
+                  <span className="text-(--text-secondary)">Item:</span>{' '}
                   {itemName || '—'}
                 </div>
               </div>
@@ -105,23 +105,23 @@ export default function FeedbackDetailsModal({
             {selectedFeedback.tracked_devices ? (
               <div className="grid grid-cols-1 gap-2 text-(--text-tertiary) md:grid-cols-2">
                 <div>
-                  <span className="font-work-sans text-(--text-secondary)">Fingerprint:</span>{' '}
+                  <span className="text-(--text-secondary)">Fingerprint:</span>{' '}
                   {selectedFeedback.tracked_devices.device_fingerprint || '—'}
                 </div>
                 <div>
-                  <span className="font-work-sans text-(--text-secondary)">Feedbacks:</span>{' '}
+                  <span className="text-(--text-secondary)">Feedbacks:</span>{' '}
                   {selectedFeedback.tracked_devices.feedback_count ?? 0}
                 </div>
                 <div>
-                  <span className="font-work-sans text-(--text-secondary)">IP:</span>{' '}
+                  <span className="text-(--text-secondary)">IP:</span>{' '}
                   {selectedFeedback.tracked_devices.ip_address || '—'}
                 </div>
                 <div>
-                  <span className="font-work-sans text-(--text-secondary)">Blocked:</span>{' '}
+                  <span className="text-(--text-secondary)">Blocked:</span>{' '}
                   {selectedFeedback.tracked_devices.is_blocked ? 'Sim' : 'Não'}
                 </div>
                 <div className="md:col-span-2">
-                  <span className="font-work-sans text-(--text-secondary)">User Agent:</span>{' '}
+                  <span className="text-(--text-secondary)">User Agent:</span>{' '}
                   {selectedFeedback.tracked_devices.user_agent || '—'}
                 </div>
               </div>
@@ -137,20 +137,20 @@ export default function FeedbackDetailsModal({
             {selectedFeedback.tracked_devices?.customer ? (
               <div className="grid grid-cols-1 gap-2 text-(--text-tertiary) md:grid-cols-2">
                 <div>
-                  <span className="font-work-sans text-(--text-secondary)">Nome:</span>{' '}
+                  <span className="text-(--text-secondary)">Nome:</span>{' '}
                   {selectedFeedback.tracked_devices.customer.name || '—'}
                 </div>
                 <div>
-                  <span className="font-work-sans text-(--text-secondary)">Email:</span>{' '}
+                  <span className="text-(--text-secondary)">Email:</span>{' '}
                   {selectedFeedback.tracked_devices.customer.email || '—'}
                 </div>
                 <div>
-                  <span className="font-work-sans text-(--text-secondary)">Gênero:</span>{' '}
+                  <span className="text-(--text-secondary)">Gênero:</span>{' '}
                   {selectedFeedback.tracked_devices.customer.gender || '—'}
                 </div>
               </div>
             ) : (
-              <div className="font-work-sans text-sm text-(--text-tertiary)">
+              <div className="text-sm text-(--text-tertiary)">
                 Nenhuma informação de cliente foi cadastrada.
               </div>
             )}

@@ -9,10 +9,10 @@ export default function InsightsReportEmptyState({
       <div className="relative overflow-hidden rounded-2xl border border-(--quaternary-color)/10 bg-gradient-to-br from-(--bg-secondary) to-(--sixth-color) p-6 glass-card">
         <div className="mb-4 flex items-center justify-between">
           <div>
-            <h2 className="font-work-sans text-lg font-semibold text-[var(--text-primary)]">
+            <h2 className="text-lg font-semibold text-[var(--text-primary)] font-montserrat">
               Relatório de Insights da IA
             </h2>
-            <p className="font-work-sans text-sm text-[var(--text-tertiary)]">
+            <p className="text-sm text-[var(--text-tertiary)]">
               Gere um relatório inteligente a partir dos feedbacks já analisados
               pela IA.
             </p>
@@ -26,7 +26,7 @@ export default function InsightsReportEmptyState({
           </button>
         </div>
 
-        <div className="mt-2 font-work-sans text-sm text-(--text-tertiary)">
+        <div className="mt-2 text-sm text-(--text-tertiary)">
           Ainda não há um relatório gerado. Clique em{' '}
           <span className="font-medium text-(--text-secondary)">
             &quot;Gerar relatório com IA&quot;

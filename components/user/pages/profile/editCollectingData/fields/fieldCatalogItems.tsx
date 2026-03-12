@@ -43,7 +43,7 @@ const CatalogItemRow = memo(function CatalogItemRow({
 
   return (
     <div
-      className="rounded-lg border border-(--quaternary-color)/10 bg-(--seventh-color) p-3"
+      className="font-work-sans rounded-lg border border-(--quaternary-color)/10 bg-(--seventh-color) p-3"
     >
       <div className="mb-3 flex items-center justify-between gap-3">
         <span className="text-xs text-(--text-tertiary)">Item {index + 1}</span>
@@ -194,7 +194,7 @@ const FieldCatalogItems = memo(function FieldCatalogItems({
   }, [items.length]);
 
   return (
-    <div className="rounded-xl border border-(--quaternary-color)/10 bg-linear-to-br from-(--bg-secondary) to-(--sixth-color) p-5">
+    <div className="font-work-sans rounded-xl border border-(--quaternary-color)/10 bg-linear-to-br from-(--bg-secondary) to-(--sixth-color) p-5">
       <div className="mb-4 flex items-center justify-between gap-3">
         <div>
           <h3 className="text-sm font-semibold text-(--text-primary)">{title}</h3>

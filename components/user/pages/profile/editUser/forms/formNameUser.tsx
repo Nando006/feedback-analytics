@@ -36,7 +36,7 @@ export default function FormNameUser({
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="grid grid-cols-1 gap-4"
+      className="font-work-sans grid grid-cols-1 gap-4"
       noValidate>
       <div>
         <label className="mb-1 block text-sm text-(--text-secondary)">

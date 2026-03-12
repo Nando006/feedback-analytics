@@ -18,13 +18,13 @@ export default function SectionEvaluationDistribution({ stats }: EvaluationDistr
   }, [stats]);
 
   return (
-    <section className="rounded-2xl border border-(--quaternary-color)/10 bg-linear-to-br from-(--bg-secondary) to-(--sixth-color) p-6">
+    <section className="font-work-sans rounded-2xl border border-(--quaternary-color)/10 bg-linear-to-br from-(--bg-secondary) to-(--sixth-color) p-6">
       <header className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
         <div>
           <h2 className="font-montserrat text-lg font-semibold text-(--text-primary)">
             Distribuição das avaliações
           </h2>
-          <p className="font-work-sans text-sm text-(--text-tertiary)">
+          <p className="text-sm text-(--text-tertiary)">
             Percentual de feedbacks por nota nos últimos registros
           </p>
         </div>
@@ -33,13 +33,13 @@ export default function SectionEvaluationDistribution({ stats }: EvaluationDistr
 
       <div className="mt-6 space-y-4">
         {distribution.length === 0 ? (
-          <div className="font-work-sans rounded-xl border border-(--quaternary-color)/10 bg-(--seventh-color) p-6 text-center text-sm text-(--text-tertiary)">
+          <div className="rounded-xl border border-(--quaternary-color)/10 bg-(--seventh-color) p-6 text-center text-sm text-(--text-tertiary)">
             Ainda não há avaliações suficientes para compor a distribuição.
           </div>
         ) : (
           distribution.map(({ rating, count, percent }) => (
             <div key={rating} className="flex items-center gap-3">
-              <div className="font-work-sans flex w-12 items-center gap-1 text-sm text-(--text-secondary)">
+              <div className="flex w-12 items-center gap-1 text-sm text-(--text-secondary)">
                 <FaStar className="text-yellow-400" size={12} />
                 <span>{rating}</span>
               </div>
@@ -49,7 +49,7 @@ export default function SectionEvaluationDistribution({ stats }: EvaluationDistr
                   style={{ width: `${percent}%` }}
                 />
               </div>
-              <div className="font-work-sans w-16 text-right text-xs text-(--text-tertiary)">
+              <div className="w-16 text-right text-xs text-(--text-tertiary)">
                 {percent}% · {count}
               </div>
             </div>

@@ -9,7 +9,7 @@ export default function StateError({ error }: { error: string }) {
         text="Não foi possível carregar o formulário"
         icon={<SVGImageProfile />}
         children={
-          <div className="text-center">
+          <div className="font-work-sans text-center">
             <div className="w-16 h-16 bg-(--negative)/20 rounded-full flex items-center justify-center mx-auto mb-4">
               <svg
                 className="w-8 h-8 text-(--negative)"
@@ -27,7 +27,7 @@ export default function StateError({ error }: { error: string }) {
             <p className="text-(--negative) mb-6">{error}</p>
             <button
               onClick={() => window.location.reload()}
-              className="w-full rounded-lg bg-(--negative) px-6 py-3 font-semibold text-white transition-opacity hover:opacity-90">
+              className="font-poppins w-full rounded-lg bg-(--negative) px-6 py-3 font-semibold text-white transition-opacity hover:opacity-90">
               Tentar Novamente
             </button>
           </div>
