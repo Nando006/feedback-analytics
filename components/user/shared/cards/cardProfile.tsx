@@ -23,7 +23,7 @@ export default function CardProfile({
       to="/user/profile"
       title="Ver perfil"
       aria-label="Ver perfil"
-      className="h-[240px] w-full border-t border-(--quaternary-color)/8 bg-linear-to-b from-(--bg-secondary) to-(--sixth-color) p-2.5 shadow-inner shadow-black/20 transition-colors duration-200 hover:bg-(--bg-secondary)">
+      className="h-[240px] w-full border-t border-(--quaternary-color)/8 bg-linear-to-b from-(--bg-secondary) to-(--sixth-color) p-2.5 dark:shadow-inner dark:shadow-black/20 transition-colors duration-200 hover:bg-(--bg-secondary)">
       <div className="flex flex-col items-center h-full justify-between">
         <div className="flex flex-col items-center">
           <div className="profileimage">

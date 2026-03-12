@@ -28,7 +28,7 @@ export default function FeedbacksInsightsStatistics() {
   );
 
   return (
-    <div className="font-inter space-y-6">
+    <div className="font-work-sans space-y-6">
       <InsightsStatisticsSentimentSection
         summary={summary}
         positivePct={positivePct}

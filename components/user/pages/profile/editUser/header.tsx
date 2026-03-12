@@ -6,7 +6,7 @@ export default function Header() {
     <CardSimple type="header">
       <div className="flex w-full flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-(--text-primary) md:text-3xl">
+          <h1 className="font-montserrat text-2xl font-semibold tracking-tight text-(--text-primary) md:text-3xl">
             Editar perfil
           </h1>
           <p className="mt-1 text-sm text-[var(--text-tertiary)]">
@@ -17,12 +17,12 @@ export default function Header() {
         <div className="flex flex-wrap gap-3">
           <Link
             to="/user/profile"
-            className="btn-ghost">
+            className="btn-ghost font-poppins">
             Perfil
           </Link>
           <Link
             to="/user/edit/collecting-data-enterprise"
-            className="btn-primary"
+            className="btn-primary font-poppins"
           >
             Informações da Empresa
           </Link>

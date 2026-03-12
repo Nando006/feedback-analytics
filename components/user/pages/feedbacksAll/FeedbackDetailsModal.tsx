@@ -40,10 +40,10 @@ export default function FeedbackDetailsModal({
         className="relative max-h-[85vh] w-full max-w-3xl overflow-y-auto rounded-2xl border border-(--quaternary-color)/10 bg-gradient-to-br from-(--bg-secondary) to-(--sixth-color) p-6 glass-card"
         onClick={(e) => e.stopPropagation()}>
         <div className="mb-4 flex items-start justify-between">
-          <h2 className="text-lg font-semibold text-(--text-primary)">Detalhes do Feedback</h2>
+          <h2 className="font-montserrat text-lg font-semibold text-(--text-primary)">Detalhes do Feedback</h2>
           <button
             onClick={onClose}
-            className="btn-ghost px-3 py-1 text-sm">
+            className="btn-ghost font-poppins px-3 py-1 text-sm">
             Fechar
           </button>
         </div>
@@ -51,45 +51,45 @@ export default function FeedbackDetailsModal({
         <div className="space-y-6 text-sm">
           <div className="space-y-2">
             <div className="flex flex-wrap items-center gap-4">
-              <span className="rounded-full border border-(--quaternary-color)/14 bg-(--seventh-color) px-3 py-1 text-xs font-medium text-(--text-secondary)">
+              <span className="rounded-full border border-(--quaternary-color)/14 bg-(--seventh-color) px-3 py-1 font-poppins text-xs font-medium text-(--text-secondary)">
                 Rating: {selectedFeedback.rating}
               </span>
-              <span className="text-(--text-tertiary)">
+              <span className="font-work-sans text-(--text-tertiary)">
                 Criado: {formatDateTime(selectedFeedback.created_at)}
               </span>
               {selectedFeedback.updated_at && (
-                <span className="text-(--text-tertiary)">
+                <span className="font-work-sans text-(--text-tertiary)">
                   Atualizado: {formatDateTime(selectedFeedback.updated_at)}
                 </span>
               )}
             </div>
-            <p className="whitespace-pre-wrap leading-relaxed text-(--text-primary)">
+            <p className="whitespace-pre-wrap leading-relaxed font-work-sans text-(--text-primary)">
               {selectedFeedback.message}
             </p>
           </div>
 
           <div className="space-y-2 rounded-xl border border-(--quaternary-color)/10 bg-(--seventh-color) p-4">
-            <h3 className="text-sm font-medium text-(--text-secondary)">Ponto de Coleta</h3>
+            <h3 className="text-sm font-montserrat font-medium text-(--text-secondary)">Ponto de Coleta</h3>
             {selectedFeedback.collection_points ? (
               <div className="grid grid-cols-1 gap-2 text-(--text-tertiary) md:grid-cols-3">
                 <div>
-                  <span className="text-(--text-secondary)">Canal:</span>{' '}
+                  <span className="font-work-sans text-(--text-secondary)">Canal:</span>{' '}
                   {channelDisplayName}
                 </div>
                 <div>
-                  <span className="text-(--text-secondary)">Tipo:</span>{' '}
+                  <span className="font-work-sans text-(--text-secondary)">Tipo:</span>{' '}
                   {selectedFeedback.collection_points.type}
                 </div>
                 <div>
-                  <span className="text-(--text-secondary)">Identificador:</span>{' '}
+                  <span className="font-work-sans text-(--text-secondary)">Identificador:</span>{' '}
                   {selectedFeedback.collection_points.identifier || '—'}
                 </div>
                 <div>
-                  <span className="text-(--text-secondary)">Categoria:</span>{' '}
+                  <span className="font-work-sans text-(--text-secondary)">Categoria:</span>{' '}
                   {itemKindLabel}
                 </div>
                 <div className="md:col-span-2">
-                  <span className="text-(--text-secondary)">Item:</span>{' '}
+                  <span className="font-work-sans text-(--text-secondary)">Item:</span>{' '}
                   {itemName || '—'}
                 </div>
               </div>
@@ -101,27 +101,27 @@ export default function FeedbackDetailsModal({
           </div>
 
           <div className="space-y-2 rounded-xl border border-(--quaternary-color)/10 bg-(--seventh-color) p-4">
-            <h3 className="text-sm font-medium text-(--text-secondary)">Dispositivo</h3>
+            <h3 className="text-sm font-montserrat font-medium text-(--text-secondary)">Dispositivo</h3>
             {selectedFeedback.tracked_devices ? (
               <div className="grid grid-cols-1 gap-2 text-(--text-tertiary) md:grid-cols-2">
                 <div>
-                  <span className="text-(--text-secondary)">Fingerprint:</span>{' '}
+                  <span className="font-work-sans text-(--text-secondary)">Fingerprint:</span>{' '}
                   {selectedFeedback.tracked_devices.device_fingerprint || '—'}
                 </div>
                 <div>
-                  <span className="text-(--text-secondary)">Feedbacks:</span>{' '}
+                  <span className="font-work-sans text-(--text-secondary)">Feedbacks:</span>{' '}
                   {selectedFeedback.tracked_devices.feedback_count ?? 0}
                 </div>
                 <div>
-                  <span className="text-(--text-secondary)">IP:</span>{' '}
+                  <span className="font-work-sans text-(--text-secondary)">IP:</span>{' '}
                   {selectedFeedback.tracked_devices.ip_address || '—'}
                 </div>
                 <div>
-                  <span className="text-(--text-secondary)">Blocked:</span>{' '}
+                  <span className="font-work-sans text-(--text-secondary)">Blocked:</span>{' '}
                   {selectedFeedback.tracked_devices.is_blocked ? 'Sim' : 'Não'}
                 </div>
                 <div className="md:col-span-2">
-                  <span className="text-(--text-secondary)">User Agent:</span>{' '}
+                  <span className="font-work-sans text-(--text-secondary)">User Agent:</span>{' '}
                   {selectedFeedback.tracked_devices.user_agent || '—'}
                 </div>
               </div>
@@ -133,24 +133,24 @@ export default function FeedbackDetailsModal({
           </div>
 
           <div className="space-y-2 rounded-xl border border-(--quaternary-color)/10 bg-(--seventh-color) p-4">
-            <h3 className="text-sm font-medium text-(--text-secondary)">Cliente</h3>
+            <h3 className="text-sm font-montserrat font-medium text-(--text-secondary)">Cliente</h3>
             {selectedFeedback.tracked_devices?.customer ? (
               <div className="grid grid-cols-1 gap-2 text-(--text-tertiary) md:grid-cols-2">
                 <div>
-                  <span className="text-(--text-secondary)">Nome:</span>{' '}
+                  <span className="font-work-sans text-(--text-secondary)">Nome:</span>{' '}
                   {selectedFeedback.tracked_devices.customer.name || '—'}
                 </div>
                 <div>
-                  <span className="text-(--text-secondary)">Email:</span>{' '}
+                  <span className="font-work-sans text-(--text-secondary)">Email:</span>{' '}
                   {selectedFeedback.tracked_devices.customer.email || '—'}
                 </div>
                 <div>
-                  <span className="text-(--text-secondary)">Gênero:</span>{' '}
+                  <span className="font-work-sans text-(--text-secondary)">Gênero:</span>{' '}
                   {selectedFeedback.tracked_devices.customer.gender || '—'}
                 </div>
               </div>
             ) : (
-              <div className="text-sm text-(--text-tertiary)">
+              <div className="font-work-sans text-sm text-(--text-tertiary)">
                 Nenhuma informação de cliente foi cadastrada.
               </div>
             )}

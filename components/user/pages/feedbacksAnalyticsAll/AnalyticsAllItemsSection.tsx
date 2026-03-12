@@ -19,7 +19,7 @@ export default function AnalyticsAllItemsSection({
 }: AnalyticsAllItemsSectionProps) {
   return (
     <div className="relative overflow-hidden rounded-2xl border border-(--quaternary-color)/10 bg-gradient-to-br from-(--bg-secondary) to-(--sixth-color) p-6 glass-card">
-      <h3 className="mb-4 text-base font-semibold text-[var(--text-primary)]">
+      <h3 className="mb-4 text-base font-montserrat font-semibold text-[var(--text-primary)]">
         Lista de feedbacks analisados
       </h3>
       <div className="max-h-[480px] space-y-4 overflow-y-auto pr-1">
@@ -28,15 +28,15 @@ export default function AnalyticsAllItemsSection({
             key={item.id}
             className="space-y-2 rounded-xl border border-(--quaternary-color)/10 bg-(--seventh-color) p-4">
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <span className="text-xs text-[var(--text-tertiary)]">
+              <span className="font-work-sans text-xs text-[var(--text-tertiary)]">
                 {new Date(item.created_at).toLocaleString('pt-BR')}
               </span>
               <div className="flex flex-wrap items-center gap-2">
-                <span className="rounded-full border border-(--quaternary-color)/14 px-2 py-0.5 text-[10px] font-medium text-(--text-secondary)">
+                <span className="font-work-sans rounded-full border border-(--quaternary-color)/14 px-2 py-0.5 text-[10px] font-medium text-(--text-secondary)">
                   Rating: {item.rating ?? '—'}
                 </span>
                 <span
-                  className={`rounded-full border px-2 py-0.5 text-[10px] font-medium ${sentimentClass(item.sentiment)}`}>
+                  className={`font-work-sans rounded-full border px-2 py-0.5 text-[10px] font-medium ${sentimentClass(item.sentiment)}`}>
                   {sentimentLabel(item.sentiment)}
                 </span>
               </div>
@@ -50,13 +50,13 @@ export default function AnalyticsAllItemsSection({
               <div className="mt-2 flex flex-wrap gap-3 text-[10px]">
                 {item.categories.length > 0 && (
                   <div className="flex flex-wrap items-center gap-1">
-                    <span className="uppercase tracking-wide text-[var(--text-tertiary)]">
+                    <span className="font-work-sans uppercase tracking-wide text-[var(--text-tertiary)]">
                       Categorias:
                     </span>
                     {item.categories.map((cat) => (
                       <span
                         key={cat}
-                        className="rounded-full border border-(--quaternary-color)/14 bg-(--bg-tertiary) px-2 py-0.5 text-(--text-secondary)">
+                        className="font-work-sans rounded-full border border-(--quaternary-color)/14 bg-(--bg-tertiary) px-2 py-0.5 text-(--text-secondary)">
                         {cat}
                       </span>
                     ))}
@@ -65,13 +65,13 @@ export default function AnalyticsAllItemsSection({
 
                 {item.keywords.length > 0 && (
                   <div className="flex flex-wrap items-center gap-1">
-                    <span className="uppercase tracking-wide text-[var(--text-tertiary)]">
+                    <span className="font-work-sans uppercase tracking-wide text-[var(--text-tertiary)]">
                       Palavras-chave:
                     </span>
                     {item.keywords.map((kw) => (
                       <span
                         key={kw}
-                        className="rounded-full border border-(--quaternary-color)/14 bg-(--bg-tertiary) px-2 py-0.5 text-(--text-secondary)">
+                        className="font-work-sans rounded-full border border-(--quaternary-color)/14 bg-(--bg-tertiary) px-2 py-0.5 text-(--text-secondary)">
                         {kw}
                       </span>
                     ))}

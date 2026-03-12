@@ -53,7 +53,7 @@ export default function FormPhoneVerifyUser() {
       </div>
       <div className="flex items-end">
         <button
-          className="btn-primary h-11 w-full cursor-pointer px-4 text-sm"
+          className="btn-primary font-poppins h-11 w-full cursor-pointer px-4 text-sm"
           type="submit">
           Confirmar telefone
         </button>

@@ -56,7 +56,7 @@ export default function FormEmailUser({
       </div>
       <div>
         <button
-          className="btn-primary h-11 cursor-pointer px-4 text-sm"
+          className="btn-primary font-poppins h-11 cursor-pointer px-4 text-sm"
           type="submit">
           Salvar e-mail
         </button>

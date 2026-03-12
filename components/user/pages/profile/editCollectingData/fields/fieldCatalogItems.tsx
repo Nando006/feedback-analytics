@@ -203,7 +203,7 @@ const FieldCatalogItems = memo(function FieldCatalogItems({
         <button
           type="button"
           onClick={handleAddItem}
-          className="btn-ghost px-3 py-2 text-xs"
+          className="btn-ghost font-poppins px-3 py-2 text-xs"
         >
           Adicionar
         </button>
@@ -233,7 +233,7 @@ const FieldCatalogItems = memo(function FieldCatalogItems({
               <button
                 type="button"
                 onClick={handleShowMore}
-                className="btn-ghost px-3 py-2 text-xs"
+                className="btn-ghost font-poppins px-3 py-2 text-xs"
               >
                 Mostrar mais {Math.min(VISIBLE_ITEMS_STEP, hiddenItemsCount)} itens
               </button>

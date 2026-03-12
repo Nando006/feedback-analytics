@@ -18,7 +18,7 @@ export default function FeedbackCard({ feedback, onClick }: FeedbackCardProps) {
     return Array.from({ length: 5 }, (_, index) => (
       <span
         key={index}
-        className={`text-lg ${
+        className={`font-work-sans text-lg ${
           index < rating ? 'text-amber-300' : 'text-(--text-tertiary)'
         }`}>
         ★
@@ -86,55 +86,55 @@ export default function FeedbackCard({ feedback, onClick }: FeedbackCardProps) {
       <div className="flex justify-between items-start mb-4">
         <div className="flex items-center gap-3">
           <div
-            className={`px-3 py-1 rounded-full text-sm font-medium border ${getRatingColor(
+            className={`font-poppins px-3 py-1 rounded-full text-sm font-medium border ${getRatingColor(
               feedback.rating,
             )}`}>
             {feedback.rating} - {getRatingText(feedback.rating)}
           </div>
-          <div className="flex items-center gap-1">
+          <div className="font-work-sans flex items-center gap-1">
             {renderStars(feedback.rating)}
           </div>
         </div>
-        <div className="text-sm text-[var(--text-tertiary)]">
+        <div className="font-work-sans text-sm text-[var(--text-tertiary)]">
           {formatDate(feedback.created_at)}
         </div>
       </div>
 
       {/* Mensagem do feedback */}
       <div className="mb-6">
-        <p className="text-[var(--text-primary)] leading-relaxed">
+        <p className="font-work-sans text-[var(--text-primary)] leading-relaxed">
           {feedback.message}
         </p>
       </div>
 
       {/* Informações adicionais */}
       <div className="flex justify-between items-center text-sm">
-        <div className="flex items-center gap-4 text-[var(--text-tertiary)]">
+        <div className="font-work-sans flex items-center gap-4 text-[var(--text-tertiary)]">
           <span>
-            <strong className="text-[var(--text-secondary)]">Canal:</strong>{' '}
+            <strong className="font-work-sans text-[var(--text-secondary)]">Canal:</strong>{' '}
             {channelDisplayName}
           </span>
           {/* <span>
-            <strong className="text-[var(--text-secondary)]">Tipo:</strong>{' '}
+            <strong className="font-work-sans text-[var(--text-secondary)]">Tipo:</strong>{' '}
             {feedback.collection_points?.type || 'N/A'}
           </span> */}
           <span>
-            <strong className="text-[var(--text-secondary)]">Categoria:</strong>{' '}
+            <strong className="font-work-sans text-[var(--text-secondary)]">Categoria:</strong>{' '}
             {itemKindLabel}
           </span>
           <span>
-            <strong className="text-[var(--text-secondary)]">Item:</strong>{' '}
+            <strong className="font-work-sans text-[var(--text-secondary)]">Item:</strong>{' '}
             {itemName || '—'}
           </span>
         </div>
 
         {feedback.tracked_devices?.customer && (
           <div className="text-right">
-            <div className="font-medium text-[var(--text-primary)]">
+            <div className="font-work-sans font-medium text-[var(--text-primary)]">
               {feedback.tracked_devices.customer.name || 'Cliente anônimo'}
             </div>
             {feedback.tracked_devices.customer.email && (
-              <div className="text-[var(--text-tertiary)] text-xs">
+              <div className="font-work-sans text-[var(--text-tertiary)] text-xs">
                 {feedback.tracked_devices.customer.email}
               </div>
             )}

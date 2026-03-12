@@ -9,8 +9,8 @@ export default function SectionCollectingStrategy({
     <section className="rounded-2xl border border-(--quaternary-color)/10 bg-linear-to-br from-(--bg-secondary) to-(--sixth-color) p-6">
       <header className="flex items-center justify-between gap-3">
         <div>
-          <h2 className="text-lg font-semibold text-(--text-primary)">Estratégia de coleta</h2>
-          <p className="text-sm text-(--text-tertiary)">
+          <h2 className="font-montserrat text-lg font-semibold text-(--text-primary)">Estratégia de coleta</h2>
+          <p className="font-work-sans text-sm text-(--text-tertiary)">
             Informações configuradas para orientar o time
           </p>
         </div>
@@ -19,31 +19,31 @@ export default function SectionCollectingStrategy({
 
       <div className="mt-6 space-y-5 text-sm text-(--text-secondary)">
         <div>
-          <p className="text-xs uppercase tracking-wide text-(--text-tertiary)">
+          <p className="font-work-sans text-xs uppercase tracking-wide text-(--text-tertiary)">
             Objetivo da empresa
           </p>
-          <p className="mt-1 leading-relaxed">
+          <p className="font-work-sans mt-1 leading-relaxed">
             {collecting?.company_objective ?? 'Nenhum objetivo cadastrado ainda.'}
           </p>
         </div>
         <div>
-          <p className="text-xs uppercase tracking-wide text-(--text-tertiary)">
+          <p className="font-work-sans text-xs uppercase tracking-wide text-(--text-tertiary)">
             Objetivo analítico
           </p>
-          <p className="mt-1 leading-relaxed">
+          <p className="font-work-sans mt-1 leading-relaxed">
             {collecting?.analytics_goal ?? 'Adicione como pretende utilizar os feedbacks.'}
           </p>
         </div>
         <div>
-          <p className="text-xs uppercase tracking-wide text-(--text-tertiary)">
+          <p className="font-work-sans text-xs uppercase tracking-wide text-(--text-tertiary)">
             Resumo do negócio
           </p>
-          <p className="mt-1 leading-relaxed">
+          <p className="font-work-sans mt-1 leading-relaxed">
             {collecting?.business_summary ?? 'Explique brevemente o contexto do negócio.'}
           </p>
         </div>
         <div>
-          <p className="text-xs uppercase tracking-wide text-(--text-tertiary)">
+          <p className="font-work-sans text-xs uppercase tracking-wide text-(--text-tertiary)">
             Produtos/Serviços monitorados
           </p>
           {collecting?.uses_company_products &&
@@ -52,13 +52,13 @@ export default function SectionCollectingStrategy({
               {collecting.main_products_or_services.map((item) => (
                 <li
                   key={item}
-                  className="rounded-md border border-(--quaternary-color)/10 bg-(--seventh-color) px-3 py-2 text-xs">
+                  className="font-work-sans rounded-md border border-(--quaternary-color)/10 bg-(--seventh-color) px-3 py-2 text-xs">
                   {item}
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="mt-1 leading-relaxed text-(--text-tertiary)">
+            <p className="font-work-sans mt-1 leading-relaxed text-(--text-tertiary)">
               Nenhum item configurado. Aproveite para mapear os produtos que devem
               receber feedback.
             </p>
@@ -68,7 +68,7 @@ export default function SectionCollectingStrategy({
 
       <Link
         to="/user/edit/collecting-data-enterprise"
-        className="mt-6 inline-flex items-center gap-2 text-sm text-(--text-secondary) transition-colors hover:text-(--text-primary)">
+        className="font-work-sans mt-6 inline-flex items-center gap-2 text-sm text-(--text-secondary) transition-colors hover:text-(--text-primary)">
         Ajustar informações de coleta
         <FaArrowRight className="text-xs" />
       </Link>

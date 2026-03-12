@@ -98,17 +98,16 @@ const QrCatalogItemCard = memo(function QrCatalogItemCard({
     >
       <div className="mb-4 flex items-start justify-between gap-3">
         <div>
-          <h2 className="text-base font-semibold text-(--text-primary)">{item.name}</h2>
+          <h2 className="font-montserrat text-base font-semibold text-(--text-primary)">{item.name}</h2>
           <p className="mt-1 text-xs text-(--text-tertiary)">
             {item.description || 'Sem descrição'}
           </p>
         </div>
         <span
-          className={`rounded-full border px-2 py-1 text-[11px] font-semibold ${
-            item.active
+          className={`rounded-full border px-2 py-1 text-[11px] font-semibold ${item.active
               ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300'
               : 'border-(--quaternary-color)/14 bg-(--seventh-color) text-(--text-secondary)'
-          }`}
+            }`}
         >
           {item.active ? 'Ativo' : 'Inativo'}
         </span>
@@ -135,11 +134,10 @@ const QrCatalogItemCard = memo(function QrCatalogItemCard({
         type="button"
         onClick={() => onToggle(item.catalog_item_id, item.active)}
         disabled={isPending}
-        className={`w-full rounded-lg border px-3 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60 ${
-          item.active
+        className={`w-full rounded-lg border px-3 py-2 text-sm font-medium font-poppins transition-colors disabled:cursor-not-allowed disabled:opacity-60 ${item.active
             ? 'border-rose-500/30 bg-rose-500/10 text-rose-200 hover:bg-rose-500/15'
             : 'border-(--primary-color) bg-(--primary-color) text-white hover:bg-(--secondary-color)'
-        }`}
+          }`}
       >
         {isPending
           ? 'Atualizando...'
@@ -209,9 +207,9 @@ export default function QrCodeCatalogPage({
   }, [fetcher]);
 
   return (
-    <div className="font-inter space-y-6 pb-8">
+    <div className="font-work-sans space-y-6 pb-8">
       <header className="rounded-2xl border border-(--quaternary-color)/10 bg-gradient-to-br from-(--bg-secondary) to-(--sixth-color) p-6 glass-card">
-        <h1 className="text-xl font-semibold text-(--text-primary)">{title}</h1>
+        <h1 className="font-montserrat text-xl font-semibold text-(--text-primary)">{title}</h1>
         <p className="mt-2 text-sm text-(--text-tertiary)">{subtitle}</p>
       </header>
 

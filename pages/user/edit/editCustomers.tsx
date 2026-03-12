@@ -2,13 +2,13 @@ import CardSimple from 'components/user/shared/cards/cardSimple';
 
 export default function EditCustomer() {
   return (
-    <div className="font-inter space-y-6 pb-8">
+    <div className="font-work-sans space-y-6 pb-8">
       <CardSimple type="header">
         <div className="space-y-2">
           <p className="text-sm uppercase tracking-wide text-(--text-tertiary)">
             Em breve
           </p>
-          <h1 className="text-2xl font-semibold tracking-tight text-(--text-primary) md:text-3xl">
+          <h1 className="font-montserrat text-2xl font-semibold tracking-tight text-(--text-primary) md:text-3xl">
             Clientes
           </h1>
           <p className="text-sm text-(--text-secondary)">

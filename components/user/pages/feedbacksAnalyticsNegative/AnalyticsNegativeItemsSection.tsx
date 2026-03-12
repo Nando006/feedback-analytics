@@ -5,7 +5,7 @@ export default function AnalyticsNegativeItemsSection({
 }: AnalyticsNegativeItemsSectionProps) {
   return (
     <div className="relative overflow-hidden rounded-2xl border border-(--quaternary-color)/10 bg-gradient-to-br from-(--bg-secondary) to-(--sixth-color) p-6 glass-card">
-      <h3 className="mb-4 text-base font-semibold text-[var(--text-primary)]">
+      <h3 className="mb-4 text-base font-montserrat font-semibold text-[var(--text-primary)]">
         Feedbacks negativos analisados
       </h3>
 
@@ -19,16 +19,16 @@ export default function AnalyticsNegativeItemsSection({
                 {new Date(item.created_at).toLocaleString('pt-BR')}
               </span>
               <div className="flex flex-wrap items-center gap-2">
-                <span className="rounded-full border border-(--quaternary-color)/14 px-2 py-0.5 text-[10px] font-medium text-(--text-secondary)">
+                <span className="font-work-sans rounded-full border border-(--quaternary-color)/14 px-2 py-0.5 text-[10px] font-medium text-(--text-secondary)">
                   Rating: {item.rating ?? '—'}
                 </span>
-                <span className="rounded-full border border-rose-500/60 bg-rose-500/10 px-2 py-0.5 text-[10px] font-medium text-rose-300">
+                <span className="font-work-sans rounded-full border border-rose-500/60 bg-rose-500/10 px-2 py-0.5 text-[10px] font-medium text-rose-300">
                   Negativo
                 </span>
-              </div>
+              </div>  
             </div>
 
-            <p className="whitespace-pre-wrap text-sm text-[var(--text-primary)]">
+            <p className="font-work-sans whitespace-pre-wrap text-sm text-[var(--text-primary)]">
               {item.message}
             </p>
 
@@ -36,13 +36,13 @@ export default function AnalyticsNegativeItemsSection({
               <div className="mt-2 flex flex-wrap gap-3 text-[10px]">
                 {item.categories.length > 0 && (
                   <div className="flex flex-wrap items-center gap-1">
-                    <span className="uppercase tracking-wide text-[var(--text-tertiary)]">
+                    <span className="font-work-sans uppercase tracking-wide text-[var(--text-tertiary)]">
                       Categorias:
                     </span>
                     {item.categories.map((cat) => (
                       <span
                         key={cat}
-                        className="rounded-full border border-(--quaternary-color)/14 bg-(--bg-tertiary) px-2 py-0.5 text-(--text-secondary)">
+                        className="font-work-sans rounded-full border border-(--quaternary-color)/14 bg-(--bg-tertiary) px-2 py-0.5 text-(--text-secondary)">
                         {cat}
                       </span>
                     ))}
@@ -51,13 +51,13 @@ export default function AnalyticsNegativeItemsSection({
 
                 {item.keywords.length > 0 && (
                   <div className="flex flex-wrap items-center gap-1">
-                    <span className="uppercase tracking-wide text-[var(--text-tertiary)]">
+                    <span className="font-work-sans uppercase tracking-wide text-[var(--text-tertiary)]">
                       Palavras-chave:
                     </span>
                     {item.keywords.map((kw) => (
                       <span
                         key={kw}
-                        className="rounded-full border border-(--quaternary-color)/14 bg-(--bg-tertiary) px-2 py-0.5 text-(--text-secondary)">
+                        className="font-work-sans rounded-full border border-(--quaternary-color)/14 bg-(--bg-tertiary) px-2 py-0.5 text-(--text-secondary)">
                         {kw}
                       </span>
                     ))}
