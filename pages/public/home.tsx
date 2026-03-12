@@ -55,7 +55,7 @@ export default function Home() {
                   </Link>
                   <button
                     onClick={() => setShowVideo(true)}
-                    className="font-poppins cursor-pointer rounded-lg border border-(--quaternary-color)/80 dark:border-(--quaternary-color)/14 bg-(--quinary-color)/6 px-5 py-3 text-sm font-semibold text-(--primary-color) transition-colors hover:bg-(--quinary-color)/10">
+                    className="font-poppins cursor-pointer rounded-lg border border-(--quaternary-color)/80 dark:border-(--quaternary-color)/14 bg-(--quinary-color)/6 px-5 py-3 text-sm font-semibold text-(--primary-color) transition-colors hover:bg-(--quinary-color) dark:hover:bg-(--quinary-color)/10">
                     Ver como funciona
                   </button>
                 </div>
@@ -69,7 +69,7 @@ export default function Home() {
               </div>
               <div className="relative">
                 <div className="absolute -inset-8 " />
-                <div className="relative overflow-hidden rounded-2xl border border-(--quaternary-color)/60 shadow-md dark:border-(--quaternary-color)/14 bg-linear-to-br from-(--sixth-color) to-(--seventh-color) p-6">
+                <div className="relative overflow-hidden rounded-2xl shadow-md border border-(--quaternary-color)/60  dark:border-(--quaternary-color)/14 dark:bg-linear-to-br dark:from-(--sixth-color) dark:to-(--seventh-color) bg-white p-6">
                   <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-(--primary-color) via-(--secondary-color) to-(--tertiary-color)" />
                   <div className="flex items-center justify-between">
                     <div>
@@ -122,7 +122,7 @@ export default function Home() {
                       </div>
                     </div>
                   </div>
-                  <div className="mt-6 rounded-xl border border-(--quaternary-color)/80 dark:border-(--quaternary-color)/14 bg-linear-to-br from-(--quinary-color)/6 to-(--bg-secondary) p-4">
+                  <div className="mt-6 rounded-xl border border-(--quaternary-color)/80 dark:border-(--quaternary-color)/14 bg-linear-to-br from-(--quinary-color)/6 to-(--bg-secondary)/30 p-4">
                     <p className="text-sm font-semibold text-(--text-primary) font-work-sans">
                       Recomendações da IA
                     </p>
@@ -150,7 +150,7 @@ export default function Home() {
             {highlights.map((item) => (
               <div
                 key={item.title}
-                className="cursor-pointer rounded-2xl border border-(--quaternary-color)/80 dark:border-(--quaternary-color)/14 bg-linear-to-br from-(--seventh-color) to-(--sixth-color) p-5 transition-colors hover:border-(--primary-color)/60 dark:hover:border-(--primary-color)/20 hover:bg-(--seventh-color)">
+                className="cursor-pointer rounded-2xl border border-(--quaternary-color)/80 dark:border-(--quaternary-color)/14 dark:bg-linear-to-br dark:from-(--sixth-color) dark:to-(--seventh-color) bg-white p-5 transition hover:border-(--primary-color)/60 dark:hover:border-(--primary-color)/20 hover:bg-(--seventh-color) shadow-md hover:shadow-lg">
                 <div className={`mb-4 h-1.5 w-20 rounded-full bg-gradient-to-r ${item.bar}`} />
                 <span className={`font-poppins inline-flex rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-wide ${item.accentBg} ${item.accentText}`}>
                   Destaque
