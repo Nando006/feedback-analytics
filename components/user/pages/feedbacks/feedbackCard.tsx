@@ -17,10 +17,8 @@ export default function FeedbackCard({ feedback, onClick }: FeedbackCardProps) {
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }, (_, index) => (
       <span
-        key={index}
-        className={`font-work-sans text-lg ${
-          index < rating ? 'text-amber-300' : 'text-(--text-tertiary)'
-        }`}>
+        className={`text-lg ${index < rating ? 'text-amber-300' : 'text-(--text-tertiary)'
+          }`}>
         ★
       </span>
     ));
@@ -74,11 +72,10 @@ export default function FeedbackCard({ feedback, onClick }: FeedbackCardProps) {
 
   return (
     <div
-      className={`relative overflow-hidden rounded-2xl border border-(--quaternary-color)/10 bg-gradient-to-br from-(--bg-secondary) to-(--sixth-color) p-6 glass-card ${
-        onClick
+      className={`font-work-sans relative overflow-hidden rounded-2xl border border-(--quaternary-color)/10 bg-gradient-to-br from-(--bg-secondary) to-(--sixth-color) p-6 glass-card ${onClick
           ? 'cursor-pointer transition-colors hover:border-(--quaternary-color)/20'
           : ''
-      }`}
+        }`}
       onClick={onClick}
       role={onClick ? 'button' : undefined}
       tabIndex={onClick ? 0 : undefined}>
@@ -91,50 +88,50 @@ export default function FeedbackCard({ feedback, onClick }: FeedbackCardProps) {
             )}`}>
             {feedback.rating} - {getRatingText(feedback.rating)}
           </div>
-          <div className="font-work-sans flex items-center gap-1">
+          <div className="flex items-center gap-1">
             {renderStars(feedback.rating)}
           </div>
         </div>
-        <div className="font-work-sans text-sm text-[var(--text-tertiary)]">
+        <div className="text-sm text-[var(--text-tertiary)]">
           {formatDate(feedback.created_at)}
         </div>
       </div>
 
       {/* Mensagem do feedback */}
       <div className="mb-6">
-        <p className="font-work-sans text-[var(--text-primary)] leading-relaxed">
+        <p className="text-[var(--text-primary)] leading-relaxed">
           {feedback.message}
         </p>
       </div>
 
       {/* Informações adicionais */}
       <div className="flex justify-between items-center text-sm">
-        <div className="font-work-sans flex items-center gap-4 text-[var(--text-tertiary)]">
+        <div className="flex items-center gap-4 text-[var(--text-tertiary)]">
           <span>
-            <strong className="font-work-sans text-[var(--text-secondary)]">Canal:</strong>{' '}
+            <strong className="text-[var(--text-secondary)]">Canal:</strong>{' '}
             {channelDisplayName}
           </span>
           {/* <span>
-            <strong className="font-work-sans text-[var(--text-secondary)]">Tipo:</strong>{' '}
+            <strong className="text-[var(--text-secondary)]">Tipo:</strong>{' '}
             {feedback.collection_points?.type || 'N/A'}
           </span> */}
           <span>
-            <strong className="font-work-sans text-[var(--text-secondary)]">Categoria:</strong>{' '}
+            <strong className="text-[var(--text-secondary)]">Categoria:</strong>{' '}
             {itemKindLabel}
           </span>
           <span>
-            <strong className="font-work-sans text-[var(--text-secondary)]">Item:</strong>{' '}
+            <strong className="text-[var(--text-secondary)]">Item:</strong>{' '}
             {itemName || '—'}
           </span>
         </div>
 
         {feedback.tracked_devices?.customer && (
           <div className="text-right">
-            <div className="font-work-sans font-medium text-[var(--text-primary)]">
+            <div className="font-medium text-[var(--text-primary)]">
               {feedback.tracked_devices.customer.name || 'Cliente anônimo'}
             </div>
             {feedback.tracked_devices.customer.email && (
-              <div className="font-work-sans text-[var(--text-tertiary)] text-xs">
+              <div className="text-[var(--text-tertiary)] text-xs">
                 {feedback.tracked_devices.customer.email}
               </div>
             )}

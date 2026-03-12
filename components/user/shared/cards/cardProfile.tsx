@@ -40,7 +40,7 @@ export default function CardProfile({
             disabled={isSigningOut}
             title="Sair"
             aria-label="Sair"
-            className="group cursor-pointer text-2xl disabled:opacity-60">
+            className="group cursor-pointer text-2xl disabled:opacity-60 font-poppins">
             <FaSignOutAlt className="text-(--negative) transition-colors duration-200 group-hover:text-red-400" />
           </button>
         </div>
