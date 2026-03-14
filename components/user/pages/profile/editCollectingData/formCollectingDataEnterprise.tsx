@@ -40,11 +40,11 @@ export default function FormCollectingDataEnterprise() {
       collecting?.catalog_products && collecting.catalog_products.length > 0
         ? normalizeCatalogInput(collecting.catalog_products)
         : (collecting?.main_products_or_services ?? []).map((name, index) => ({
-            name,
-            description: '',
-            status: 'ACTIVE' as const,
-            sort_order: index,
-          })),
+          name,
+          description: '',
+          status: 'ACTIVE' as const,
+          sort_order: index,
+        })),
     [collecting?.catalog_products, collecting?.main_products_or_services],
   );
 
@@ -218,12 +218,12 @@ export default function FormCollectingDataEnterprise() {
         <button
           type="button"
           onClick={() => window.history.back()}
-          className="btn-ghost px-6 py-3 text-sm">
+          className="btn-ghost font-poppins px-6 py-3 text-sm">
           Cancelar
         </button>
         <button
           type="submit"
-          className="btn-primary group flex items-center gap-2 px-8 py-3">
+          className="btn-primary font-poppins group flex items-center gap-2 px-8 py-3">
           <span>Salvar Alterações</span>
           <svg
             className="h-4 w-4 transition-transform group-hover:translate-x-1"

@@ -4,8 +4,8 @@ export default function AnalyticsAllSummarySection({
   summary,
 }: AnalyticsAllSummarySectionProps) {
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-(--quaternary-color)/10 bg-gradient-to-br from-(--bg-secondary) to-(--sixth-color) p-6 glass-card">
-      <h2 className="mb-2 text-lg font-semibold text-[var(--text-primary)]">
+    <div className="font-work-sans relative overflow-hidden rounded-2xl border border-(--quaternary-color)/10 bg-gradient-to-br from-(--bg-secondary) to-(--sixth-color) p-6 glass-card">
+      <h2 className="mb-2 text-lg font-montserrat font-semibold text-[var(--text-primary)]">
         Visão geral dos feedbacks analisados pela IA
       </h2>
       <p className="mb-4 text-sm text-[var(--text-tertiary)]">
@@ -15,9 +15,9 @@ export default function AnalyticsAllSummarySection({
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         <div className="space-y-1">
-          <div className="text-xs uppercase tracking-wide text-[var(--text-tertiary)]">
+          <p className="text-xs uppercase tracking-wide text-[var(--text-tertiary)]">
             Total analisados
-          </div>
+          </p>
           <div className="text-2xl font-semibold text-[var(--text-primary)]">
             {summary.totalAnalyzed}
           </div>
@@ -28,13 +28,13 @@ export default function AnalyticsAllSummarySection({
             Sentimentos
           </div>
           <div className="flex flex-wrap gap-2 text-xs">
-            <span className="rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3 py-1 text-emerald-300">
+            <span className="font-poppins rounded-full border border-(--positive)/40 bg-(--positive)/10 px-3 py-1 text-(--positive)">
               Positivos: {summary.sentiments.positive}
             </span>
-            <span className="rounded-full border border-amber-500/40 bg-amber-500/10 px-3 py-1 text-amber-300">
+            <span className="font-poppins rounded-full border border-(--neutral)/40 bg-(--neutral)/10 px-3 py-1 text-(--neutral)">
               Neutros: {summary.sentiments.neutral}
             </span>
-            <span className="rounded-full border border-rose-500/40 bg-rose-500/10 px-3 py-1 text-rose-300">
+            <span className="font-poppins rounded-full border border-(--negative)/40 bg-(--negative)/10 px-3 py-1 text-(--negative)">
               Negativos: {summary.sentiments.negative}
             </span>
           </div>

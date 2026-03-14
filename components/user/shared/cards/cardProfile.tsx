@@ -23,7 +23,7 @@ export default function CardProfile({
       to="/user/profile"
       title="Ver perfil"
       aria-label="Ver perfil"
-      className="h-[240px] w-full border-t border-(--quaternary-color)/8 bg-linear-to-b from-(--bg-secondary) to-(--sixth-color) p-2.5 shadow-inner shadow-black/20 transition-colors duration-200 hover:bg-(--bg-secondary)">
+      className="h-[240px] w-full border-t border-(--quaternary-color)/8 bg-linear-to-b from-(--bg-secondary) to-(--sixth-color) p-2.5 dark:shadow-inner dark:shadow-black/20 transition-colors duration-200 hover:bg-(--bg-secondary)">
       <div className="flex flex-col items-center h-full justify-between">
         <div className="flex flex-col items-center">
           <div className="profileimage">
@@ -40,7 +40,7 @@ export default function CardProfile({
             disabled={isSigningOut}
             title="Sair"
             aria-label="Sair"
-            className="group cursor-pointer text-2xl disabled:opacity-60">
+            className="group cursor-pointer text-2xl disabled:opacity-60 font-poppins">
             <FaSignOutAlt className="text-(--negative) transition-colors duration-200 group-hover:text-red-400" />
           </button>
         </div>

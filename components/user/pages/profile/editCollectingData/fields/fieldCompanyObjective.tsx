@@ -7,7 +7,7 @@ const FieldCompanyObjective = memo(function FieldCompanyObjective({
   const [characterCount, setCharacterCount] = useState(defaultValue.length);
 
   return (
-    <div className="group">
+    <div className="group font-work-sans">
       <label
         htmlFor="company_objective"
         className="mb-2 block text-sm font-medium text-(--text-secondary) transition-colors group-focus-within:text-(--primary-color)">

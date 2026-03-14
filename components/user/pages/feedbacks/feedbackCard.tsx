@@ -17,10 +17,8 @@ export default function FeedbackCard({ feedback, onClick }: FeedbackCardProps) {
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }, (_, index) => (
       <span
-        key={index}
-        className={`text-lg ${
-          index < rating ? 'text-amber-300' : 'text-(--text-tertiary)'
-        }`}>
+        className={`text-lg ${index < rating ? 'text-amber-300' : 'text-(--text-tertiary)'
+          }`}>
         ★
       </span>
     ));
@@ -74,11 +72,10 @@ export default function FeedbackCard({ feedback, onClick }: FeedbackCardProps) {
 
   return (
     <div
-      className={`relative overflow-hidden rounded-2xl border border-(--quaternary-color)/10 bg-gradient-to-br from-(--bg-secondary) to-(--sixth-color) p-6 glass-card ${
-        onClick
+      className={`font-work-sans relative overflow-hidden rounded-2xl border border-(--quaternary-color)/10 bg-gradient-to-br from-(--bg-secondary) to-(--sixth-color) p-6 glass-card ${onClick
           ? 'cursor-pointer transition-colors hover:border-(--quaternary-color)/20'
           : ''
-      }`}
+        }`}
       onClick={onClick}
       role={onClick ? 'button' : undefined}
       tabIndex={onClick ? 0 : undefined}>
@@ -86,7 +83,7 @@ export default function FeedbackCard({ feedback, onClick }: FeedbackCardProps) {
       <div className="flex justify-between items-start mb-4">
         <div className="flex items-center gap-3">
           <div
-            className={`px-3 py-1 rounded-full text-sm font-medium border ${getRatingColor(
+            className={`font-poppins px-3 py-1 rounded-full text-sm font-medium border ${getRatingColor(
               feedback.rating,
             )}`}>
             {feedback.rating} - {getRatingText(feedback.rating)}

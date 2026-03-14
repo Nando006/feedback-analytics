@@ -9,10 +9,10 @@ export default function SectionLatestFeedbacks({
   latestLimit,
 }: LatestFeedbacksProps) {
   return (
-    <section className="rounded-2xl border border-(--quaternary-color)/10 bg-linear-to-br from-(--bg-secondary) to-(--sixth-color) p-6">
+    <section className="font-work-sans rounded-2xl border border-(--quaternary-color)/10 bg-linear-to-br from-(--bg-secondary) to-(--sixth-color) p-6">
       <header className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
         <div>
-          <h2 className="text-lg font-semibold text-(--text-primary)">Feedbacks recentes</h2>
+          <h2 className="font-montserrat text-lg font-semibold text-(--text-primary)">Feedbacks recentes</h2>
           <p className="text-sm text-(--text-tertiary)">
             Últimos {latestLimit} retornos enviados pelos clientes
           </p>

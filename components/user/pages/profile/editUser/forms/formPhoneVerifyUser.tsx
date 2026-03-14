@@ -35,7 +35,7 @@ export default function FormPhoneVerifyUser() {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="grid grid-cols-1 gap-3 sm:grid-cols-2"
+      className="font-work-sans grid grid-cols-1 gap-3 sm:grid-cols-2"
       noValidate>
       <div>
         <label className="mb-1 block text-sm text-(--text-secondary)">
@@ -53,7 +53,7 @@ export default function FormPhoneVerifyUser() {
       </div>
       <div className="flex items-end">
         <button
-          className="btn-primary h-11 w-full cursor-pointer px-4 text-sm"
+          className="btn-primary font-poppins h-11 w-full cursor-pointer px-4 text-sm"
           type="submit">
           Confirmar telefone
         </button>

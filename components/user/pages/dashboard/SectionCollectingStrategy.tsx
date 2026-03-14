@@ -6,10 +6,10 @@ export default function SectionCollectingStrategy({
   collecting,
 }: SectionCollectingStrategyProps) {
   return (
-    <section className="rounded-2xl border border-(--quaternary-color)/10 bg-linear-to-br from-(--bg-secondary) to-(--sixth-color) p-6">
+    <section className="font-work-sans rounded-2xl border border-(--quaternary-color)/10 bg-linear-to-br from-(--bg-secondary) to-(--sixth-color) p-6">
       <header className="flex items-center justify-between gap-3">
         <div>
-          <h2 className="text-lg font-semibold text-(--text-primary)">Estratégia de coleta</h2>
+          <h2 className="font-montserrat text-lg font-semibold text-(--text-primary)">Estratégia de coleta</h2>
           <p className="text-sm text-(--text-tertiary)">
             Informações configuradas para orientar o time
           </p>
@@ -47,7 +47,7 @@ export default function SectionCollectingStrategy({
             Produtos/Serviços monitorados
           </p>
           {collecting?.uses_company_products &&
-          collecting?.main_products_or_services?.length ? (
+            collecting?.main_products_or_services?.length ? (
             <ul className="mt-1 space-y-1 text-(--text-primary)">
               {collecting.main_products_or_services.map((item) => (
                 <li

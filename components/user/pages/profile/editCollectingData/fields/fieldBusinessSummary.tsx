@@ -17,7 +17,7 @@ const FieldBusinessSummary = memo(function FieldBusinessSummary({ defaultValue }
         <textarea
           id="business_summary"
           name="business_summary"
-          className="w-full rounded-xl border border-(--quaternary-color)/14 bg-(--seventh-color) px-4 py-3 text-(--text-primary) outline-none transition-all duration-200 placeholder:text-(--text-tertiary) focus:border-(--quinary-color) focus:ring-2 focus:ring-(--quinary-color)/20"
+          className="w-full rounded-xl border border-(--quaternary-color)/14 bg-(--seventh-color) px-4 py-3 text-(--text-primary) outline-none transition-all duration-200 placeholder:text-(--text-tertiary) focus:border-(--quinary-color) focus:ring-2 focus:ring-(--quinary-color)/20 font-work-sans"
           rows={5}
           defaultValue={defaultValue}
           onInput={(event) => setCharacterCount(event.currentTarget.value.length)}

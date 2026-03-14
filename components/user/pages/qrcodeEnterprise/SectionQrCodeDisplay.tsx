@@ -39,14 +39,14 @@ const SectionQrCodeDisplay = memo(function SectionQrCodeDisplay({
             <div className="flex w-full items-center justify-center gap-2">
               <button
                 onClick={onDownload}
-                className="btn-ghost flex items-center gap-2 px-4 py-2 text-sm">
+                className="btn-ghost font-poppins flex items-center gap-2 px-4 py-2 text-sm">
                 <FaDownload className="text-xs" />
                 <span>Download</span>
               </button>
 
               <button
                 onClick={onCopyLink}
-                className="btn-ghost relative flex items-center gap-2 px-4 py-2 text-sm">
+                className="btn-ghost font-poppins relative flex items-center gap-2 px-4 py-2 text-sm">
                 <FaCopy className="text-xs" />
                 <span>{showCopied ? 'Copiado!' : 'Copiar'}</span>
                 {showCopied && (
@@ -58,7 +58,7 @@ const SectionQrCodeDisplay = memo(function SectionQrCodeDisplay({
 
               <button
                 onClick={onShare}
-                className="btn-primary flex items-center gap-2 px-4 py-2 text-sm">
+                className="btn-primary font-poppins flex items-center gap-2 px-4 py-2 text-sm">
                 <FaShare className="text-xs" />
                 <span>Compartilhar</span>
               </button>

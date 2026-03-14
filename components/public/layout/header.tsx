@@ -15,14 +15,14 @@ export default function Header() {
           <li>
             <Link
               to="/register"
-              className="font-poppins rounded-lg border border-(--primary-color) px-6 py-2 text-sm font-medium text-(--text-primary) transition-colors hover:bg-(--primary-color)/12 md:px-10">
+              className="font-poppins rounded-lg border border-(--secondary-color) px-6 py-2 text-sm font-medium text-(--text-primary) transition-colors hover:bg-(--secondary-color)/12 md:px-10">
               Registrar
             </Link>
           </li>
           <li>
             <Link
               to="/login"
-              className="font-poppins rounded-lg bg-(--primary-color) px-6 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90 md:px-10">
+              className="font-poppins rounded-lg bg-(--secondary-color) px-6 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90 md:px-10">
               Login
             </Link>
           </li>

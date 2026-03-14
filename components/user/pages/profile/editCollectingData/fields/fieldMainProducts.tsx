@@ -2,7 +2,7 @@ import type { FieldMainProductsProps } from './ui.types';
 
 export default function FieldMainProducts({ value, onChange }: FieldMainProductsProps) {
   return (
-    <div className="animate-fadeIn group overflow-hidden rounded-xl border border-(--primary-color)/18 bg-gradient-to-br from-(--primary-color)/8 to-(--bg-secondary) p-6">
+    <div className="font-work-sans animate-fadeIn group overflow-hidden rounded-xl border border-(--primary-color)/18 bg-gradient-to-br from-(--primary-color)/8 to-(--bg-secondary) p-6">
       <div className="mb-4 flex items-start gap-3">
         <div className="rounded-lg bg-(--primary-color)/10 p-2">
           <svg
