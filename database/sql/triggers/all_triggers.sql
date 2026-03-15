@@ -41,6 +41,17 @@ CREATE TRIGGER "set_updated_at" BEFORE UPDATE ON "public"."feedback"
   FOR EACH ROW
   EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS "validate_questions_of_feedbacks_context" ON "public"."questions_of_feedbacks";
+CREATE TRIGGER "validate_questions_of_feedbacks_context"
+  BEFORE INSERT OR UPDATE ON "public"."questions_of_feedbacks"
+  FOR EACH ROW
+  EXECUTE FUNCTION public.validate_questions_of_feedbacks_context();
+
+DROP TRIGGER IF EXISTS "set_updated_at" ON "public"."questions_of_feedbacks";
+CREATE TRIGGER "set_updated_at" BEFORE UPDATE ON "public"."questions_of_feedbacks"
+  FOR EACH ROW
+  EXECUTE FUNCTION update_updated_at_column();
+
 DROP TRIGGER IF EXISTS "set_updated_at" ON "public"."feedback_analysis";
 CREATE TRIGGER "set_updated_at" BEFORE UPDATE ON "public"."feedback_analysis"
   FOR EACH ROW

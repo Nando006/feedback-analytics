@@ -1,3 +1,5 @@
+import type { FeedbackQuestionPublic } from './qrcode.contract';
+
 /**
  * Resposta mínima de empresa usada na validação de QR Code.
  * Usado em: src/services/serviceEnterprise.ts.
@@ -9,6 +11,7 @@ export interface EnterpriseContractResponse {
   catalog_item_id?: string | null;
   item_name?: string | null;
   item_kind?: 'PRODUCT' | 'SERVICE' | 'DEPARTMENT' | null;
+  questions?: FeedbackQuestionPublic[];
 }
 
 /**

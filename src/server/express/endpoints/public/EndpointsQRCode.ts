@@ -15,6 +15,23 @@ import {
 } from '../../../../../lib/constants/server/errors.js';
 import { sendTypedError } from '../../../../../lib/utils/sendTypedError.js';
 
+function mapAnswerScore(answerValue: string): number {
+  switch (answerValue) {
+    case 'PESSIMO':
+      return 1;
+    case 'RUIM':
+      return 2;
+    case 'MEDIANA':
+      return 3;
+    case 'BOA':
+      return 4;
+    case 'OTIMA':
+      return 5;
+    default:
+      return 0;
+  }
+}
+
 export function EndpointsQRCode(app: express.Express) {
   // Recebe feedback público via QR Code
   app.post('/api/public/qrcode/feedback', async (req, res) => {
@@ -56,7 +73,7 @@ export function EndpointsQRCode(app: express.Express) {
     // 1. Buscar collection_point do tipo QR_CODE para a empresa (não criar no fluxo público)
     let cpQuery = supabase
       .from('collection_points')
-      .select('id, name, catalog_item_id')
+      .select('id, name, catalog_item_id, catalog_items(kind)')
       .eq('enterprise_id', payload.enterprise_id)
       .eq('type', 'QR_CODE')
       .eq('status', 'ACTIVE');
@@ -78,6 +95,69 @@ export function EndpointsQRCode(app: express.Express) {
 
     if (!collectionPoint) {
       return sendTypedError(res, 404, API_ERROR_COLLECTION_POINT_NOT_FOUND);
+    }
+
+    const cpCatalogItem = Array.isArray(collectionPoint.catalog_items)
+      ? collectionPoint.catalog_items[0]
+      : collectionPoint.catalog_items;
+
+    const contextScope: 'COMPANY' | 'PRODUCT' | 'SERVICE' | 'DEPARTMENT' =
+      cpCatalogItem?.kind === 'PRODUCT' ||
+      cpCatalogItem?.kind === 'SERVICE' ||
+      cpCatalogItem?.kind === 'DEPARTMENT'
+        ? cpCatalogItem.kind
+        : 'COMPANY';
+
+    const fetchQuestions = async (
+      scopeType: 'COMPANY' | 'PRODUCT' | 'SERVICE' | 'DEPARTMENT',
+      catalogItemId: string | null,
+    ) => {
+      let query = supabase
+        .from('questions_of_feedbacks')
+        .select('id, question_order, question_text')
+        .eq('enterprise_id', payload.enterprise_id)
+        .eq('scope_type', scopeType)
+        .eq('is_active', true)
+        .order('question_order', { ascending: true });
+
+      if (scopeType === 'COMPANY') {
+        query = query.is('catalog_item_id', null);
+      } else {
+        query = catalogItemId
+          ? query.eq('catalog_item_id', catalogItemId)
+          : query.is('catalog_item_id', null);
+      }
+
+      return await query;
+    };
+
+    let { data: currentQuestions, error: currentQuestionsError } =
+      await fetchQuestions(contextScope, collectionPoint.catalog_item_id ?? null);
+
+    if (
+      !currentQuestionsError &&
+      contextScope !== 'COMPANY' &&
+      (!currentQuestions || currentQuestions.length === 0)
+    ) {
+      const fallback = await fetchQuestions('COMPANY', null);
+      currentQuestions = fallback.data;
+      currentQuestionsError = fallback.error;
+    }
+
+    if (currentQuestionsError || !currentQuestions || currentQuestions.length !== 3) {
+      console.error('Perguntas não configuradas para o contexto do feedback:', currentQuestionsError);
+      return sendTypedError(res, 400, API_ERROR_INVALID_PAYLOAD);
+    }
+
+    const allowedQuestionIds = new Set(currentQuestions.map((question) => question.id));
+    const payloadQuestionIds = payload.answers.map((answer) => answer.question_id);
+
+    if (
+      payload.answers.length !== 3 ||
+      new Set(payloadQuestionIds).size !== 3 ||
+      payloadQuestionIds.some((questionId) => !allowedQuestionIds.has(questionId))
+    ) {
+      return sendTypedError(res, 400, API_ERROR_INVALID_PAYLOAD);
     }
 
     // 2. Buscar ou criar dispositivo rastreado PRIMEIRO
@@ -218,9 +298,12 @@ export function EndpointsQRCode(app: express.Express) {
     }
 
     // 3. Inserir feedback na tabela COM tracked_device_id (sem RETURNING para evitar RLS no SELECT)
+    const feedbackId = crypto.randomUUID();
+
     const { error: feedbackErr } = await supabase
       .from('feedback')
       .insert({
+        id: feedbackId,
         enterprise_id: payload.enterprise_id,
         collection_point_id: collectionPoint.id,
         tracked_device_id: trackedDevice!.id, // RELAÇÃO CORRETA!
@@ -230,6 +313,42 @@ export function EndpointsQRCode(app: express.Express) {
 
     if (feedbackErr) {
       console.error('Erro ao inserir feedback:', feedbackErr);
+      return sendTypedError(res, 500, API_ERROR_FEEDBACK_INSERT_FAILED);
+    }
+
+    const questionById = new Map(
+      currentQuestions.map((question) => [question.id, question]),
+    );
+
+    const answerRows = payload.answers.map((answer) => {
+      const question = questionById.get(answer.question_id);
+      const answerScore = mapAnswerScore(answer.answer_value);
+
+      return {
+        feedback_id: feedbackId,
+        question_id: answer.question_id,
+        question_text_snapshot: question?.question_text ?? '',
+        answer_value: answer.answer_value,
+        answer_score: answerScore,
+      };
+    });
+
+    if (answerRows.some((answerRow) => answerRow.answer_score === 0)) {
+      return sendTypedError(res, 400, API_ERROR_INVALID_PAYLOAD);
+    }
+
+    const { error: answersError } = await supabase
+      .from('feedback_question_answers')
+      .insert(answerRows);
+
+    if (answersError) {
+      console.error('Erro ao inserir respostas do feedback:', answersError);
+
+      await supabase
+        .from('feedback')
+        .delete()
+        .eq('id', feedbackId);
+
       return sendTypedError(res, 500, API_ERROR_FEEDBACK_INSERT_FAILED);
     }
 

@@ -16,6 +16,26 @@ export interface QrcodeFeedbackErrorResponse {
   details?: string;
 }
 
+export type FeedbackAnswerValue =
+  | 'PESSIMO'
+  | 'RUIM'
+  | 'MEDIANA'
+  | 'BOA'
+  | 'OTIMA';
+
+export interface FeedbackQuestionPublic {
+  id: string;
+  scope_type: 'COMPANY' | 'PRODUCT' | 'SERVICE' | 'DEPARTMENT';
+  catalog_item_id: string | null;
+  question_order: 1 | 2 | 3;
+  question_text: string;
+}
+
+export interface FeedbackQuestionAnswerInput {
+  question_id: string;
+  answer_value: FeedbackAnswerValue;
+}
+
 /**
  * Dados principais do feedback enviados pelo formulário público.
  * Usado em: pages/public/qrcode/enterprise.tsx e components/public/forms/fields/fieldsQRCode/ui.types.ts.
@@ -23,6 +43,7 @@ export interface QrcodeFeedbackErrorResponse {
 export interface FeedbackData {
   message: string;
   rating: number;
+  answers: FeedbackQuestionAnswerInput[];
   enterprise_id: string;
   collection_point_id?: string;
   catalog_item_id?: string;
