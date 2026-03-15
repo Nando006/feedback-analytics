@@ -239,13 +239,25 @@ async function getCompanyFeedbackQuestionsSnapshot(
     .eq('enterprise_id', enterpriseId)
     .eq('scope_type', 'COMPANY')
     .is('catalog_item_id', null)
-    .order('question_order', { ascending: true });
+    .order('question_order', { ascending: true })
+    .order('updated_at', { ascending: false })
+    .order('created_at', { ascending: false });
 
   if (error || !data) {
     return [];
   }
 
-  return data;
+  const firstByOrder = new Map<number, (typeof data)[number]>();
+
+  for (const item of data) {
+    if (!firstByOrder.has(item.question_order)) {
+      firstByOrder.set(item.question_order, item);
+    }
+  }
+
+  return Array.from(firstByOrder.values()).sort(
+    (left, right) => left.question_order - right.question_order,
+  );
 }
 
 async function syncCompanyFeedbackQuestions(params: {
@@ -261,40 +273,40 @@ async function syncCompanyFeedbackQuestions(params: {
     return { error: true as const };
   }
 
-  const existing = await getCompanyFeedbackQuestionsSnapshot(supabase, enterpriseId);
-  const existingByOrder = new Map(
-    existing.map((question) => [question.question_order, question]),
-  );
-
   for (const item of normalizedItems) {
-    const current = existingByOrder.get(item.question_order);
+    const { data: updatedRows, error: updateError } = await supabase
+      .from('questions_of_feedbacks')
+      .update({
+        question_text: item.question_text,
+        is_active: item.is_active,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('enterprise_id', enterpriseId)
+      .eq('scope_type', 'COMPANY')
+      .is('catalog_item_id', null)
+      .eq('question_order', item.question_order)
+      .select('id');
 
-    if (current?.id) {
-      const { error } = await supabase
-        .from('questions_of_feedbacks')
-        .update({
-          question_text: item.question_text,
-          is_active: item.is_active,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', current.id);
+    if (updateError) {
+      return { error: true as const };
+    }
 
-      if (error) {
-        return { error: true as const };
-      }
+    if ((updatedRows?.length ?? 0) > 0) {
       continue;
     }
 
-    const { error } = await supabase.from('questions_of_feedbacks').insert({
-      enterprise_id: enterpriseId,
-      scope_type: 'COMPANY',
-      catalog_item_id: null,
-      question_order: item.question_order,
-      question_text: item.question_text,
-      is_active: item.is_active,
-    });
+    const { error: insertError } = await supabase
+      .from('questions_of_feedbacks')
+      .insert({
+        enterprise_id: enterpriseId,
+        scope_type: 'COMPANY',
+        catalog_item_id: null,
+        question_order: item.question_order,
+        question_text: item.question_text,
+        is_active: item.is_active,
+      });
 
-    if (error) {
+    if (insertError) {
       return { error: true as const };
     }
   }
