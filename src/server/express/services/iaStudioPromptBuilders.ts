@@ -57,22 +57,22 @@ function getScopeInstructions(scopeType: FeedbackScopeType) {
     COMPANY: [
       'Contexto: feedbacks gerais da empresa (visão ampla da experiência).',
       'Priorize categorias como atendimento, comunicação, preço, ambiente, experiência geral e confiança.',
-      'Considere as respostas dinâmicas para qualificar pontos fortes e fracos de forma objetiva.',
+      'Considere respostas dinâmicas apenas como sinal auxiliar de polaridade, sem copiar rótulos para categorias/keywords.',
     ],
     PRODUCT: [
       'Contexto: feedbacks de produto específico.',
       'Priorize categorias como qualidade, durabilidade, custo-benefício, funcionalidades e embalagem.',
-      'Use o nome/descrição do produto e respostas dinâmicas para recomendações mais acionáveis de produto.',
+      'Use o nome/descrição do produto e respostas dinâmicas apenas para enriquecer contexto da análise textual.',
     ],
     SERVICE: [
       'Contexto: feedbacks de serviço específico.',
       'Priorize categorias como tempo de resposta, eficiência, cordialidade, clareza e resolução de problemas.',
-      'Considere respostas dinâmicas para detectar gargalos operacionais e oportunidades de melhoria do serviço.',
+      'Considere respostas dinâmicas apenas para apoiar inferências do texto, sem virar palavras-chave literais.',
     ],
     DEPARTMENT: [
       'Contexto: feedbacks de departamento/setor específico.',
       'Priorize categorias como processo interno, comunicação da equipe, agilidade e qualidade da interação.',
-      'Use respostas dinâmicas para orientar recomendações práticas para o time responsável.',
+      'Use respostas dinâmicas para apoiar recomendações práticas, mas extraia termos prioritariamente da descrição.',
     ],
   };
 
@@ -99,7 +99,12 @@ Regras IMPORTANTES:
 - Responda SEMPRE em JSON válido.
 - Não inclua comentários, texto fora do JSON ou explicações adicionais.
 - Use apenas os valores 'positive', 'neutral' ou 'negative' em "sentiment".
-- Em "categories" e "keywords", use arrays de strings curtas (ex.: ["atendimento", "preço"]).`;
+- Em "categories" e "keywords", use arrays de strings curtas (ex.: ["atendimento", "preço"]).
+- A fonte principal para categories/keywords é EXCLUSIVAMENTE o campo "message" do feedback.
+- Campos estruturados (rating, dynamic_answers, catalog_item) são contexto auxiliar e NÃO podem ser copiados literalmente.
+- NÃO use termos como "pessimo", "ruim", "mediana", "boa" ou "otima" como keywords/categorias.
+- NÃO copie texto das perguntas dinâmicas como keywords/categorias.
+- Se o texto for curto, prefira poucos termos relevantes e evidentes no próprio message.`;
 
   const scopeInstructions = getScopeInstructions(scopeType);
 
@@ -128,7 +133,18 @@ Regras IMPORTANTES:
   const payload = {
     analysis_scope: scopeType,
     enterprise: enterpriseContext,
-    feedbacks,
+    feedbacks: feedbacks.map((feedback) => ({
+      id: feedback.id,
+      created_at: feedback.created_at,
+      scope_type: feedback.scope_type,
+      message_primary: feedback.message,
+      context_signals: {
+        rating: feedback.rating,
+        dynamic_answers: feedback.dynamic_answers,
+        collection_point: feedback.collection_point,
+        catalog_item: feedback.catalog_item,
+      },
+    })),
   };
 
   return [

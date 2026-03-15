@@ -187,6 +187,169 @@ function buildEnterpriseContext(params: {
   };
 }
 
+const STRUCTURED_ANSWER_LABELS = new Set<string>([
+  'pessimo',
+  'ruim',
+  'mediana',
+  'boa',
+  'otima',
+]);
+
+const PORTUGUESE_STOPWORDS = new Set<string>([
+  'a',
+  'ao',
+  'aos',
+  'as',
+  'com',
+  'da',
+  'das',
+  'de',
+  'do',
+  'dos',
+  'e',
+  'em',
+  'na',
+  'nas',
+  'no',
+  'nos',
+  'o',
+  'os',
+  'para',
+  'por',
+  'que',
+  'sem',
+  'um',
+  'uma',
+]);
+
+function normalizeForComparison(value: string) {
+  return value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function tokenizeRelevantWords(value: string) {
+  return normalizeForComparison(value)
+    .split(' ')
+    .map((token) => token.trim())
+    .filter(
+      (token) =>
+        token.length >= 4 &&
+        !PORTUGUESE_STOPWORDS.has(token) &&
+        !STRUCTURED_ANSWER_LABELS.has(token),
+    );
+}
+
+function isGroundedInMessage(termNormalized: string, messageNormalized: string) {
+  if (!termNormalized || !messageNormalized) {
+    return false;
+  }
+
+  if (messageNormalized.includes(termNormalized)) {
+    return true;
+  }
+
+  const termTokens = tokenizeRelevantWords(termNormalized);
+  if (termTokens.length === 0) {
+    return false;
+  }
+
+  const messageTokens = new Set(tokenizeRelevantWords(messageNormalized));
+
+  return termTokens.some((token) => messageTokens.has(token));
+}
+
+function fallbackKeywordsFromMessage(message: string, maxCount: number) {
+  const tokens = tokenizeRelevantWords(message);
+  const unique = Array.from(new Set(tokens));
+  return unique.slice(0, maxCount);
+}
+
+function sanitizeTermList(params: {
+  terms: string[];
+  messageNormalized: string;
+  forbiddenTerms: Set<string>;
+  maxCount: number;
+}) {
+  const { terms, messageNormalized, forbiddenTerms, maxCount } = params;
+  const result: string[] = [];
+  const seen = new Set<string>();
+
+  for (const value of terms) {
+    const rawTerm = String(value ?? '').trim();
+    if (!rawTerm) continue;
+
+    const normalizedTerm = normalizeForComparison(rawTerm);
+    if (!normalizedTerm) continue;
+    if (forbiddenTerms.has(normalizedTerm)) continue;
+    if (!isGroundedInMessage(normalizedTerm, messageNormalized)) continue;
+    if (seen.has(normalizedTerm)) continue;
+
+    seen.add(normalizedTerm);
+    result.push(normalizedTerm);
+
+    if (result.length >= maxCount) {
+      break;
+    }
+  }
+
+  return result;
+}
+
+function sanitizeAnalysisTerms(params: {
+  feedback: FeedbackForAnalysis;
+  categories: string[];
+  keywords: string[];
+}) {
+  const { feedback, categories, keywords } = params;
+
+  const messageNormalized = normalizeForComparison(feedback.message ?? '');
+  const forbiddenTerms = new Set<string>(STRUCTURED_ANSWER_LABELS);
+
+  feedback.dynamic_answers.forEach((answer) => {
+    const normalizedAnswerValue = normalizeForComparison(answer.answer_value);
+    if (normalizedAnswerValue) {
+      forbiddenTerms.add(normalizedAnswerValue);
+    }
+
+    const normalizedQuestion = normalizeForComparison(answer.question_text_snapshot);
+    if (normalizedQuestion) {
+      forbiddenTerms.add(normalizedQuestion);
+    }
+  });
+
+  let sanitizedKeywords = sanitizeTermList({
+    terms: keywords,
+    messageNormalized,
+    forbiddenTerms,
+    maxCount: 6,
+  });
+
+  if (sanitizedKeywords.length === 0) {
+    sanitizedKeywords = fallbackKeywordsFromMessage(feedback.message ?? '', 4);
+  }
+
+  let sanitizedCategories = sanitizeTermList({
+    terms: categories,
+    messageNormalized,
+    forbiddenTerms,
+    maxCount: 4,
+  });
+
+  if (sanitizedCategories.length === 0) {
+    sanitizedCategories = sanitizedKeywords.slice(0, 2);
+  }
+
+  return {
+    categories: sanitizedCategories,
+    keywords: sanitizedKeywords,
+  };
+}
+
 function applyExecutionFilter(
   feedbacks: FeedbackForAnalysis[],
   options?: IaStudioOptions,
@@ -688,6 +851,7 @@ export async function analyzeFeedbacksForEnterprise(params: {
 
     const items = Array.isArray(parsed?.feedbacks) ? parsed.feedbacks : [];
     const allowedFeedbackIds = new Set(batch.feedbacks.map((item) => item.id));
+    const feedbackById = new Map(batch.feedbacks.map((feedback) => [feedback.id, feedback]));
 
     items.forEach((item) => {
       if (
@@ -698,15 +862,26 @@ export async function analyzeFeedbacksForEnterprise(params: {
         return;
       }
 
-      rowsByFeedbackId.set(item.feedback_id, {
-        feedback_id: item.feedback_id,
-        sentiment: item.sentiment,
+      const sourceFeedback = feedbackById.get(item.feedback_id);
+      if (!sourceFeedback) {
+        return;
+      }
+
+      const sanitizedTerms = sanitizeAnalysisTerms({
+        feedback: sourceFeedback,
         categories: Array.isArray(item.categories)
           ? item.categories
           : ([] as string[]),
         keywords: Array.isArray(item.keywords)
           ? item.keywords
           : ([] as string[]),
+      });
+
+      rowsByFeedbackId.set(item.feedback_id, {
+        feedback_id: item.feedback_id,
+        sentiment: item.sentiment,
+        categories: sanitizedTerms.categories,
+        keywords: sanitizedTerms.keywords,
       });
     });
   }
