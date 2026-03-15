@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useFetcher, useLoaderData } from 'react-router-dom';
 import Card from 'components/public/shared/card';
 import SVGImageProfile from 'components/svg/imageProfile';
@@ -25,7 +25,10 @@ export default function FeedbackQRCodeEnterprise() {
   const enterpriseName = loaderData?.enterpriseName ?? '';
   const itemName = loaderData?.itemName ?? '';
   const itemKind = loaderData?.itemKind ?? null;
-  const questions = loaderData?.questions ?? [];
+  const questions = useMemo(
+    () => loaderData?.questions ?? [],
+    [loaderData?.questions],
+  );
 
   const itemKindLabel =
     itemKind === 'PRODUCT'

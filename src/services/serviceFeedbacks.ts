@@ -3,7 +3,6 @@ import type {
   FeedbackStats,
   FeedbackFilters,
   FeedbackAnalysisResponse,
-  FeedbackSentiment,
   FeedbackInsightsReport,
   FeedbackAnalysisOptions,
   FeedbackInsightsReportOptions,

@@ -590,7 +590,7 @@ export function EndpointsFeedbacks(app: express.Express) {
               filteredCollectionPointIds = (companyCollectionPoints ?? []).map((cp) => cp.id);
             }
           } else if (catalogItemId) {
-            let pointsQuery = supabase
+            const pointsQuery = supabase
               .from('collection_points')
               .select('id')
               .eq('enterprise_id', enterprise.id)
