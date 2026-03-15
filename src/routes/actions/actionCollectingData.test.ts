@@ -186,4 +186,75 @@ describe('ActionCollectingData', () => {
       catalog_departments: [],
     });
   });
+
+  it('envia perguntas padrão da empresa quando company_feedback_questions é informado', async () => {
+    mockUpdateCollectingDataEnterprise.mockResolvedValue({
+      id: 'collecting-id',
+      enterprise_id: 'enterprise-id',
+      company_objective: null,
+      analytics_goal: null,
+      business_summary: null,
+      main_products_or_services: null,
+      uses_company_products: false,
+      uses_company_services: false,
+      uses_company_departments: false,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    });
+
+    await ActionCollectingData(
+      createArgs({
+        uses_company_products: 'false',
+        uses_company_services: 'false',
+        uses_company_departments: 'false',
+        company_feedback_questions: JSON.stringify([
+          {
+            question_order: 1,
+            question_text: 'Pergunta 1',
+            is_active: true,
+          },
+          {
+            question_order: 2,
+            question_text: 'Pergunta 2',
+            is_active: true,
+          },
+          {
+            question_order: 3,
+            question_text: 'Pergunta 3',
+            is_active: true,
+          },
+        ]),
+      }),
+    );
+
+    expect(mockUpdateCollectingDataEnterprise).toHaveBeenCalledWith({
+      company_objective: null,
+      analytics_goal: null,
+      business_summary: null,
+      main_products_or_services: null,
+      uses_company_products: false,
+      uses_company_services: false,
+      uses_company_departments: false,
+      catalog_products: [],
+      catalog_services: [],
+      catalog_departments: [],
+      company_feedback_questions: [
+        {
+          question_order: 1,
+          question_text: 'Pergunta 1',
+          is_active: true,
+        },
+        {
+          question_order: 2,
+          question_text: 'Pergunta 2',
+          is_active: true,
+        },
+        {
+          question_order: 3,
+          question_text: 'Pergunta 3',
+          is_active: true,
+        },
+      ],
+    });
+  });
 });
