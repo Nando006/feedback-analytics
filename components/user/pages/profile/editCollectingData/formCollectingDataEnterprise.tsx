@@ -194,7 +194,7 @@ export default function FormCollectingDataEnterprise() {
         companyFeedbackQuestions.map((question, index) => ({
           question_order: (index + 1) as 1 | 2 | 3,
           question_text: String(question.question_text ?? '').trim(),
-          is_active: true,
+          is_active: question.is_active ?? true,
         })),
       );
     }
