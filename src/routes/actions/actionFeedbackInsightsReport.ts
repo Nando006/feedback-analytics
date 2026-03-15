@@ -80,6 +80,20 @@ export async function ActionFeedbackInsightsReport({
       );
     }
 
+    if (typedError.code === 'collecting_data_required_for_analysis') {
+      return new Response(
+        JSON.stringify({
+          errorCode: 'collecting_data_required_for_analysis',
+          error:
+            'Para analisar os feedbacks, preencha as informações da empresa em Editar > Configuração de Coleta de Dados.',
+        }),
+        {
+          status: 422,
+          headers: { 'Content-Type': 'application/json' },
+        },
+      );
+    }
+
     return new Response(
       JSON.stringify({ error: 'Erro ao atualizar insights com IA' }),
       {

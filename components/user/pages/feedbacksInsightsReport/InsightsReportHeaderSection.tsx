@@ -1,8 +1,11 @@
+import { Link } from 'react-router-dom';
 import type { InsightsReportHeaderSectionProps } from './ui.types';
 
 export default function InsightsReportHeaderSection({
   updatedLabel,
   refreshing,
+  canAnalyze,
+  analysisBlockedMessage,
   availableScopes,
   selectedScope,
   selectedCatalogItemId,
@@ -30,6 +33,8 @@ export default function InsightsReportHeaderSection({
   const missingRequiredItem =
     itemSelectionEnabled &&
     (selectedCatalogItemId.trim().length === 0 || filteredCatalogItems.length === 0);
+
+  const analysisDisabled = refreshing || missingRequiredItem || !canAnalyze;
 
   const buttonLabel =
     selectedScope === 'COMPANY' ? 'Atualizar' : 'Analisar item selecionado';
@@ -99,11 +104,25 @@ export default function InsightsReportHeaderSection({
         <button
           type="button"
           onClick={onRefreshSelected}
-          disabled={refreshing || missingRequiredItem}
+          disabled={analysisDisabled}
           className="btn-primary font-poppins px-4 py-2 text-sm disabled:opacity-60"
         >
           {refreshing ? 'Atualizando...' : buttonLabel}
         </button>
+
+        {!canAnalyze && analysisBlockedMessage && (
+          <p className="max-w-[280px] text-right text-xs text-(--text-tertiary)">
+            {analysisBlockedMessage}
+            {' '}
+            <Link
+              to="/user/edit/collecting-data-enterprise"
+              className="font-semibold text-(--text-primary) underline underline-offset-2"
+            >
+              Configurar agora
+            </Link>
+            .
+          </p>
+        )}
       </div>
     </div>
   );

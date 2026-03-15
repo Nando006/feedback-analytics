@@ -4,6 +4,7 @@ import type {
   FeedbackInsightsReportOptions,
   FeedbackInsightsReport,
 } from 'lib/interfaces/domain/feedback.domain';
+import type { CollectingDataEnterprise } from 'lib/interfaces/entities/enterprise.entity';
 import { ServiceGetFeedbackInsightsReport } from 'src/services/serviceFeedbacks';
 import { loadFeedbackAnalysisData } from 'src/routes/load/loadFeedbackAnalysis';
 import { ServiceGetCollectingDataEnterprise } from 'src/services/serviceEnterprise';
@@ -19,6 +20,10 @@ export type FeedbackInsightsReportLoadData = {
   summary: FeedbackAnalysisSummary | null;
   availableScopes: FeedbackInsightScopeType[];
   catalogItemOptions: InsightsCatalogItemOption[];
+  analysisGuard: {
+    canAnalyze: boolean;
+    message: string | null;
+  };
   filters: {
     scope_type: FeedbackInsightScopeType;
     catalog_item_id: string | null;
@@ -26,10 +31,23 @@ export type FeedbackInsightsReportLoadData = {
   error: string | null;
 };
 
+function hasRequiredEnterpriseInfo(collecting: CollectingDataEnterprise | null) {
+  if (!collecting) {
+    return false;
+  }
+
+  const hasCompanyObjective = String(collecting.company_objective ?? '').trim().length > 0;
+  const hasAnalyticsGoal = String(collecting.analytics_goal ?? '').trim().length > 0;
+  const hasBusinessSummary = String(collecting.business_summary ?? '').trim().length > 0;
+
+  return hasCompanyObjective && hasAnalyticsGoal && hasBusinessSummary;
+}
+
 export async function loadFeedbackInsightsReportData(
   options?: FeedbackInsightsReportOptions,
 ): Promise<FeedbackInsightsReportLoadData> {
   const collectingData = await ServiceGetCollectingDataEnterprise().catch(() => null);
+  const canAnalyze = hasRequiredEnterpriseInfo(collectingData);
 
   const availableScopes: FeedbackInsightScopeType[] = ['COMPANY'];
   const catalogItemOptions: InsightsCatalogItemOption[] = [];
@@ -106,6 +124,12 @@ export async function loadFeedbackInsightsReportData(
     summary: analysisData.summary,
     availableScopes,
     catalogItemOptions,
+    analysisGuard: {
+      canAnalyze,
+      message: canAnalyze
+        ? null
+        : 'Para analisar os feedbacks, preencha as informações da empresa em Editar > Configuração de Coleta de Dados.',
+    },
     filters: {
       scope_type,
       catalog_item_id: catalog_item_id ?? null,

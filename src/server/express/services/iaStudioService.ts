@@ -187,6 +187,20 @@ function buildEnterpriseContext(params: {
   };
 }
 
+function hasRequiredEnterpriseInfoForAnalysis(
+  collecting: CollectingDataContext | null,
+) {
+  if (!collecting) {
+    return false;
+  }
+
+  const hasCompanyObjective = String(collecting.company_objective ?? '').trim().length > 0;
+  const hasAnalyticsGoal = String(collecting.analytics_goal ?? '').trim().length > 0;
+  const hasBusinessSummary = String(collecting.business_summary ?? '').trim().length > 0;
+
+  return hasCompanyObjective && hasAnalyticsGoal && hasBusinessSummary;
+}
+
 const STRUCTURED_ANSWER_LABELS = new Set<string>([
   'pessimo',
   'ruim',
@@ -684,6 +698,14 @@ export async function analyzeFeedbacksForEnterprise(params: {
       'Failed to fetch collecting data',
       500,
       'failed_to_fetch_collecting_data',
+    );
+  }
+
+  if (!hasRequiredEnterpriseInfoForAnalysis(collecting as CollectingDataContext | null)) {
+    throw new IaStudioServiceError(
+      'collecting_data_required_for_analysis',
+      422,
+      'collecting_data_required_for_analysis',
     );
   }
 

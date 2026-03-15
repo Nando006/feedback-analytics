@@ -65,6 +65,7 @@ export default function FeedbacksInsightsReport() {
     summary,
     error: loaderError,
     filters,
+    analysisGuard,
     availableScopes,
     catalogItemOptions,
   } =
@@ -75,7 +76,9 @@ export default function FeedbacksInsightsReport() {
   const [dismissedErrorKey, setDismissedErrorKey] = useState<string | null>(null);
   const [localError, setLocalError] = useState<{
     error: string;
-    errorCode: 'item_selection_required';
+    errorCode:
+      | 'item_selection_required'
+      | 'collecting_data_required_for_analysis';
   } | null>(null);
 
   const refreshing =
@@ -84,6 +87,7 @@ export default function FeedbacksInsightsReport() {
   const errorCode = localError?.errorCode ?? fetcher.data?.errorCode;
   const errorVariant =
     errorCode === 'insufficient_feedbacks_for_analysis' ||
+      errorCode === 'collecting_data_required_for_analysis' ||
       errorCode === 'item_selection_required'
       ? 'warning'
       : 'error';
@@ -132,6 +136,17 @@ export default function FeedbacksInsightsReport() {
   }, [fetcher.state, fetcher.data?.ok, revalidator]);
 
   const handleRefreshSelected = () => {
+    if (!analysisGuard.canAnalyze) {
+      setLocalError({
+        error:
+          analysisGuard.message ??
+          'Preencha as informações da empresa para liberar a análise.',
+        errorCode: 'collecting_data_required_for_analysis',
+      });
+      setDismissedErrorKey(null);
+      return;
+    }
+
     if (filters.scope_type !== 'COMPANY' && !filters.catalog_item_id) {
       setLocalError({
         error: 'Selecione um item para analisar este escopo.',
@@ -220,6 +235,8 @@ export default function FeedbacksInsightsReport() {
           <InsightsReportHeaderSection
             updatedLabel={updatedLabel}
             refreshing={refreshing}
+            canAnalyze={analysisGuard.canAnalyze}
+            analysisBlockedMessage={analysisGuard.message}
             availableScopes={availableScopes}
             selectedScope={filters.scope_type}
             selectedCatalogItemId={filters.catalog_item_id ?? ''}
