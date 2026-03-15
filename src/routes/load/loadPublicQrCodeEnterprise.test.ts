@@ -33,6 +33,7 @@ describe('loadPublicQrCodeEnterpriseData', () => {
       enterpriseName: '',
       itemName: null,
       itemKind: null,
+      questions: [],
       error: 'ID da empresa não encontrado na URL. Verifique o QR Code.',
     });
 
@@ -65,6 +66,7 @@ describe('loadPublicQrCodeEnterpriseData', () => {
       enterpriseName: 'Empresa X',
       itemName: 'Produto X',
       itemKind: 'PRODUCT',
+      questions: [],
       error: '',
     });
   });
@@ -83,6 +85,7 @@ describe('loadPublicQrCodeEnterpriseData', () => {
       enterpriseName: '',
       itemName: null,
       itemKind: null,
+      questions: [],
       error: 'Empresa não encontrada. Verifique se o QR Code é válido.',
     });
   });
