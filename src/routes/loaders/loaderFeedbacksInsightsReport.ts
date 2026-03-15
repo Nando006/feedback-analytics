@@ -23,16 +23,8 @@ export async function LoaderFeedbacksInsightsReport({ request }: LoaderFunctionA
   const scope_type = parseScopeType(url.searchParams.get('scope_type')) ?? 'COMPANY';
   const catalog_item_id = String(url.searchParams.get('catalog_item_id') ?? '').trim() || undefined;
 
-  const data = await loadFeedbackInsightsReportData({
+  return await loadFeedbackInsightsReportData({
     scope_type,
     catalog_item_id,
   });
-
-  return {
-    ...data,
-    filters: {
-      scope_type,
-      catalog_item_id: catalog_item_id ?? null,
-    },
-  };
 }

@@ -3,6 +3,7 @@ import type { InsightsReportHeaderSectionProps } from './ui.types';
 export default function InsightsReportHeaderSection({
   updatedLabel,
   refreshing,
+  availableScopes,
   selectedScope,
   selectedCatalogItemId,
   catalogItemOptions,
@@ -10,6 +11,16 @@ export default function InsightsReportHeaderSection({
   onCatalogItemChange,
   onRefreshSelected,
 }: InsightsReportHeaderSectionProps) {
+  const scopeLabels: Record<
+    'COMPANY' | 'PRODUCT' | 'SERVICE' | 'DEPARTMENT',
+    string
+  > = {
+    COMPANY: 'Empresa (visão geral)',
+    PRODUCT: 'Produto',
+    SERVICE: 'Serviço',
+    DEPARTMENT: 'Departamento',
+  };
+
   const itemSelectionEnabled = selectedScope !== 'COMPANY';
 
   const filteredCatalogItems = catalogItemOptions.filter(
@@ -50,10 +61,11 @@ export default function InsightsReportHeaderSection({
             }
             className="min-w-[220px] rounded-lg border border-(--quaternary-color)/20 bg-(--bg-primary) px-3 py-2 text-sm text-(--text-primary)"
           >
-            <option value="COMPANY">Empresa (visão geral)</option>
-            <option value="PRODUCT">Produto</option>
-            <option value="SERVICE">Serviço</option>
-            <option value="DEPARTMENT">Departamento</option>
+            {availableScopes.map((scope) => (
+              <option key={scope} value={scope}>
+                {scopeLabels[scope]}
+              </option>
+            ))}
           </select>
 
           {itemSelectionEnabled && (

@@ -65,6 +65,7 @@ export default function FeedbacksInsightsReport() {
     summary,
     error: loaderError,
     filters,
+    availableScopes,
     catalogItemOptions,
   } =
     useLoaderData<Awaited<ReturnType<typeof LoaderFeedbacksInsightsReport>>>();
@@ -219,6 +220,7 @@ export default function FeedbacksInsightsReport() {
           <InsightsReportHeaderSection
             updatedLabel={updatedLabel}
             refreshing={refreshing}
+            availableScopes={availableScopes}
             selectedScope={filters.scope_type}
             selectedCatalogItemId={filters.catalog_item_id ?? ''}
             catalogItemOptions={catalogItemOptions}

@@ -15,6 +15,7 @@ export type InsightsCatalogItemOption = {
 export interface InsightsReportHeaderSectionProps {
   updatedLabel: string | null;
   refreshing: boolean;
+  availableScopes: InsightScopeOption[];
   selectedScope: InsightScopeOption;
   selectedCatalogItemId: string;
   catalogItemOptions: InsightsCatalogItemOption[];
