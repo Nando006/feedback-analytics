@@ -40,6 +40,19 @@ export async function ActionFeedbackInsightsReport({
   const scope_type = parseScopeType(form.get('scope_type'));
   const catalog_item_id = String(form.get('catalog_item_id') ?? '').trim() || undefined;
 
+  if (scope_type && scope_type !== 'COMPANY' && !catalog_item_id) {
+    return new Response(
+      JSON.stringify({
+        errorCode: 'item_selection_required',
+        error: 'Selecione um item para analisar este escopo.',
+      }),
+      {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      },
+    );
+  }
+
   try {
     await ServiceRunFeedbackIAAnalysis({
       scope_type,

@@ -9,13 +9,19 @@ export default function InsightsReportHeaderSection({
   onScopeChange,
   onCatalogItemChange,
   onRefreshSelected,
-  onRefreshAll,
 }: InsightsReportHeaderSectionProps) {
   const itemSelectionEnabled = selectedScope !== 'COMPANY';
 
   const filteredCatalogItems = catalogItemOptions.filter(
     (item) => item.kind === selectedScope,
   );
+
+  const missingRequiredItem =
+    itemSelectionEnabled &&
+    (selectedCatalogItemId.trim().length === 0 || filteredCatalogItems.length === 0);
+
+  const buttonLabel =
+    selectedScope === 'COMPANY' ? 'Atualizar' : 'Analisar item selecionado';
 
   return (
     <div className="font-work-sans mb-4 flex flex-col md:flex-row items-start justify-between gap-4">
@@ -56,13 +62,19 @@ export default function InsightsReportHeaderSection({
               onChange={(event) => onCatalogItemChange(event.target.value)}
               className="min-w-[220px] rounded-lg border border-(--quaternary-color)/20 bg-(--bg-primary) px-3 py-2 text-sm text-(--text-primary)"
             >
-              <option value="">Todos os itens do escopo</option>
+              <option value="">Selecione um item</option>
               {filteredCatalogItems.map((item) => (
                 <option key={item.id} value={item.id}>
                   {item.name}
                 </option>
               ))}
             </select>
+          )}
+
+          {itemSelectionEnabled && filteredCatalogItems.length === 0 && (
+            <p className="text-xs text-(--text-tertiary)">
+              Nenhum item disponível neste escopo. Cadastre itens para analisar.
+            </p>
           )}
         </div>
 
@@ -72,24 +84,14 @@ export default function InsightsReportHeaderSection({
           </span>
         )}
 
-        <div className="flex flex-wrap justify-end gap-2">
-          <button
-            type="button"
-            onClick={onRefreshSelected}
-            disabled={refreshing}
-            className="btn-primary font-poppins px-4 py-2 text-sm disabled:opacity-60"
-          >
-            {refreshing ? 'Atualizando...' : 'Atualizar escopo selecionado'}
-          </button>
-          <button
-            type="button"
-            onClick={onRefreshAll}
-            disabled={refreshing}
-            className="rounded-lg border border-(--quaternary-color)/30 px-4 py-2 text-sm text-(--text-primary) hover:bg-(--quaternary-color)/10 disabled:opacity-60"
-          >
-            Atualizar análise completa
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={onRefreshSelected}
+          disabled={refreshing || missingRequiredItem}
+          className="btn-primary font-poppins px-4 py-2 text-sm disabled:opacity-60"
+        >
+          {refreshing ? 'Atualizando...' : buttonLabel}
+        </button>
       </div>
     </div>
   );

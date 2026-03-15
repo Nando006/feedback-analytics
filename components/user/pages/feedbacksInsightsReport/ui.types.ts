@@ -21,7 +21,6 @@ export interface InsightsReportHeaderSectionProps {
   onScopeChange: (scope: InsightScopeOption) => void;
   onCatalogItemChange: (catalogItemId: string) => void;
   onRefreshSelected: () => void;
-  onRefreshAll: () => void;
 }
 
 /**

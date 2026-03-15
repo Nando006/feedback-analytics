@@ -72,18 +72,49 @@ export default function FeedbacksInsightsReport() {
   const fetcher = useFetcher<FeedbackInsightsReportActionData>();
   const shouldRevalidateRef = useRef(false);
   const [dismissedErrorKey, setDismissedErrorKey] = useState<string | null>(null);
+  const [localError, setLocalError] = useState<{
+    error: string;
+    errorCode: 'item_selection_required';
+  } | null>(null);
 
   const refreshing =
     fetcher.state !== 'idle' || revalidator.state === 'loading';
-  const error = fetcher.data?.error ?? loaderError;
+  const error = localError?.error ?? fetcher.data?.error ?? loaderError;
+  const errorCode = localError?.errorCode ?? fetcher.data?.errorCode;
   const errorVariant =
-    fetcher.data?.errorCode === 'insufficient_feedbacks_for_analysis'
+    errorCode === 'insufficient_feedbacks_for_analysis' ||
+      errorCode === 'item_selection_required'
       ? 'warning'
       : 'error';
   const errorKey = error
-    ? `${fetcher.data?.errorCode ?? 'generic'}:${error}`
+    ? `${errorCode ?? 'generic'}:${error}`
     : null;
   const showErrorPopup = Boolean(errorKey && dismissedErrorKey !== errorKey);
+
+  useEffect(() => {
+    if (filters.scope_type === 'COMPANY') {
+      return;
+    }
+
+    const scopeItems = catalogItemOptions.filter((item) => item.kind === filters.scope_type);
+    const hasSelectedItem =
+      Boolean(filters.catalog_item_id) &&
+      scopeItems.some((item) => item.id === filters.catalog_item_id);
+
+    if (hasSelectedItem || scopeItems.length === 0) {
+      return;
+    }
+
+    const nextParams = new URLSearchParams(searchParams);
+    nextParams.set('catalog_item_id', scopeItems[0].id);
+    setSearchParams(nextParams, { replace: true });
+  }, [
+    filters.scope_type,
+    filters.catalog_item_id,
+    catalogItemOptions,
+    searchParams,
+    setSearchParams,
+  ]);
 
   useEffect(() => {
     const finishedRequest = fetcher.state === 'idle' && shouldRevalidateRef.current;
@@ -100,6 +131,15 @@ export default function FeedbacksInsightsReport() {
   }, [fetcher.state, fetcher.data?.ok, revalidator]);
 
   const handleRefreshSelected = () => {
+    if (filters.scope_type !== 'COMPANY' && !filters.catalog_item_id) {
+      setLocalError({
+        error: 'Selecione um item para analisar este escopo.',
+        errorCode: 'item_selection_required',
+      });
+      setDismissedErrorKey(null);
+      return;
+    }
+
     const form = new FormData();
     form.set('intent', INTENT_FEEDBACK_RUN_IA);
     form.set('scope_type', filters.scope_type);
@@ -108,14 +148,7 @@ export default function FeedbacksInsightsReport() {
       form.set('catalog_item_id', filters.catalog_item_id);
     }
 
-    setDismissedErrorKey(null);
-    shouldRevalidateRef.current = true;
-    fetcher.submit(form, { method: 'post' });
-  };
-
-  const handleRefreshAll = () => {
-    const form = new FormData();
-    form.set('intent', INTENT_FEEDBACK_RUN_IA);
+    setLocalError(null);
     setDismissedErrorKey(null);
     shouldRevalidateRef.current = true;
     fetcher.submit(form, { method: 'post' });
@@ -124,7 +157,21 @@ export default function FeedbacksInsightsReport() {
   const handleScopeChange = (scope: InsightScopeOption) => {
     const nextParams = new URLSearchParams(searchParams);
     nextParams.set('scope_type', scope);
-    nextParams.delete('catalog_item_id');
+
+    if (scope === 'COMPANY') {
+      nextParams.delete('catalog_item_id');
+    } else {
+      const scopeItems = catalogItemOptions.filter((item) => item.kind === scope);
+
+      if (scopeItems.length > 0) {
+        nextParams.set('catalog_item_id', scopeItems[0].id);
+      } else {
+        nextParams.delete('catalog_item_id');
+      }
+    }
+
+    setLocalError(null);
+    setDismissedErrorKey(null);
     setSearchParams(nextParams);
   };
 
@@ -137,6 +184,8 @@ export default function FeedbacksInsightsReport() {
       nextParams.delete('catalog_item_id');
     }
 
+    setLocalError(null);
+    setDismissedErrorKey(null);
     setSearchParams(nextParams);
   };
 
@@ -176,7 +225,6 @@ export default function FeedbacksInsightsReport() {
             onScopeChange={handleScopeChange}
             onCatalogItemChange={handleCatalogItemChange}
             onRefreshSelected={handleRefreshSelected}
-            onRefreshAll={handleRefreshAll}
           />
 
           <InsightsReportMoodSection
@@ -218,7 +266,13 @@ export default function FeedbacksInsightsReport() {
         <InsightsReportErrorState
           error={error}
           variant={errorVariant}
-          onClose={() => setDismissedErrorKey(errorKey)}
+          onClose={() => {
+            if (localError) {
+              setLocalError(null);
+            }
+
+            setDismissedErrorKey(errorKey);
+          }}
         />
       )}
     </>

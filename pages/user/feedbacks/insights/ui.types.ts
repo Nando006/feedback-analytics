@@ -5,5 +5,7 @@
 export type FeedbackInsightsReportActionData = {
   ok?: boolean;
   error?: string;
-  errorCode?: 'insufficient_feedbacks_for_analysis';
+  errorCode?:
+    | 'insufficient_feedbacks_for_analysis'
+    | 'item_selection_required';
 };
