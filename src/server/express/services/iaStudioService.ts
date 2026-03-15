@@ -56,6 +56,8 @@ export type IaStudioOptions = {
   catalog_item_id?: string;
 };
 
+const MIN_FEEDBACKS_FOR_RELEVANT_ANALYSIS = 10;
+
 type AnalysisBatch = {
   scopeType: FeedbackScopeType;
   catalogItemId: string | null;
@@ -549,6 +551,14 @@ export async function analyzeFeedbacksForEnterprise(params: {
       globalInsights: null,
       contexts: [],
     };
+  }
+
+  if (feedbacksForExecution.length < MIN_FEEDBACKS_FOR_RELEVANT_ANALYSIS) {
+    throw new IaStudioServiceError(
+      'insufficient_feedbacks_for_analysis',
+      422,
+      'insufficient_feedbacks_for_analysis',
+    );
   }
 
   // 5) Evitar reprocessar feedbacks já analisados buscando os IDs já presentes em feedback_analysis

@@ -4,6 +4,11 @@ import { INTENT_FEEDBACK_RUN_IA } from 'lib/constants/routes/intents';
 import { ACTION_ERROR_INVALID_INTENT } from 'lib/constants/routes/errors';
 import type { FeedbackInsightScopeType } from 'lib/interfaces/domain/feedback.domain';
 
+type HttpActionError = Error & {
+  status?: number;
+  code?: string;
+};
+
 function parseScopeType(value: FormDataEntryValue | null): FeedbackInsightScopeType | undefined {
   const normalized = String(value ?? '').trim().toUpperCase();
 
@@ -45,7 +50,22 @@ export async function ActionFeedbackInsightsReport({
       status: 200,
       headers: { 'Content-Type': 'application/json' },
     });
-  } catch {
+  } catch (error) {
+    const typedError = error as HttpActionError;
+
+    if (typedError.code === 'insufficient_feedbacks_for_analysis') {
+      return new Response(
+        JSON.stringify({
+          error:
+            'Há poucos feedbacks neste contexto para uma análise relevante. É necessário no mínimo 10 feedbacks.',
+        }),
+        {
+          status: 422,
+          headers: { 'Content-Type': 'application/json' },
+        },
+      );
+    }
+
     return new Response(
       JSON.stringify({ error: 'Erro ao atualizar insights com IA' }),
       {
