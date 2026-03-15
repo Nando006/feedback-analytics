@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import {
   useFetcher,
   useLoaderData,
@@ -71,16 +71,25 @@ export default function FeedbacksInsightsReport() {
     useLoaderData<Awaited<ReturnType<typeof LoaderFeedbacksInsightsReport>>>();
   const revalidator = useRevalidator();
   const fetcher = useFetcher<FeedbackInsightsReportActionData>();
+  const shouldRevalidateRef = useRef(false);
 
   const refreshing =
     fetcher.state !== 'idle' || revalidator.state === 'loading';
   const error = fetcher.data?.error ?? loaderError;
 
   useEffect(() => {
-    if (fetcher.state === 'idle' && fetcher.data?.ok) {
+    const finishedRequest = fetcher.state === 'idle' && shouldRevalidateRef.current;
+
+    if (!finishedRequest) {
+      return;
+    }
+
+    shouldRevalidateRef.current = false;
+
+    if (fetcher.data?.ok) {
       revalidator.revalidate();
     }
-  }, [fetcher.state, fetcher.data, revalidator]);
+  }, [fetcher.state, fetcher.data?.ok, revalidator]);
 
   const handleRefreshSelected = () => {
     const form = new FormData();
@@ -91,12 +100,14 @@ export default function FeedbacksInsightsReport() {
       form.set('catalog_item_id', filters.catalog_item_id);
     }
 
+    shouldRevalidateRef.current = true;
     fetcher.submit(form, { method: 'post' });
   };
 
   const handleRefreshAll = () => {
     const form = new FormData();
     form.set('intent', INTENT_FEEDBACK_RUN_IA);
+    shouldRevalidateRef.current = true;
     fetcher.submit(form, { method: 'post' });
   };
 
