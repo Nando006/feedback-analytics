@@ -75,6 +75,7 @@ export interface InsightsReportRecommendationsSectionProps {
 export interface InsightsReportErrorStateProps {
   error: string;
   variant?: 'error' | 'warning';
+  onClose: () => void;
 }
 
 /**

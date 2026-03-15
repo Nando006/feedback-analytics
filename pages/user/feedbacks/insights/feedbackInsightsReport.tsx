@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   useFetcher,
   useLoaderData,
@@ -12,7 +12,6 @@ import type { LoaderFeedbacksInsightsReport } from 'src/routes/loaders/loaderFee
 import { INTENT_FEEDBACK_RUN_IA } from 'lib/constants/routes/intents';
 import InsightsReportLoadingState from 'components/user/pages/feedbacksInsightsReport/InsightsReportLoadingState';
 import InsightsReportErrorState from 'components/user/pages/feedbacksInsightsReport/InsightsReportErrorState';
-import InsightsReportEmptyState from 'components/user/pages/feedbacksInsightsReport/InsightsReportEmptyState';
 import InsightsReportHeaderSection from 'components/user/pages/feedbacksInsightsReport/InsightsReportHeaderSection';
 import InsightsReportMoodSection from 'components/user/pages/feedbacksInsightsReport/InsightsReportMoodSection';
 import InsightsReportSummarySection from 'components/user/pages/feedbacksInsightsReport/InsightsReportSummarySection';
@@ -72,6 +71,7 @@ export default function FeedbacksInsightsReport() {
   const revalidator = useRevalidator();
   const fetcher = useFetcher<FeedbackInsightsReportActionData>();
   const shouldRevalidateRef = useRef(false);
+  const [dismissedErrorKey, setDismissedErrorKey] = useState<string | null>(null);
 
   const refreshing =
     fetcher.state !== 'idle' || revalidator.state === 'loading';
@@ -80,6 +80,10 @@ export default function FeedbacksInsightsReport() {
     fetcher.data?.errorCode === 'insufficient_feedbacks_for_analysis'
       ? 'warning'
       : 'error';
+  const errorKey = error
+    ? `${fetcher.data?.errorCode ?? 'generic'}:${error}`
+    : null;
+  const showErrorPopup = Boolean(errorKey && dismissedErrorKey !== errorKey);
 
   useEffect(() => {
     const finishedRequest = fetcher.state === 'idle' && shouldRevalidateRef.current;
@@ -104,6 +108,7 @@ export default function FeedbacksInsightsReport() {
       form.set('catalog_item_id', filters.catalog_item_id);
     }
 
+    setDismissedErrorKey(null);
     shouldRevalidateRef.current = true;
     fetcher.submit(form, { method: 'post' });
   };
@@ -111,6 +116,7 @@ export default function FeedbacksInsightsReport() {
   const handleRefreshAll = () => {
     const form = new FormData();
     form.set('intent', INTENT_FEEDBACK_RUN_IA);
+    setDismissedErrorKey(null);
     shouldRevalidateRef.current = true;
     fetcher.submit(form, { method: 'post' });
   };
@@ -138,22 +144,9 @@ export default function FeedbacksInsightsReport() {
     return <InsightsReportLoadingState />;
   }
 
-  if (error) {
-    return <InsightsReportErrorState error={error} variant={errorVariant} />;
-  }
-
   const hasContent =
     report && ((report.summary && report.summary.trim().length > 0) ||
       (report.recommendations && report.recommendations.length > 0));
-
-  if (!hasContent) {
-    return (
-      <InsightsReportEmptyState
-        refreshing={refreshing}
-        onRefresh={handleRefreshSelected}
-      />
-    );
-  }
 
   const updatedLabel =
     report?.updatedAt != null
@@ -171,38 +164,63 @@ export default function FeedbacksInsightsReport() {
     total > 0 ? Math.round((summary!.sentiments.negative / total) * 100) : 0;
 
   return (
-    <div className="font-work-sans space-y-6 pb-8">
-      <div className="relative overflow-hidden rounded-2xl border border-(--quaternary-color)/10 bg-gradient-to-br from-(--bg-secondary) to-(--sixth-color) p-6 glass-card space-y-6">
-        <InsightsReportHeaderSection
-          updatedLabel={updatedLabel}
-          refreshing={refreshing}
-          selectedScope={filters.scope_type}
-          selectedCatalogItemId={filters.catalog_item_id ?? ''}
-          catalogItemOptions={catalogItemOptions}
-          onScopeChange={handleScopeChange}
-          onCatalogItemChange={handleCatalogItemChange}
-          onRefreshSelected={handleRefreshSelected}
-          onRefreshAll={handleRefreshAll}
-        />
-
-        <InsightsReportMoodSection
-          mood={mood}
-          summary={summary}
-          positivePct={positivePct}
-          neutralPct={neutralPct}
-          negativePct={negativePct}
-        />
-
-        {report?.summary && report.summary.trim().length > 0 && (
-          <InsightsReportSummarySection summaryText={report.summary} />
-        )}
-
-        {report?.recommendations && report.recommendations.length > 0 && (
-          <InsightsReportRecommendationsSection
-            recommendations={report.recommendations}
+    <>
+      <div className="font-work-sans space-y-6 pb-8">
+        <div className="relative overflow-hidden rounded-2xl border border-(--quaternary-color)/10 bg-gradient-to-br from-(--bg-secondary) to-(--sixth-color) p-6 glass-card space-y-6">
+          <InsightsReportHeaderSection
+            updatedLabel={updatedLabel}
+            refreshing={refreshing}
+            selectedScope={filters.scope_type}
+            selectedCatalogItemId={filters.catalog_item_id ?? ''}
+            catalogItemOptions={catalogItemOptions}
+            onScopeChange={handleScopeChange}
+            onCatalogItemChange={handleCatalogItemChange}
+            onRefreshSelected={handleRefreshSelected}
+            onRefreshAll={handleRefreshAll}
           />
-        )}
+
+          <InsightsReportMoodSection
+            mood={mood}
+            summary={summary}
+            positivePct={positivePct}
+            neutralPct={neutralPct}
+            negativePct={negativePct}
+          />
+
+          {!hasContent && (
+            <div className="rounded-2xl border border-(--quaternary-color)/20 bg-(--bg-primary)/60 p-5">
+              <h3 className="font-montserrat text-base font-semibold text-(--text-primary)">
+                Ainda não há relatório para este escopo
+              </h3>
+              <p className="mt-2 text-sm text-(--text-secondary)">
+                Selecione outro escopo no filtro acima ou clique em
+                {' '}
+                <span className="font-semibold text-(--text-primary)">Atualizar escopo selecionado</span>
+                {' '}
+                para gerar um novo relatório.
+              </p>
+            </div>
+          )}
+
+          {report?.summary && report.summary.trim().length > 0 && (
+            <InsightsReportSummarySection summaryText={report.summary} />
+          )}
+
+          {report?.recommendations && report.recommendations.length > 0 && (
+            <InsightsReportRecommendationsSection
+              recommendations={report.recommendations}
+            />
+          )}
+        </div>
       </div>
-    </div>
+
+      {showErrorPopup && error && (
+        <InsightsReportErrorState
+          error={error}
+          variant={errorVariant}
+          onClose={() => setDismissedErrorKey(errorKey)}
+        />
+      )}
+    </>
   );
 }
