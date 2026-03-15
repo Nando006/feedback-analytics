@@ -41,12 +41,31 @@ export interface CollectingDataEnterprise {
   uses_company_products: boolean;
   uses_company_services: boolean;
   uses_company_departments: boolean;
+  company_feedback_questions?: CompanyFeedbackQuestion[];
   catalog_products?: CatalogItem[];
   catalog_services?: CatalogItem[];
   catalog_departments?: CatalogItem[];
   created_at: string;
   updated_at: string;
 }
+
+export interface CompanyFeedbackQuestion {
+  id: string;
+  enterprise_id: string;
+  scope_type: 'COMPANY';
+  catalog_item_id: null;
+  question_order: 1 | 2 | 3;
+  question_text: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export type CompanyFeedbackQuestionInput = {
+  question_order: 1 | 2 | 3;
+  question_text: string;
+  is_active?: boolean;
+};
 
 export type CatalogItemKind = 'PRODUCT' | 'SERVICE' | 'DEPARTMENT';
 
@@ -89,6 +108,7 @@ export type UpdateCollectingDataPayload = Partial<
   catalog_products?: CatalogItemInput[] | null;
   catalog_services?: CatalogItemInput[] | null;
   catalog_departments?: CatalogItemInput[] | null;
+  company_feedback_questions?: CompanyFeedbackQuestionInput[] | null;
 };
 
 /**

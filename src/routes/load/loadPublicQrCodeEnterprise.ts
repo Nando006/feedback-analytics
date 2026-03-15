@@ -1,4 +1,5 @@
 import { ServiceGetEnterprisePublic } from 'src/services/serviceEnterprise';
+import type { FeedbackQuestionPublic } from 'lib/interfaces/contracts/qrcode.contract';
 
 export type PublicQrCodeEnterpriseLoadData = {
   enterpriseId: string | null;
@@ -7,6 +8,7 @@ export type PublicQrCodeEnterpriseLoadData = {
   enterpriseName: string;
   itemName: string | null;
   itemKind: 'PRODUCT' | 'SERVICE' | 'DEPARTMENT' | null;
+  questions: FeedbackQuestionPublic[];
   error: string;
 };
 
@@ -27,6 +29,7 @@ export async function loadPublicQrCodeEnterpriseData(
       enterpriseName: '',
       itemName: null,
       itemKind: null,
+      questions: [],
       error: 'ID da empresa não encontrado na URL. Verifique o QR Code.',
     };
   }
@@ -44,6 +47,7 @@ export async function loadPublicQrCodeEnterpriseData(
       enterpriseName: enterprise.name || 'Empresa',
       itemName: enterprise.item_name ?? null,
       itemKind: enterprise.item_kind ?? null,
+      questions: enterprise.questions ?? [],
       error: '',
     };
   } catch (err) {
@@ -56,6 +60,7 @@ export async function loadPublicQrCodeEnterpriseData(
       enterpriseName: '',
       itemName: null,
       itemKind: null,
+      questions: [],
       error: 'Empresa não encontrada. Verifique se o QR Code é válido.',
     };
   }

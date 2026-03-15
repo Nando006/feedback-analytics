@@ -9,6 +9,8 @@
 - `public.customer`: cadastro de clientes finais associados à empresa.
 - `public.tracked_devices`: rastreio de dispositivos por fingerprint, bloqueio e contagem de feedbacks.
 - `public.feedback`: feedback bruto enviado pelo cliente (mensagem, nota, vínculo com ponto/dispositivo/empresa).
+- `public.questions_of_feedbacks`: perguntas configuráveis por contexto de feedback (empresa/produto/serviço/departamento).
+- `public.feedback_question_answers`: respostas das perguntas dinâmicas vinculadas a cada feedback enviado.
 - `public.feedback_analysis`: resultado analítico do feedback (sentimento, categorias e palavras-chave).
 - `public.feedback_insights_report`: relatório consolidado de insights e recomendações por empresa.
 

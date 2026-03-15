@@ -1,5 +1,13 @@
 import type { FeedbackCardProps } from './ui.types';
 
+const ANSWER_LABEL: Record<string, string> = {
+  PESSIMO: 'Péssimo',
+  RUIM: 'Ruim',
+  MEDIANA: 'Mediana',
+  BOA: 'Boa',
+  OTIMA: 'Ótima',
+};
+
 export default function FeedbackCard({ feedback, onClick }: FeedbackCardProps) {
   const catalogItem = Array.isArray(feedback.collection_points?.catalog_items)
     ? (feedback.collection_points?.catalog_items[0] ?? null)
@@ -17,6 +25,7 @@ export default function FeedbackCard({ feedback, onClick }: FeedbackCardProps) {
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }, (_, index) => (
       <span
+        key={`feedback-star-${index}`}
         className={`text-lg ${index < rating ? 'text-amber-300' : 'text-(--text-tertiary)'
           }`}>
         ★
@@ -70,6 +79,8 @@ export default function FeedbackCard({ feedback, onClick }: FeedbackCardProps) {
       ? (feedback.collection_points?.name || '').replace(/^QR Code\s*-\s*.+$/, 'QR Code')
       : (feedback.collection_points?.name || 'N/A');
 
+  const questionAnswers = feedback.feedback_question_answers ?? [];
+
   return (
     <div
       className={`font-work-sans relative overflow-hidden rounded-2xl border border-(--quaternary-color)/10 bg-gradient-to-br from-(--bg-secondary) to-(--sixth-color) p-6 glass-card ${onClick
@@ -103,6 +114,20 @@ export default function FeedbackCard({ feedback, onClick }: FeedbackCardProps) {
           {feedback.message}
         </p>
       </div>
+
+      {questionAnswers.length > 0 && (
+        <div className="mb-5 flex flex-wrap gap-2">
+          {questionAnswers.slice(0, 3).map((answer, index) => (
+            <span
+              key={`${feedback.id}-question-answer-${answer.question_id}`}
+              title={answer.question_text_snapshot}
+              className="rounded-full border border-(--quaternary-color)/15 bg-(--seventh-color) px-3 py-1 text-xs text-(--text-secondary)"
+            >
+              {index + 1}. {ANSWER_LABEL[answer.answer_value] ?? answer.answer_value}
+            </span>
+          ))}
+        </div>
+      )}
 
       {/* Informações adicionais */}
       <div className="flex justify-between items-center text-sm">

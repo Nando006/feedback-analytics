@@ -2,6 +2,14 @@ import type { FeedbackDetailsModalProps } from './ui.types';
 
 import { formatDateTime } from 'lib/utils/FormatDate';
 
+const ANSWER_LABEL: Record<string, string> = {
+  PESSIMO: 'Péssimo',
+  RUIM: 'Ruim',
+  MEDIANA: 'Mediana',
+  BOA: 'Boa',
+  OTIMA: 'Ótima',
+};
+
 export default function FeedbackDetailsModal({
   selectedFeedback,
   onClose,
@@ -32,6 +40,8 @@ export default function FeedbackDetailsModal({
     selectedFeedback.collection_points?.type === 'QR_CODE'
       ? (selectedFeedback.collection_points?.name || '').replace(/^QR Code\s*-\s*.+$/, 'QR Code')
       : (selectedFeedback.collection_points?.name || 'N/A');
+
+  const questionAnswers = selectedFeedback.feedback_question_answers ?? [];
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose}>
@@ -96,6 +106,31 @@ export default function FeedbackDetailsModal({
             ) : (
               <div className="text-sm text-(--text-tertiary)">
                 Nenhuma informação de ponto de coleta.
+              </div>
+            )}
+          </div>
+
+          <div className="space-y-2 rounded-xl border border-(--quaternary-color)/10 bg-(--seventh-color) p-4">
+            <h3 className="text-sm font-montserrat font-medium text-(--text-secondary)">Perguntas Dinâmicas</h3>
+            {questionAnswers.length > 0 ? (
+              <div className="space-y-2">
+                {questionAnswers.slice(0, 3).map((answer, index) => (
+                  <div
+                    key={`${selectedFeedback.id}-question-answer-${answer.question_id}`}
+                    className="rounded-lg border border-(--quaternary-color)/10 bg-(--bg-secondary) px-3 py-2"
+                  >
+                    <p className="text-xs text-(--text-tertiary)">
+                      {index + 1}. {answer.question_text_snapshot}
+                    </p>
+                    <p className="mt-1 text-sm font-medium text-(--text-primary)">
+                      {ANSWER_LABEL[answer.answer_value] ?? answer.answer_value}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-sm text-(--text-tertiary)">
+                Este feedback não possui respostas das perguntas dinâmicas.
               </div>
             )}
           </div>

@@ -1,5 +1,13 @@
 import type { FeedbackAnalysisSummary } from 'lib/interfaces/domain/feedback.domain';
 
+export type InsightScopeOption = 'COMPANY' | 'PRODUCT' | 'SERVICE' | 'DEPARTMENT';
+
+export type InsightsCatalogItemOption = {
+  id: string;
+  name: string;
+  kind: Exclude<InsightScopeOption, 'COMPANY'>;
+};
+
 /**
  * Props do cabeçalho da tela de insights em relatório.
  * Usado em: components/user/pages/feedbacksInsightsReport/InsightsReportHeaderSection.tsx.
@@ -7,7 +15,15 @@ import type { FeedbackAnalysisSummary } from 'lib/interfaces/domain/feedback.dom
 export interface InsightsReportHeaderSectionProps {
   updatedLabel: string | null;
   refreshing: boolean;
-  onRefresh: () => void;
+  canAnalyze: boolean;
+  analysisBlockedMessage: string | null;
+  availableScopes: InsightScopeOption[];
+  selectedScope: InsightScopeOption;
+  selectedCatalogItemId: string;
+  catalogItemOptions: InsightsCatalogItemOption[];
+  onScopeChange: (scope: InsightScopeOption) => void;
+  onCatalogItemChange: (catalogItemId: string) => void;
+  onRefreshSelected: () => void;
 }
 
 /**
@@ -60,6 +76,8 @@ export interface InsightsReportRecommendationsSectionProps {
  */
 export interface InsightsReportErrorStateProps {
   error: string;
+  variant?: 'error' | 'warning';
+  onClose: () => void;
 }
 
 /**

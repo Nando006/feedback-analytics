@@ -1,5 +1,6 @@
 import type {
   CatalogItemInput,
+  CompanyFeedbackQuestionInput,
   CollectingDataEnterprise,
 } from 'lib/interfaces/entities/enterprise.entity';
 import { useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent } from 'react';
@@ -9,6 +10,26 @@ import FieldAnalyticsGoal from './fields/fieldAnalyticsGoal';
 import FieldBusinessSummary from './fields/fieldBusinessSummary';
 import FieldUsesCompanyProducts from './fields/fieldUsesCompanyProducts';
 import FieldCatalogItems from './fields/fieldCatalogItems';
+import FieldCompanyFeedbackQuestions from './fields/fieldCompanyFeedbackQuestions';
+
+const DEFAULT_COMPANY_FEEDBACK_QUESTIONS: CompanyFeedbackQuestionInput[] = [
+  {
+    question_order: 1,
+    question_text: 'Como foi sua experiência em relação ao atendimento?',
+    is_active: true,
+  },
+  {
+    question_order: 2,
+    question_text: 'O que você achou da qualidade do produto/serviço?',
+    is_active: true,
+  },
+  {
+    question_order: 3,
+    question_text:
+      'Como você avalia a relação entre o valor pago e a qualidade do produto/serviço?',
+    is_active: true,
+  },
+];
 
 function normalizeCatalogInput(items: CatalogItemInput[] | undefined) {
   return (items ?? []).map((item, index) => ({
@@ -28,6 +49,33 @@ function buildLegacyProducts(items: CatalogItemInput[]) {
     .map((item) => String(item.name ?? '').trim())
     .filter((name) => name.length > 0)
     .join('\n');
+}
+
+function normalizeCompanyFeedbackQuestions(
+  items: CollectingDataEnterprise['company_feedback_questions'] | undefined,
+) {
+  const byOrder = new Map<number, CompanyFeedbackQuestionInput>();
+
+  (items ?? []).forEach((item) => {
+    const order = Number(item.question_order);
+    if (!Number.isInteger(order) || order < 1 || order > 3) return;
+
+    byOrder.set(order, {
+      question_order: order as 1 | 2 | 3,
+      question_text: item.question_text ?? '',
+      is_active: item.is_active ?? true,
+    });
+  });
+
+  return DEFAULT_COMPANY_FEEDBACK_QUESTIONS.map((fallback, index) => {
+    const current = byOrder.get(index + 1);
+
+    return {
+      question_order: ((index + 1) as 1 | 2 | 3),
+      question_text: current?.question_text ?? fallback.question_text,
+      is_active: current?.is_active ?? true,
+    };
+  });
 }
 
 export default function FormCollectingDataEnterprise() {
@@ -58,6 +106,11 @@ export default function FormCollectingDataEnterprise() {
     [collecting?.catalog_departments],
   );
 
+  const initialCompanyFeedbackQuestions = useMemo(
+    () => normalizeCompanyFeedbackQuestions(collecting?.company_feedback_questions),
+    [collecting?.company_feedback_questions],
+  );
+
   const [usesCompanyProducts, setUsesCompanyProducts] = useState(
     collecting?.uses_company_products ?? false,
   );
@@ -70,10 +123,14 @@ export default function FormCollectingDataEnterprise() {
   const [productItems, setProductItems] = useState<CatalogItemInput[]>(() => initialProducts);
   const [serviceItems, setServiceItems] = useState<CatalogItemInput[]>(() => initialServices);
   const [departmentItems, setDepartmentItems] = useState<CatalogItemInput[]>(() => initialDepartments);
+  const [companyFeedbackQuestions, setCompanyFeedbackQuestions] = useState<CompanyFeedbackQuestionInput[]>(
+    () => initialCompanyFeedbackQuestions,
+  );
   const productsInputRef = useRef<HTMLInputElement | null>(null);
   const servicesInputRef = useRef<HTMLInputElement | null>(null);
   const departmentsInputRef = useRef<HTMLInputElement | null>(null);
   const legacyProductsInputRef = useRef<HTMLInputElement | null>(null);
+  const companyQuestionsInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     if (!usesCompanyProducts) {
@@ -131,7 +188,17 @@ export default function FormCollectingDataEnterprise() {
     if (legacyProductsInputRef.current) {
       legacyProductsInputRef.current.value = buildLegacyProducts(productItems);
     }
-  }, [productItems, serviceItems, departmentItems]);
+
+    if (companyQuestionsInputRef.current) {
+      companyQuestionsInputRef.current.value = JSON.stringify(
+        companyFeedbackQuestions.map((question, index) => ({
+          question_order: (index + 1) as 1 | 2 | 3,
+          question_text: String(question.question_text ?? '').trim(),
+          is_active: question.is_active ?? true,
+        })),
+      );
+    }
+  }, [productItems, serviceItems, departmentItems, companyFeedbackQuestions]);
 
   return (
     <Form
@@ -181,6 +248,17 @@ export default function FormCollectingDataEnterprise() {
           type="hidden"
           name="main_products_or_services"
           defaultValue=""
+        />
+        <input
+          ref={companyQuestionsInputRef}
+          type="hidden"
+          name="company_feedback_questions"
+          defaultValue="[]"
+        />
+
+        <FieldCompanyFeedbackQuestions
+          questions={companyFeedbackQuestions}
+          onChange={setCompanyFeedbackQuestions}
         />
 
         {usesCompanyProducts && (

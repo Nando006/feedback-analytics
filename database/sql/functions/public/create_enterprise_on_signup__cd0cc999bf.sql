@@ -14,6 +14,7 @@ DECLARE
   v_terms_version      text        := NULLIF(meta->>'terms_version', '');
   v_terms_accepted_at  timestamptz := NULLIF(meta->>'terms_accepted_at', '')::timestamptz;
   v_phone              text        := NULLIF(meta->>'phone', '');
+  v_enterprise_id      uuid;
   v_exists int;
 BEGIN
   -- documento obrigatório
@@ -35,6 +36,44 @@ BEGIN
   INSERT INTO public.enterprise (document, account_type, terms_version, terms_accepted_at, auth_user_id)
   VALUES (v_document, v_account_type, v_terms_version, v_terms_accepted_at, NEW.id)
   ON CONFLICT (auth_user_id) DO NOTHING;
+
+  -- Busca a enterprise atual para semear perguntas padrão no contexto COMPANY.
+  SELECT e.id INTO v_enterprise_id
+  FROM public.enterprise e
+  WHERE e.auth_user_id = NEW.id
+  LIMIT 1;
+
+  IF v_enterprise_id IS NOT NULL AND to_regclass('public.questions_of_feedbacks') IS NOT NULL THEN
+    INSERT INTO public.questions_of_feedbacks (
+      enterprise_id,
+      scope_type,
+      catalog_item_id,
+      question_order,
+      question_text,
+      is_active
+    )
+    SELECT
+      v_enterprise_id,
+      'COMPANY',
+      NULL,
+      q.question_order,
+      q.question_text,
+      true
+    FROM (
+      VALUES
+        (1, 'Como foi sua experiência em relação ao atendimento?'),
+        (2, 'O que você achou da qualidade do produto/serviço?'),
+        (3, 'Como você avalia a relação entre o valor pago e a qualidade do produto/serviço?')
+    ) AS q(question_order, question_text)
+    WHERE NOT EXISTS (
+      SELECT 1
+      FROM public.questions_of_feedbacks existing
+      WHERE existing.enterprise_id = v_enterprise_id
+        AND existing.scope_type = 'COMPANY'
+        AND existing.catalog_item_id IS NULL
+        AND existing.question_order = q.question_order
+    );
+  END IF;
 
   -- valida duplicidade de telefone antes de atualizar auth.users
   IF v_phone IS NOT NULL THEN

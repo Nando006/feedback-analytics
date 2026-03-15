@@ -1,5 +1,8 @@
 import type { ChangeEvent, Dispatch, SetStateAction } from 'react';
-import type { CatalogItemInput } from 'lib/interfaces/entities/enterprise.entity';
+import type {
+  CatalogItemInput,
+  CompanyFeedbackQuestionInput,
+} from 'lib/interfaces/entities/enterprise.entity';
 
 /**
  * Props do campo de principais produtos/serviços.
@@ -46,6 +49,15 @@ export interface FieldUsesCompanyProductsProps {
   usesCompanyServices: boolean;
   usesCompanyDepartments: boolean;
   onChange: (event: ChangeEvent<HTMLInputElement>) => void;
+}
+
+/**
+ * Props do bloco de perguntas padrão de feedback da empresa.
+ * Usado em: components/user/pages/profile/editCollectingData/fields/fieldCompanyFeedbackQuestions.tsx.
+ */
+export interface FieldCompanyFeedbackQuestionsProps {
+  questions: CompanyFeedbackQuestionInput[];
+  onChange: Dispatch<SetStateAction<CompanyFeedbackQuestionInput[]>>;
 }
 
 /**

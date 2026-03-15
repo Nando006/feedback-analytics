@@ -1,8 +1,8 @@
 import { ServiceGetFeedbackAnalysis } from 'src/services/serviceFeedbacks';
 import type {
   FeedbackAnalysisItem,
+  FeedbackAnalysisOptions,
   FeedbackAnalysisSummary,
-  FeedbackSentiment,
 } from 'lib/interfaces/domain/feedback.domain';
 
 export type FeedbackAnalysisLoadData = {
@@ -11,9 +11,9 @@ export type FeedbackAnalysisLoadData = {
   error: string | null;
 };
 
-export async function loadFeedbackAnalysisData(options?: {
-  sentiment?: FeedbackSentiment;
-}): Promise<FeedbackAnalysisLoadData> {
+export async function loadFeedbackAnalysisData(
+  options?: FeedbackAnalysisOptions,
+): Promise<FeedbackAnalysisLoadData> {
   try {
     const response = await ServiceGetFeedbackAnalysis(options);
 
