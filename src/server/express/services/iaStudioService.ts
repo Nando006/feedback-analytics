@@ -35,7 +35,16 @@ export type IaStudioResult = {
     keywords: string[];
   }[];
   globalInsights: IaGlobalInsights | null;
+  contexts: Array<{
+    scope_type: FeedbackScopeType;
+    catalog_item_id: string | null;
+    catalog_item_name: string | null;
+    analyzedCount: number;
+    globalInsights: IaGlobalInsights | null;
+  }>;
 };
+
+type IaStudioResultContext = IaStudioResult['contexts'][number];
 
 export type IaStudioOptions = {
   /**
@@ -43,6 +52,15 @@ export type IaStudioOptions = {
    * Default: 50, Máximo: 100.
    */
   limit?: number;
+  scope_type?: FeedbackScopeType;
+  catalog_item_id?: string;
+};
+
+type AnalysisBatch = {
+  scopeType: FeedbackScopeType;
+  catalogItemId: string | null;
+  catalogItemName: string | null;
+  feedbacks: FeedbackForAnalysis[];
 };
 
 type CollectingDataContext = {
@@ -167,78 +185,121 @@ function buildEnterpriseContext(params: {
   };
 }
 
-function groupFeedbacksByScope(feedbacks: FeedbackForAnalysis[]) {
-  const buckets = new Map<FeedbackScopeType, FeedbackForAnalysis[]>([
-    ['COMPANY', []],
-    ['PRODUCT', []],
-    ['SERVICE', []],
-    ['DEPARTMENT', []],
-  ]);
+function applyExecutionFilter(
+  feedbacks: FeedbackForAnalysis[],
+  options?: IaStudioOptions,
+) {
+  const scope = options?.scope_type;
+  const catalogItemId = options?.catalog_item_id?.trim();
 
-  for (const feedback of feedbacks) {
-    const scope = normalizeScopeType(feedback.scope_type);
-    buckets.get(scope)?.push(feedback);
+  if (!scope && !catalogItemId) {
+    return feedbacks;
   }
 
-  return Array.from(buckets.entries()).filter(([, items]) => items.length > 0);
+  return feedbacks.filter((feedback) => {
+    const feedbackScope = normalizeScopeType(feedback.scope_type);
+    const feedbackCatalogItemId = feedback.catalog_item?.id ?? null;
+
+    if (scope === 'COMPANY') {
+      return feedbackScope === 'COMPANY';
+    }
+
+    if (scope && feedbackScope !== scope) {
+      return false;
+    }
+
+    if (catalogItemId) {
+      return feedbackCatalogItemId === catalogItemId;
+    }
+
+    if (scope) {
+      return feedbackScope === scope;
+    }
+
+    return feedbackCatalogItemId !== null;
+  });
 }
 
-function mergeGlobalInsights(
-  items: Array<{
-    scopeType: FeedbackScopeType;
-    insights: IaGlobalInsights | null;
-  }>,
-): IaGlobalInsights | null {
-  const valid = items.filter((entry) => {
-    const summary = entry.insights?.summary?.trim();
-    const recommendations = (entry.insights?.recommendations ?? []).filter(
-      (value) => String(value).trim().length > 0,
-    );
+function buildAnalysisBatches(
+  feedbacks: FeedbackForAnalysis[],
+  options?: IaStudioOptions,
+): AnalysisBatch[] {
+  const scope = options?.scope_type;
+  const catalogItemId = options?.catalog_item_id?.trim();
 
-    return Boolean(summary) || recommendations.length > 0;
+  const companyFeedbacks = feedbacks.filter((feedback) =>
+    normalizeScopeType(feedback.scope_type) === 'COMPANY',
+  );
+
+  const itemBuckets = new Map<string, AnalysisBatch>();
+
+  feedbacks.forEach((feedback) => {
+    const feedbackScope = normalizeScopeType(feedback.scope_type);
+    const item = feedback.catalog_item;
+
+    if (feedbackScope === 'COMPANY' || !item?.id) {
+      return;
+    }
+
+    const key = `${feedbackScope}:${item.id}`;
+    const current = itemBuckets.get(key);
+
+    if (!current) {
+      itemBuckets.set(key, {
+        scopeType: feedbackScope,
+        catalogItemId: item.id,
+        catalogItemName: item.name,
+        feedbacks: [feedback],
+      });
+      return;
+    }
+
+    current.feedbacks.push(feedback);
   });
 
-  if (valid.length === 0) {
-    return null;
+  const itemBatches = Array.from(itemBuckets.values());
+
+  if (scope === 'COMPANY') {
+    return companyFeedbacks.length > 0
+      ? [
+          {
+            scopeType: 'COMPANY',
+            catalogItemId: null,
+            catalogItemName: null,
+            feedbacks: companyFeedbacks,
+          },
+        ]
+      : [];
   }
 
-  if (valid.length === 1) {
-    const single = valid[0].insights!;
-    return {
-      summary: single.summary,
-      recommendations: single.recommendations,
-    };
+  if (scope) {
+    const filteredByScope = itemBatches.filter((batch) => batch.scopeType === scope);
+
+    if (catalogItemId) {
+      return filteredByScope.filter((batch) => batch.catalogItemId === catalogItemId);
+    }
+
+    return filteredByScope;
   }
 
-  const summaryParts = valid
-    .map((entry) => {
-      const summary = entry.insights?.summary?.trim();
-      if (!summary) return null;
-      return `[${entry.scopeType}] ${summary}`;
-    })
-    .filter((part): part is string => Boolean(part));
+  if (catalogItemId) {
+    return itemBatches.filter((batch) => batch.catalogItemId === catalogItemId);
+  }
 
-  const recommendationSet = new Set<string>();
+  const batches: AnalysisBatch[] = [];
 
-  valid.forEach((entry) => {
-    (entry.insights?.recommendations ?? []).forEach((recommendation) => {
-      const text = String(recommendation ?? '').trim();
-      if (!text) return;
-      recommendationSet.add(text);
+  if (companyFeedbacks.length > 0) {
+    batches.push({
+      scopeType: 'COMPANY',
+      catalogItemId: null,
+      catalogItemName: null,
+      feedbacks: companyFeedbacks,
     });
-  });
-
-  const recommendations = Array.from(recommendationSet);
-  const summary = summaryParts.length > 0 ? summaryParts.join('\n\n') : undefined;
-
-  if (!summary && recommendations.length === 0) {
-    return null;
   }
 
-  return {
-    ...(summary ? { summary } : {}),
-    ...(recommendations.length > 0 ? { recommendations } : {}),
-  };
+  batches.push(...itemBatches);
+
+  return batches;
 }
 
 async function fetchFeedbacksForAnalysis(params: {
@@ -479,11 +540,14 @@ export async function analyzeFeedbacksForEnterprise(params: {
     limit,
   });
 
-  if (feedbacksForAnalysis.length === 0) {
+  const feedbacksForExecution = applyExecutionFilter(feedbacksForAnalysis, options);
+
+  if (feedbacksForExecution.length === 0) {
     return {
       analyzedCount: 0,
       feedbacksAnalyzed: [],
       globalInsights: null,
+      contexts: [],
     };
   }
 
@@ -493,7 +557,7 @@ export async function analyzeFeedbacksForEnterprise(params: {
     .select('feedback_id')
     .in(
       'feedback_id',
-      feedbacksForAnalysis.map((f) => f.id),
+      feedbacksForExecution.map((f) => f.id),
     );
 
   if (existingAnalysisError) {
@@ -508,7 +572,7 @@ export async function analyzeFeedbacksForEnterprise(params: {
     (existingAnalysis ?? []).map((row) => row.feedback_id as string),
   );
 
-  const feedbacksToAnalyze = feedbacksForAnalysis.filter(
+  const feedbacksToAnalyze = feedbacksForExecution.filter(
     (f) => !alreadyAnalyzedIds.has(f.id),
   );
 
@@ -517,6 +581,7 @@ export async function analyzeFeedbacksForEnterprise(params: {
       analyzedCount: 0,
       feedbacksAnalyzed: [],
       globalInsights: null,
+      contexts: [],
     };
   }
 
@@ -525,7 +590,16 @@ export async function analyzeFeedbacksForEnterprise(params: {
     collecting: collecting as CollectingDataContext | null,
   });
 
-  const feedbackGroupsByScope = groupFeedbacksByScope(feedbacksToAnalyze);
+  const analysisBatches = buildAnalysisBatches(feedbacksToAnalyze, options);
+
+  if (analysisBatches.length === 0) {
+    return {
+      analyzedCount: 0,
+      feedbacksAnalyzed: [],
+      globalInsights: null,
+      contexts: [],
+    };
+  }
 
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
@@ -551,16 +625,13 @@ export async function analyzeFeedbacksForEnterprise(params: {
     }
   >();
 
-  const insightsByScope: Array<{
-    scopeType: FeedbackScopeType;
-    insights: IaGlobalInsights | null;
-  }> = [];
+  const insightsContexts: IaStudioResultContext[] = [];
 
-  for (const [scopeType, feedbackItems] of feedbackGroupsByScope) {
+  for (const batch of analysisBatches) {
     const prompt = buildIaPromptByScope({
-      scopeType,
+      scopeType: batch.scopeType,
       enterpriseContext,
-      feedbacks: feedbackItems,
+      feedbacks: batch.feedbacks,
     });
 
     const aiResponse = await ai.models.generateContent({
@@ -597,13 +668,16 @@ export async function analyzeFeedbacksForEnterprise(params: {
       );
     }
 
-    insightsByScope.push({
-      scopeType,
-      insights: parsed?.global_insights ?? null,
+    insightsContexts.push({
+      scope_type: batch.scopeType,
+      catalog_item_id: batch.catalogItemId,
+      catalog_item_name: batch.catalogItemName,
+      globalInsights: parsed?.global_insights ?? null,
+      analyzedCount: batch.feedbacks.length,
     });
 
     const items = Array.isArray(parsed?.feedbacks) ? parsed.feedbacks : [];
-    const allowedFeedbackIds = new Set(feedbackItems.map((item) => item.id));
+    const allowedFeedbackIds = new Set(batch.feedbacks.map((item) => item.id));
 
     items.forEach((item) => {
       if (
@@ -629,13 +703,20 @@ export async function analyzeFeedbacksForEnterprise(params: {
 
   const rowsToInsert = Array.from(rowsByFeedbackId.values());
 
-  const globalInsights = mergeGlobalInsights(insightsByScope);
+  const globalInsights =
+    insightsContexts.find(
+      (context) =>
+        context.scope_type === 'COMPANY' &&
+        context.catalog_item_id === null &&
+        context.globalInsights,
+    )?.globalInsights ?? insightsContexts[0]?.globalInsights ?? null;
 
   if (rowsToInsert.length === 0) {
     return {
       analyzedCount: 0,
       feedbacksAnalyzed: [],
       globalInsights,
+      contexts: insightsContexts,
     };
   }
 
@@ -652,29 +733,59 @@ export async function analyzeFeedbacksForEnterprise(params: {
     );
   }
 
-  // 7) Persistir relatório global de insights (summary + recommendations) por empresa
-  if (globalInsights) {
-    const summary = globalInsights.summary ?? null;
+  for (const context of insightsContexts) {
+    const summary = context.globalInsights?.summary?.trim() || null;
     const recommendations =
-      globalInsights.recommendations && globalInsights.recommendations.length > 0
-        ? globalInsights.recommendations
-        : null;
+      context.globalInsights?.recommendations?.filter((value: string) =>
+        String(value ?? '').trim(),
+      ) ?? [];
 
-    try {
-      await supabase
-        .from('feedback_insights_report')
-        .upsert(
-          {
-            enterprise_id: enterpriseId,
-            summary,
-            recommendations,
-            updated_at: new Date().toISOString(),
-          },
-          { onConflict: 'enterprise_id' },
-        );
-    } catch {
-      // Não deve quebrar o fluxo principal se o relatório falhar
-      console.error('Falha ao salvar feedback_insights_report');
+    const hasMeaningfulData = summary || recommendations.length > 0;
+
+    if (!hasMeaningfulData) {
+      continue;
+    }
+
+    const payload = {
+      enterprise_id: enterpriseId,
+      scope_type: context.scope_type,
+      catalog_item_id: context.catalog_item_id,
+      catalog_item_name: context.catalog_item_name,
+      summary,
+      recommendations,
+      updated_at: new Date().toISOString(),
+    };
+
+    const { error: scopedUpsertError } = await supabase
+      .from('feedback_insights_report')
+      .upsert(payload, {
+        onConflict: 'enterprise_id,scope_type,catalog_item_id',
+      });
+
+    if (!scopedUpsertError) {
+      continue;
+    }
+
+    if (context.scope_type !== 'COMPANY' || context.catalog_item_id !== null) {
+      console.error('Falha ao salvar feedback_insights_report segmentado', scopedUpsertError);
+      continue;
+    }
+
+    const legacyPayload = {
+      enterprise_id: enterpriseId,
+      summary,
+      recommendations,
+      updated_at: new Date().toISOString(),
+    };
+
+    const { error: legacyUpsertError } = await supabase
+      .from('feedback_insights_report')
+      .upsert(legacyPayload, {
+        onConflict: 'enterprise_id',
+      });
+
+    if (legacyUpsertError) {
+      console.error('Falha ao salvar feedback_insights_report legado', legacyUpsertError);
     }
   }
 
@@ -689,6 +800,7 @@ export async function analyzeFeedbacksForEnterprise(params: {
         keywords: (row.keywords ?? []) as string[],
       })) ?? [],
     globalInsights,
+    contexts: insightsContexts,
   };
 }
 

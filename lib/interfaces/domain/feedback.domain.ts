@@ -146,6 +146,8 @@ export type FeedbackCategory =
   | 'SERVICE'
   | 'DEPARTMENT';
 
+export type FeedbackInsightScopeType = FeedbackCategory;
+
 /**
  * Sentimento classificado para um feedback analisado.
  * Usado em: lib/interfaces/domain/feedback.domain.ts (composição de FeedbackAnalysisItem).
@@ -195,6 +197,12 @@ export interface FeedbackAnalysisResponse {
   summary: FeedbackAnalysisSummary;
 }
 
+export type FeedbackAnalysisOptions = {
+  sentiment?: FeedbackSentiment;
+  scope_type?: FeedbackInsightScopeType;
+  catalog_item_id?: string;
+};
+
 /**
  * Relatório textual de insights e recomendações gerado para feedbacks.
  * Usado em: src/routes/load/loadFeedbackInsightsReport.ts e pages/user/feedbacks/insights/feedbackInsightsReport.tsx.
@@ -203,4 +211,11 @@ export interface FeedbackInsightsReport {
   summary: string | null;
   recommendations: string[];
   updatedAt: string | null;
+  scopeType?: FeedbackInsightScopeType;
+  catalogItemId?: string | null;
 }
+
+export type FeedbackInsightsReportOptions = {
+  scope_type?: FeedbackInsightScopeType;
+  catalog_item_id?: string;
+};

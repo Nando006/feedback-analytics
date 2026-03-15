@@ -21,6 +21,21 @@ type FeedbackQuestionAnswerRow = {
   created_at: string;
 };
 
+function parseInsightScopeType(rawValue: unknown) {
+  const normalized = String(rawValue ?? '').trim().toUpperCase();
+
+  if (
+    normalized === 'COMPANY' ||
+    normalized === 'PRODUCT' ||
+    normalized === 'SERVICE' ||
+    normalized === 'DEPARTMENT'
+  ) {
+    return normalized;
+  }
+
+  return undefined;
+}
+
 export function EndpointsFeedbacks(app: express.Express) {
   // Busca feedbacks da empresa com paginação
   app.get('/api/protected/user/feedbacks', requireAuth, async (req, res) => {
@@ -424,6 +439,8 @@ export function EndpointsFeedbacks(app: express.Express) {
     async (req, res) => {
       const supabase = req.supabase!;
       const user = req.user!;
+      const scopeType = parseInsightScopeType(req.query.scope_type) ?? 'COMPANY';
+      const catalogItemId = String(req.query.catalog_item_id ?? '').trim() || null;
 
       try {
         // Buscar a empresa do usuário
@@ -437,30 +454,85 @@ export function EndpointsFeedbacks(app: express.Express) {
           return sendTypedError(res, 404, API_ERROR_ENTERPRISE_NOT_FOUND);
         }
 
-        const { data: report, error } = await supabase
+        let scopedQuery = supabase
+          .from('feedback_insights_report')
+          .select(
+            'summary, recommendations, updated_at, scope_type, catalog_item_id',
+          )
+          .eq('enterprise_id', enterprise.id)
+          .eq('scope_type', scopeType)
+          .order('updated_at', { ascending: false })
+          .limit(1);
+
+        if (catalogItemId) {
+          scopedQuery = scopedQuery.eq('catalog_item_id', catalogItemId);
+        } else if (scopeType === 'COMPANY') {
+          scopedQuery = scopedQuery.is('catalog_item_id', null);
+        }
+
+        const { data: scopedRows, error: scopedError } = await scopedQuery;
+
+        if (!scopedError) {
+          const report = Array.isArray(scopedRows) ? scopedRows[0] : null;
+
+          if (!report) {
+            return res.json({
+              summary: null,
+              recommendations: [],
+              updatedAt: null,
+              scopeType,
+              catalogItemId,
+            });
+          }
+
+          return res.json({
+            summary: (report.summary as string | null) ?? null,
+            recommendations: ((report.recommendations ??
+              []) as string[]).filter((rec) => !!rec && rec.trim().length > 0),
+            updatedAt: (report.updated_at as string | null) ?? null,
+            scopeType: (report.scope_type as string | null) ?? scopeType,
+            catalogItemId: (report.catalog_item_id as string | null) ?? catalogItemId,
+          });
+        }
+
+        if (scopeType !== 'COMPANY' || catalogItemId) {
+          return res.json({
+            summary: null,
+            recommendations: [],
+            updatedAt: null,
+            scopeType,
+            catalogItemId,
+          });
+        }
+
+        const { data: legacyReport, error: legacyError } = await supabase
           .from('feedback_insights_report')
           .select('summary, recommendations, updated_at')
           .eq('enterprise_id', enterprise.id)
           .maybeSingle();
 
-        if (error) {
-          console.error('Erro ao buscar feedback_insights_report:', error);
+        if (legacyError) {
+          console.error('Erro ao buscar feedback_insights_report:', legacyError);
           return sendTypedError(res, 500, API_ERROR_FAILED_TO_FETCH_FEEDBACK_INSIGHTS_REPORT);
         }
 
-        if (!report) {
+        if (!legacyReport) {
           return res.json({
             summary: null,
             recommendations: [],
             updatedAt: null,
+            scopeType,
+            catalogItemId,
           });
         }
 
         return res.json({
-          summary: (report.summary as string | null) ?? null,
-          recommendations: ((report.recommendations ??
+          summary: (legacyReport.summary as string | null) ?? null,
+          recommendations: ((legacyReport.recommendations ??
             []) as string[]).filter((rec) => !!rec && rec.trim().length > 0),
-          updatedAt: (report.updated_at as string | null) ?? null,
+          updatedAt: (legacyReport.updated_at as string | null) ?? null,
+          scopeType,
+          catalogItemId,
         });
       } catch (error) {
         console.error('Erro ao buscar relatório de insights (IA):', error);
@@ -483,6 +555,8 @@ export function EndpointsFeedbacks(app: express.Express) {
         | 'neutral'
         | 'negative'
         | undefined) ?? undefined;
+      const scopeType = parseInsightScopeType(req.query.scope_type);
+      const catalogItemId = String(req.query.catalog_item_id ?? '').trim() || null;
 
       try {
         // Buscar a empresa do usuário
@@ -494,6 +568,106 @@ export function EndpointsFeedbacks(app: express.Express) {
 
         if (enterpriseError || !enterprise) {
           return sendTypedError(res, 404, API_ERROR_ENTERPRISE_NOT_FOUND);
+        }
+
+        let filteredCollectionPointIds: string[] | null = null;
+
+        if (scopeType || catalogItemId) {
+          if (scopeType === 'COMPANY') {
+            if (catalogItemId) {
+              filteredCollectionPointIds = [];
+            } else {
+              const { data: companyCollectionPoints, error: companyCpError } = await supabase
+                .from('collection_points')
+                .select('id')
+                .eq('enterprise_id', enterprise.id)
+                .is('catalog_item_id', null);
+
+              if (companyCpError) {
+                return sendTypedError(res, 500, API_ERROR_FAILED_TO_FETCH_FEEDBACK_ANALYSIS);
+              }
+
+              filteredCollectionPointIds = (companyCollectionPoints ?? []).map((cp) => cp.id);
+            }
+          } else if (catalogItemId) {
+            let pointsQuery = supabase
+              .from('collection_points')
+              .select('id')
+              .eq('enterprise_id', enterprise.id)
+              .eq('catalog_item_id', catalogItemId);
+
+            if (scopeType) {
+              const { data: catalogItem, error: catalogItemError } = await supabase
+                .from('catalog_items')
+                .select('id')
+                .eq('enterprise_id', enterprise.id)
+                .eq('id', catalogItemId)
+                .eq('kind', scopeType)
+                .maybeSingle();
+
+              if (catalogItemError) {
+                return sendTypedError(res, 500, API_ERROR_FAILED_TO_FETCH_FEEDBACK_ANALYSIS);
+              }
+
+              if (!catalogItem) {
+                filteredCollectionPointIds = [];
+              }
+            }
+
+            if (!filteredCollectionPointIds) {
+              const { data: points, error: pointsError } = await pointsQuery;
+
+              if (pointsError) {
+                return sendTypedError(res, 500, API_ERROR_FAILED_TO_FETCH_FEEDBACK_ANALYSIS);
+              }
+
+              filteredCollectionPointIds = (points ?? []).map((cp) => cp.id);
+            }
+          } else if (scopeType) {
+            const { data: catalogItems, error: catalogItemsError } = await supabase
+              .from('catalog_items')
+              .select('id')
+              .eq('enterprise_id', enterprise.id)
+              .eq('kind', scopeType);
+
+            if (catalogItemsError) {
+              return sendTypedError(res, 500, API_ERROR_FAILED_TO_FETCH_FEEDBACK_ANALYSIS);
+            }
+
+            const catalogIds = (catalogItems ?? []).map((item) => item.id);
+
+            if (catalogIds.length === 0) {
+              filteredCollectionPointIds = [];
+            } else {
+              const { data: points, error: pointsError } = await supabase
+                .from('collection_points')
+                .select('id')
+                .eq('enterprise_id', enterprise.id)
+                .in('catalog_item_id', catalogIds);
+
+              if (pointsError) {
+                return sendTypedError(res, 500, API_ERROR_FAILED_TO_FETCH_FEEDBACK_ANALYSIS);
+              }
+
+              filteredCollectionPointIds = (points ?? []).map((cp) => cp.id);
+            }
+          }
+        }
+
+        if (filteredCollectionPointIds && filteredCollectionPointIds.length === 0) {
+          return res.json({
+            items: [],
+            summary: {
+              totalAnalyzed: 0,
+              sentiments: {
+                positive: 0,
+                neutral: 0,
+                negative: 0,
+              },
+              topCategories: [],
+              topKeywords: [],
+            },
+          });
         }
 
         // Buscar feedbacks com análise associada
@@ -513,6 +687,10 @@ export function EndpointsFeedbacks(app: express.Express) {
           `,
           )
           .eq('enterprise_id', enterprise.id);
+
+        if (filteredCollectionPointIds) {
+          query = query.in('collection_point_id', filteredCollectionPointIds);
+        }
 
         if (sentimentFilter) {
           query = query.eq('feedback_analysis.sentiment', sentimentFilter);

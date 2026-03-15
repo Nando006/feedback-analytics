@@ -1,5 +1,10 @@
 import { useEffect } from 'react';
-import { useFetcher, useLoaderData, useRevalidator } from 'react-router-dom';
+import {
+  useFetcher,
+  useLoaderData,
+  useRevalidator,
+  useSearchParams,
+} from 'react-router-dom';
 import type {
   FeedbackAnalysisSummary,
 } from 'lib/interfaces/domain/feedback.domain';
@@ -13,6 +18,7 @@ import InsightsReportMoodSection from 'components/user/pages/feedbacksInsightsRe
 import InsightsReportSummarySection from 'components/user/pages/feedbacksInsightsReport/InsightsReportSummarySection';
 import InsightsReportRecommendationsSection from 'components/user/pages/feedbacksInsightsReport/InsightsReportRecommendationsSection';
 import type { FeedbackInsightsReportActionData } from './ui.types';
+import type { InsightScopeOption } from 'components/user/pages/feedbacksInsightsReport/ui.types';
 
 function getMoodFromSummary(summary: FeedbackAnalysisSummary | null) {
   if (!summary || summary.totalAnalyzed === 0) {
@@ -54,7 +60,14 @@ function getMoodFromSummary(summary: FeedbackAnalysisSummary | null) {
 }
 
 export default function FeedbacksInsightsReport() {
-  const { report, summary, error: loaderError } =
+  const [searchParams, setSearchParams] = useSearchParams();
+  const {
+    report,
+    summary,
+    error: loaderError,
+    filters,
+    catalogItemOptions,
+  } =
     useLoaderData<Awaited<ReturnType<typeof LoaderFeedbacksInsightsReport>>>();
   const revalidator = useRevalidator();
   const fetcher = useFetcher<FeedbackInsightsReportActionData>();
@@ -69,10 +82,41 @@ export default function FeedbacksInsightsReport() {
     }
   }, [fetcher.state, fetcher.data, revalidator]);
 
-  const handleRefreshClick = () => {
+  const handleRefreshSelected = () => {
+    const form = new FormData();
+    form.set('intent', INTENT_FEEDBACK_RUN_IA);
+    form.set('scope_type', filters.scope_type);
+
+    if (filters.catalog_item_id) {
+      form.set('catalog_item_id', filters.catalog_item_id);
+    }
+
+    fetcher.submit(form, { method: 'post' });
+  };
+
+  const handleRefreshAll = () => {
     const form = new FormData();
     form.set('intent', INTENT_FEEDBACK_RUN_IA);
     fetcher.submit(form, { method: 'post' });
+  };
+
+  const handleScopeChange = (scope: InsightScopeOption) => {
+    const nextParams = new URLSearchParams(searchParams);
+    nextParams.set('scope_type', scope);
+    nextParams.delete('catalog_item_id');
+    setSearchParams(nextParams);
+  };
+
+  const handleCatalogItemChange = (catalogItemId: string) => {
+    const nextParams = new URLSearchParams(searchParams);
+
+    if (catalogItemId) {
+      nextParams.set('catalog_item_id', catalogItemId);
+    } else {
+      nextParams.delete('catalog_item_id');
+    }
+
+    setSearchParams(nextParams);
   };
 
   if (refreshing && !report && !summary && !loaderError) {
@@ -91,7 +135,7 @@ export default function FeedbacksInsightsReport() {
     return (
       <InsightsReportEmptyState
         refreshing={refreshing}
-        onRefresh={handleRefreshClick}
+        onRefresh={handleRefreshSelected}
       />
     );
   }
@@ -117,7 +161,13 @@ export default function FeedbacksInsightsReport() {
         <InsightsReportHeaderSection
           updatedLabel={updatedLabel}
           refreshing={refreshing}
-          onRefresh={handleRefreshClick}
+          selectedScope={filters.scope_type}
+          selectedCatalogItemId={filters.catalog_item_id ?? ''}
+          catalogItemOptions={catalogItemOptions}
+          onScopeChange={handleScopeChange}
+          onCatalogItemChange={handleCatalogItemChange}
+          onRefreshSelected={handleRefreshSelected}
+          onRefreshAll={handleRefreshAll}
         />
 
         <InsightsReportMoodSection
