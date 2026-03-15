@@ -76,6 +76,10 @@ export default function FeedbacksInsightsReport() {
   const refreshing =
     fetcher.state !== 'idle' || revalidator.state === 'loading';
   const error = fetcher.data?.error ?? loaderError;
+  const errorVariant =
+    fetcher.data?.errorCode === 'insufficient_feedbacks_for_analysis'
+      ? 'warning'
+      : 'error';
 
   useEffect(() => {
     const finishedRequest = fetcher.state === 'idle' && shouldRevalidateRef.current;
@@ -135,7 +139,7 @@ export default function FeedbacksInsightsReport() {
   }
 
   if (error) {
-    return <InsightsReportErrorState error={error} />;
+    return <InsightsReportErrorState error={error} variant={errorVariant} />;
   }
 
   const hasContent =

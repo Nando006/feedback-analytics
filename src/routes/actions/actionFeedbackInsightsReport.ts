@@ -56,6 +56,7 @@ export async function ActionFeedbackInsightsReport({
     if (typedError.code === 'insufficient_feedbacks_for_analysis') {
       return new Response(
         JSON.stringify({
+          errorCode: 'insufficient_feedbacks_for_analysis',
           error:
             'Há poucos feedbacks neste contexto para uma análise relevante. É necessário no mínimo 10 feedbacks.',
         }),
