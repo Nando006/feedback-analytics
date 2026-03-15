@@ -12,6 +12,15 @@ import {
 import { normalizeFeedbackAnalysisRows } from '../../../../../lib/utils/normalizeFeedbackAnalysisRows.js';
 import { sendTypedError } from '../../../../../lib/utils/sendTypedError.js';
 
+type FeedbackQuestionAnswerRow = {
+  feedback_id: string;
+  question_id: string;
+  question_text_snapshot: string;
+  answer_value: 'PESSIMO' | 'RUIM' | 'MEDIANA' | 'BOA' | 'OTIMA';
+  answer_score: number;
+  created_at: string;
+};
+
 export function EndpointsFeedbacks(app: express.Express) {
   // Busca feedbacks da empresa com paginação
   app.get('/api/protected/user/feedbacks', requireAuth, async (req, res) => {
@@ -279,8 +288,54 @@ export function EndpointsFeedbacks(app: express.Express) {
         };
       });
 
+      const feedbackIds = normalizedFeedbacks
+        .map((feedback) => feedback.id)
+        .filter((id): id is string => typeof id === 'string' && id.length > 0);
+
+      const answersByFeedbackId = new Map<
+        string,
+        Array<{
+          question_id: string;
+          question_text_snapshot: string;
+          answer_value: 'PESSIMO' | 'RUIM' | 'MEDIANA' | 'BOA' | 'OTIMA';
+          answer_score: number;
+        }>
+      >();
+
+      if (feedbackIds.length > 0) {
+        const { data: answerRows, error: answersError } = await supabase
+          .from('feedback_question_answers')
+          .select(
+            'feedback_id, question_id, question_text_snapshot, answer_value, answer_score, created_at',
+          )
+          .in('feedback_id', feedbackIds)
+          .order('created_at', { ascending: true });
+
+        if (answersError) {
+          console.error('Erro ao buscar respostas dinâmicas dos feedbacks:', answersError);
+        } else {
+          (answerRows as FeedbackQuestionAnswerRow[] | null)?.forEach((row) => {
+            const current = answersByFeedbackId.get(row.feedback_id) ?? [];
+
+            current.push({
+              question_id: row.question_id,
+              question_text_snapshot: row.question_text_snapshot,
+              answer_value: row.answer_value,
+              answer_score: row.answer_score,
+            });
+
+            answersByFeedbackId.set(row.feedback_id, current);
+          });
+        }
+      }
+
+      const normalizedFeedbacksWithAnswers = normalizedFeedbacks.map((feedback) => ({
+        ...feedback,
+        feedback_question_answers: answersByFeedbackId.get(feedback.id) ?? [],
+      }));
+
       return res.json({
-        feedbacks: normalizedFeedbacks,
+        feedbacks: normalizedFeedbacksWithAnswers,
         pagination: {
           currentPage: page,
           totalPages,

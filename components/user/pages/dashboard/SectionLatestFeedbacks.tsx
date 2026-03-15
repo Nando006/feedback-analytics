@@ -4,6 +4,14 @@ import { truncateMessage } from 'lib/utils/truncateText';
 import { formatDateTime } from 'lib/utils/FormatDate';
 import type { LatestFeedbacksProps } from './ui.types';
 
+const ANSWER_LABEL: Record<string, string> = {
+  PESSIMO: 'Péssimo',
+  RUIM: 'Ruim',
+  MEDIANA: 'Mediana',
+  BOA: 'Boa',
+  OTIMA: 'Ótima',
+};
+
 export default function SectionLatestFeedbacks({
   latestFeedbacks,
   latestLimit,
@@ -51,6 +59,19 @@ export default function SectionLatestFeedbacks({
               <p className="text-sm leading-relaxed text-(--text-primary)">
                 {truncateMessage(feedback.message)}
               </p>
+              {(feedback.feedback_question_answers ?? []).length > 0 ? (
+                <div className="flex flex-wrap gap-2">
+                  {(feedback.feedback_question_answers ?? []).slice(0, 3).map((answer, index) => (
+                    <span
+                      key={`${feedback.id}-latest-question-answer-${answer.question_id}`}
+                      title={answer.question_text_snapshot}
+                      className="rounded-full border border-(--quaternary-color)/15 bg-(--bg-secondary) px-2.5 py-1 text-xs text-(--text-secondary)"
+                    >
+                      {index + 1}. {ANSWER_LABEL[answer.answer_value] ?? answer.answer_value}
+                    </span>
+                  ))}
+                </div>
+              ) : null}
               {feedback.tracked_devices?.customer ? (
                 <p className="text-xs text-(--text-tertiary)">
                   Cliente:{' '}

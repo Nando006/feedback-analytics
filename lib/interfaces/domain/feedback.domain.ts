@@ -43,6 +43,17 @@ export interface CollectionPoint {
 }
 
 /**
+ * Resposta de uma pergunta dinâmica vinculada ao feedback.
+ * Usado em: componentes de listagem/detalhe de feedback e dashboard.
+ */
+export interface FeedbackQuestionAnswer {
+  question_id: string;
+  question_text_snapshot: string;
+  answer_value: 'PESSIMO' | 'RUIM' | 'MEDIANA' | 'BOA' | 'OTIMA';
+  answer_score: number;
+}
+
+/**
  * Entidade de feedback com vínculo de canal e dispositivo rastreado.
  * Usado em: src/services/serviceFeedbacks.ts, src/routes/load/loadFeedbacks.ts, loaderUserDashboard.ts e components/user/pages/feedbacksAll/ui.types.ts.
  */
@@ -54,6 +65,7 @@ export interface Feedback {
   updated_at: string;
   collection_points: CollectionPoint;
   tracked_devices: TrackedDevice | null;
+  feedback_question_answers?: FeedbackQuestionAnswer[];
 }
 
 /**
