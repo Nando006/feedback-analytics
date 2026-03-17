@@ -13,7 +13,7 @@ export default function StateSentPreviousFeedback({
         text="Este dispositivo já enviou feedback para esta empresa hoje"
         icon={<SVGImageProfile />}
         children={
-          <div className="text-center">
+          <div className="font-work-sans text-center">
             <div className="w-16 h-16 bg-(--neutral)/20 rounded-full flex items-center justify-center mx-auto mb-4">
               <svg
                 className="w-8 h-8 text-(--neutral)"
@@ -28,17 +28,17 @@ export default function StateSentPreviousFeedback({
                 />
               </svg>
             </div>
-            <p className="text-(--text-secondary) mb-6 font-work-sans">
+            <p className="text-(--text-secondary) mb-6">
               Obrigado! Este dispositivo já enviou feedback para esta empresa
               hoje. Você poderá enviar um novo feedback amanhã.
             </p>
             {enterpriseName && (
-              <p className="text-sm text-(--text-tertiary) mb-6 font-work-sans">
+              <p className="text-sm text-(--text-tertiary) mb-6">
                 <span className="font-medium">Empresa:</span> {enterpriseName}
               </p>
             )}
             <div className="bg-(--primary-color)/10 border border-(--primary-color)/20 rounded-lg p-4">
-              <p className="text-(--primary-color) text-sm font-work-sans">
+              <p className="text-(--primary-color) text-sm">
                 <strong>Por que não posso enviar outro feedback?</strong>
                 <br />
                 Para evitar spam e garantir a qualidade dos feedbacks,

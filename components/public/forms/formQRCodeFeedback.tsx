@@ -1,4 +1,5 @@
 import FieldRating from './fields/fieldsQRCode/fieldRating';
+import FieldDynamicQuestions from './fields/fieldsQRCode/fieldDynamicQuestions';
 import FieldMessage from './fields/fieldsQRCode/fieldMessage';
 import FieldCustomerName from './fields/fieldsQRCode/fieldCustomerName';
 import FieldCustomerEmail from './fields/fieldsQRCode/fieldCustomerEmail';
@@ -8,11 +9,13 @@ import { FaSpinner } from 'react-icons/fa6';
 
 export default function FormQRCodeFeedback({
   formData,
+  questions,
   customerData,
   showOptionalFields,
   error,
   isSubmitting,
   onFormDataChange,
+  onAnswerChange,
   onCustomerDataChange,
   onToggleOptionalFields,
   onSubmit,
@@ -22,6 +25,12 @@ export default function FormQRCodeFeedback({
       <FieldRating
         rating={formData.rating}
         onRatingChange={(rating) => onFormDataChange({ rating })}
+      />
+
+      <FieldDynamicQuestions
+        questions={questions}
+        answers={formData.answers}
+        onAnswerChange={onAnswerChange}
       />
 
       <FieldMessage
@@ -56,7 +65,7 @@ export default function FormQRCodeFeedback({
       </div>
 
       {showOptionalFields && (
-        <div className="space-y-4 rounded-xl border border-(--bg-tertiary) bg-(--bg-secondary) p-6">
+        <div className="space-y-4 rounded-xl border border-(--bg-tertiary) bg-(--seventh-color) p-6">
           <div className="flex items-center mb-4 gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-(--primary-color) to-(--tertiary-color)">
               <svg

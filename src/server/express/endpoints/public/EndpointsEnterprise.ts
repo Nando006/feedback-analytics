@@ -70,6 +70,52 @@ export function EndpointsEnterprise(app: express.Express) {
         }
       }
 
+      const fetchQuestions = async (
+        scopeType: 'COMPANY' | 'PRODUCT' | 'SERVICE' | 'DEPARTMENT',
+        catalogItemContextId: string | null,
+      ) => {
+        let query = supabase
+          .from('questions_of_feedbacks')
+          .select('id, scope_type, catalog_item_id, question_order, question_text')
+          .eq('enterprise_id', enterprise.id)
+          .eq('scope_type', scopeType)
+          .eq('is_active', true)
+          .order('question_order', { ascending: true });
+
+        if (scopeType === 'COMPANY') {
+          query = query.is('catalog_item_id', null);
+        } else {
+          query = catalogItemContextId
+            ? query.eq('catalog_item_id', catalogItemContextId)
+            : query.is('catalog_item_id', null);
+        }
+
+        return await query;
+      };
+
+      const currentScope: 'COMPANY' | 'PRODUCT' | 'SERVICE' | 'DEPARTMENT' =
+        contextItemKind ?? 'COMPANY';
+
+      let { data: questions, error: questionsError } = await fetchQuestions(
+        currentScope,
+        contextCatalogItemId,
+      );
+
+      // Fallback para COMPANY quando QR de item ainda não tiver perguntas específicas.
+      if (
+        !questionsError &&
+        currentScope !== 'COMPANY' &&
+        (!questions || questions.length === 0)
+      ) {
+        const fallback = await fetchQuestions('COMPANY', null);
+        questions = fallback.data;
+        questionsError = fallback.error;
+      }
+
+      if (questionsError) {
+        console.error('Erro ao buscar perguntas públicas de feedback:', questionsError);
+      }
+
       return res.json({
         id: enterprise.id,
         name: enterprise.name || 'Empresa',
@@ -77,6 +123,7 @@ export function EndpointsEnterprise(app: express.Express) {
         catalog_item_id: contextCatalogItemId,
         item_name: contextItemName,
         item_kind: contextItemKind,
+        questions: questions ?? [],
       });
     } catch (err) {
       console.error('Erro ao buscar empresa:', err);

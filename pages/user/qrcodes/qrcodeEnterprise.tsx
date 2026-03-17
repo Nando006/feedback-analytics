@@ -95,9 +95,8 @@ export default function QRCodeEnterprise() {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: `Deixe seu Feedback - ${
-            enterprise.full_name || 'Nossa Empresa'
-          }`,
+          title: `Deixe seu Feedback - ${enterprise.full_name || 'Nossa Empresa'
+            }`,
           text: `Compartilhe sua experiência conosco! Acesse o formulário de feedback.`,
           url: feedbackUrl,
         });
@@ -118,7 +117,7 @@ export default function QRCodeEnterprise() {
   }, [qrActive, qrFetcher]);
 
   return (
-    <div className="font-inter space-y-8 pb-8">
+    <div className="font-work-sans space-y-8 pb-8">
       <SectionQrHeader
         enterpriseName={enterprise.full_name}
         qrActive={qrActive}

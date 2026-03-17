@@ -1,4 +1,7 @@
-import type { CatalogItemInput } from 'lib/interfaces/entities/enterprise.entity';
+import type {
+  CatalogItemInput,
+  CompanyFeedbackQuestionInput,
+} from 'lib/interfaces/entities/enterprise.entity';
 import { ServiceUpdateCollectingDataEnterprise } from 'src/services/serviceEnterprise';
 import type { ActionFunctionArgs } from 'react-router-dom';
 
@@ -87,6 +90,58 @@ function parseCatalogItemsField(
   }
 }
 
+function parseCompanyFeedbackQuestionsField(
+  raw: FormDataEntryValue | null,
+): CompanyFeedbackQuestionInput[] | undefined {
+  if (raw === null) return undefined;
+
+  const text = String(raw ?? '').trim();
+  if (!text) return [];
+
+  try {
+    const parsed = JSON.parse(text) as unknown;
+    if (!Array.isArray(parsed)) return [];
+
+    return parsed
+      .slice(0, 3)
+      .map((item, index) => {
+        if (!item || typeof item !== 'object') return null;
+
+        const candidate = item as {
+          question_order?: unknown;
+          question_text?: unknown;
+          is_active?: unknown;
+        };
+
+        const questionOrderRaw = Number(candidate.question_order);
+        const question_order =
+          Number.isInteger(questionOrderRaw) &&
+          questionOrderRaw >= 1 &&
+          questionOrderRaw <= 3
+            ? (questionOrderRaw as 1 | 2 | 3)
+            : ((index + 1) as 1 | 2 | 3);
+
+        const question_text =
+          typeof candidate.question_text === 'string'
+            ? candidate.question_text.trim()
+            : '';
+
+        if (!question_text) return null;
+
+        return {
+          question_order,
+          question_text,
+          is_active: candidate.is_active === false ? false : true,
+        };
+      })
+      .filter(
+        (item): item is CompanyFeedbackQuestionInput => item !== null,
+      );
+  } catch {
+    return [];
+  }
+}
+
 export async function ActionCollectingData({ request }: ActionFunctionArgs) {
   const form = await request.formData();
 
@@ -111,6 +166,9 @@ export async function ActionCollectingData({ request }: ActionFunctionArgs) {
   );
   const catalogDepartmentsFromForm = parseCatalogItemsField(
     form.get('catalog_departments'),
+  );
+  const companyFeedbackQuestionsFromForm = parseCompanyFeedbackQuestionsField(
+    form.get('company_feedback_questions'),
   );
 
   const legacyProducts = parseLegacyProductsText(main_products_or_services_text);
@@ -143,6 +201,9 @@ export async function ActionCollectingData({ request }: ActionFunctionArgs) {
       catalog_products,
       catalog_services,
       catalog_departments,
+      ...(companyFeedbackQuestionsFromForm !== undefined
+        ? { company_feedback_questions: companyFeedbackQuestionsFromForm }
+        : {}),
     });
 
     return new Response(JSON.stringify({ collecting }), {

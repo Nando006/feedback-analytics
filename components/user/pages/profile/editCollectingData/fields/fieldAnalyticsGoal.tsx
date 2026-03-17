@@ -5,7 +5,7 @@ const FieldAnalyticsGoal = memo(function FieldAnalyticsGoal({ defaultValue }: Fi
   const [characterCount, setCharacterCount] = useState(defaultValue.length);
 
   return (
-    <div className="group">
+    <div className="group font-work-sans">
       <label
         htmlFor="analytics_goal"
         className="mb-2 block text-sm font-medium text-(--text-secondary) transition-colors group-focus-within:text-(--tertiary-color)">

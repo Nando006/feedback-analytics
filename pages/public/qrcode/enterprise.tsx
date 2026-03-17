@@ -1,8 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useFetcher, useLoaderData } from 'react-router-dom';
 import Card from 'components/public/shared/card';
 import SVGImageProfile from 'components/svg/imageProfile';
-import type { CustomerData, FeedbackData } from 'lib/interfaces/contracts/qrcode.contract';
+import type {
+  CustomerData,
+  FeedbackAnswerValue,
+  FeedbackData,
+} from 'lib/interfaces/contracts/qrcode.contract';
 import StateSentPreviousFeedback from 'components/public/qrcode/enterprise/stateSentPreviousFeedback';
 import StateError from 'components/public/qrcode/enterprise/stateError';
 import StateSubmitted from 'components/public/qrcode/enterprise/stateSubmitted';
@@ -21,6 +25,10 @@ export default function FeedbackQRCodeEnterprise() {
   const enterpriseName = loaderData?.enterpriseName ?? '';
   const itemName = loaderData?.itemName ?? '';
   const itemKind = loaderData?.itemKind ?? null;
+  const questions = useMemo(
+    () => loaderData?.questions ?? [],
+    [loaderData?.questions],
+  );
 
   const itemKindLabel =
     itemKind === 'PRODUCT'
@@ -34,6 +42,7 @@ export default function FeedbackQRCodeEnterprise() {
   const [formData, setFormData] = useState<FeedbackData>({
     message: '',
     rating: 0,
+    answers: [],
     enterprise_id: enterpriseId,
     collection_point_id: collectionPointId || undefined,
     catalog_item_id: catalogItemId || undefined,
@@ -65,6 +74,15 @@ export default function FeedbackQRCodeEnterprise() {
     }
   }, [fetcher.state, fetcher.data]);
 
+  useEffect(() => {
+    const questionIds = new Set(questions.map((question) => question.id));
+
+    setFormData((prev) => ({
+      ...prev,
+      answers: prev.answers.filter((answer) => questionIds.has(answer.question_id)),
+    }));
+  }, [questions]);
+
   const handleFormDataChange = (data: Partial<FeedbackData>) => {
     setFormData((prev) => ({ ...prev, ...data }));
   };
@@ -74,6 +92,25 @@ export default function FeedbackQRCodeEnterprise() {
     value: string | undefined,
   ) => {
     setCustomerData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleAnswerChange = (
+    questionId: string,
+    answerValue: FeedbackAnswerValue,
+  ) => {
+    setFormData((prev) => {
+      const answersWithoutCurrentQuestion = prev.answers.filter(
+        (answer) => answer.question_id !== questionId,
+      );
+
+      return {
+        ...prev,
+        answers: [
+          ...answersWithoutCurrentQuestion,
+          { question_id: questionId, answer_value: answerValue },
+        ],
+      };
+    });
   };
 
   const handleToggleOptionalFields = () => {
@@ -98,7 +135,31 @@ export default function FeedbackQRCodeEnterprise() {
       return;
     }
 
+    if (questions.length !== 3) {
+      setError('Perguntas de feedback ainda não configuradas para este QR Code.');
+      return;
+    }
+
+    const questionIds = new Set(questions.map((question) => question.id));
+    const hasAllAnswers =
+      formData.answers.length === 3 &&
+      formData.answers.every((answer) => questionIds.has(answer.question_id));
+
+    if (!hasAllAnswers) {
+      setError('Responda as 3 perguntas antes de enviar.');
+      return;
+    }
+
     setError('');
+
+    const answersByQuestionId = new Map(
+      formData.answers.map((answer) => [answer.question_id, answer]),
+    );
+
+    const orderedAnswers = [...questions]
+      .sort((left, right) => left.question_order - right.question_order)
+      .map((question) => answersByQuestionId.get(question.id))
+      .filter((answer): answer is NonNullable<typeof answer> => Boolean(answer));
 
     fetcher.submit(
       {
@@ -107,6 +168,7 @@ export default function FeedbackQRCodeEnterprise() {
         catalog_item_id: formData.catalog_item_id ?? '',
         message: formData.message.trim(),
         rating: String(formData.rating),
+        answers: JSON.stringify(orderedAnswers),
         customer_name: customerData.customer_name ?? '',
         customer_email: customerData.customer_email ?? '',
         customer_gender: customerData.customer_gender ?? '',
@@ -130,7 +192,7 @@ export default function FeedbackQRCodeEnterprise() {
   }
 
   return (
-    <div className="min-h-screen bg-(--bg-primary) flex items-center justify-center p-4">
+    <div className="min-h-screen bg-(--bg-primary) flex items-center justify-center p-4 ">
       <Card
         title="Compartilhe sua Experiência"
         text={
@@ -146,11 +208,13 @@ export default function FeedbackQRCodeEnterprise() {
         children={
           <FormQRCodeFeedback
             formData={formData}
+            questions={questions}
             customerData={customerData}
             showOptionalFields={showOptionalFields}
             error={error}
             isSubmitting={isSubmitting}
             onFormDataChange={handleFormDataChange}
+            onAnswerChange={handleAnswerChange}
             onCustomerDataChange={handleCustomerDataChange}
             onToggleOptionalFields={handleToggleOptionalFields}
             onSubmit={handleSubmit}

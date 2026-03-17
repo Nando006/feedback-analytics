@@ -4,8 +4,8 @@ export default function AnalyticsAllKeywordsSection({
   summary,
 }: AnalyticsAllKeywordsSectionProps) {
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-(--quaternary-color)/10 bg-gradient-to-br from-(--bg-secondary) to-(--sixth-color) p-6 glass-card">
-      <h3 className="mb-4 text-base font-semibold text-[var(--text-primary)]">
+    <div className="font-work-sans relative overflow-hidden rounded-2xl border border-(--quaternary-color)/10 bg-gradient-to-br from-(--bg-secondary) to-(--sixth-color) p-6 glass-card">
+      <h3 className="mb-4 text-base font-montserrat font-semibold text-[var(--text-primary)]">
         Palavras-chave mais recorrentes
       </h3>
       {summary.topKeywords.length === 0 ? (

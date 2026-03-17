@@ -80,6 +80,52 @@ CREATE POLICY "Usuários autenticados podem gerenciar feedbacks" ON "public"."fe
   TO authenticated
   USING ((enterprise_id IN ( SELECT enterprise.id FROM enterprise WHERE (enterprise.auth_user_id = auth.uid()))));
 
+DROP POLICY IF EXISTS "Auth gerencia perguntas de feedback" ON "public"."questions_of_feedbacks";
+CREATE POLICY "Auth gerencia perguntas de feedback" ON "public"."questions_of_feedbacks"
+  AS PERMISSIVE
+  FOR ALL
+  TO authenticated
+  USING ((enterprise_id IN (SELECT enterprise.id FROM enterprise WHERE (enterprise.auth_user_id = auth.uid()))))
+  WITH CHECK ((enterprise_id IN (SELECT enterprise.id FROM enterprise WHERE (enterprise.auth_user_id = auth.uid()))));
+
+DROP POLICY IF EXISTS "Anon pode ler perguntas ativas de feedback" ON "public"."questions_of_feedbacks";
+CREATE POLICY "Anon pode ler perguntas ativas de feedback" ON "public"."questions_of_feedbacks"
+  AS PERMISSIVE
+  FOR SELECT
+  TO anon
+  USING ((is_active = true));
+
+DROP POLICY IF EXISTS "Auth gerencia respostas de perguntas de feedback" ON "public"."feedback_question_answers";
+CREATE POLICY "Auth gerencia respostas de perguntas de feedback" ON "public"."feedback_question_answers"
+  AS PERMISSIVE
+  FOR ALL
+  TO authenticated
+  USING ((feedback_id IN (
+    SELECT f.id
+    FROM feedback f
+    WHERE f.enterprise_id IN (
+      SELECT enterprise.id
+      FROM enterprise
+      WHERE enterprise.auth_user_id = auth.uid()
+    )
+  )))
+  WITH CHECK ((feedback_id IN (
+    SELECT f.id
+    FROM feedback f
+    WHERE f.enterprise_id IN (
+      SELECT enterprise.id
+      FROM enterprise
+      WHERE enterprise.auth_user_id = auth.uid()
+    )
+  )));
+
+DROP POLICY IF EXISTS "Anon pode inserir respostas de perguntas" ON "public"."feedback_question_answers";
+CREATE POLICY "Anon pode inserir respostas de perguntas" ON "public"."feedback_question_answers"
+  AS PERMISSIVE
+  FOR INSERT
+  TO anon
+  WITH CHECK ((feedback_id IS NOT NULL) AND (question_id IS NOT NULL));
+
 DROP POLICY IF EXISTS "Empresas gerenciam apenas suas próprias análises" ON "public"."feedback_analysis";
 CREATE POLICY "Empresas gerenciam apenas suas próprias análises" ON "public"."feedback_analysis"
   AS PERMISSIVE

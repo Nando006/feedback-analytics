@@ -6,8 +6,8 @@ export default function InsightsEmotionalClustersSection({
   clusters,
 }: InsightsEmotionalClustersSectionProps) {
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-(--quaternary-color)/10 bg-gradient-to-br from-(--bg-secondary) to-(--sixth-color) p-6 glass-card space-y-6">
-      <h3 className="text-base font-semibold text-[var(--text-primary)]">
+    <div className="font-work-sans relative overflow-hidden rounded-2xl border border-(--quaternary-color)/10 bg-gradient-to-br from-(--bg-secondary) to-(--sixth-color) p-6 glass-card space-y-6">
+      <h3 className="text-base font-montserrat font-semibold text-[var(--text-primary)]">
         Momentos emocionais que mais se repetem
       </h3>
       <p className="mb-2 max-w-2xl text-sm text-[var(--text-tertiary)]">
@@ -26,7 +26,7 @@ export default function InsightsEmotionalClustersSection({
               key={cluster.title}
               className="space-y-3 rounded-xl border border-(--quaternary-color)/10 bg-(--seventh-color) p-4">
               <div>
-                <h4 className="mb-1 text-sm font-semibold text-[var(--text-primary)]">
+                <h4 className="font-montserrat mb-1 text-sm font-semibold text-[var(--text-primary)]">
                   {cluster.title}
                 </h4>
                 <p className="text-xs text-[var(--text-tertiary)]">{cluster.description}</p>

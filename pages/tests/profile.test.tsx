@@ -115,7 +115,7 @@ describe('Profile Page', () => {
     const { container } = render(<Profile />);
 
     const mainDiv = container.firstChild as HTMLElement;
-    expect(mainDiv).toHaveClass('font-inter', 'space-y-6');
+    expect(mainDiv).toHaveClass('font-work-sans', 'space-y-6');
   });
 
   it('deve chamar useRouteLoaderData com a chave correta', () => {

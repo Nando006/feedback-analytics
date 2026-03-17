@@ -39,7 +39,7 @@ export default function FormPhoneStartUser({
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="grid grid-cols-1 gap-2"
+      className="font-work-sans grid grid-cols-1 gap-2"
       noValidate>
       <div>
         <label className="mb-1 block text-sm text-(--text-secondary)">
@@ -60,7 +60,7 @@ export default function FormPhoneStartUser({
       </div>
       <div>
         <button
-          className="btn-primary h-11 cursor-pointer px-4 text-sm"
+          className="btn-primary font-poppins h-11 cursor-pointer px-4 text-sm"
           type="submit">
           Enviar código SMS
         </button>

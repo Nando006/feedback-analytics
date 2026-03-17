@@ -9,7 +9,7 @@ export default function StateLoading() {
         text="Verificando informações da empresa"
         icon={<SVGImageProfile />}
         children={
-          <div className="text-center">
+          <div className="font-work-sans text-center">
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-(--bg-secondary)">
               <svg
                 className="w-8 h-8 text-(--primary-color) animate-spin"

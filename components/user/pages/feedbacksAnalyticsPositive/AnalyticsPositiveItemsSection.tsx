@@ -4,8 +4,8 @@ export default function AnalyticsPositiveItemsSection({
   items,
 }: AnalyticsPositiveItemsSectionProps) {
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-(--quaternary-color)/10 bg-gradient-to-br from-(--bg-secondary) to-(--sixth-color) p-6 glass-card">
-      <h3 className="mb-4 text-base font-semibold text-[var(--text-primary)]">
+    <div className="font-work-sans relative overflow-hidden rounded-2xl border border-(--quaternary-color)/10 bg-gradient-to-br from-(--bg-secondary) to-(--sixth-color) p-6 glass-card">
+      <h3 className="mb-4 text-base font-montserrat font-semibold text-[var(--text-primary)]">
         Feedbacks positivos analisados
       </h3>
 
@@ -22,7 +22,7 @@ export default function AnalyticsPositiveItemsSection({
                 <span className="rounded-full border border-(--quaternary-color)/14 px-2 py-0.5 text-[10px] font-medium text-(--text-secondary)">
                   Rating: {item.rating ?? '—'}
                 </span>
-                <span className="rounded-full border border-emerald-500/60 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-medium text-emerald-300">
+                <span className="rounded-full border border-(--positive)/60 bg-(--positive)/10 px-2 py-0.5 text-[10px] font-medium text-(--positive)">
                   Positivo
                 </span>
               </div>

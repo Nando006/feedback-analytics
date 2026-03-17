@@ -43,6 +43,17 @@ export interface CollectionPoint {
 }
 
 /**
+ * Resposta de uma pergunta dinâmica vinculada ao feedback.
+ * Usado em: componentes de listagem/detalhe de feedback e dashboard.
+ */
+export interface FeedbackQuestionAnswer {
+  question_id: string;
+  question_text_snapshot: string;
+  answer_value: 'PESSIMO' | 'RUIM' | 'MEDIANA' | 'BOA' | 'OTIMA';
+  answer_score: number;
+}
+
+/**
  * Entidade de feedback com vínculo de canal e dispositivo rastreado.
  * Usado em: src/services/serviceFeedbacks.ts, src/routes/load/loadFeedbacks.ts, loaderUserDashboard.ts e components/user/pages/feedbacksAll/ui.types.ts.
  */
@@ -54,6 +65,7 @@ export interface Feedback {
   updated_at: string;
   collection_points: CollectionPoint;
   tracked_devices: TrackedDevice | null;
+  feedback_question_answers?: FeedbackQuestionAnswer[];
 }
 
 /**
@@ -134,6 +146,8 @@ export type FeedbackCategory =
   | 'SERVICE'
   | 'DEPARTMENT';
 
+export type FeedbackInsightScopeType = FeedbackCategory;
+
 /**
  * Sentimento classificado para um feedback analisado.
  * Usado em: lib/interfaces/domain/feedback.domain.ts (composição de FeedbackAnalysisItem).
@@ -183,6 +197,12 @@ export interface FeedbackAnalysisResponse {
   summary: FeedbackAnalysisSummary;
 }
 
+export type FeedbackAnalysisOptions = {
+  sentiment?: FeedbackSentiment;
+  scope_type?: FeedbackInsightScopeType;
+  catalog_item_id?: string;
+};
+
 /**
  * Relatório textual de insights e recomendações gerado para feedbacks.
  * Usado em: src/routes/load/loadFeedbackInsightsReport.ts e pages/user/feedbacks/insights/feedbackInsightsReport.tsx.
@@ -191,4 +211,11 @@ export interface FeedbackInsightsReport {
   summary: string | null;
   recommendations: string[];
   updatedAt: string | null;
+  scopeType?: FeedbackInsightScopeType;
+  catalogItemId?: string | null;
 }
+
+export type FeedbackInsightsReportOptions = {
+  scope_type?: FeedbackInsightScopeType;
+  catalog_item_id?: string;
+};

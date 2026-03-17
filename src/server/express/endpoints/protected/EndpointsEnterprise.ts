@@ -20,6 +20,12 @@ type CatalogItemInput = {
   status?: 'ACTIVE' | 'INACTIVE';
 };
 
+type CompanyFeedbackQuestionInput = {
+  question_order?: number;
+  question_text?: string;
+  is_active?: boolean;
+};
+
 type CollectingDataPayload = {
   company_objective?: string | null;
   analytics_goal?: string | null;
@@ -31,7 +37,24 @@ type CollectingDataPayload = {
   catalog_products?: CatalogItemInput[] | null;
   catalog_services?: CatalogItemInput[] | null;
   catalog_departments?: CatalogItemInput[] | null;
+  company_feedback_questions?: CompanyFeedbackQuestionInput[] | null;
 };
+
+const DEFAULT_COMPANY_FEEDBACK_QUESTIONS = [
+  {
+    question_order: 1,
+    question_text: 'Como foi sua experiência em relação ao atendimento?',
+  },
+  {
+    question_order: 2,
+    question_text: 'O que você achou da qualidade do produto/serviço?',
+  },
+  {
+    question_order: 3,
+    question_text:
+      'Como você avalia a relação entre o valor pago e a qualidade do produto/serviço?',
+  },
+];
 
 function normalizeCatalogItems(items: CatalogItemInput[] | null | undefined) {
   return (items ?? [])
@@ -183,6 +206,114 @@ async function getCatalogSnapshot(
   };
 }
 
+function normalizeCompanyFeedbackQuestions(
+  items: CompanyFeedbackQuestionInput[] | null | undefined,
+) {
+  const source = Array.isArray(items) && items.length > 0
+    ? items
+    : DEFAULT_COMPANY_FEEDBACK_QUESTIONS;
+
+  return source
+    .slice(0, 3)
+    .map((item, index) => ({
+      question_order: (index + 1) as 1 | 2 | 3,
+      question_text: String(item?.question_text ?? '').trim(),
+      is_active: item?.is_active === false ? false : true,
+    }))
+    .filter((item) => item.question_text.length > 0);
+}
+
+async function getCompanyFeedbackQuestionsSnapshot(
+  supabase: express.Request['supabase'],
+  enterpriseId: string,
+) {
+  if (!supabase) {
+    return [];
+  }
+
+  const { data, error } = await supabase
+    .from('questions_of_feedbacks')
+    .select(
+      'id, enterprise_id, scope_type, catalog_item_id, question_order, question_text, is_active, created_at, updated_at',
+    )
+    .eq('enterprise_id', enterpriseId)
+    .eq('scope_type', 'COMPANY')
+    .is('catalog_item_id', null)
+    .order('question_order', { ascending: true })
+    .order('updated_at', { ascending: false })
+    .order('created_at', { ascending: false });
+
+  if (error || !data) {
+    return [];
+  }
+
+  const firstByOrder = new Map<number, (typeof data)[number]>();
+
+  for (const item of data) {
+    if (!firstByOrder.has(item.question_order)) {
+      firstByOrder.set(item.question_order, item);
+    }
+  }
+
+  return Array.from(firstByOrder.values()).sort(
+    (left, right) => left.question_order - right.question_order,
+  );
+}
+
+async function syncCompanyFeedbackQuestions(params: {
+  supabase: express.Request['supabase'];
+  enterpriseId: string;
+  items: CompanyFeedbackQuestionInput[] | null | undefined;
+}) {
+  const { supabase, enterpriseId, items } = params;
+  if (!supabase) return { error: true as const };
+
+  const normalizedItems = normalizeCompanyFeedbackQuestions(items);
+  if (normalizedItems.length !== 3) {
+    return { error: true as const };
+  }
+
+  for (const item of normalizedItems) {
+    const { data: updatedRows, error: updateError } = await supabase
+      .from('questions_of_feedbacks')
+      .update({
+        question_text: item.question_text,
+        is_active: item.is_active,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('enterprise_id', enterpriseId)
+      .eq('scope_type', 'COMPANY')
+      .is('catalog_item_id', null)
+      .eq('question_order', item.question_order)
+      .select('id');
+
+    if (updateError) {
+      return { error: true as const };
+    }
+
+    if ((updatedRows?.length ?? 0) > 0) {
+      continue;
+    }
+
+    const { error: insertError } = await supabase
+      .from('questions_of_feedbacks')
+      .insert({
+        enterprise_id: enterpriseId,
+        scope_type: 'COMPANY',
+        catalog_item_id: null,
+        question_order: item.question_order,
+        question_text: item.question_text,
+        is_active: item.is_active,
+      });
+
+    if (insertError) {
+      return { error: true as const };
+    }
+  }
+
+  return { error: false as const };
+}
+
 export function EndpointsEnterprise(app: express.Express) {
   // Busca os dados da empresa.
   app.get('/api/protected/user/enterprise', requireAuth, async (req, res) => {
@@ -296,8 +427,18 @@ export function EndpointsEnterprise(app: express.Express) {
       }
 
       const catalog = await getCatalogSnapshot(supabase, enterpriseRow.id);
+      const companyFeedbackQuestions = await getCompanyFeedbackQuestionsSnapshot(
+        supabase,
+        enterpriseRow.id,
+      );
 
-      return res.json({ collecting: { ...collecting, ...catalog } });
+      return res.json({
+        collecting: {
+          ...collecting,
+          ...catalog,
+          company_feedback_questions: companyFeedbackQuestions,
+        },
+      });
     },
   );
 
@@ -383,12 +524,17 @@ export function EndpointsEnterprise(app: express.Express) {
         payload,
         'catalog_departments',
       );
+      const hasCompanyFeedbackQuestions = Object.prototype.hasOwnProperty.call(
+        payload,
+        'company_feedback_questions',
+      );
 
       if (
         Object.keys(updateData).length === 1 &&
         !hasCatalogProducts &&
         !hasCatalogServices &&
-        !hasCatalogDepartments
+        !hasCatalogDepartments &&
+        !hasCompanyFeedbackQuestions
       ) {
         return sendTypedError(res, 400, API_ERROR_EMPTY_PAYLOAD);
       }
@@ -490,17 +636,36 @@ export function EndpointsEnterprise(app: express.Express) {
               })
             : { error: false as const };
 
+        const syncQuestionsResult = hasCompanyFeedbackQuestions
+          ? await syncCompanyFeedbackQuestions({
+              supabase,
+              enterpriseId: enterpriseRow.id,
+              items: payload.company_feedback_questions,
+            })
+          : { error: false as const };
+
         if (
           syncProductResult.error ||
           syncServiceResult.error ||
-          syncDepartmentResult.error
+          syncDepartmentResult.error ||
+          syncQuestionsResult.error
         ) {
           return sendTypedError(res, 400, API_ERROR_UPSERT_FAILED);
         }
 
         const catalog = await getCatalogSnapshot(supabase, enterpriseRow.id);
+        const companyFeedbackQuestions = await getCompanyFeedbackQuestionsSnapshot(
+          supabase,
+          enterpriseRow.id,
+        );
 
-        return res.json({ collecting: { ...data, ...catalog } });
+        return res.json({
+          collecting: {
+            ...data,
+            ...catalog,
+            company_feedback_questions: companyFeedbackQuestions,
+          },
+        });
       }
 
       const syncProductResult =
@@ -536,17 +701,36 @@ export function EndpointsEnterprise(app: express.Express) {
             })
           : { error: false as const };
 
+      const syncQuestionsResult = hasCompanyFeedbackQuestions
+        ? await syncCompanyFeedbackQuestions({
+            supabase,
+            enterpriseId: enterpriseRow.id,
+            items: payload.company_feedback_questions,
+          })
+        : { error: false as const };
+
       if (
         syncProductResult.error ||
         syncServiceResult.error ||
-        syncDepartmentResult.error
+        syncDepartmentResult.error ||
+        syncQuestionsResult.error
       ) {
         return sendTypedError(res, 400, API_ERROR_UPSERT_FAILED);
       }
 
       const catalog = await getCatalogSnapshot(supabase, enterpriseRow.id);
+      const companyFeedbackQuestions = await getCompanyFeedbackQuestionsSnapshot(
+        supabase,
+        enterpriseRow.id,
+      );
 
-      return res.json({ collecting: { ...updated, ...catalog } });
+      return res.json({
+        collecting: {
+          ...updated,
+          ...catalog,
+          company_feedback_questions: companyFeedbackQuestions,
+        },
+      });
     },
   );
 
@@ -621,17 +805,34 @@ export function EndpointsEnterprise(app: express.Express) {
         disableAll: payload.uses_company_departments === false,
       });
 
+      const syncQuestionsResult = await syncCompanyFeedbackQuestions({
+        supabase,
+        enterpriseId: enterpriseRow.id,
+        items: payload.company_feedback_questions,
+      });
+
       if (
         syncProductResult.error ||
         syncServiceResult.error ||
-        syncDepartmentResult.error
+        syncDepartmentResult.error ||
+        syncQuestionsResult.error
       ) {
         return sendTypedError(res, 400, API_ERROR_UPSERT_FAILED);
       }
 
       const catalog = await getCatalogSnapshot(supabase, enterpriseRow.id);
+      const companyFeedbackQuestions = await getCompanyFeedbackQuestionsSnapshot(
+        supabase,
+        enterpriseRow.id,
+      );
 
-      return res.json({ collecting: { ...data, ...catalog } });
+      return res.json({
+        collecting: {
+          ...data,
+          ...catalog,
+          company_feedback_questions: companyFeedbackQuestions,
+        },
+      });
     },
   );
 }

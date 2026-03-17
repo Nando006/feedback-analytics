@@ -19,7 +19,7 @@ export default function FeedbacksAnalyticsAll() {
   }
 
   return (
-    <div className="font-inter space-y-6">
+    <div className="font-work-sans space-y-6">
       <AnalyticsAllSummarySection summary={summary} />
 
       <AnalyticsAllKeywordsSection summary={summary} />

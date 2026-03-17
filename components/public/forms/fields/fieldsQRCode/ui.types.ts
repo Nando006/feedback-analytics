@@ -1,6 +1,8 @@
 import type {
+  FeedbackAnswerValue,
   CustomerData,
   FeedbackData,
+  FeedbackQuestionPublic,
 } from 'lib/interfaces/contracts/qrcode.contract';
 
 /**
@@ -40,16 +42,28 @@ export interface FieldRatingProps {
 }
 
 /**
+ * Props do bloco de perguntas dinâmicas do feedback.
+ * Usado em: components/public/forms/fields/fieldsQRCode/fieldDynamicQuestions.tsx.
+ */
+export interface FieldDynamicQuestionsProps {
+  questions: FeedbackQuestionPublic[];
+  answers: FeedbackData['answers'];
+  onAnswerChange: (questionId: string, answerValue: FeedbackAnswerValue) => void;
+}
+
+/**
  * Props do formulário completo de feedback por QR Code.
  * Usado em: components/public/forms/formQRCodeFeedback.tsx.
  */
 export interface FormQRCodeFeedbackProps {
   formData: FeedbackData;
+  questions: FeedbackQuestionPublic[];
   customerData: CustomerData;
   showOptionalFields: boolean;
   error: string;
   isSubmitting: boolean;
   onFormDataChange: (data: Partial<FeedbackData>) => void;
+  onAnswerChange: (questionId: string, answerValue: FeedbackAnswerValue) => void;
   onCustomerDataChange: (
     field: keyof CustomerData,
     value: string | undefined,

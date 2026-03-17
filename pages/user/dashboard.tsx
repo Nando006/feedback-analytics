@@ -34,11 +34,11 @@ export default function Dashboard() {
   const negative = stats?.sentimentBreakdown.negative ?? 0;
 
   return (
-    <div className="font-inter space-y-6">
+    <div className="font-work-sans space-y-6">
       <CardSimple type="header">
         <div className="flex-1 space-y-2">
           <p className="text-sm uppercase tracking-wide text-(--text-tertiary)">Visão Geral</p>
-          <h1 className="text-3xl font-semibold text-(--text-primary) md:text-4xl">
+          <h1 className="font-montserrat text-3xl font-semibold text-(--text-primary) md:text-4xl">
             Olá, {displayName}
           </h1>
           <p className="text-sm text-(--text-secondary) md:text-base">
@@ -49,7 +49,7 @@ export default function Dashboard() {
         <div className="flex flex-col gap-3 md:items-end">
           <Link
             to="/user/feedbacks/all"
-            className="btn-primary inline-flex items-center gap-2 px-5 py-3 text-sm font-semibold">
+            className="btn-primary font-poppins inline-flex items-center gap-2 px-5 py-3 text-sm font-semibold">
             Ver feedbacks
             <FaArrowRight className="text-xs" />
           </Link>
