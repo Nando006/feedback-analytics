@@ -11,7 +11,7 @@ import FieldText from './fields/fieldsLogin/fieldText';
 import { FaEnvelope, FaLock, FaSpinner } from 'react-icons/fa6';
 import FieldPassword from './fields/fieldsLogin/fieldPassword';
 import FieldRemember from './fields/fieldsLogin/fieldRemember';
-import { useToast } from 'components/public/forms/messages/statusNotification';
+import { useToast } from 'components/public/forms/messages/useToast';
 import type { ActionData } from 'lib/interfaces/contracts/action-data.contract';
 import {
   loginSchema,

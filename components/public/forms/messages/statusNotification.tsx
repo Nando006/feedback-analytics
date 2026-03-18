@@ -1,13 +1,15 @@
 import {
   useCallback,
   useEffect,
-  useMemo,
   useRef,
   useState,
-  type Dispatch,
-  type ReactNode,
-  type SetStateAction,
 } from 'react';
+import { bindToastDispatch } from './useToast';
+import type {
+  ToastItem,
+  ToastProps,
+  ToastProviderProps,
+} from './ui.types';
 
 const VARIANTS = {
   success: {
@@ -38,31 +40,6 @@ const VARIANTS = {
       </svg>
     ),
   },
-};
-
-type ToastVariant = keyof typeof VARIANTS;
-
-type ToastInput = {
-  message: string;
-  description?: string;
-  variant?: ToastVariant;
-  duration?: number;
-};
-
-type ToastItem = {
-  id: number;
-  message: string;
-  description?: string;
-  variant: ToastVariant;
-  duration: number;
-};
-
-type ToastProps = Omit<ToastItem, 'id'> & {
-  onClose?: () => void;
-};
-
-type ToastProviderProps = {
-  children: ReactNode;
 };
 
 export function Toast({
@@ -143,44 +120,10 @@ export function Toast({
   );
 }
 
-
-// --- Hook ---
-
-let _setToasts: Dispatch<SetStateAction<ToastItem[]>> | null = null;
-
-export function useToast() {
-  const show = useCallback(({ message, description, variant = 'success', duration = 3000 }: ToastInput) => {
-    const id = Date.now();
-    _setToasts?.((prev) => [...prev, { id, message, description, variant, duration }]);
-  }, []);
-
-  const success = useCallback((message: string, description?: string) => {
-    show({ message, description, variant: 'success' });
-  }, [show]);
-
-  const error = useCallback((message: string, description?: string) => {
-    show({ message, description, variant: 'error' });
-  }, [show]);
-
-  const warning = useCallback((message: string, description?: string) => {
-    show({ message, description, variant: 'warning' });
-  }, [show]);
-
-  return useMemo(() => ({ success, error, warning }), [success, error, warning]);
-}
-
-
-// --- Provider ---
-
 export function ToastProvider({ children }: ToastProviderProps) {
   const [toasts, setToasts] = useState<ToastItem[]>([]);
 
-  useEffect(() => {
-    _setToasts = setToasts;
-    return () => {
-      if (_setToasts === setToasts) _setToasts = null;
-    };
-  }, [setToasts]);
+  useEffect(() => bindToastDispatch(setToasts), [setToasts]);
 
   const remove = useCallback((id: number) => {
     setToasts((prev) => prev.filter((t) => t.id !== id));

@@ -1,8 +1,5 @@
 import { Link } from 'react-router-dom';
-
-type RegisterEmailPendingNoticeProps = {
-  email?: string;
-};
+import type { RegisterEmailPendingNoticeProps } from './ui.types';
 
 export default function RegisterEmailPendingNotice({
   email,

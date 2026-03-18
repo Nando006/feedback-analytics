@@ -14,7 +14,7 @@ import SectionEvaluationDistribution from 'components/user/pages/dashboard/Secti
 import SectionLatestFeedbacks from 'components/user/pages/dashboard/SectionLatestFeedbacks';
 import SectionCollectingStrategy from 'components/user/pages/dashboard/SectionCollectingStrategy';
 import SectionSatisfactionRadar from 'components/user/pages/dashboard/SectionSatisfactionRadar';
-import { useToast } from 'components/public/forms/messages/statusNotification';
+import { useToast } from 'components/public/forms/messages/useToast';
 import type { DashboardLoaderData, UserLoaderData } from './ui.types';
 
 

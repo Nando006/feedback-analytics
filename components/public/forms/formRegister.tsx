@@ -14,7 +14,7 @@ import FieldPasswordRegister from './fields/fieldsRegister/fieldPassword';
 import FieldTermsRegister from './fields/fieldsRegister/fieldTerms';
 import type { ActionData } from 'lib/interfaces/contracts/action-data.contract';
 import { FaSpinner } from 'react-icons/fa6';
-import { useToast } from 'components/public/forms/messages/statusNotification';
+import { useToast } from 'components/public/forms/messages/useToast';
 import RegisterEmailPendingNotice from './messages/registerEmailPendingNotice';
 
 function getRegisterErrorMessage(actionData: ActionData) {
