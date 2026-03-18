@@ -21,11 +21,11 @@ const FieldBusinessSummary = memo(function FieldBusinessSummary({ defaultValue }
           rows={5}
           defaultValue={defaultValue}
           onInput={(event) => setCharacterCount(event.currentTarget.value.length)}
-          placeholder="Ex: Atuamos há 5 anos no mercado de software, oferecendo sistemas de gestão..."
+          placeholder="Descreva seu negócio. (O que faz? Para quem?) Ex: Rede de clínicas odontológicas focada em tratamentos estéticos de alta tecnologia."
         />
         <div className="mt-1.5 flex items-center justify-between">
           <p className="text-xs text-(--text-tertiary)">
-            Conte brevemente sobre a empresa e seu funcionamento
+            Este campo ajuda a IA a entender o seu nicho de mercado e o perfil do seu público.
           </p>
           <span className="text-xs text-(--text-tertiary)">
             {characterCount} caracteres

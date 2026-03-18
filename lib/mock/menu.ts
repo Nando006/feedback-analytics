@@ -15,7 +15,7 @@ export const menuData: MenuItem[] = [
   {
     label: 'Feedbacks',
     children: [
-      { label: 'Enviados', to: '/user/feedbacks/all' },
+      { label: 'Recebidos', to: '/user/feedbacks/all' },
       {
         label: 'Analisados',
         children: [
