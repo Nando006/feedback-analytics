@@ -1,21 +1,59 @@
+import { useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { Link, useNavigation, useSubmit } from 'react-router-dom';
+import {
+  Link,
+  useActionData,
+  useNavigation,
+  useSubmit,
+} from 'react-router-dom';
 import FieldText from './fields/fieldsLogin/fieldText';
 import { FaEnvelope, FaLock, FaSpinner } from 'react-icons/fa6';
 import FieldPassword from './fields/fieldsLogin/fieldPassword';
 import FieldRemember from './fields/fieldsLogin/fieldRemember';
+import { useToast } from 'components/public/forms/messages/statusNotification';
+import type { ActionData } from 'lib/interfaces/contracts/action-data.contract';
 import {
   loginSchema,
   type LoginFormValues,
 } from 'lib/schemas/public/loginSchema';
 
+function getLoginErrorMessage(actionData: ActionData) {
+  if (actionData.error === 'invalid_credentials') {
+    return {
+      message: 'E-mail ou senha incorretos.',
+      description: 'Revise as credenciais e tente novamente.',
+    };
+  }
+
+  if (actionData.error === 'invalid_payload') {
+    return {
+      message: 'Dados de login inválidos.',
+      description: 'Preencha os campos corretamente antes de continuar.',
+    };
+  }
+
+  return {
+    message: 'Não foi possivel realizar o login.',
+    description: actionData.message ?? 'Tente novamente em instantes.',
+  };
+}
+
 export default function FormLogin() {
   const submit = useSubmit();
+  const actionData = useActionData() as ActionData | undefined;
+  const toast = useToast();
   const navigation = useNavigation();
   const isSubmitting =
     navigation.state === 'submitting' &&
     (navigation.formAction?.includes('/login') ?? false);
+
+  useEffect(() => {
+    if (!actionData?.error) return;
+
+    const { message, description } = getLoginErrorMessage(actionData);
+    toast.error(message, description);
+  }, [actionData, toast]);
 
   const {
     register,

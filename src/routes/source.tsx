@@ -1,4 +1,5 @@
 import ErrorPage from 'components/globals/handling/errorPage';
+import { ToastProvider } from 'components/public/forms/messages/statusNotification';
 import {
   createBrowserRouter,
   createRoutesFromElements,
@@ -25,5 +26,9 @@ export default function Source() {
     },
   ]);
 
-  return <RouterProvider router={router} />;
+  return (
+    <ToastProvider>
+      <RouterProvider router={router} />
+    </ToastProvider>
+  );
 }
