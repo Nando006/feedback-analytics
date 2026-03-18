@@ -16,7 +16,7 @@ export default function Info({
               <h2 className="font-montserrat text-lg font-semibold text-(--text-primary)">Objetivo</h2>
             </div>
             <p className="max-w-2xl text-(--text-secondary)">
-              {collecting?.business_summary ?? 'Conte sobre sua empresa...'}
+              {collecting?.business_summary ?? 'Adicione informações sobre seu negócio...'}
             </p>
           </div>
           <p className="text-sm text-(--text-tertiary)">

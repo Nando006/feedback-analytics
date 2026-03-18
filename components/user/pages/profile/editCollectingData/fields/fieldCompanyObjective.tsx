@@ -22,11 +22,11 @@ const FieldCompanyObjective = memo(function FieldCompanyObjective({
           rows={4}
           defaultValue={defaultValue}
           onInput={(event) => setCharacterCount(event.currentTarget.value.length)}
-          placeholder="Ex: Fornecer soluções tecnológicas inovadoras para pequenas e médias empresas..."
+          placeholder="Instrua a IA sobre seu foco atual para ela filtrar os feedbacks. Ex: Oferecer o melhor custo-benefício e a entrega mais segura em hardware de alto desempenho."
         />
         <div className="mt-1.5 flex items-center justify-between">
           <p className="text-xs text-(--text-tertiary)">
-            Descreva qual é o foco principal da empresa
+            Quanto mais específico, melhor a análise da IA.
           </p>
           <span className="text-xs text-(--text-tertiary)">{characterCount} caracteres</span>
         </div>

@@ -10,8 +10,7 @@ export default function Header() {
             Editar perfil
           </h1>
           <p className="mt-1 text-sm text-[var(--text-tertiary)]">
-            Ajuste suas informações pessoais e preferências. Campos e lógica
-            serão adicionados posteriormente.
+            Ajuste suas informações pessoais e preferências.
           </p>
         </div>
         <div className="flex flex-wrap gap-3">
