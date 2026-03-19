@@ -19,7 +19,8 @@ export function useToast() {
       variant = 'success',
       duration = 3000,
     }: ToastInput) => {
-      const id = Date.now();
+      let toastId = 0;
+      const id = ++toastId;
       const toast: ToastItem = {
         id,
         message,
