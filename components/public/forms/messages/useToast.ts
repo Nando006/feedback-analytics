@@ -2,6 +2,7 @@ import { useCallback, useMemo } from 'react';
 import type { ToastDispatch, ToastInput, ToastItem } from './ui.types';
 
 let toastDispatch: ToastDispatch | null = null;
+let toastId = 0;
 
 export function bindToastDispatch(dispatch: ToastDispatch) {
   toastDispatch = dispatch;
@@ -19,7 +20,6 @@ export function useToast() {
       variant = 'success',
       duration = 3000,
     }: ToastInput) => {
-      let toastId = 0;
       const id = ++toastId;
       const toast: ToastItem = {
         id,
