@@ -1,4 +1,10 @@
-import { Link, useLoaderData, useRouteLoaderData } from 'react-router-dom';
+import { useEffect, useRef } from 'react';
+import {
+  Link,
+  useLoaderData,
+  useRouteLoaderData,
+  useSearchParams,
+} from 'react-router-dom';
 import CardSimple from 'components/user/shared/cards/cardSimple';
 import {
   FaArrowRight,
@@ -8,6 +14,7 @@ import SectionEvaluationDistribution from 'components/user/pages/dashboard/Secti
 import SectionLatestFeedbacks from 'components/user/pages/dashboard/SectionLatestFeedbacks';
 import SectionCollectingStrategy from 'components/user/pages/dashboard/SectionCollectingStrategy';
 import SectionSatisfactionRadar from 'components/user/pages/dashboard/SectionSatisfactionRadar';
+import { useToast } from 'components/public/forms/messages/useToast';
 import type { DashboardLoaderData, UserLoaderData } from './ui.types';
 
 
@@ -16,7 +23,22 @@ const LATEST_LIMIT = 5;
 export default function Dashboard() {
   const userLoaderData = useRouteLoaderData<UserLoaderData>('user');
   const dashboardLoaderData = useLoaderData<DashboardLoaderData>();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const toast = useToast();
 
+  const toastShownRef = useRef(false);
+
+  useEffect(() => {
+    if (searchParams.get('login') !== 'success') return;
+    if (toastShownRef.current) return; // já exibiu, ignora
+
+    toastShownRef.current = true;
+    toast.success('Login realizado com sucesso.', 'Bem-vindo de volta.');
+
+    const nextSearchParams = new URLSearchParams(searchParams);
+    nextSearchParams.delete('login');
+    setSearchParams(nextSearchParams, { replace: true });
+  }, [searchParams, setSearchParams, toast]);
   const user = userLoaderData?.user;
   const enterprise = userLoaderData?.enterprise;
   const collecting = userLoaderData?.collecting ?? null;

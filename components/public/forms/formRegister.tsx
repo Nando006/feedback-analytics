@@ -1,10 +1,11 @@
+import { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   type RegisterFormValues,
   registerSchema,
 } from 'lib/schemas/public/registerSchema';
 import { useForm, type SubmitHandler } from 'react-hook-form';
-import { Link, useActionData, useSubmit } from 'react-router-dom';
+import { useActionData, useSubmit } from 'react-router-dom';
 import FieldAccountTypeRegister from './fields/fieldsRegister/fieldAccountType';
 import FieldText from './fields/fieldsRegister/fieldText';
 import FieldDocument from './fields/fieldsRegister/fieldDocument';
@@ -13,9 +14,55 @@ import FieldPasswordRegister from './fields/fieldsRegister/fieldPassword';
 import FieldTermsRegister from './fields/fieldsRegister/fieldTerms';
 import type { ActionData } from 'lib/interfaces/contracts/action-data.contract';
 import { FaSpinner } from 'react-icons/fa6';
+import { useToast } from 'components/public/forms/messages/useToast';
+import RegisterEmailPendingNotice from './messages/registerEmailPendingNotice';
+
+function getRegisterErrorMessage(actionData: ActionData) {
+  if (actionData.error === 'email_taken') {
+    return {
+      message: 'E-mail ja cadastrado.',
+      description: 'Use outro e-mail ou recupere sua conta existente.',
+    };
+  }
+
+  if (actionData.error === 'phone_taken') {
+    return {
+      message: 'Telefone ja cadastrado.',
+      description: 'Informe outro numero para continuar o cadastro.',
+    };
+  }
+
+  if (actionData.error === 'document_taken') {
+    return {
+      message: 'Documento ja cadastrado.',
+      description: 'Verifique o CPF/CNPJ informado ou entre com sua conta.',
+    };
+  }
+
+  if (actionData.error === 'document_required') {
+    return {
+      message: 'Documento obrigatorio.',
+      description: 'Preencha o CPF/CNPJ para concluir o cadastro.',
+    };
+  }
+
+  if (actionData.error === 'invalid_payload') {
+    return {
+      message: 'Dados de cadastro invalidos.',
+      description: 'Revise os campos e tente novamente.',
+    };
+  }
+
+  return {
+    message: 'Nao foi possivel criar sua conta.',
+    description: actionData.message ?? 'Tente novamente em instantes.',
+  };
+}
 
 export default function FormRegister() {
   const submit = useSubmit();
+  const toast = useToast();
+  const [submittedEmail, setSubmittedEmail] = useState('');
   const {
     register,
     handleSubmit,
@@ -39,9 +86,21 @@ export default function FormRegister() {
 
   const accountType = watch('accountType') ?? 'CPF';
   const actionData = useActionData() as ActionData | undefined;
-  const isSuccess = actionData?.ok === true;
+
+  useEffect(() => {
+    if (!actionData) return;
+
+    if (actionData.ok) return;
+
+    if (actionData.error) {
+      const { message, description } = getRegisterErrorMessage(actionData);
+      toast.error(message, description);
+    }
+  }, [actionData, toast]);
 
   const onSubmit: SubmitHandler<RegisterFormValues> = (data) => {
+    setSubmittedEmail(data.email);
+
     const formData = new FormData();
     formData.set('accountType', data.accountType);
 
@@ -65,37 +124,12 @@ export default function FormRegister() {
     });
   };
 
+  if (actionData?.ok) {
+    return <RegisterEmailPendingNotice email={submittedEmail} />;
+  }
+
   return (
     <div>
-      {isSuccess && (
-        <div
-          role="status"
-          aria-live="polite"
-          className="rounded-lg border border-(--positive)/30 bg-(--positive)/10 p-4 text-(--text-primary)">
-          <div className="text-sm font-work-sans ">
-            Conta criada! Enviamos um e-mail de confirmação. Verifique sua caixa
-            de entrada e confirme para ativar seu acesso.
-          </div>
-          <div className="mt-3">
-            <Link
-              to="/login"
-              className="inline-flex items-center justify-center rounded-md bg-(--primary-color) px-4 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90">
-              Ir para o login
-            </Link>
-          </div>
-        </div>
-      )}
-
-      {actionData?.error && !isSuccess && (
-        <div
-          role="alert"
-          className="rounded-lg border border-(--negative)/30 bg-(--negative)/10 p-4 text-(--text-primary)">
-          <div className="text-sm font-work-sans">
-            Não foi possível criar sua conta.{' '}
-            {actionData.message ?? 'Verifique os campos e tente novamente.'}
-          </div>
-        </div>
-      )}
       <form
         onSubmit={handleSubmit(onSubmit)}
         noValidate
@@ -178,12 +212,12 @@ export default function FormRegister() {
           disabled={isSubmitting}
           aria-busy={isSubmitting}>
           {isSubmitting ? (
-                    <>
-                      <FaSpinner className="animate-spin text-(--text-primary)" aria-hidden="true" />
-                    </>
-                  ) : (
-                    'Criar Conta'
-                  )}
+            <>
+              <FaSpinner className="animate-spin text-(--text-primary)" aria-hidden="true" />
+            </>
+          ) : (
+            'Criar Conta'
+          )}
         </button>
       </form>
     </div>
