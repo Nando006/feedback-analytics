@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useFetcher, useLoaderData, useRouteLoaderData } from 'react-router-dom';
 import { getQrCodeUrl } from 'lib/utils/qrcode';
+import { useToast } from 'components/public/forms/messages/useToast';
 import type { Enterprise } from 'lib/interfaces/entities/enterprise.entity';
 import type { AuthUser } from 'lib/interfaces/entities/auth-user.entity';
 import type { LoaderQrCodeEnterprise } from 'src/routes/loaders/loaderQrCodeEnterprise';
@@ -22,6 +23,7 @@ export default function QRCodeEnterprise() {
   const qrLoaderData =
     useLoaderData<Awaited<ReturnType<typeof LoaderQrCodeEnterprise>>>();
   const qrFetcher = useFetcher<QrCodeEnterpriseActionResponse>();
+  const toast = useToast();
 
   const [showCopied, setShowCopied] = useState(false);
   const [qrActive, setQrActive] = useState<boolean>(qrLoaderData?.qrActive ?? false);
@@ -38,14 +40,20 @@ export default function QRCodeEnterprise() {
 
     if (actionResult.error) {
       setQrError(actionResult.error);
+      toast.error('Erro na operação', actionResult.error);
       return;
     }
 
     if (actionResult.ok && typeof actionResult.active === 'boolean') {
       setQrError(null);
       setQrActive(actionResult.active);
+      if (actionResult.active) {
+        toast.success('QR Code ativado!', 'Agora os clientes podem enviar feedback');
+      } else {
+        toast.success('QR Code desativado!', 'Coleta de feedback pausada');
+      }
     }
-  }, [qrFetcher.data]);
+  }, [qrFetcher.data, toast]);
 
   // Gera URL para formulário de feedback da empresa
   const feedbackUrl = useMemo(() => {
@@ -76,10 +84,12 @@ export default function QRCodeEnterprise() {
       a.click();
       document.body.removeChild(a);
       window.URL.revokeObjectURL(url);
+      toast.success('QR Code baixado!', 'Download iniciado automaticamente');
     } catch (error) {
       console.error('Erro ao baixar QR Code:', error);
+      toast.error('Erro no download', 'Não foi possível baixar o QR Code');
     }
-  }, [enterprise.full_name, qrCodeUrl]);
+  }, [enterprise.full_name, qrCodeUrl, toast]);
 
   const handleCopyLink = useCallback(async () => {
     try {

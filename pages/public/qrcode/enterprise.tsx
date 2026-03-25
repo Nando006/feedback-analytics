@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useFetcher, useLoaderData } from 'react-router-dom';
 import Card from 'components/public/shared/card';
 import SVGImageProfile from 'components/svg/imageProfile';
+import { useToast } from 'components/public/forms/messages/useToast';
 import type {
   CustomerData,
   FeedbackAnswerValue,
@@ -17,6 +18,7 @@ import type { QrcodeEnterpriseActionData } from './ui.types';
 export default function FeedbackQRCodeEnterprise() {
   const loaderData =
     useLoaderData<Awaited<ReturnType<typeof LoaderPublicQrCodeEnterprise>>>();
+  const toast = useToast();
 
   const enterpriseId = loaderData?.enterpriseId ?? '';
   const collectionPointId = loaderData?.collectionPointId ?? '';
@@ -60,7 +62,11 @@ export default function FeedbackQRCodeEnterprise() {
     if (fetcher.state !== 'idle' || !fetcher.data) return;
 
     if (fetcher.data.ok) {
-      setIsSubmitted(true);
+      toast.success('Obrigado pelo feedback!', 'Sua opinião é muito importante');
+      // Redireciona após 2 segundos para permitir que o usuário veja o toast
+      setTimeout(() => {
+        setIsSubmitted(true);
+      }, 2000);
       return;
     }
 
@@ -70,9 +76,10 @@ export default function FeedbackQRCodeEnterprise() {
     }
 
     if (fetcher.data.error) {
+      toast.error('Erro ao enviar feedback', fetcher.data.error);
       setError(fetcher.data.error);
     }
-  }, [fetcher.state, fetcher.data]);
+  }, [fetcher.state, fetcher.data, toast]);
 
   useEffect(() => {
     const questionIds = new Set(questions.map((question) => question.id));

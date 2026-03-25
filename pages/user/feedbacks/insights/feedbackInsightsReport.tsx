@@ -5,6 +5,7 @@ import {
   useRevalidator,
   useSearchParams,
 } from 'react-router-dom';
+import { useToast } from 'components/public/forms/messages/useToast';
 import type {
   FeedbackAnalysisSummary,
 } from 'lib/interfaces/domain/feedback.domain';
@@ -60,6 +61,7 @@ function getMoodFromSummary(summary: FeedbackAnalysisSummary | null) {
 
 export default function FeedbacksInsightsReport() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const toast = useToast();
   const {
     report,
     summary,
@@ -131,9 +133,12 @@ export default function FeedbacksInsightsReport() {
     shouldRevalidateRef.current = false;
 
     if (fetcher.data?.ok) {
+      toast.success('Análise concluída!', 'Relatório atualizado com insights da IA');
       revalidator.revalidate();
+    } else if (fetcher.data?.error) {
+      toast.error('Erro na análise', fetcher.data.error);
     }
-  }, [fetcher.state, fetcher.data?.ok, revalidator]);
+  }, [fetcher.state, fetcher.data?.ok, fetcher.data?.error, revalidator, toast]);
 
   const handleRefreshSelected = () => {
     if (!analysisGuard.canAnalyze) {
@@ -167,6 +172,10 @@ export default function FeedbacksInsightsReport() {
     setLocalError(null);
     setDismissedErrorKey(null);
     shouldRevalidateRef.current = true;
+    
+    // Toast de loading para análises longas
+    toast.success('Gerando análise...', 'Isso pode levar alguns momentos');
+    
     fetcher.submit(form, { method: 'post' });
   };
 
