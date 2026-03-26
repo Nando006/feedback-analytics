@@ -63,10 +63,9 @@ export default function FeedbackQRCodeEnterprise() {
 
     if (fetcher.data.ok) {
       toast.success('Obrigado pelo feedback!', 'Sua opinião é muito importante');
-      // Redireciona após 2 segundos para permitir que o usuário veja o toast
       setTimeout(() => {
         setIsSubmitted(true);
-      }, 2000);
+      });
       return;
     }
 
