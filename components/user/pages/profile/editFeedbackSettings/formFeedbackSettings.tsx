@@ -19,8 +19,7 @@ import {
 } from 'react';
 import { Form, Link, useRouteLoaderData } from 'react-router-dom';
 import FieldCatalogItems from '../editCollectingData/fields/fieldCatalogItems';
-
-type FeedbackTab = 'COMPANY' | 'PRODUCT' | 'SERVICE' | 'DEPARTMENT';
+import type { FeedbackTab } from './ui.types';
 
 const TOTAL_QUESTIONS = 3;
 const TOTAL_SUBQUESTIONS = 3;

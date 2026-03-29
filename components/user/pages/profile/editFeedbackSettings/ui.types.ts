@@ -1,0 +1,1 @@
+export type FeedbackTab = 'COMPANY' | 'PRODUCT' | 'SERVICE' | 'DEPARTMENT';
