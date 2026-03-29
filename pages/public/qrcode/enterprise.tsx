@@ -38,19 +38,9 @@ export default function FeedbackQRCodeEnterprise() {
   const itemKindLabel = getItemKindLabel(itemKind);
 
   const {
-    formData,
-    customerData,
-    showOptionalFields,
+    formModel,
     isSubmitted,
-    error,
     hasAlreadySubmitted,
-    isSubmitting,
-    handleFormDataChange,
-    handleAnswerChange,
-    handleSubanswerChange,
-    handleCustomerDataChange,
-    handleToggleOptionalFields,
-    handleSubmit,
   } = useQrCodeFeedbackController({
     enterpriseId,
     collectionPointId,
@@ -65,8 +55,8 @@ export default function FeedbackQRCodeEnterprise() {
   }
 
   // Error state
-  if (error && !formData.enterprise_id) {
-    return <StateError error={error} />;
+  if (formModel.state.error && !formModel.state.formData.enterprise_id) {
+    return <StateError error={formModel.state.error} />;
   }
 
   if (isSubmitted) {
@@ -90,18 +80,7 @@ export default function FeedbackQRCodeEnterprise() {
         children={
           <PublicQrFeedbackTemplateRenderer
             scope={feedbackScope}
-            formData={formData}
-            questions={questions}
-            customerData={customerData}
-            showOptionalFields={showOptionalFields}
-            error={error}
-            isSubmitting={isSubmitting}
-            onFormDataChange={handleFormDataChange}
-            onAnswerChange={handleAnswerChange}
-            onSubanswerChange={handleSubanswerChange}
-            onCustomerDataChange={handleCustomerDataChange}
-            onToggleOptionalFields={handleToggleOptionalFields}
-            onSubmit={handleSubmit}
+            model={formModel}
           />
         }
       />

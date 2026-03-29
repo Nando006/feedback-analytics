@@ -1,9 +1,7 @@
 import type {
-  CustomerData,
-  FeedbackAnswerValue,
-  FeedbackData,
   FeedbackQuestionPublic,
 } from 'lib/interfaces/contracts/qrcode.contract';
+import type { PublicQrFeedbackFormViewModel } from 'components/public/forms/fields/fieldsQRCode/ui.types';
 
 /**
  * Resultado da action de envio de feedback por QR Code.
@@ -30,26 +28,7 @@ export type QrCodeFeedbackControllerParams = {
  * Retorno do controller do formulário público QR.
  */
 export type QrCodeFeedbackControllerResult = {
-  formData: FeedbackData;
-  customerData: CustomerData;
-  showOptionalFields: boolean;
-  isSubmitted: boolean;
-  error: string;
+  formModel: PublicQrFeedbackFormViewModel;
   hasAlreadySubmitted: boolean;
-  isSubmitting: boolean;
-  handleFormDataChange: (data: Partial<FeedbackData>) => void;
-  handleCustomerDataChange: (
-    field: keyof CustomerData,
-    value: string | undefined,
-  ) => void;
-  handleAnswerChange: (
-    questionId: string,
-    answerValue: FeedbackAnswerValue,
-  ) => void;
-  handleSubanswerChange: (
-    subquestionId: string,
-    answerValue: FeedbackAnswerValue,
-  ) => void;
-  handleToggleOptionalFields: () => void;
-  handleSubmit: (event: React.FormEvent) => void;
+  isSubmitted: boolean;
 };

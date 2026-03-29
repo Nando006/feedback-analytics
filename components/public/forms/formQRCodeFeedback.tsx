@@ -8,43 +8,50 @@ import type { FormQRCodeFeedbackProps } from './fields/fieldsQRCode/ui.types';
 import { FaSpinner } from 'react-icons/fa6';
 
 export default function FormQRCodeFeedback({
-  formData,
-  questions,
-  customerData,
-  showOptionalFields,
-  error,
-  isSubmitting,
-  onFormDataChange,
-  onAnswerChange,
-  onSubanswerChange,
-  onCustomerDataChange,
-  onToggleOptionalFields,
-  onSubmit,
+  model,
 }: FormQRCodeFeedbackProps) {
+  const {
+    formData,
+    questions,
+    customerData,
+    showOptionalFields,
+    error,
+    isSubmitting,
+  } = model.state;
+
+  const {
+    updateFormData,
+    updateAnswer,
+    updateSubanswer,
+    updateCustomerData,
+    toggleOptionalFields,
+    submit,
+  } = model.actions;
+
   return (
-    <form onSubmit={onSubmit} className="space-y-6">
+    <form onSubmit={submit} className="space-y-6">
       <FieldRating
         rating={formData.rating}
-        onRatingChange={(rating) => onFormDataChange({ rating })}
+        onRatingChange={(rating) => updateFormData({ rating })}
       />
 
       <FieldDynamicQuestions
         questions={questions}
         answers={formData.answers}
         subanswers={formData.subanswers}
-        onAnswerChange={onAnswerChange}
-        onSubanswerChange={onSubanswerChange}
+        onAnswerChange={updateAnswer}
+        onSubanswerChange={updateSubanswer}
       />
 
       <FieldMessage
         message={formData.message}
-        onMessageChange={(message) => onFormDataChange({ message })}
+        onMessageChange={(message) => updateFormData({ message })}
       />
 
       <div className="border-t border-(--bg-tertiary) pt-4">
         <button
           type="button"
-          onClick={onToggleOptionalFields}
+          onClick={toggleOptionalFields}
           className="flex items-center justify-between w-full text-left text-sm font-medium text-(--text-secondary) hover:text-(--primary-color) transition-colors font-work-sans">
           <span>Informações pessoais (opcional)</span>
           <svg
@@ -91,16 +98,16 @@ export default function FormQRCodeFeedback({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FieldCustomerName
               name={customerData.customer_name || ''}
-              onNameChange={(value) => onCustomerDataChange('customer_name', value)}
+              onNameChange={(value) => updateCustomerData('customer_name', value)}
             />
             <FieldCustomerEmail
               email={customerData.customer_email || ''}
-              onEmailChange={(value) => onCustomerDataChange('customer_email', value)}
+              onEmailChange={(value) => updateCustomerData('customer_email', value)}
             />
           </div>
           <FieldCustomerGender
             gender={customerData.customer_gender}
-            onGenderChange={(value) => onCustomerDataChange('customer_gender', value)}
+            onGenderChange={(value) => updateCustomerData('customer_gender', value)}
           />
         </div>
       )}

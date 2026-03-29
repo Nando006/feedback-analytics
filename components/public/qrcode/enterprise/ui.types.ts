@@ -1,11 +1,15 @@
-import type { FormQRCodeFeedbackProps } from 'components/public/forms/fields/fieldsQRCode/ui.types';
+import type {
+  FormQRCodeFeedbackProps,
+  PublicQrFeedbackFormViewModel,
+} from 'components/public/forms/fields/fieldsQRCode/ui.types';
 import type {
   PublicQrFeedbackScope,
   PublicQrFeedbackTemplateKey,
 } from 'lib/utils/publicQrFeedbackTemplateEngine';
 
-export type PublicQrFeedbackTemplateRendererProps = FormQRCodeFeedbackProps & {
+export type PublicQrFeedbackTemplateRendererProps = {
   scope: PublicQrFeedbackScope;
+  model: PublicQrFeedbackFormViewModel;
 };
 
 export type FeedbackTemplateComponent = (

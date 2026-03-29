@@ -189,19 +189,28 @@ export function useQrCodeFeedbackController({
     );
   };
 
+  const formModel = {
+    state: {
+      formData,
+      questions,
+      customerData,
+      showOptionalFields,
+      error,
+      isSubmitting,
+    },
+    actions: {
+      updateFormData: handleFormDataChange,
+      updateCustomerData: handleCustomerDataChange,
+      updateAnswer: handleAnswerChange,
+      updateSubanswer: handleSubanswerChange,
+      toggleOptionalFields: handleToggleOptionalFields,
+      submit: handleSubmit,
+    },
+  };
+
   return {
-    formData,
-    customerData,
-    showOptionalFields,
-    isSubmitted,
-    error,
+    formModel,
     hasAlreadySubmitted,
-    isSubmitting,
-    handleFormDataChange,
-    handleCustomerDataChange,
-    handleAnswerChange,
-    handleSubanswerChange,
-    handleToggleOptionalFields,
-    handleSubmit,
+    isSubmitted,
   };
 }

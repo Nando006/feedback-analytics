@@ -13,10 +13,10 @@ const TEMPLATE_COMPONENTS: FeedbackTemplateRegistry = {
 
 export default function PublicQrFeedbackTemplateRenderer({
   scope,
-  ...formProps
+  model,
 }: PublicQrFeedbackTemplateRendererProps) {
   const templateKey = resolvePublicQrFeedbackTemplate(scope);
   const Template = TEMPLATE_COMPONENTS[templateKey] ?? FormQRCodeFeedback;
 
-  return <Template {...formProps} />;
+  return <Template model={model} />;
 }
