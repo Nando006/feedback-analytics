@@ -1,14 +1,20 @@
-import { useSubmit } from 'react-router-dom';
+import { useEffect } from 'react';
+import { useSubmit, useActionData } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { emailUpdateSchema } from 'lib/schemas/user/emailUpdateSchema';
 import { INTENT_PROFILE_UPDATE_EMAIL } from 'lib/constants/routes/intents';
+import { useToast } from 'components/public/forms/messages/useToast';
+import type { ActionData } from 'lib/interfaces/contracts/action-data.contract';
 import type { FormEmailUserProps, FormEmailUserValues } from './ui.types';
 
 export default function FormEmailUser({
   defaultEmail = '',
 }: FormEmailUserProps) {
   const submit = useSubmit();
+  const toast = useToast();
+  const actionData = useActionData() as ActionData | undefined;
+  
   const {
     register,
     handleSubmit,
@@ -20,6 +26,16 @@ export default function FormEmailUser({
     reValidateMode: 'onChange',
     defaultValues: { email: defaultEmail },
   });
+
+  useEffect(() => {
+    if (!actionData) return;
+    
+    if (actionData.ok) {
+      toast.success('Email atualizado!', 'Confirme a mudança nos dois emails');
+    } else {
+      toast.error('Erro ao atualizar email', actionData.message || 'Tente novamente em instantes');
+    }
+  }, [actionData, toast]);
 
   const onSubmit = () => {
     const v = getValues();

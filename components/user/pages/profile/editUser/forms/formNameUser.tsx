@@ -1,14 +1,20 @@
+import { useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { nameSchema, type NameFormValues } from 'lib/schemas/user/nameSchema';
 import { useForm } from 'react-hook-form';
-import { useSubmit } from 'react-router-dom';
+import { useSubmit, useActionData } from 'react-router-dom';
 import { INTENT_PROFILE_UPDATE_FULL_NAME } from 'lib/constants/routes/intents';
+import { useToast } from 'components/public/forms/messages/useToast';
+import type { ActionData } from 'lib/interfaces/contracts/action-data.contract';
 import type { FormNameUserProps } from './ui.types';
 
 export default function FormNameUser({
   defaultFullName = '',
 }: FormNameUserProps) {
   const submit = useSubmit();
+  const toast = useToast();
+  const actionData = useActionData() as ActionData | undefined;
+  
   const {
     register,
     handleSubmit,
@@ -20,6 +26,16 @@ export default function FormNameUser({
     reValidateMode: 'onChange',
     defaultValues: { full_name: defaultFullName },
   });
+
+  useEffect(() => {
+    if (!actionData) return;
+    
+    if (actionData.ok) {
+      toast.success('Nome atualizado!', 'Dados salvos com sucesso');
+    } else {
+      toast.error('Erro ao salvar dados', actionData.message || 'Tente novamente em instantes');
+    }
+  }, [actionData, toast]);
 
   const onSubmit = () => {
     const v = getValues();

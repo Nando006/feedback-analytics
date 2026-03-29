@@ -1,6 +1,7 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useFetcher, useRouteLoaderData } from 'react-router-dom';
 import { getQrCodeUrl } from 'lib/utils/qrcode';
+import { useToast } from 'components/public/forms/messages/useToast';
 import type { Enterprise } from 'lib/interfaces/entities/enterprise.entity';
 import type { AuthUser } from 'lib/interfaces/entities/auth-user.entity';
 import {
@@ -154,6 +155,7 @@ export default function QrCodeCatalogPage({
   subtitle,
   data,
 }: QrCodeCatalogPageProps) {
+  const toast = useToast();
   const { enterprise } = useRouteLoaderData('user') as {
     enterprise: Enterprise;
     user: AuthUser['user'];
@@ -172,6 +174,7 @@ export default function QrCodeCatalogPage({
     }
 
     if (fetcher.data.ok && fetcher.data.catalog_item_id) {
+      const isActivating = fetcher.data.active;
       setItems((previousItems) =>
         previousItems.map((item) => {
           if (item.catalog_item_id !== fetcher.data?.catalog_item_id) {
@@ -188,10 +191,18 @@ export default function QrCodeCatalogPage({
           };
         }),
       );
+      
+      if (isActivating) {
+        toast.success('QR Code ativado!', 'Item disponível para feedback');
+      } else {
+        toast.success('QR Code desativado!', 'Item removido da coleta');
+      }
+    } else if (fetcher.data.error) {
+      toast.error('Erro na operação', fetcher.data.error);
     }
 
     setPendingCatalogItemId(null);
-  }, [fetcher.state, fetcher.data]);
+  }, [fetcher.state, fetcher.data, toast]);
 
   const hasItems = items.length > 0;
 

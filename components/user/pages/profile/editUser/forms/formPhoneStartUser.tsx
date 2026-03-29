@@ -1,4 +1,5 @@
-import { useSubmit } from 'react-router-dom';
+import { useEffect } from 'react';
+import { useSubmit, useActionData } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -6,12 +7,17 @@ import {
   type PhoneStartFormValues,
 } from 'lib/schemas/user/phoneSchema';
 import { INTENT_PROFILE_START_PHONE } from 'lib/constants/routes/intents';
+import { useToast } from 'components/public/forms/messages/useToast';
+import type { ActionData } from 'lib/interfaces/contracts/action-data.contract';
 import type { FormPhoneStartUserProps } from './ui.types';
 
 export default function FormPhoneStartUser({
   defaultPhone = '',
 }: FormPhoneStartUserProps) {
   const submit = useSubmit();
+  const toast = useToast();
+  const actionData = useActionData() as ActionData | undefined;
+  
   const {
     register,
     handleSubmit,
@@ -23,6 +29,16 @@ export default function FormPhoneStartUser({
     reValidateMode: 'onChange',
     defaultValues: { phone: defaultPhone },
   });
+
+  useEffect(() => {
+    if (!actionData) return;
+    
+    if (actionData.ok) {
+      toast.success('Código enviado!', 'Verifique seu SMS para continuar');
+    } else {
+      toast.error('Erro ao enviar código', actionData.message || 'Verifique o número e tente novamente');
+    }
+  }, [actionData, toast]);
 
   const onSubmit = () => {
     const v = getValues();
