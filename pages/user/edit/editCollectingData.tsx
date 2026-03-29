@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useActionData } from 'react-router-dom';
+import { Link, useActionData } from 'react-router-dom';
 import CardSimple from 'components/user/shared/cards/cardSimple';
 import Header from 'components/user/pages/profile/editCollectingData/header';
 import FormCollectingDataEnterprise from 'components/user/pages/profile/editCollectingData/formCollectingDataEnterprise';
@@ -28,11 +28,18 @@ export default function EditCollectingData() {
         <div className="w-full">
           <div className="mb-6 border-b border-(--quaternary-color)/10 pb-4">
             <h2 className="font-montserrat text-xl font-semibold text-(--text-primary)">
-              Configuração de Coleta de Dados
+              Informações Gerais da Empresa
             </h2>
             <p className="mt-2 text-sm text-(--text-tertiary)">
-              Configure como sua empresa irá coletar e utilizar os feedbacks dos clientes.
+              Defina o contexto estratégico da empresa. Perguntas dinâmicas e catálogos por tipo ficam na configuração de feedbacks.
             </p>
+
+            <Link
+              to="/user/edit/feedback-settings"
+              className="mt-3 inline-flex rounded-lg border border-(--primary-color) px-3 py-2 text-sm font-semibold text-(--primary-color) transition-colors hover:bg-(--primary-color)/10"
+            >
+              Abrir Configuração de Feedbacks
+            </Link>
           </div>
 
           <FormCollectingDataEnterprise />

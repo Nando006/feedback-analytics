@@ -80,6 +80,7 @@ describe('ActionPublicQrCodeFeedback', () => {
       message: 'Ótimo produto',
       rating: 5,
       answers: defaultAnswers,
+      subanswers: [],
       channel: 'QRCODE',
       customer_name: undefined,
       customer_email: undefined,

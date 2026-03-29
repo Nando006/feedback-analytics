@@ -4,6 +4,7 @@ import { getPublicQrFeedbackErrorMessage } from 'lib/utils/publicQrFeedbackError
 import type {
   FeedbackAnswerValue,
   FeedbackQuestionAnswerInput,
+  FeedbackSubquestionAnswerInput,
 } from 'lib/interfaces/contracts/qrcode.contract';
 
 type HttpError = Error & {
@@ -79,6 +80,70 @@ function parseAnswersInput(raw: string): FeedbackQuestionAnswerInput[] | null {
   }
 }
 
+function parseSubanswersInput(raw: string): FeedbackSubquestionAnswerInput[] | null {
+  if (!raw) return [];
+
+  try {
+    const parsed = JSON.parse(raw) as unknown;
+    if (!Array.isArray(parsed)) {
+      return null;
+    }
+
+    if (parsed.length > 9) {
+      return null;
+    }
+
+    const normalized = parsed
+      .map((item) => {
+        if (!item || typeof item !== 'object') return null;
+
+        const candidate = item as {
+          subquestion_id?: unknown;
+          answer_value?: unknown;
+        };
+
+        const subquestionId =
+          typeof candidate.subquestion_id === 'string'
+            ? candidate.subquestion_id.trim()
+            : '';
+
+        const answerValue =
+          typeof candidate.answer_value === 'string'
+            ? candidate.answer_value.trim().toUpperCase()
+            : '';
+
+        if (
+          !subquestionId ||
+          !ALLOWED_ANSWER_VALUES.includes(answerValue as FeedbackAnswerValue)
+        ) {
+          return null;
+        }
+
+        return {
+          subquestion_id: subquestionId,
+          answer_value: answerValue as FeedbackAnswerValue,
+        };
+      })
+      .filter(
+        (entry): entry is FeedbackSubquestionAnswerInput =>
+          Boolean(entry?.subquestion_id) && Boolean(entry?.answer_value),
+      );
+
+    if (normalized.length !== parsed.length) {
+      return null;
+    }
+
+    const subquestionIds = normalized.map((entry) => entry.subquestion_id);
+    if (new Set(subquestionIds).size !== normalized.length) {
+      return null;
+    }
+
+    return normalized;
+  } catch {
+    return null;
+  }
+}
+
 export async function ActionPublicQrCodeFeedback({
   request,
 }: ActionFunctionArgs) {
@@ -90,10 +155,12 @@ export async function ActionPublicQrCodeFeedback({
   const message = String(form.get('message') ?? '').trim();
   const rating = Number(form.get('rating') ?? 0);
   const answersRaw = String(form.get('answers') ?? '').trim();
+  const subanswersRaw = String(form.get('subanswers') ?? '').trim();
   const customer_name = String(form.get('customer_name') ?? '').trim();
   const customer_email = String(form.get('customer_email') ?? '').trim();
   const customer_gender_raw = String(form.get('customer_gender') ?? '').trim();
   const answers = parseAnswersInput(answersRaw);
+  const subanswers = parseSubanswersInput(subanswersRaw);
 
   if (!enterprise_id) {
     return new Response(
@@ -135,6 +202,16 @@ export async function ActionPublicQrCodeFeedback({
     );
   }
 
+  if (!subanswers) {
+    return new Response(
+      JSON.stringify({ error: 'Responda todas as subperguntas antes de enviar.' }),
+      {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      },
+    );
+  }
+
   try {
     await ServiceSubmitQrcodeFeedback({
       enterprise_id,
@@ -143,6 +220,7 @@ export async function ActionPublicQrCodeFeedback({
       message,
       rating,
       answers,
+      subanswers,
       channel: 'QRCODE',
       customer_name: customer_name || undefined,
       customer_email: customer_email || undefined,

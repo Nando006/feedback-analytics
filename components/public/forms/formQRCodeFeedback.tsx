@@ -16,6 +16,7 @@ export default function FormQRCodeFeedback({
   isSubmitting,
   onFormDataChange,
   onAnswerChange,
+  onSubanswerChange,
   onCustomerDataChange,
   onToggleOptionalFields,
   onSubmit,
@@ -30,7 +31,9 @@ export default function FormQRCodeFeedback({
       <FieldDynamicQuestions
         questions={questions}
         answers={formData.answers}
+        subanswers={formData.subanswers}
         onAnswerChange={onAnswerChange}
+        onSubanswerChange={onSubanswerChange}
       />
 
       <FieldMessage

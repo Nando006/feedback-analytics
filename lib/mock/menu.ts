@@ -51,6 +51,10 @@ export const menuData: MenuItem[] = [
         label: 'Informações',
         to: '/user/edit/collecting-data-enterprise',
       },
+      {
+        label: 'Feedbacks',
+        to: '/user/edit/feedback-settings',
+      },
       { label: 'Clientes', to: '/user/edit/customers' },
     ],
   },

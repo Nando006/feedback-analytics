@@ -114,7 +114,9 @@ export function EndpointsQRCode(app: express.Express) {
     ) => {
       let query = supabase
         .from('questions_of_feedbacks')
-        .select('id, question_order, question_text')
+        .select(
+          'id, question_order, question_text, subquestions:feedback_question_subquestions(id, question_id, subquestion_order, subquestion_text, is_active)',
+        )
         .eq('enterprise_id', payload.enterprise_id)
         .eq('scope_type', scopeType)
         .eq('is_active', true)
@@ -137,25 +139,65 @@ export function EndpointsQRCode(app: express.Express) {
     if (
       !currentQuestionsError &&
       contextScope !== 'COMPANY' &&
-      (!currentQuestions || currentQuestions.length === 0)
+      (!currentQuestions || currentQuestions.length < 3)
     ) {
       const fallback = await fetchQuestions('COMPANY', null);
       currentQuestions = fallback.data;
       currentQuestionsError = fallback.error;
     }
 
-    if (currentQuestionsError || !currentQuestions || currentQuestions.length !== 3) {
+    const normalizedQuestions = (currentQuestions ?? []).map((question) => ({
+      id: String(question.id),
+      question_order: Number(question.question_order),
+      question_text: String(question.question_text ?? ''),
+      subquestions: Array.isArray(question.subquestions)
+        ? question.subquestions
+            .filter((subquestion) => subquestion?.is_active === true)
+            .map((subquestion) => ({
+              id: String(subquestion.id),
+              question_id: String(subquestion.question_id),
+              subquestion_order: Number(subquestion.subquestion_order),
+              subquestion_text: String(subquestion.subquestion_text ?? ''),
+            }))
+            .sort((left, right) => left.subquestion_order - right.subquestion_order)
+        : [],
+    }));
+
+    if (currentQuestionsError || normalizedQuestions.length !== 3) {
       console.error('Perguntas não configuradas para o contexto do feedback:', currentQuestionsError);
       return sendTypedError(res, 400, API_ERROR_INVALID_PAYLOAD);
     }
 
-    const allowedQuestionIds = new Set(currentQuestions.map((question) => question.id));
+    const allowedQuestionIds = new Set(
+      normalizedQuestions.map((question) => question.id),
+    );
     const payloadQuestionIds = payload.answers.map((answer) => answer.question_id);
 
     if (
       payload.answers.length !== 3 ||
       new Set(payloadQuestionIds).size !== 3 ||
       payloadQuestionIds.some((questionId) => !allowedQuestionIds.has(questionId))
+    ) {
+      return sendTypedError(res, 400, API_ERROR_INVALID_PAYLOAD);
+    }
+
+    const activeSubquestions = normalizedQuestions.flatMap(
+      (question) => question.subquestions,
+    );
+    const payloadSubanswers = payload.subanswers ?? [];
+    const allowedSubquestionIds = new Set(
+      activeSubquestions.map((subquestion) => subquestion.id),
+    );
+    const payloadSubquestionIds = payloadSubanswers.map(
+      (subanswer) => subanswer.subquestion_id,
+    );
+
+    if (
+      payloadSubanswers.length !== activeSubquestions.length ||
+      new Set(payloadSubquestionIds).size !== payloadSubanswers.length ||
+      payloadSubquestionIds.some(
+        (subquestionId) => !allowedSubquestionIds.has(subquestionId),
+      )
     ) {
       return sendTypedError(res, 400, API_ERROR_INVALID_PAYLOAD);
     }
@@ -317,7 +359,11 @@ export function EndpointsQRCode(app: express.Express) {
     }
 
     const questionById = new Map(
-      currentQuestions.map((question) => [question.id, question]),
+      normalizedQuestions.map((question) => [question.id, question]),
+    );
+
+    const subquestionById = new Map(
+      activeSubquestions.map((subquestion) => [subquestion.id, subquestion]),
     );
 
     const answerRows = payload.answers.map((answer) => {
@@ -333,7 +379,23 @@ export function EndpointsQRCode(app: express.Express) {
       };
     });
 
-    if (answerRows.some((answerRow) => answerRow.answer_score === 0)) {
+    const subanswerRows = payloadSubanswers.map((subanswer) => {
+      const subquestion = subquestionById.get(subanswer.subquestion_id);
+      const answerScore = mapAnswerScore(subanswer.answer_value);
+
+      return {
+        feedback_id: feedbackId,
+        subquestion_id: subanswer.subquestion_id,
+        subquestion_text_snapshot: subquestion?.subquestion_text ?? '',
+        answer_value: subanswer.answer_value,
+        answer_score: answerScore,
+      };
+    });
+
+    if (
+      answerRows.some((answerRow) => answerRow.answer_score === 0) ||
+      subanswerRows.some((subanswerRow) => subanswerRow.answer_score === 0)
+    ) {
       return sendTypedError(res, 400, API_ERROR_INVALID_PAYLOAD);
     }
 
@@ -350,6 +412,23 @@ export function EndpointsQRCode(app: express.Express) {
         .eq('id', feedbackId);
 
       return sendTypedError(res, 500, API_ERROR_FEEDBACK_INSERT_FAILED);
+    }
+
+    if (subanswerRows.length > 0) {
+      const { error: subanswersError } = await supabase
+        .from('feedback_subquestion_answers')
+        .insert(subanswerRows);
+
+      if (subanswersError) {
+        console.error('Erro ao inserir respostas de subperguntas do feedback:', subanswersError);
+
+        await supabase
+          .from('feedback')
+          .delete()
+          .eq('id', feedbackId);
+
+        return sendTypedError(res, 500, API_ERROR_FEEDBACK_INSERT_FAILED);
+      }
     }
 
     // 4. Atualizar dispositivo com novo feedback

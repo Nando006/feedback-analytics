@@ -24,6 +24,29 @@ type CompanyFeedbackQuestionInput = {
   question_order?: number;
   question_text?: string;
   is_active?: boolean;
+  subquestions?: CompanyFeedbackSubquestionInput[];
+};
+
+type CompanyFeedbackSubquestionInput = {
+  subquestion_order?: number;
+  subquestion_text?: string;
+  is_active?: boolean;
+};
+
+type NormalizedCompanyFeedbackSubquestion = {
+  subquestion_order: 1 | 2 | 3;
+  subquestion_text: string;
+  is_active: boolean;
+};
+
+type NormalizedCompanyFeedbackQuestion = {
+  question_order: 1 | 2 | 3;
+  question_text: string;
+  is_active: boolean;
+  subquestionsByOrder: Map<
+    1 | 2 | 3,
+    NormalizedCompanyFeedbackSubquestion
+  >;
 };
 
 type CollectingDataPayload = {
@@ -55,6 +78,13 @@ const DEFAULT_COMPANY_FEEDBACK_QUESTIONS = [
       'Como você avalia a relação entre o valor pago e a qualidade do produto/serviço?',
   },
 ];
+
+const MIN_QUESTION_LENGTH = 20;
+const MAX_QUESTION_LENGTH = 150;
+
+function hasValidQuestionLength(value: string) {
+  return value.length >= MIN_QUESTION_LENGTH && value.length <= MAX_QUESTION_LENGTH;
+}
 
 function normalizeCatalogItems(items: CatalogItemInput[] | null | undefined) {
   return (items ?? [])
@@ -208,19 +238,101 @@ async function getCatalogSnapshot(
 
 function normalizeCompanyFeedbackQuestions(
   items: CompanyFeedbackQuestionInput[] | null | undefined,
-) {
+) : NormalizedCompanyFeedbackQuestion[] | null {
   const source = Array.isArray(items) && items.length > 0
-    ? items
+    ? items.slice(0, 3)
     : DEFAULT_COMPANY_FEEDBACK_QUESTIONS;
 
-  return source
-    .slice(0, 3)
-    .map((item, index) => ({
-      question_order: (index + 1) as 1 | 2 | 3,
-      question_text: String(item?.question_text ?? '').trim(),
+  const questionByOrder = new Map<number, NormalizedCompanyFeedbackQuestion>();
+
+  for (let index = 0; index < source.length; index += 1) {
+    const item = source[index];
+
+    const questionOrderRaw = Number(item?.question_order);
+    const questionOrder =
+      Number.isInteger(questionOrderRaw) && questionOrderRaw >= 1 && questionOrderRaw <= 3
+        ? (questionOrderRaw as 1 | 2 | 3)
+        : ((index + 1) as 1 | 2 | 3);
+
+    if (questionByOrder.has(questionOrder)) {
+      return null;
+    }
+
+    const questionText = String(item?.question_text ?? '').trim();
+
+    if (!hasValidQuestionLength(questionText)) {
+      return null;
+    }
+
+    const rawSubquestions = Array.isArray(item?.subquestions)
+      ? item.subquestions.slice(0, 3)
+      : [];
+
+    const subquestionsByOrder = new Map<
+      1 | 2 | 3,
+      NormalizedCompanyFeedbackSubquestion
+    >();
+
+    for (let subIndex = 0; subIndex < rawSubquestions.length; subIndex += 1) {
+      const subquestion = rawSubquestions[subIndex];
+
+      if (!subquestion || typeof subquestion !== 'object') {
+        return null;
+      }
+
+      const subquestionOrderRaw = Number(subquestion.subquestion_order);
+      const subquestionOrder =
+        Number.isInteger(subquestionOrderRaw) &&
+        subquestionOrderRaw >= 1 &&
+        subquestionOrderRaw <= 3
+          ? (subquestionOrderRaw as 1 | 2 | 3)
+          : ((subIndex + 1) as 1 | 2 | 3);
+
+      if (subquestionsByOrder.has(subquestionOrder)) {
+        return null;
+      }
+
+      const subquestionText = String(subquestion.subquestion_text ?? '').trim();
+      const subquestionIsActive = subquestion.is_active === true;
+
+      if (!subquestionText) {
+        if (subquestionIsActive) {
+          return null;
+        }
+
+        continue;
+      }
+
+      if (!hasValidQuestionLength(subquestionText)) {
+        return null;
+      }
+
+      subquestionsByOrder.set(subquestionOrder, {
+        subquestion_order: subquestionOrder,
+        subquestion_text: subquestionText,
+        is_active: subquestionIsActive,
+      });
+    }
+
+    questionByOrder.set(questionOrder, {
+      question_order: questionOrder,
+      question_text: questionText,
       is_active: item?.is_active === false ? false : true,
-    }))
-    .filter((item) => item.question_text.length > 0);
+      subquestionsByOrder,
+    });
+  }
+
+  const orderedQuestions = ([1, 2, 3] as const)
+    .map((order) => questionByOrder.get(order))
+    .filter(
+      (question): question is NormalizedCompanyFeedbackQuestion => Boolean(question),
+    );
+
+  if (orderedQuestions.length !== 3) {
+    return null;
+  }
+
+  return orderedQuestions;
 }
 
 async function getCompanyFeedbackQuestionsSnapshot(
@@ -234,7 +346,7 @@ async function getCompanyFeedbackQuestionsSnapshot(
   const { data, error } = await supabase
     .from('questions_of_feedbacks')
     .select(
-      'id, enterprise_id, scope_type, catalog_item_id, question_order, question_text, is_active, created_at, updated_at',
+      'id, enterprise_id, scope_type, catalog_item_id, question_order, question_text, is_active, created_at, updated_at, subquestions:feedback_question_subquestions(id, question_id, subquestion_order, subquestion_text, is_active, created_at, updated_at)',
     )
     .eq('enterprise_id', enterpriseId)
     .eq('scope_type', 'COMPANY')
@@ -247,9 +359,24 @@ async function getCompanyFeedbackQuestionsSnapshot(
     return [];
   }
 
-  const firstByOrder = new Map<number, (typeof data)[number]>();
+  const normalizedData = data.map((item) => ({
+    ...item,
+    question_order: Number(item.question_order),
+    subquestions: Array.isArray(item.subquestions)
+      ? item.subquestions
+          .map((subquestion) => ({
+            ...subquestion,
+            subquestion_order: Number(subquestion.subquestion_order),
+          }))
+          .sort(
+            (left, right) => left.subquestion_order - right.subquestion_order,
+          )
+      : [],
+  }));
 
-  for (const item of data) {
+  const firstByOrder = new Map<number, (typeof normalizedData)[number]>();
+
+  for (const item of normalizedData) {
     if (!firstByOrder.has(item.question_order)) {
       firstByOrder.set(item.question_order, item);
     }
@@ -269,7 +396,8 @@ async function syncCompanyFeedbackQuestions(params: {
   if (!supabase) return { error: true as const };
 
   const normalizedItems = normalizeCompanyFeedbackQuestions(items);
-  if (normalizedItems.length !== 3) {
+
+  if (!normalizedItems || normalizedItems.length !== 3) {
     return { error: true as const };
   }
 
@@ -291,23 +419,77 @@ async function syncCompanyFeedbackQuestions(params: {
       return { error: true as const };
     }
 
-    if ((updatedRows?.length ?? 0) > 0) {
-      continue;
+    let questionId = updatedRows?.[0]?.id as string | undefined;
+
+    if (!questionId) {
+      const { data: insertedRow, error: insertError } = await supabase
+        .from('questions_of_feedbacks')
+        .insert({
+          enterprise_id: enterpriseId,
+          scope_type: 'COMPANY',
+          catalog_item_id: null,
+          question_order: item.question_order,
+          question_text: item.question_text,
+          is_active: item.is_active,
+        })
+        .select('id')
+        .single();
+
+      if (insertError || !insertedRow) {
+        return { error: true as const };
+      }
+
+      questionId = insertedRow.id as string;
     }
 
-    const { error: insertError } = await supabase
-      .from('questions_of_feedbacks')
-      .insert({
-        enterprise_id: enterpriseId,
-        scope_type: 'COMPANY',
-        catalog_item_id: null,
-        question_order: item.question_order,
-        question_text: item.question_text,
-        is_active: item.is_active,
-      });
+    for (const subquestionOrder of [1, 2, 3] as const) {
+      const subquestion = item.subquestionsByOrder.get(subquestionOrder);
 
-    if (insertError) {
-      return { error: true as const };
+      if (!subquestion) {
+        const { error: deleteError } = await supabase
+          .from('feedback_question_subquestions')
+          .delete()
+          .eq('question_id', questionId)
+          .eq('subquestion_order', subquestionOrder);
+
+        if (deleteError) {
+          return { error: true as const };
+        }
+
+        continue;
+      }
+
+      const { data: updatedSubRows, error: updateSubError } = await supabase
+        .from('feedback_question_subquestions')
+        .update({
+          subquestion_text: subquestion.subquestion_text,
+          is_active: subquestion.is_active,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('question_id', questionId)
+        .eq('subquestion_order', subquestion.subquestion_order)
+        .select('id');
+
+      if (updateSubError) {
+        return { error: true as const };
+      }
+
+      if ((updatedSubRows?.length ?? 0) > 0) {
+        continue;
+      }
+
+      const { error: insertSubError } = await supabase
+        .from('feedback_question_subquestions')
+        .insert({
+          question_id: questionId,
+          subquestion_order: subquestion.subquestion_order,
+          subquestion_text: subquestion.subquestion_text,
+          is_active: subquestion.is_active,
+        });
+
+      if (insertSubError) {
+        return { error: true as const };
+      }
     }
   }
 

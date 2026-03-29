@@ -50,6 +50,21 @@ BEGIN
   IF NOT EXISTS (
     SELECT 1
     FROM pg_constraint
+    WHERE conname = 'questions_of_feedbacks_question_text_length_check'
+  ) THEN
+    ALTER TABLE "public"."questions_of_feedbacks"
+      ADD CONSTRAINT "questions_of_feedbacks_question_text_length_check"
+      CHECK ((char_length(btrim("question_text")) >= 20 AND char_length(btrim("question_text")) <= 150))
+      NOT VALID;
+  END IF;
+END
+$$;
+
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+    FROM pg_constraint
     WHERE conname = 'questions_of_feedbacks_enterprise_id_fkey'
   ) THEN
     ALTER TABLE "public"."questions_of_feedbacks"
