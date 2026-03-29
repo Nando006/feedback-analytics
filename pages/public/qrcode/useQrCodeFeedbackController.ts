@@ -15,6 +15,10 @@ import {
   orderAnswersByQuestions,
   orderSubanswersByQuestions,
 } from 'lib/utils/publicQrFeedbackForm';
+import {
+  PUBLIC_QR_FEEDBACK_ERRORS,
+  getPublicQrFeedbackBaseValidationError,
+} from 'lib/utils/publicQrFeedbackValidation';
 import type {
   QrCodeFeedbackControllerParams,
   QrCodeFeedbackControllerResult,
@@ -134,33 +138,29 @@ export function useQrCodeFeedbackController({
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
-    if (!formData.enterprise_id) {
-      setError('ID da empresa não encontrado. Verifique o QR Code.');
-      return;
-    }
+    const baseValidationError = getPublicQrFeedbackBaseValidationError({
+      enterprise_id: formData.enterprise_id,
+      rating: formData.rating,
+      message: formData.message,
+    });
 
-    if (formData.rating === 0) {
-      setError('Por favor, selecione uma avaliação.');
-      return;
-    }
-
-    if (!formData.message.trim()) {
-      setError('Por favor, escreva seu feedback.');
+    if (baseValidationError) {
+      setError(baseValidationError);
       return;
     }
 
     if (questions.length !== REQUIRED_QUESTION_COUNT) {
-      setError('Perguntas de feedback ainda não configuradas para este QR Code.');
+      setError(PUBLIC_QR_FEEDBACK_ERRORS.questionsNotConfigured);
       return;
     }
 
     if (!hasAllRequiredAnswers(formData.answers, questions)) {
-      setError('Responda as 3 perguntas antes de enviar.');
+      setError(PUBLIC_QR_FEEDBACK_ERRORS.missingAnswers);
       return;
     }
 
     if (!hasAllRequiredSubanswers(formData.subanswers, questions)) {
-      setError('Responda todas as subperguntas antes de enviar.');
+      setError(PUBLIC_QR_FEEDBACK_ERRORS.missingSubanswers);
       return;
     }
 
