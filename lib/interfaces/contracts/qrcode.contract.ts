@@ -29,10 +29,24 @@ export interface FeedbackQuestionPublic {
   catalog_item_id: string | null;
   question_order: 1 | 2 | 3;
   question_text: string;
+  subquestions?: FeedbackSubquestionPublic[];
+}
+
+export interface FeedbackSubquestionPublic {
+  id: string;
+  question_id: string;
+  subquestion_order: 1 | 2 | 3;
+  subquestion_text: string;
+  is_active: boolean;
 }
 
 export interface FeedbackQuestionAnswerInput {
   question_id: string;
+  answer_value: FeedbackAnswerValue;
+}
+
+export interface FeedbackSubquestionAnswerInput {
+  subquestion_id: string;
   answer_value: FeedbackAnswerValue;
 }
 
@@ -44,6 +58,7 @@ export interface FeedbackData {
   message: string;
   rating: number;
   answers: FeedbackQuestionAnswerInput[];
+  subanswers: FeedbackSubquestionAnswerInput[];
   enterprise_id: string;
   collection_point_id?: string;
   catalog_item_id?: string;

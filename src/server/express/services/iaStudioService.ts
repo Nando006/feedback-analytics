@@ -110,6 +110,14 @@ type RawFeedbackQuestionAnswerRow = {
   answer_score: number;
 };
 
+type RawFeedbackSubquestionAnswerRow = {
+  feedback_id: string;
+  subquestion_id: string;
+  subquestion_text_snapshot: string;
+  answer_value: 'PESSIMO' | 'RUIM' | 'MEDIANA' | 'BOA' | 'OTIMA';
+  answer_score: number;
+};
+
 export class IaStudioServiceError extends Error {
   public statusCode: number;
 
@@ -333,6 +341,20 @@ function sanitizeAnalysisTerms(params: {
     const normalizedQuestion = normalizeForComparison(answer.question_text_snapshot);
     if (normalizedQuestion) {
       forbiddenTerms.add(normalizedQuestion);
+    }
+  });
+
+  feedback.dynamic_subanswers.forEach((answer) => {
+    const normalizedAnswerValue = normalizeForComparison(answer.answer_value);
+    if (normalizedAnswerValue) {
+      forbiddenTerms.add(normalizedAnswerValue);
+    }
+
+    const normalizedSubquestion = normalizeForComparison(
+      answer.subquestion_text_snapshot,
+    );
+    if (normalizedSubquestion) {
+      forbiddenTerms.add(normalizedSubquestion);
     }
   });
 
@@ -597,6 +619,16 @@ async function fetchFeedbacksForAnalysis(params: {
     }>
   >();
 
+  const subanswersByFeedbackId = new Map<
+    string,
+    Array<{
+      subquestion_id: string;
+      subquestion_text_snapshot: string;
+      answer_value: 'PESSIMO' | 'RUIM' | 'MEDIANA' | 'BOA' | 'OTIMA';
+      answer_score: number;
+    }>
+  >();
+
   if (feedbackIds.length > 0) {
     const { data: answerRows, error: answersError } = await supabase
       .from('feedback_question_answers')
@@ -626,6 +658,37 @@ async function fetchFeedbacksForAnalysis(params: {
 
       answersByFeedbackId.set(answer.feedback_id, current);
     });
+
+    const { data: subanswerRows, error: subanswersError } = await supabase
+      .from('feedback_subquestion_answers')
+      .select(
+        'feedback_id, subquestion_id, subquestion_text_snapshot, answer_value, answer_score, created_at',
+      )
+      .in('feedback_id', feedbackIds)
+      .order('created_at', { ascending: true });
+
+    if (subanswersError) {
+      throw new IaStudioServiceError(
+        'Failed to fetch feedback dynamic subanswers for IA',
+        500,
+        'failed_to_fetch_feedback_dynamic_subanswers_for_ia',
+      );
+    }
+
+    ((subanswerRows ?? []) as RawFeedbackSubquestionAnswerRow[]).forEach(
+      (subanswer) => {
+        const current = subanswersByFeedbackId.get(subanswer.feedback_id) ?? [];
+
+        current.push({
+          subquestion_id: subanswer.subquestion_id,
+          subquestion_text_snapshot: subanswer.subquestion_text_snapshot,
+          answer_value: subanswer.answer_value,
+          answer_score: subanswer.answer_score,
+        });
+
+        subanswersByFeedbackId.set(subanswer.feedback_id, current);
+      },
+    );
   }
 
   return feedbackRows.map((feedback) => {
@@ -656,6 +719,7 @@ async function fetchFeedbacksForAnalysis(params: {
       },
       catalog_item: catalogItem,
       dynamic_answers: answersByFeedbackId.get(feedback.id) ?? [],
+      dynamic_subanswers: subanswersByFeedbackId.get(feedback.id) ?? [],
     } satisfies FeedbackForAnalysis;
   });
 }

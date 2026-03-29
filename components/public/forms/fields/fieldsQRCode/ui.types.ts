@@ -48,7 +48,12 @@ export interface FieldRatingProps {
 export interface FieldDynamicQuestionsProps {
   questions: FeedbackQuestionPublic[];
   answers: FeedbackData['answers'];
+  subanswers: FeedbackData['subanswers'];
   onAnswerChange: (questionId: string, answerValue: FeedbackAnswerValue) => void;
+  onSubanswerChange: (
+    subquestionId: string,
+    answerValue: FeedbackAnswerValue,
+  ) => void;
 }
 
 /**
@@ -64,6 +69,10 @@ export interface FormQRCodeFeedbackProps {
   isSubmitting: boolean;
   onFormDataChange: (data: Partial<FeedbackData>) => void;
   onAnswerChange: (questionId: string, answerValue: FeedbackAnswerValue) => void;
+  onSubanswerChange: (
+    subquestionId: string,
+    answerValue: FeedbackAnswerValue,
+  ) => void;
   onCustomerDataChange: (
     field: keyof CustomerData,
     value: string | undefined,

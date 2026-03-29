@@ -126,6 +126,68 @@ CREATE POLICY "Anon pode inserir respostas de perguntas" ON "public"."feedback_q
   TO anon
   WITH CHECK ((feedback_id IS NOT NULL) AND (question_id IS NOT NULL));
 
+DROP POLICY IF EXISTS "Auth gerencia subperguntas de feedback" ON "public"."feedback_question_subquestions";
+CREATE POLICY "Auth gerencia subperguntas de feedback" ON "public"."feedback_question_subquestions"
+  AS PERMISSIVE
+  FOR ALL
+  TO authenticated
+  USING ((question_id IN (
+    SELECT q.id
+    FROM questions_of_feedbacks q
+    WHERE q.enterprise_id IN (
+      SELECT enterprise.id
+      FROM enterprise
+      WHERE enterprise.auth_user_id = auth.uid()
+    )
+  )))
+  WITH CHECK ((question_id IN (
+    SELECT q.id
+    FROM questions_of_feedbacks q
+    WHERE q.enterprise_id IN (
+      SELECT enterprise.id
+      FROM enterprise
+      WHERE enterprise.auth_user_id = auth.uid()
+    )
+  )));
+
+DROP POLICY IF EXISTS "Anon pode ler subperguntas ativas" ON "public"."feedback_question_subquestions";
+CREATE POLICY "Anon pode ler subperguntas ativas" ON "public"."feedback_question_subquestions"
+  AS PERMISSIVE
+  FOR SELECT
+  TO anon
+  USING ((is_active = true));
+
+DROP POLICY IF EXISTS "Auth gerencia respostas de subperguntas" ON "public"."feedback_subquestion_answers";
+CREATE POLICY "Auth gerencia respostas de subperguntas" ON "public"."feedback_subquestion_answers"
+  AS PERMISSIVE
+  FOR ALL
+  TO authenticated
+  USING ((feedback_id IN (
+    SELECT f.id
+    FROM feedback f
+    WHERE f.enterprise_id IN (
+      SELECT enterprise.id
+      FROM enterprise
+      WHERE enterprise.auth_user_id = auth.uid()
+    )
+  )))
+  WITH CHECK ((feedback_id IN (
+    SELECT f.id
+    FROM feedback f
+    WHERE f.enterprise_id IN (
+      SELECT enterprise.id
+      FROM enterprise
+      WHERE enterprise.auth_user_id = auth.uid()
+    )
+  )));
+
+DROP POLICY IF EXISTS "Anon pode inserir respostas de subperguntas" ON "public"."feedback_subquestion_answers";
+CREATE POLICY "Anon pode inserir respostas de subperguntas" ON "public"."feedback_subquestion_answers"
+  AS PERMISSIVE
+  FOR INSERT
+  TO anon
+  WITH CHECK ((feedback_id IS NOT NULL) AND (subquestion_id IS NOT NULL));
+
 DROP POLICY IF EXISTS "Empresas gerenciam apenas suas próprias análises" ON "public"."feedback_analysis";
 CREATE POLICY "Empresas gerenciam apenas suas próprias análises" ON "public"."feedback_analysis"
   AS PERMISSIVE

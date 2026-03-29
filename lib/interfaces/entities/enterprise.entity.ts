@@ -57,14 +57,32 @@ export interface CompanyFeedbackQuestion {
   question_order: 1 | 2 | 3;
   question_text: string;
   is_active: boolean;
+  subquestions?: CompanyFeedbackSubquestion[];
   created_at: string;
   updated_at: string;
 }
+
+export interface CompanyFeedbackSubquestion {
+  id: string;
+  question_id: string;
+  subquestion_order: 1 | 2 | 3;
+  subquestion_text: string;
+  is_active: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export type CompanyFeedbackSubquestionInput = {
+  subquestion_order: 1 | 2 | 3;
+  subquestion_text: string;
+  is_active?: boolean;
+};
 
 export type CompanyFeedbackQuestionInput = {
   question_order: 1 | 2 | 3;
   question_text: string;
   is_active?: boolean;
+  subquestions?: CompanyFeedbackSubquestionInput[];
 };
 
 export type CatalogItemKind = 'PRODUCT' | 'SERVICE' | 'DEPARTMENT';

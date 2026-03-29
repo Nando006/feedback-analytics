@@ -45,6 +45,7 @@ export default function FeedbackQRCodeEnterprise() {
     message: '',
     rating: 0,
     answers: [],
+    subanswers: [],
     enterprise_id: enterpriseId,
     collection_point_id: collectionPointId || undefined,
     catalog_item_id: catalogItemId || undefined,
@@ -82,10 +83,19 @@ export default function FeedbackQRCodeEnterprise() {
 
   useEffect(() => {
     const questionIds = new Set(questions.map((question) => question.id));
+    const subquestionIds = new Set(
+      questions
+        .flatMap((question) => question.subquestions ?? [])
+        .filter((subquestion) => subquestion.is_active)
+        .map((subquestion) => subquestion.id),
+    );
 
     setFormData((prev) => ({
       ...prev,
       answers: prev.answers.filter((answer) => questionIds.has(answer.question_id)),
+      subanswers: prev.subanswers.filter((answer) =>
+        subquestionIds.has(answer.subquestion_id),
+      ),
     }));
   }, [questions]);
 
@@ -114,6 +124,25 @@ export default function FeedbackQRCodeEnterprise() {
         answers: [
           ...answersWithoutCurrentQuestion,
           { question_id: questionId, answer_value: answerValue },
+        ],
+      };
+    });
+  };
+
+  const handleSubanswerChange = (
+    subquestionId: string,
+    answerValue: FeedbackAnswerValue,
+  ) => {
+    setFormData((prev) => {
+      const subanswersWithoutCurrentSubquestion = prev.subanswers.filter(
+        (answer) => answer.subquestion_id !== subquestionId,
+      );
+
+      return {
+        ...prev,
+        subanswers: [
+          ...subanswersWithoutCurrentSubquestion,
+          { subquestion_id: subquestionId, answer_value: answerValue },
         ],
       };
     });
@@ -156,6 +185,23 @@ export default function FeedbackQRCodeEnterprise() {
       return;
     }
 
+    const activeSubquestions = questions
+      .flatMap((question) => question.subquestions ?? [])
+      .filter((subquestion) => subquestion.is_active);
+
+    const activeSubquestionIds = new Set(activeSubquestions.map((subquestion) => subquestion.id));
+
+    const hasAllSubanswers =
+      formData.subanswers.length === activeSubquestions.length &&
+      formData.subanswers.every((answer) =>
+        activeSubquestionIds.has(answer.subquestion_id),
+      );
+
+    if (!hasAllSubanswers) {
+      setError('Responda todas as subperguntas antes de enviar.');
+      return;
+    }
+
     setError('');
 
     const answersByQuestionId = new Map(
@@ -167,6 +213,20 @@ export default function FeedbackQRCodeEnterprise() {
       .map((question) => answersByQuestionId.get(question.id))
       .filter((answer): answer is NonNullable<typeof answer> => Boolean(answer));
 
+    const answersBySubquestionId = new Map(
+      formData.subanswers.map((answer) => [answer.subquestion_id, answer]),
+    );
+
+    const orderedSubanswers = [...questions]
+      .sort((left, right) => left.question_order - right.question_order)
+      .flatMap((question) =>
+        [...(question.subquestions ?? [])]
+          .filter((subquestion) => subquestion.is_active)
+          .sort((left, right) => left.subquestion_order - right.subquestion_order)
+          .map((subquestion) => answersBySubquestionId.get(subquestion.id)),
+      )
+      .filter((answer): answer is NonNullable<typeof answer> => Boolean(answer));
+
     fetcher.submit(
       {
         enterprise_id: formData.enterprise_id,
@@ -175,6 +235,7 @@ export default function FeedbackQRCodeEnterprise() {
         message: formData.message.trim(),
         rating: String(formData.rating),
         answers: JSON.stringify(orderedAnswers),
+        subanswers: JSON.stringify(orderedSubanswers),
         customer_name: customerData.customer_name ?? '',
         customer_email: customerData.customer_email ?? '',
         customer_gender: customerData.customer_gender ?? '',
@@ -221,6 +282,7 @@ export default function FeedbackQRCodeEnterprise() {
             isSubmitting={isSubmitting}
             onFormDataChange={handleFormDataChange}
             onAnswerChange={handleAnswerChange}
+            onSubanswerChange={handleSubanswerChange}
             onCustomerDataChange={handleCustomerDataChange}
             onToggleOptionalFields={handleToggleOptionalFields}
             onSubmit={handleSubmit}

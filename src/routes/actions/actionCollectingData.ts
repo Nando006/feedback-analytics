@@ -111,6 +111,7 @@ function parseCompanyFeedbackQuestionsField(
           question_order?: unknown;
           question_text?: unknown;
           is_active?: unknown;
+          subquestions?: unknown;
         };
 
         const questionOrderRaw = Number(candidate.question_order);
@@ -128,10 +129,45 @@ function parseCompanyFeedbackQuestionsField(
 
         if (!question_text) return null;
 
+        const subquestions = Array.isArray(candidate.subquestions)
+          ? candidate.subquestions
+              .slice(0, 3)
+              .map((subquestion, subIndex) => {
+                if (!subquestion || typeof subquestion !== 'object') {
+                  return null;
+                }
+
+                const subCandidate = subquestion as {
+                  subquestion_order?: unknown;
+                  subquestion_text?: unknown;
+                  is_active?: unknown;
+                };
+
+                const subOrderRaw = Number(subCandidate.subquestion_order);
+                const subquestion_order =
+                  Number.isInteger(subOrderRaw) &&
+                  subOrderRaw >= 1 &&
+                  subOrderRaw <= 3
+                    ? (subOrderRaw as 1 | 2 | 3)
+                    : ((subIndex + 1) as 1 | 2 | 3);
+
+                return {
+                  subquestion_order,
+                  subquestion_text:
+                    typeof subCandidate.subquestion_text === 'string'
+                      ? subCandidate.subquestion_text.trim()
+                      : '',
+                  is_active: subCandidate.is_active === true,
+                };
+              })
+              .filter((subquestion): subquestion is NonNullable<typeof subquestion> => Boolean(subquestion))
+          : [];
+
         return {
           question_order,
           question_text,
           is_active: candidate.is_active === false ? false : true,
+          subquestions,
         };
       })
       .filter(
@@ -144,6 +180,11 @@ function parseCompanyFeedbackQuestionsField(
 
 export async function ActionCollectingData({ request }: ActionFunctionArgs) {
   const form = await request.formData();
+
+  const hasCatalogProductsField =
+    form.has('catalog_products') || form.has('main_products_or_services');
+  const hasCatalogServicesField = form.has('catalog_services');
+  const hasCatalogDepartmentsField = form.has('catalog_departments');
 
   // Extraindo os valores dos campos do formulário, convertendo-os para string.
   const company_objective = String(form.get('company_objective') ?? '');
@@ -172,19 +213,29 @@ export async function ActionCollectingData({ request }: ActionFunctionArgs) {
   );
 
   const legacyProducts = parseLegacyProductsText(main_products_or_services_text);
-  const catalog_products = uses_company_products
-    ? (catalogProductsFromForm ?? legacyProducts)
-    : [];
-  const catalog_services = uses_company_services
-    ? (catalogServicesFromForm ?? [])
-    : [];
-  const catalog_departments = uses_company_departments
-    ? (catalogDepartmentsFromForm ?? [])
-    : [];
+  const catalog_products = !uses_company_products
+    ? []
+    : hasCatalogProductsField
+      ? (catalogProductsFromForm ?? legacyProducts)
+      : undefined;
+  const catalog_services = !uses_company_services
+    ? []
+    : hasCatalogServicesField
+      ? (catalogServicesFromForm ?? [])
+      : undefined;
+  const catalog_departments = !uses_company_departments
+    ? []
+    : hasCatalogDepartmentsField
+      ? (catalogDepartmentsFromForm ?? [])
+      : undefined;
 
-  const main_products_or_services = uses_company_products
-    ? catalog_products.map((item) => item.name).filter((name) => name.length > 0)
-    : [];
+  const main_products_or_services = !uses_company_products
+    ? null
+    : Array.isArray(catalog_products)
+      ? (catalog_products
+          .map((item) => item.name)
+          .filter((name) => name.length > 0))
+      : undefined;
 
   try {
     // Chamando a função ServiceUpdateCollectingDataEnterprise para atualizar os dados do formulário.
@@ -192,15 +243,21 @@ export async function ActionCollectingData({ request }: ActionFunctionArgs) {
       company_objective: company_objective || null,
       analytics_goal: analytics_goal || null,
       business_summary: business_summary || null,
-      main_products_or_services: main_products_or_services.length
-        ? main_products_or_services
-        : null,
+      ...(main_products_or_services !== undefined
+        ? {
+            main_products_or_services:
+              Array.isArray(main_products_or_services) &&
+              main_products_or_services.length > 0
+                ? main_products_or_services
+                : null,
+          }
+        : {}),
       uses_company_products,
       uses_company_services,
       uses_company_departments,
-      catalog_products,
-      catalog_services,
-      catalog_departments,
+      ...(catalog_products !== undefined ? { catalog_products } : {}),
+      ...(catalog_services !== undefined ? { catalog_services } : {}),
+      ...(catalog_departments !== undefined ? { catalog_departments } : {}),
       ...(companyFeedbackQuestionsFromForm !== undefined
         ? { company_feedback_questions: companyFeedbackQuestionsFromForm }
         : {}),

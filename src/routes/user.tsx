@@ -31,10 +31,12 @@ import QRCodeDepartments from 'pages/user/qrcodes/qrcodeDepartments';
 import { ActionCollectingData } from './actions/actionCollectingData';
 import { ActionFeedbackInsightsReport } from './actions/actionFeedbackInsightsReport';
 import EditCollectingData from 'pages/user/edit/editCollectingData';
+import EditFeedbackSettings from 'pages/user/edit/editFeedbackSettings';
 import { ActionProfile } from './actions/actionProfile';
 import { ActionQrCodeEnterprise } from './actions/actionQrCodeEnterprise';
 import { ActionQrCodeCatalog } from './actions/actionQrCodeCatalog';
 import { ActionLogout } from './actions/actionLogout';
+import { ActionFeedbackSettings } from './actions/actionFeedbackSettings';
 import { LoaderQrCodeProducts } from './loaders/loaderQrCodeProducts';
 import { LoaderQrCodeServices } from './loaders/loaderQrCodeServices';
 import { LoaderQrCodeDepartments } from './loaders/loaderQrCodeDepartments';
@@ -169,6 +171,11 @@ export function RouteUser() {
         path="edit/collecting-data-enterprise"
         element={<EditCollectingData />}
         action={ActionCollectingData}
+      />
+      <Route
+        path="edit/feedback-settings"
+        element={<EditFeedbackSettings />}
+        action={ActionFeedbackSettings}
       />
     </Route>
   );

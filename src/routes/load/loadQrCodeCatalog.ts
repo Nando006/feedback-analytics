@@ -1,6 +1,7 @@
 import {
   ServiceGetQrCatalogStatus,
   type CatalogQrKind,
+  type QrCatalogQuestion,
 } from 'src/services/serviceCollectionPoints';
 
 export type QrCodeCatalogLoadItem = {
@@ -10,6 +11,7 @@ export type QrCodeCatalogLoadItem = {
   kind: CatalogQrKind;
   active: boolean;
   collection_point_id: string | null;
+  questions: QrCatalogQuestion[];
 };
 
 export type QrCodeCatalogLoadData = {
