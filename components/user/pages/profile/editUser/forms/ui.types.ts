@@ -28,4 +28,13 @@ export type FormNameUserProps = {
  */
 export type FormPhoneStartUserProps = {
   defaultPhone?: string;
+  onSuccess?: () => void;
+};
+
+/**
+ * Props do formulário de verificação de telefone.
+ * Usado em: components/user/pages/profile/editUser/forms/formPhoneVerifyUser.tsx.
+ */
+export type FormPhoneVerifyUserProps = {
+  onSuccess?: () => void;
 };
