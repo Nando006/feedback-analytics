@@ -42,9 +42,9 @@ export default function SimpleEditableField({
   // Handle action response
   useEffect(() => {
     if (!actionData) return;
-    
+
     console.log('Action response received:', actionData);
-    
+
     if (actionData.ok) {
       toast.success(successMessage);
       setIsEditing(false);
@@ -83,7 +83,7 @@ export default function SimpleEditableField({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     console.log('=== DEBUG SimpleEditableField - Submit ===');
     console.log('Field name:', getFieldName());
     console.log('Original value:', value);
@@ -166,7 +166,7 @@ export default function SimpleEditableField({
               <p className="mt-1 text-xs text-(--text-secondary)">{hint}</p>
             )}
           </div>
-          
+
           <div className="flex items-center gap-2 pt-2">
             <button
               type="submit"
@@ -200,7 +200,7 @@ export default function SimpleEditableField({
   }
 
   return (
-    <div 
+    <div
       className={`group relative bg-(--bg-secondary)/30 border border-(--quaternary-color)/20 rounded-lg p-4 hover:border-(--primary-color)/30 hover:bg-(--primary-color)/5 transition-all cursor-pointer ${className}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -210,10 +210,9 @@ export default function SimpleEditableField({
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-1">
             <span className="text-sm font-medium text-(--text-secondary)">{label}</span>
-            <span 
-              className={`text-lg transition-all duration-200 ${
-                isHovered ? 'opacity-100 scale-110' : 'opacity-60 scale-100'
-              }`}
+            <span
+              className={`text-lg transition-all duration-200 ${isHovered ? 'opacity-100 scale-110' : 'opacity-60 scale-100'
+                }`}
             >
               {icon}
             </span>
@@ -223,14 +222,14 @@ export default function SimpleEditableField({
             <p className="text-xs text-(--text-tertiary)">{description}</p>
           )}
         </div>
-        
+
         <div className={`ml-3 transition-all duration-200 ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
           <div className="bg-(--primary-color) text-white rounded-full w-8 h-8 flex items-center justify-center text-sm shadow-lg">
             <FaPenToSquare aria-hidden="true" />
           </div>
         </div>
       </div>
-      
+
       {/* Indicador visual de hover */}
       <div className={`absolute inset-0 bg-(--primary-color)/5 rounded-lg transition-opacity duration-200 pointer-events-none ${isHovered ? 'opacity-100' : 'opacity-0'}`} />
     </div>

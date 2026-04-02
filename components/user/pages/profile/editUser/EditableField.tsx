@@ -60,7 +60,7 @@ export default function EditableField({
   useEffect(() => {
     if (!actionData) return;
     if (!isSubmitting) return;
-    
+
     if (actionData.ok) {
       toast.success(successMessage, 'Alterações salvas com sucesso');
       setIsEditing(false);
@@ -105,18 +105,18 @@ export default function EditableField({
     console.log('Form data:', formData);
     console.log('Form data[fieldName]:', formData[fieldName]);
     console.log('Intent:', intent);
-    
+
     const fd = new FormData();
     fd.set('intent', intent);
     fd.set(`initial_${fieldName}`, value || '');
     fd.set(fieldName, formData[fieldName] || '');
-    
+
     // Log FormData contents
     console.log('FormData contents:');
     for (const [key, value] of fd.entries()) {
       console.log(`  ${key}: ${value}`);
     }
-    
+
     setIsSubmitting(true);
     submit(fd, {
       method: 'post',
@@ -152,7 +152,7 @@ export default function EditableField({
               <p className="mt-1 text-xs text-(--text-secondary)">{hint}</p>
             )}
           </div>
-          
+
           <div className="flex items-center gap-2 pt-2">
             <button
               type="submit"
@@ -178,7 +178,7 @@ export default function EditableField({
   }
 
   return (
-    <div 
+    <div
       className={`group relative bg-(--bg-secondary)/30 border border-(--quaternary-color)/20 rounded-lg p-4 hover:border-(--primary-color)/30 hover:bg-(--primary-color)/5 transition-all cursor-pointer ${className}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -188,10 +188,9 @@ export default function EditableField({
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-1">
             <span className="text-sm font-medium text-(--text-secondary)">{label}</span>
-            <span 
-              className={`text-lg transition-all duration-200 ${
-                isHovered ? 'opacity-100 scale-110' : 'opacity-60 scale-100'
-              }`}
+            <span
+              className={`text-lg transition-all duration-200 ${isHovered ? 'opacity-100 scale-110' : 'opacity-60 scale-100'
+                }`}
             >
               {icon}
             </span>
@@ -201,14 +200,14 @@ export default function EditableField({
             <p className="text-xs text-(--text-tertiary)">{description}</p>
           )}
         </div>
-        
+
         <div className={`ml-3 transition-all duration-200 ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
           <div className="bg-(--primary-color) text-white rounded-full w-8 h-8 flex items-center justify-center text-sm shadow-lg">
             <FaPenToSquare aria-hidden="true" />
           </div>
         </div>
       </div>
-      
+
       {/* Indicador visual de hover */}
       <div className={`absolute inset-0 bg-(--primary-color)/5 rounded-lg transition-opacity duration-200 pointer-events-none ${isHovered ? 'opacity-100' : 'opacity-0'}`} />
     </div>

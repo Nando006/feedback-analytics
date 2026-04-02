@@ -15,10 +15,10 @@ export default function PhoneEditableField({ currentPhone, className = '' }: Pho
   const [pendingPhone, setPendingPhone] = useState('');
   const [submitStage, setSubmitStage] = useState<'start' | 'verify' | null>(null);
   const [actionDataAtSubmit, setActionDataAtSubmit] = useState<ActionData | undefined>(undefined);
-  
+
   // Garantir que currentPhone nunca seja undefined
   const safeCurrentPhone = currentPhone || '';
-  
+
   const submit = useSubmit();
   const toast = useToast();
   const actionData = useActionData() as ActionData | undefined;
@@ -39,7 +39,7 @@ export default function PhoneEditableField({ currentPhone, className = '' }: Pho
     if (!submitStage) return;
     if (!actionData) return;
     if (actionData === actionDataAtSubmit) return;
-    
+
     if (actionData.ok) {
       if (submitStage === 'start') {
         // SMS enviado com sucesso
@@ -54,7 +54,7 @@ export default function PhoneEditableField({ currentPhone, className = '' }: Pho
         setPendingPhone('');
       }
     } else {
-      const message = submitStage === 'start' 
+      const message = submitStage === 'start'
         ? 'Erro ao enviar código'
         : 'Código inválido';
       toast.error(message, actionData.message || 'Tente novamente');
@@ -98,7 +98,7 @@ export default function PhoneEditableField({ currentPhone, className = '' }: Pho
   // Modo de visualização
   if (mode === 'view') {
     return (
-      <div 
+      <div
         className={`group relative bg-(--bg-secondary)/30 border border-(--quaternary-color)/20 rounded-lg p-4 hover:border-(--primary-color)/30 hover:bg-(--primary-color)/5 transition-all cursor-pointer ${className}`}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
@@ -108,10 +108,9 @@ export default function PhoneEditableField({ currentPhone, className = '' }: Pho
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-1">
               <span className="text-sm font-medium text-(--text-secondary)">Telefone</span>
-              <span 
-                className={`text-lg transition-all duration-200 ${
-                  isHovered ? 'opacity-100 scale-110' : 'opacity-60 scale-100'
-                }`}
+              <span
+                className={`text-lg transition-all duration-200 ${isHovered ? 'opacity-100 scale-110' : 'opacity-60 scale-100'
+                  }`}
               >
                 <FaPhone aria-hidden="true" className="text-(--primary-color)" />
               </span>
@@ -123,14 +122,14 @@ export default function PhoneEditableField({ currentPhone, className = '' }: Pho
               Usado para notificações e recuperação de conta
             </p>
           </div>
-          
+
           <div className={`ml-3 transition-all duration-200 ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
             <div className="bg-(--primary-color) text-white rounded-full w-8 h-8 flex items-center justify-center text-sm shadow-lg">
               <FaPenToSquare aria-hidden="true" />
             </div>
           </div>
         </div>
-        
+
         <div className={`absolute inset-0 bg-(--primary-color)/5 rounded-lg transition-opacity duration-200 pointer-events-none ${isHovered ? 'opacity-100' : 'opacity-0'}`} />
       </div>
     );
@@ -153,17 +152,17 @@ export default function PhoneEditableField({ currentPhone, className = '' }: Pho
               className="w-full rounded-lg border border-(--quaternary-color)/30 bg-(--seventh-color) px-4 py-3 text-(--text-primary) outline-none placeholder:text-(--text-tertiary) focus:border-(--primary-color) focus:ring-2 focus:ring-(--primary-color)/20 transition-all"
               autoFocus
             />
-        {phoneForm.formState.errors.phone?.message && (
-          <p className="mt-1 text-xs text-(--negative) flex items-center gap-1">
-            <FaCircleExclamation aria-hidden="true" />
-            {phoneForm.formState.errors.phone.message}
-          </p>
-        )}
+            {phoneForm.formState.errors.phone?.message && (
+              <p className="mt-1 text-xs text-(--negative) flex items-center gap-1">
+                <FaCircleExclamation aria-hidden="true" />
+                {phoneForm.formState.errors.phone.message}
+              </p>
+            )}
             <p className="mt-1 text-xs text-(--text-secondary)">
               Formato: +55 seguido do DDD e número
             </p>
           </div>
-          
+
           <div className="flex items-center gap-2 pt-2">
             <button
               type="submit"
@@ -224,7 +223,7 @@ export default function PhoneEditableField({ currentPhone, className = '' }: Pho
             </p>
           )}
         </div>
-        
+
         <div className="flex items-center gap-2 pt-2">
           <button
             type="submit"
