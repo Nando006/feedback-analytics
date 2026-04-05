@@ -82,6 +82,7 @@ export default function FormLogin() {
     defaultValues: { remember: false },
   });
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (!actionData?.error) return;
 
@@ -90,7 +91,7 @@ export default function FormLogin() {
       actionLabel: 'Clique para reenviar e-mail',
       onAction: () => handleResendConfirmation(getValues('email'))
     });
-  }, [actionData, toast, getValues, handleResendConfirmation]);
+  }, [actionData, toast]);
 
   const onSubmit = (data: LoginFormValues) => {
     const formData = new FormData();
