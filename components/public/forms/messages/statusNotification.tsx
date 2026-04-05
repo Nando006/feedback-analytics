@@ -144,7 +144,7 @@ export function ToastProvider({ children }: ToastProviderProps) {
   return (
     <>
       {children}
-      <div className="fixed top-5 right-14 z-50 flex flex-col gap-2">
+      <div className="fixed top-5 right-14 z-50 flex flex-col gap-12">
         {toasts.map((t) => (
           <Toast key={t.id} {...t} onClose={() => remove(t.id)} />
         ))}

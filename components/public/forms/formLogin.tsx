@@ -37,7 +37,7 @@ function getLoginErrorMessage(actionData: ActionData) {
   if (actionData.error === 'email_not_confirmed') {
     return {
       message: 'Conta não verificada.',
-      description: 'Verifique seu e-mail e clique no link de confirmação para ativar sua conta.',
+      description: 'Verifique seu e-mail e clique no link de confirmação para ativar sua conta. Se não conseguir encontrar o e-mail clique embaixo para reenviar o e-mail de verificação.',
     };
   }
 
@@ -87,9 +87,10 @@ export default function FormLogin() {
     if (!actionData?.error) return;
 
     const { message, description } = getLoginErrorMessage(actionData);
-    toast.error(message, description, {
+    toast.error(message, description,  {
       actionLabel: 'Clique para reenviar e-mail',
-      onAction: () => handleResendConfirmation(getValues('email'))
+      onAction: () => handleResendConfirmation(getValues('email')),
+      duration: 14000,
     });
   }, [actionData, toast]);
 
