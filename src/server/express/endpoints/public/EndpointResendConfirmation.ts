@@ -1,7 +1,7 @@
 import express from 'express';
-import { sendTypedError } from '../../../../../lib/utils/sendTypedError';
-import { API_ERROR_INVALID_PAYLOAD } from '../../../../../lib/constants/server/errors';
-import { createSupabaseServerClient } from '../../supabase';
+import { sendTypedError } from '../../../../../lib/utils/sendTypedError.js';
+import { API_ERROR_INVALID_PAYLOAD } from '../../../../../lib/constants/server/errors.js';
+import { createSupabaseServerClient } from '../../supabase.js';
 
 export function EndpointResendConfirmation(app: express.Express) {
   app.post('/api/public/auth/resend-confirmation', async (req, res) => {
