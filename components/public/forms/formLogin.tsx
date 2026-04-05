@@ -17,6 +17,7 @@ import {
   loginSchema,
   type LoginFormValues,
 } from 'lib/schemas/public/loginSchema';
+import { ServiceResendConfirmation } from 'src/services/serviceAuth';
 
 function getLoginErrorMessage(actionData: ActionData) {
   if (actionData.error === 'invalid_credentials') {
@@ -55,23 +56,41 @@ export default function FormLogin() {
     navigation.state === 'submitting' &&
     (navigation.formAction?.includes('/login') ?? false);
 
-  useEffect(() => {
-    if (!actionData?.error) return;
+  async function handleResendConfirmation(email: string) {
+    if(!email) {
+      toast.error('Informe um e-mail válido.');
+      return;
+    }
 
-    const { message, description } = getLoginErrorMessage(actionData);
-    toast.error(message, description);
-  }, [actionData, toast]);
+    const result = await ServiceResendConfirmation(email);
+    if (result.ok) {
+      toast.success('E-mail reenviado!', 'Verifique sua caixa de entrada.');
+    } else {
+      toast.error('Erro ao reenviar', result.message || 'Tente novamente.');
+    }
+  }
 
   const {
     register,
     handleSubmit,
     formState: { errors },
+    getValues,
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     mode: 'onSubmit',
     reValidateMode: 'onChange',
     defaultValues: { remember: false },
   });
+
+  useEffect(() => {
+    if (!actionData?.error) return;
+
+    const { message, description } = getLoginErrorMessage(actionData);
+    toast.error(message, description, {
+      actionLabel: 'Clique para reenviar e-mail',
+      onAction: () => handleResendConfirmation(getValues('email'))
+    });
+  }, [actionData, toast, getValues, handleResendConfirmation]);
 
   const onSubmit = (data: LoginFormValues) => {
     const formData = new FormData();
