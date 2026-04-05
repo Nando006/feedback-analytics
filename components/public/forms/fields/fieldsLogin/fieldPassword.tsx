@@ -1,7 +1,7 @@
 import type { FieldFormProps } from '../ui.types';
 import { useMemo, useState } from 'react';
 
-import { getPasswordStrength } from 'lib/utils/passwordStrength';
+// import { getPasswordStrength } from 'lib/utils/passwordStrength';
 
 export default function FieldPassword({
   id,
@@ -12,11 +12,11 @@ export default function FieldPassword({
   error,
 }: FieldFormProps) {
   const [show, setShow] = useState(false);
-  const [value, setValue] = useState('');
+  // const [value, setValue] = useState('');
 
-  const strength = useMemo(() => {
-    return getPasswordStrength(value);
-  }, [value]);
+  // const strength = useMemo(() => {
+  //   return getPasswordStrength(value);
+  // }, [value]);
 
   return (
     <div className="space-y-1 relative">
@@ -36,7 +36,7 @@ export default function FieldPassword({
           {...register}
           onChange={(e) => {
             register?.onChange?.(e);
-            setValue(e.target.value);
+            // setValue(e.target.value);
           }}
         />
         <button
@@ -63,7 +63,7 @@ export default function FieldPassword({
           )}
         </button>
       </div>
-      {strength.showBar && (
+      {/* {strength.showBar && (
         <div className="mt-2">
           <div className="w-full h-2 rounded-full overflow-hidden bg-(--seventh-color)">
             <div
@@ -76,7 +76,7 @@ export default function FieldPassword({
             <span className="text-(--text-tertiary)">{strength.label}</span>
           </div>
         </div>
-      )}
+      )} */}
       {error && (
         <span
           role="alert"
