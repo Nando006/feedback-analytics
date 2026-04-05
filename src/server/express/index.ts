@@ -11,6 +11,7 @@ import { EndpointsCollectionPointsQRCode } from './endpoints/protected/Endpoints
 import { EndpointsFeedbacks } from './endpoints/protected/EndpointsFeedbacks.js';
 import { EndpointsUser } from './endpoints/protected/EndpointsUser.js';
 import { EndpointsIAStudio } from './endpoints/protected/EndpoitsIAStudio.js';
+import { EndpointResendConfirmation } from './endpoints/public/EndpointResendConfirmation.js';
 
 
 // Criando o servidor.
@@ -31,6 +32,7 @@ EndpointsCallback(app);
 EndpointsRegister(app);
 EndpointsEnterprisePublic(app);
 EndpointsQRCode(app);
+EndpointResendConfirmation(app);
 
 // Endpoints Protegidos
 EndpointsCollectionPointsQRCode(app);
