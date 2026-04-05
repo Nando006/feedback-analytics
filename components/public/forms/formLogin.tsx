@@ -33,6 +33,13 @@ function getLoginErrorMessage(actionData: ActionData) {
     };
   }
 
+  if (actionData.error === 'email_not_confirmed') {
+    return {
+      message: 'Conta não verificada.',
+      description: 'Verifique seu e-mail e clique no link de confirmação para ativar sua conta.',
+    };
+  }
+
   return {
     message: 'Não foi possivel realizar o login.',
     description: actionData.message ?? 'Tente novamente em instantes.',

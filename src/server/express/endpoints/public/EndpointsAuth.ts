@@ -2,6 +2,7 @@ import express from 'express';
 import { loginSchema } from '../../../../../lib/schemas/public/loginSchema.js';
 import { createSupabaseServerClient } from '../../supabase.js';
 import {
+  API_ERROR_EMAIL_NOT_CONFIRMED,
   API_ERROR_INVALID_CREDENTIALS,
   API_ERROR_INVALID_PAYLOAD,
 } from '../../../../../lib/constants/server/errors.js';
@@ -25,6 +26,9 @@ export function EndpointsAuth(app: express.Express) {
     });
 
     if (error) {
+      if (error.code === 'email_not_confirmed') {
+        return sendTypedError(res, 401, API_ERROR_EMAIL_NOT_CONFIRMED);
+      }
       return sendTypedError(res, 401, API_ERROR_INVALID_CREDENTIALS);
     }
 

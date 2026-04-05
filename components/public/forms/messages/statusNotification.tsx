@@ -88,7 +88,7 @@ export function Toast({
   return (
     <div
       className={`
-        relative flex items-start gap-3 w-80 rounded-lg bg-(--seventh-color)
+        relative scale-125 flex items-start gap-3 w-80 rounded-lg bg-(--seventh-color)
         border border-(--quaternary-color)/14 border-l-4 ${border}
         px-4 py-3 shadow-md
         animate-in slide-in-from-top-2 fade-in duration-300
@@ -132,7 +132,7 @@ export function ToastProvider({ children }: ToastProviderProps) {
   return (
     <>
       {children}
-      <div className="fixed top-4 right-4 z-50 flex flex-col gap-2">
+      <div className="fixed top-5 right-14 z-50 flex flex-col gap-2">
         {toasts.map((t) => (
           <Toast key={t.id} {...t} onClose={() => remove(t.id)} />
         ))}
