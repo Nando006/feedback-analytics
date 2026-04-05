@@ -5,6 +5,7 @@ export const API_ERROR_UPDATE_FAILED = 'update_failed' as const;
 export const API_ERROR_VERIFY_FAILED = 'verify_failed' as const;
 export const API_ERROR_UPSERT_FAILED = 'upsert_failed' as const;
 export const API_ERROR_INVALID_CREDENTIALS = 'invalid_credentials' as const;
+export const API_ERROR_EMAIL_NOT_CONFIRMED = 'email_not_confirmed' as const;
 export const API_ERROR_INTERNAL_ERROR = 'internal_error' as const;
 export const API_ERROR_INTERNAL_SERVER_ERROR = 'internal_server_error' as const;
 
