@@ -48,6 +48,8 @@ export function Toast({
   variant = 'success',
   duration = 3000,
   onClose,
+  actionLabel,
+  onAction,
 }: ToastProps) {
   const [visible, setVisible] = useState(true);
   const [progress, setProgress] = useState(100);
@@ -100,6 +102,16 @@ export function Toast({
         <p className="text-sm font-medium text-(--text-primary)">{message}</p>
         {description && (
           <p className="text-xs text-(--text-secondary) mt-0.5">{description}</p>
+        )}
+
+        {actionLabel && onAction && (
+          <button
+            type="button"
+            onClick={onAction}
+            className="mt-2 px-2 py-1 rounded text-(--secondary-color) bg-(--primary-color)/40 hover:bg-(--primary-color)/20 text-xs font-medium transition"
+          >
+            {actionLabel}
+          </button>
         )}
       </div>
 
