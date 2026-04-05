@@ -70,16 +70,6 @@ export default function FormLogin() {
     }
   }
 
-  useEffect(() => {
-    if (!actionData?.error) return;
-
-    const { message, description } = getLoginErrorMessage(actionData);
-    toast.error(message, description, {
-      actionLabel: 'Clique para reenviar e-mail',
-      onAction: () => handleResendConfirmation(getValues('email'))
-    });
-  }, [actionData, toast]);
-
   const {
     register,
     handleSubmit,
@@ -91,6 +81,16 @@ export default function FormLogin() {
     reValidateMode: 'onChange',
     defaultValues: { remember: false },
   });
+
+  useEffect(() => {
+    if (!actionData?.error) return;
+
+    const { message, description } = getLoginErrorMessage(actionData);
+    toast.error(message, description, {
+      actionLabel: 'Clique para reenviar e-mail',
+      onAction: () => handleResendConfirmation(getValues('email'))
+    });
+  }, [actionData, toast, getValues, handleResendConfirmation]);
 
   const onSubmit = (data: LoginFormValues) => {
     const formData = new FormData();

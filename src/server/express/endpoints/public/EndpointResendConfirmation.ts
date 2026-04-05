@@ -25,7 +25,7 @@ export function EndpointResendConfirmation(app: express.Express) {
         ok: true,
         message: 'E-mail de confirmação reenviado com sucesso.'
       })
-    } catch (err) {
+    } catch {
       return sendTypedError(res, 500, 'Erro interno ao reenviar e-mail');
     }
   })
