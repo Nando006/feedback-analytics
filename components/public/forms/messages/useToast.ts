@@ -41,7 +41,8 @@ export function useToast() {
   const success = useCallback(
     (message: string, description?: string, options?: {
       actionLabel?: string;
-      onAction?: () => void
+      onAction?: () => void;
+      duration?: number;
     }) => {
       show({ message, description, variant: 'success', ...options });
     },
@@ -51,7 +52,8 @@ export function useToast() {
   const error = useCallback(
     (message: string, description?: string, options?: { 
       actionLabel?: string; 
-      onAction?: () => void 
+      onAction?: () => void;
+      duration?: number; 
     }) => {
       show({ message, description, variant: 'error', ...options });
     },
@@ -61,7 +63,8 @@ export function useToast() {
   const warning = useCallback(
     (message: string, description?: string, options?: {
       actionLabel?: string;
-      onAction?: () => void
+      onAction?: () => void;
+      duration?: number;
     }) => {
       show({ message, description, variant: 'warning', ...options });
     },
