@@ -27,3 +27,13 @@ export async function ServiceLogout(): Promise<boolean> {
   });
   return res.ok;
 }
+
+export async function ServiceResendConfirmation(email: string) {
+  const res = await fetch('/api/public/auth/resend-confirmation', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email }),
+  });
+
+  return res.json();
+}
