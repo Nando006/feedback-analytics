@@ -21,6 +21,28 @@ type FeedbackQuestionAnswerRow = {
   created_at: string;
 };
 
+type FeedbackCollectionPoint = {
+  id?: string;
+  name?: string;
+  type?: string;
+  identifier?: string | null;
+  catalog_item_id?: string | null;
+};
+
+function resolveCollectionPoint(
+  collectionPointRaw:
+    | FeedbackCollectionPoint
+    | FeedbackCollectionPoint[]
+    | null
+    | undefined,
+) {
+  if (Array.isArray(collectionPointRaw)) {
+    return collectionPointRaw[0] ?? null;
+  }
+
+  return collectionPointRaw ?? null;
+}
+
 function parseInsightScopeType(rawValue: unknown) {
   const normalized = String(rawValue ?? '').trim().toUpperCase();
 
@@ -242,7 +264,7 @@ export function EndpointsFeedbacks(app: express.Express) {
       const catalogItemIds = Array.from(
         new Set(
           (feedbacks ?? [])
-            .map((feedback) => feedback.collection_points?.catalog_item_id)
+            .map((feedback) => resolveCollectionPoint(feedback.collection_points)?.catalog_item_id)
             .filter((id): id is string => typeof id === 'string' && id.length > 0),
         ),
       );
@@ -282,7 +304,7 @@ export function EndpointsFeedbacks(app: express.Express) {
       }
 
       const normalizedFeedbacks = (feedbacks ?? []).map((feedback) => {
-        const collectionPoint = feedback.collection_points;
+        const collectionPoint = resolveCollectionPoint(feedback.collection_points);
 
         if (!collectionPoint) {
           return feedback;
