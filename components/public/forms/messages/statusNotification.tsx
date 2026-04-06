@@ -48,6 +48,8 @@ export function Toast({
   variant = 'success',
   duration = 3000,
   onClose,
+  actionLabel,
+  onAction,
 }: ToastProps) {
   const [visible, setVisible] = useState(true);
   const [progress, setProgress] = useState(100);
@@ -88,7 +90,7 @@ export function Toast({
   return (
     <div
       className={`
-        relative flex items-start gap-3 w-80 rounded-lg bg-(--seventh-color)
+        relative scale-125 flex items-start gap-3 w-80 rounded-lg bg-(--seventh-color)
         border border-(--quaternary-color)/14 border-l-4 ${border}
         px-4 py-3 shadow-md
         animate-in slide-in-from-top-2 fade-in duration-300
@@ -100,6 +102,16 @@ export function Toast({
         <p className="text-sm font-medium text-(--text-primary)">{message}</p>
         {description && (
           <p className="text-xs text-(--text-secondary) mt-0.5">{description}</p>
+        )}
+
+        {actionLabel && onAction && (
+          <button
+            type="button"
+            onClick={onAction}
+            className="mt-2 px-2 py-1 rounded text-(--secondary-color) bg-(--primary-color)/40 hover:bg-(--primary-color)/20 text-xs font-medium transition"
+          >
+            {actionLabel}
+          </button>
         )}
       </div>
 
@@ -132,7 +144,7 @@ export function ToastProvider({ children }: ToastProviderProps) {
   return (
     <>
       {children}
-      <div className="fixed top-4 right-4 z-50 flex flex-col gap-2">
+      <div className="fixed top-5 right-14 z-50 flex flex-col gap-12">
         {toasts.map((t) => (
           <Toast key={t.id} {...t} onClose={() => remove(t.id)} />
         ))}

@@ -11,6 +11,13 @@ export type PromptFeedbackDynamicAnswer = {
   answer_score: number;
 };
 
+export type PromptFeedbackDynamicSubanswer = {
+  subquestion_id: string;
+  subquestion_text_snapshot: string;
+  answer_value: 'PESSIMO' | 'RUIM' | 'MEDIANA' | 'BOA' | 'OTIMA';
+  answer_score: number;
+};
+
 export type PromptFeedbackInput = {
   id: string;
   message: string;
@@ -30,6 +37,7 @@ export type PromptFeedbackInput = {
     description: string | null;
   } | null;
   dynamic_answers: PromptFeedbackDynamicAnswer[];
+  dynamic_subanswers: PromptFeedbackDynamicSubanswer[];
 };
 
 export type PromptEnterpriseContext = {
@@ -101,9 +109,9 @@ Regras IMPORTANTES:
 - Use apenas os valores 'positive', 'neutral' ou 'negative' em "sentiment".
 - Em "categories" e "keywords", use arrays de strings curtas (ex.: ["atendimento", "preço"]).
 - A fonte principal para categories/keywords é EXCLUSIVAMENTE o campo "message" do feedback.
-- Campos estruturados (rating, dynamic_answers, catalog_item) são contexto auxiliar e NÃO podem ser copiados literalmente.
+- Campos estruturados (rating, dynamic_answers, dynamic_subanswers, catalog_item) são contexto auxiliar e NÃO podem ser copiados literalmente.
 - NÃO use termos como "pessimo", "ruim", "mediana", "boa" ou "otima" como keywords/categorias.
-- NÃO copie texto das perguntas dinâmicas como keywords/categorias.
+- NÃO copie texto das perguntas ou subperguntas dinâmicas como keywords/categorias.
 - Se o texto for curto, prefira poucos termos relevantes e evidentes no próprio message.`;
 
   const scopeInstructions = getScopeInstructions(scopeType);
@@ -141,6 +149,7 @@ Regras IMPORTANTES:
       context_signals: {
         rating: feedback.rating,
         dynamic_answers: feedback.dynamic_answers,
+        dynamic_subanswers: feedback.dynamic_subanswers,
         collection_point: feedback.collection_point,
         catalog_item: feedback.catalog_item,
       },

@@ -76,7 +76,9 @@ export function EndpointsEnterprise(app: express.Express) {
       ) => {
         let query = supabase
           .from('questions_of_feedbacks')
-          .select('id, scope_type, catalog_item_id, question_order, question_text')
+          .select(
+            'id, scope_type, catalog_item_id, question_order, question_text, subquestions:feedback_question_subquestions(id, question_id, subquestion_order, subquestion_text, is_active)',
+          )
           .eq('enterprise_id', enterprise.id)
           .eq('scope_type', scopeType)
           .eq('is_active', true)
@@ -105,7 +107,7 @@ export function EndpointsEnterprise(app: express.Express) {
       if (
         !questionsError &&
         currentScope !== 'COMPANY' &&
-        (!questions || questions.length === 0)
+        (!questions || questions.length < 3)
       ) {
         const fallback = await fetchQuestions('COMPANY', null);
         questions = fallback.data;

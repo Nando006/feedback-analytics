@@ -169,3 +169,23 @@
 .font-poppins {
   font-family: var(--font-button);
 }
+
+/* Removendo o botão nativo de mostrar senha no Chrome, Edge, Opera */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear,
+input[type="password"]::-webkit-credentials-auto-fill-button,
+input[type="password"]::-webkit-input-decoration,
+input[type="password"]::-webkit-textfield-decoration-container,
+input[type="password"]::-webkit-clear-button,
+input[type="password"]::-webkit-inner-spin-button,
+input[type="password"]::-webkit-outer-spin-button,
+input[type="password"]::-webkit-password-toggle-button {
+  display: none !important;
+  pointer-events: none;
+  opacity: 0;
+}
+
+/* E para firefox */
+input[type="password"]::-moz-password-toggle {
+  display: none !important;
+}

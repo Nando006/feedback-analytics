@@ -11,6 +11,8 @@ export type ToastInput = {
   description?: string;
   variant?: ToastVariant;
   duration?: number;
+  actionLabel?: string;
+  onAction?: () => void;
 };
 
 export type ToastItem = {
@@ -19,10 +21,13 @@ export type ToastItem = {
   description?: string;
   variant: ToastVariant;
   duration: number;
+  actionLabel?: string;
+  onAction?: () => void;
 };
 
 export type ToastProps = Omit<ToastItem, 'id'> & {
   onClose?: () => void;
+
 };
 
 export type ToastProviderProps = {

@@ -10,7 +10,9 @@
 - `public.tracked_devices`: rastreio de dispositivos por fingerprint, bloqueio e contagem de feedbacks.
 - `public.feedback`: feedback bruto enviado pelo cliente (mensagem, nota, vínculo com ponto/dispositivo/empresa).
 - `public.questions_of_feedbacks`: perguntas configuráveis por contexto de feedback (empresa/produto/serviço/departamento).
+- `public.feedback_question_subquestions`: subperguntas configuráveis (até 3) para cada pergunta dinâmica principal.
 - `public.feedback_question_answers`: respostas das perguntas dinâmicas vinculadas a cada feedback enviado.
+- `public.feedback_subquestion_answers`: respostas das subperguntas dinâmicas vinculadas a cada feedback enviado.
 - `public.feedback_analysis`: resultado analítico do feedback (sentimento, categorias e palavras-chave).
 - `public.feedback_insights_report`: relatório consolidado de insights e recomendações por empresa.
 
@@ -39,6 +41,14 @@
 ## Permissões (Policies / RLS)
 ### public.collecting_data_enterprise
 - `Auth gerencia dados de coleta`: só usuários autenticados da própria empresa podem ler/escrever dados de coleta.
+
+### public.feedback_question_subquestions
+- `Auth gerencia subperguntas de feedback`: usuários autenticados gerenciam subperguntas da própria empresa.
+- `Anon pode ler subperguntas ativas`: permite leitura pública das subperguntas ativas no fluxo de QR Code.
+
+### public.feedback_subquestion_answers
+- `Auth gerencia respostas de subperguntas`: usuários autenticados gerenciam respostas da própria empresa.
+- `Anon pode inserir respostas de subperguntas`: permite inserção pública no envio de feedback via QR Code.
 
 ### public.catalog_items
 - `Usuários autenticados podem gerenciar catálogo`: gestão completa do catálogo restrita à empresa dona.

@@ -1,5 +1,30 @@
 import type { ActionFunctionArgs } from 'react-router-dom';
 
+function getRegisterFallbackByStatus(status: number) {
+  if (status === 429) {
+    return {
+      error: 'rate_limited',
+      message: 'Muitas tentativas em pouco tempo. Aguarde e tente novamente.',
+    };
+  }
+
+  if (status >= 500) {
+    return {
+      error: 'service_unavailable',
+      message: 'Cadastro temporariamente indisponível. Tente novamente em instantes.',
+    };
+  }
+
+  return {
+    error: 'register_failed',
+    message: 'Não foi possível concluir seu cadastro. Revise os dados e tente novamente.',
+  };
+}
+
+function isObject(value: unknown): value is Record<string, unknown> {
+  return !!value && typeof value === 'object' && !Array.isArray(value);
+}
+
 export async function ActionRegister({ request }: ActionFunctionArgs) {
   const form = await request.formData();
 
@@ -16,51 +41,72 @@ export async function ActionRegister({ request }: ActionFunctionArgs) {
   const document = String(form.get('document') ?? '');
 
   // Enviando os valores para o servidor.
-  const payload =
-    // Condição para CNPJ
-    accountType === 'CNPJ'
+  const payload = {
+    accountType,
+    fullName,
+    document,
+    email,
+    phone,
+    password,
+    confirmPassword,
+    terms,
+  };
+
+  try {
+    const res = await fetch('/api/public/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    if (res.ok) {
+      // Verificando se o registro foi bem-sucedido.
+      // Opcional: redirecionar para /login após sucesso
+      // return redirect('/login')
+      return new Response(JSON.stringify({ ok: true }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
+    const rawBody = await res.text();
+    let parsedData: unknown;
+
+    if (rawBody) {
+      try {
+        parsedData = JSON.parse(rawBody);
+      } catch {
+        parsedData = null;
+      }
+    }
+
+    const fallback = getRegisterFallbackByStatus(res.status);
+    const data = isObject(parsedData)
       ? {
-          accountType,
-          fullName,
-          document,
-          email,
-          phone,
-          password,
-          confirmPassword,
-          terms,
+          error: typeof parsedData.error === 'string' ? parsedData.error : fallback.error,
+          message:
+            typeof parsedData.message === 'string' && parsedData.message.trim().length > 0
+              ? parsedData.message
+              : fallback.message,
+          issues: parsedData.issues,
         }
-      : {
-          accountType,
-          fullName,
-          document,
-          email,
-          phone,
-          password,
-          confirmPassword,
-          terms,
-        };
+      : fallback;
 
-  // Enviando os valores para o servidor.
-  const res = await fetch('/api/public/auth/register', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
-  });
-
-  if (res.ok) {
-    // Verificando se o registro foi bem-sucedido.
-    // Opcional: redirecionar para /login após sucesso
-    // return redirect('/login')
-    return new Response(JSON.stringify({ ok: true }), {
-      status: 200,
+    return new Response(JSON.stringify(data), {
+      status: res.status,
       headers: { 'Content-Type': 'application/json' },
     });
+  } catch {
+    return new Response(
+      JSON.stringify({
+        error: 'network_error',
+        message:
+          'Não foi possível conectar ao servidor de cadastro. Verifique sua conexão e tente novamente.',
+      }),
+      {
+        status: 503,
+        headers: { 'Content-Type': 'application/json' },
+      },
+    );
   }
-
-  // Retornando o erro caso o registro falhe.
-  const data = await res.json().catch(() => ({ error: 'register_failed' }));
-  return new Response(JSON.stringify(data), {
-    status: res.status,
-    headers: { 'Content-Type': 'application/json' },
-  });
 }

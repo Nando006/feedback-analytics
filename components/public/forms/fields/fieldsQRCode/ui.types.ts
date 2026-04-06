@@ -48,7 +48,53 @@ export interface FieldRatingProps {
 export interface FieldDynamicQuestionsProps {
   questions: FeedbackQuestionPublic[];
   answers: FeedbackData['answers'];
+  subanswers: FeedbackData['subanswers'];
   onAnswerChange: (questionId: string, answerValue: FeedbackAnswerValue) => void;
+  onSubanswerChange: (
+    subquestionId: string,
+    answerValue: FeedbackAnswerValue,
+  ) => void;
+}
+
+/**
+ * Estado de apresentação do formulário público QR.
+ * Usado em: components/public/forms/formQRCodeFeedback.tsx.
+ */
+export interface PublicQrFeedbackFormViewState {
+  formData: FeedbackData;
+  questions: FeedbackQuestionPublic[];
+  customerData: CustomerData;
+  showOptionalFields: boolean;
+  error: string;
+  isSubmitting: boolean;
+}
+
+/**
+ * Ações de apresentação do formulário público QR.
+ * Usado em: components/public/forms/formQRCodeFeedback.tsx.
+ */
+export interface PublicQrFeedbackFormViewActions {
+  updateFormData: (data: Partial<FeedbackData>) => void;
+  updateAnswer: (questionId: string, answerValue: FeedbackAnswerValue) => void;
+  updateSubanswer: (
+    subquestionId: string,
+    answerValue: FeedbackAnswerValue,
+  ) => void;
+  updateCustomerData: (
+    field: keyof CustomerData,
+    value: string | undefined,
+  ) => void;
+  toggleOptionalFields: () => void;
+  submit: (event: React.FormEvent) => void;
+}
+
+/**
+ * View-model do formulário público QR.
+ * Usado em: pages/public/qrcode/useQrCodeFeedbackController.ts e renderer de templates públicos.
+ */
+export interface PublicQrFeedbackFormViewModel {
+  state: PublicQrFeedbackFormViewState;
+  actions: PublicQrFeedbackFormViewActions;
 }
 
 /**
@@ -56,18 +102,5 @@ export interface FieldDynamicQuestionsProps {
  * Usado em: components/public/forms/formQRCodeFeedback.tsx.
  */
 export interface FormQRCodeFeedbackProps {
-  formData: FeedbackData;
-  questions: FeedbackQuestionPublic[];
-  customerData: CustomerData;
-  showOptionalFields: boolean;
-  error: string;
-  isSubmitting: boolean;
-  onFormDataChange: (data: Partial<FeedbackData>) => void;
-  onAnswerChange: (questionId: string, answerValue: FeedbackAnswerValue) => void;
-  onCustomerDataChange: (
-    field: keyof CustomerData,
-    value: string | undefined,
-  ) => void;
-  onToggleOptionalFields: () => void;
-  onSubmit: (e: React.FormEvent) => void;
+  model: PublicQrFeedbackFormViewModel;
 }

@@ -13,6 +13,15 @@ export const feedbackBaseSchema = z.object({
       }),
     )
     .length(3),
+  subanswers: z
+    .array(
+      z.object({
+        subquestion_id: z.uuidv4(),
+        answer_value: z.enum(['PESSIMO', 'RUIM', 'MEDIANA', 'BOA', 'OTIMA']),
+      }),
+    )
+    .max(9)
+    .optional(),
 
   // opcionais
   customer_name: z.string().min(1).max(120).optional(),

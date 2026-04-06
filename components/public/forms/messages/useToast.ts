@@ -19,6 +19,8 @@ export function useToast() {
       description,
       variant = 'success',
       duration = 3000,
+      actionLabel,
+      onAction
     }: ToastInput) => {
       const id = ++toastId;
       const toast: ToastItem = {
@@ -27,6 +29,8 @@ export function useToast() {
         description,
         variant,
         duration,
+        actionLabel,
+        onAction
       };
 
       toastDispatch?.((prev) => [...prev, toast]);
@@ -35,22 +39,34 @@ export function useToast() {
   );
 
   const success = useCallback(
-    (message: string, description?: string) => {
-      show({ message, description, variant: 'success' });
+    (message: string, description?: string, options?: {
+      actionLabel?: string;
+      onAction?: () => void;
+      duration?: number;
+    }) => {
+      show({ message, description, variant: 'success', ...options });
     },
     [show],
   );
 
   const error = useCallback(
-    (message: string, description?: string) => {
-      show({ message, description, variant: 'error' });
+    (message: string, description?: string, options?: { 
+      actionLabel?: string; 
+      onAction?: () => void;
+      duration?: number; 
+    }) => {
+      show({ message, description, variant: 'error', ...options });
     },
     [show],
   );
 
   const warning = useCallback(
-    (message: string, description?: string) => {
-      show({ message, description, variant: 'warning' });
+    (message: string, description?: string, options?: {
+      actionLabel?: string;
+      onAction?: () => void;
+      duration?: number;
+    }) => {
+      show({ message, description, variant: 'warning', ...options });
     },
     [show],
   );

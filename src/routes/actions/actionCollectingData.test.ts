@@ -90,7 +90,6 @@ describe('ActionCollectingData', () => {
           status: 'ACTIVE',
         },
       ],
-      catalog_services: [],
       catalog_departments: [],
     });
   });
@@ -243,16 +242,159 @@ describe('ActionCollectingData', () => {
           question_order: 1,
           question_text: 'Pergunta 1',
           is_active: true,
+          subquestions: [],
         },
         {
           question_order: 2,
           question_text: 'Pergunta 2',
           is_active: true,
+          subquestions: [],
         },
         {
           question_order: 3,
           question_text: 'Pergunta 3',
           is_active: true,
+          subquestions: [],
+        },
+      ],
+    });
+  });
+
+  it('não sobrescreve catálogos quando campos específicos não são enviados', async () => {
+    mockUpdateCollectingDataEnterprise.mockResolvedValue({
+      id: 'collecting-id',
+      enterprise_id: 'enterprise-id',
+      company_objective: 'Objetivo atual',
+      analytics_goal: 'Meta atual',
+      business_summary: 'Resumo atual',
+      main_products_or_services: ['Produto existente'],
+      uses_company_products: true,
+      uses_company_services: true,
+      uses_company_departments: true,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    });
+
+    await ActionCollectingData(
+      createArgs({
+        company_objective: 'Objetivo atualizado',
+        analytics_goal: 'Meta atualizada',
+        business_summary: 'Resumo atualizado',
+        uses_company_products: 'true',
+        uses_company_services: 'true',
+        uses_company_departments: 'true',
+      }),
+    );
+
+    const payload = mockUpdateCollectingDataEnterprise.mock.calls[0]?.[0] as
+      | Record<string, unknown>
+      | undefined;
+
+    expect(payload).toBeDefined();
+    expect(payload).toMatchObject({
+      company_objective: 'Objetivo atualizado',
+      analytics_goal: 'Meta atualizada',
+      business_summary: 'Resumo atualizado',
+      uses_company_products: true,
+      uses_company_services: true,
+      uses_company_departments: true,
+    });
+    expect(payload).not.toHaveProperty('catalog_products');
+    expect(payload).not.toHaveProperty('catalog_services');
+    expect(payload).not.toHaveProperty('catalog_departments');
+    expect(payload).not.toHaveProperty('main_products_or_services');
+  });
+
+  it('envia subperguntas quando company_feedback_questions possui estrutura 3x3', async () => {
+    mockUpdateCollectingDataEnterprise.mockResolvedValue({
+      id: 'collecting-id',
+      enterprise_id: 'enterprise-id',
+      company_objective: null,
+      analytics_goal: null,
+      business_summary: null,
+      main_products_or_services: null,
+      uses_company_products: false,
+      uses_company_services: false,
+      uses_company_departments: false,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    });
+
+    await ActionCollectingData(
+      createArgs({
+        uses_company_products: 'false',
+        uses_company_services: 'false',
+        uses_company_departments: 'false',
+        company_feedback_questions: JSON.stringify([
+          {
+            question_order: 1,
+            question_text:
+              'Como você avalia o tempo de atendimento na recepção?',
+            is_active: true,
+            subquestions: [
+              {
+                subquestion_order: 1,
+                subquestion_text:
+                  'A equipe esclareceu suas dúvidas com clareza durante o atendimento?',
+                is_active: true,
+              },
+            ],
+          },
+          {
+            question_order: 2,
+            question_text:
+              'Como você avalia a clareza das informações recebidas?',
+            is_active: true,
+            subquestions: [],
+          },
+          {
+            question_order: 3,
+            question_text:
+              'Como foi sua percepção geral sobre o atendimento recebido?',
+            is_active: true,
+            subquestions: [],
+          },
+        ]),
+      }),
+    );
+
+    expect(mockUpdateCollectingDataEnterprise).toHaveBeenCalledWith({
+      company_objective: null,
+      analytics_goal: null,
+      business_summary: null,
+      main_products_or_services: null,
+      uses_company_products: false,
+      uses_company_services: false,
+      uses_company_departments: false,
+      catalog_products: [],
+      catalog_services: [],
+      catalog_departments: [],
+      company_feedback_questions: [
+        {
+          question_order: 1,
+          question_text: 'Como você avalia o tempo de atendimento na recepção?',
+          is_active: true,
+          subquestions: [
+            {
+              subquestion_order: 1,
+              subquestion_text:
+                'A equipe esclareceu suas dúvidas com clareza durante o atendimento?',
+              is_active: true,
+            },
+          ],
+        },
+        {
+          question_order: 2,
+          question_text: 'Como você avalia a clareza das informações recebidas?',
+          is_active: true,
+          subquestions: [],
+        },
+        {
+          question_order: 3,
+          question_text:
+            'Como foi sua percepção geral sobre o atendimento recebido?',
+          is_active: true,
+          subquestions: [],
         },
       ],
     });
