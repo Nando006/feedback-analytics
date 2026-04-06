@@ -14,6 +14,125 @@ import {
 } from '../../../../../lib/constants/server/errors.js';
 import { sendTypedError } from '../../../../../lib/utils/sendTypedError.js';
 
+function mapSupabaseRegisterError(rawMessage?: string): {
+  http: number;
+  code: ApiRegisterErrorCode;
+  message: string;
+} {
+  const message = rawMessage?.trim() ?? '';
+  const msg = message.toLowerCase();
+
+  if (msg.includes('user already registered') || msg.includes('user already exists')) {
+    return {
+      http: 409,
+      code: API_ERROR_EMAIL_TAKEN,
+      message: 'E-mail já cadastrado.',
+    };
+  }
+
+  if (msg.includes('phone_already_exists') || msg.includes('phone already exists')) {
+    return {
+      http: 409,
+      code: API_ERROR_PHONE_TAKEN,
+      message: 'Telefone já cadastrado.',
+    };
+  }
+
+  if (msg.includes('document_already_exists') || msg.includes('document already exists')) {
+    return {
+      http: 409,
+      code: API_ERROR_DOCUMENT_TAKEN,
+      message: 'Documento já cadastrado.',
+    };
+  }
+
+  if (msg.includes('document is required')) {
+    return {
+      http: 400,
+      code: API_ERROR_DOCUMENT_REQUIRED,
+      message: 'Documento é obrigatório.',
+    };
+  }
+
+  if (
+    msg.includes('unable to validate email address') ||
+    msg.includes('invalid email') ||
+    msg.includes('email address is invalid')
+  ) {
+    return {
+      http: 400,
+      code: API_ERROR_SIGNUP_FAILED,
+      message: 'E-mail inválido. Verifique o formato e tente novamente.',
+    };
+  }
+
+  if (
+    msg.includes('password should be at least') ||
+    msg.includes('weak password') ||
+    msg.includes('password is too weak') ||
+    msg.includes('password strength')
+  ) {
+    return {
+      http: 400,
+      code: API_ERROR_SIGNUP_FAILED,
+      message: 'Senha fraca. Use uma senha com no mínimo 8 caracteres e mais complexa.',
+    };
+  }
+
+  if (msg.includes('signup is disabled') || msg.includes('signups not allowed')) {
+    return {
+      http: 503,
+      code: API_ERROR_SIGNUP_FAILED,
+      message: 'Novos cadastros estão temporariamente indisponíveis.',
+    };
+  }
+
+  if (
+    msg.includes('email rate limit exceeded') ||
+    msg.includes('too many requests') ||
+    msg.includes('rate limit')
+  ) {
+    return {
+      http: 429,
+      code: API_ERROR_SIGNUP_FAILED,
+      message: 'Muitas tentativas em pouco tempo. Aguarde e tente novamente.',
+    };
+  }
+
+  if (
+    msg.includes('error sending confirmation email') ||
+    msg.includes('error sending confirmation mail')
+  ) {
+    return {
+      http: 502,
+      code: API_ERROR_SIGNUP_FAILED,
+      message: 'Não foi possível enviar o e-mail de confirmação agora. Tente novamente.',
+    };
+  }
+
+  if (msg.includes('captcha')) {
+    return {
+      http: 400,
+      code: API_ERROR_SIGNUP_FAILED,
+      message: 'Falha na validação de segurança. Recarregue a página e tente novamente.',
+    };
+  }
+
+  if (msg.includes('database error saving new user')) {
+    return {
+      http: 400,
+      code: API_ERROR_DATABASE_ERROR,
+      message: 'Erro ao salvar novo usuário.',
+    };
+  }
+
+  return {
+    http: 400,
+    code: API_ERROR_SIGNUP_FAILED,
+    message: message || 'Não foi possível criar sua conta.',
+  };
+}
+
 export function EndpointsRegister(app: express.Express) {
   app.post('/api/public/auth/register', async (req, res) => {
     try {
@@ -102,40 +221,10 @@ export function EndpointsRegister(app: express.Express) {
 
       // Verifica se o registro foi bem-sucedido. Se não foi, retorna um erro com mensagem amigável.
       if (error) {
-        const msg = (error.message ?? '').toLowerCase();
-
-        // valores padrão
-        let http = 400 as 400 | 409;
-        let code: ApiRegisterErrorCode = API_ERROR_SIGNUP_FAILED;
-        let message = 'Não foi possível criar sua conta.';
-
-        // e-mail já cadastrado (mensagens comuns do Supabase Auth)
-        if (msg.includes('user already registered') || msg.includes('user already exists')) {
-          http = 409;
-          code = API_ERROR_EMAIL_TAKEN;
-          message = 'E-mail já cadastrado.';
-        }
-        // mensagens explicitadas pela função do banco (migração adicionada)
-        else if (msg.includes('phone_already_exists')) {
-          http = 409;
-          code = API_ERROR_PHONE_TAKEN;
-          message = 'Telefone já cadastrado.';
-        } else if (msg.includes('document_already_exists')) {
-          http = 409;
-          code = API_ERROR_DOCUMENT_TAKEN;
-          message = 'Documento já cadastrado.';
-        } else if (msg.includes('document is required')) {
-          http = 400;
-          code = API_ERROR_DOCUMENT_REQUIRED;
-          message = 'Documento é obrigatório.';
-        } else if (msg.includes('database error saving new user')) {
-          // fallback para erro genérico do Supabase
-          http = 400;
-          code = API_ERROR_DATABASE_ERROR;
-          message = 'Erro ao salvar novo usuário.';
-        }
-
-        return sendTypedError(res, http, code, { message });
+        const mapped = mapSupabaseRegisterError(error.message);
+        return sendTypedError(res, mapped.http, mapped.code, {
+          message: mapped.message,
+        });
       }
 
       // Retorna o usuário registrado. Se não foi, retorna um erro.
