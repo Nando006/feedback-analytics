@@ -63,19 +63,25 @@ type CollectingDataPayload = {
   company_feedback_questions?: CompanyFeedbackQuestionInput[] | null;
 };
 
-const DEFAULT_COMPANY_FEEDBACK_QUESTIONS = [
+const DEFAULT_COMPANY_FEEDBACK_QUESTIONS: CompanyFeedbackQuestionInput[] = [
   {
     question_order: 1,
     question_text: 'Como foi sua experiência em relação ao atendimento?',
+    is_active: true,
+    subquestions: [],
   },
   {
     question_order: 2,
     question_text: 'O que você achou da qualidade do produto/serviço?',
+    is_active: true,
+    subquestions: [],
   },
   {
     question_order: 3,
     question_text:
       'Como você avalia a relação entre o valor pago e a qualidade do produto/serviço?',
+    is_active: true,
+    subquestions: [],
   },
 ];
 
