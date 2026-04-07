@@ -17,7 +17,7 @@ export default function CardSimple({
     case 'header':
       return (
         <section className={baseClass}>
-          <div className="flex flex-col gap-6 md:flex-row md:items-center">
+          <div className="flex flex-col gap-6 md:flex-row md:items-cente justify-center">
             {children}
           </div>
           {!disableGlass && <div className="gradient-banner" />}
