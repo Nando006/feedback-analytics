@@ -38,7 +38,7 @@ export default function EditProfile() {
   });
 
   return (
-    <div className="font-work-sans space-y-8 pb-12 max-w-4xl mx-auto">
+    <div className="font-work-sans space-y-8 pb-12">
       <Header />
 
       <div className="px-4 space-y-8">
