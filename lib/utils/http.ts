@@ -31,6 +31,17 @@ function resolveApiUrl(path: string): string {
     : normalizedPath;
 }
 
+// Requisição base para manter um único ponto de resolução de URL + credentials
+export async function requestApi(
+  path: string,
+  init?: RequestInit,
+): Promise<Response> {
+  return fetch(resolveApiUrl(path), {
+    credentials: 'include',
+    ...(init ?? {}),
+  });
+}
+
 async function throwIfNotOk(res: Response): Promise<void> {
   if (res.ok) return;
 
@@ -63,10 +74,7 @@ async function throwIfNotOk(res: Response): Promise<void> {
 }
 
 export async function getJson<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(resolveApiUrl(path), {
-    credentials: 'include',
-    ...(init ?? {}),
-  });
+  const res = await requestApi(path, init);
 
   await throwIfNotOk(res);
 
@@ -78,7 +86,7 @@ export async function postJson<T>(
   body: unknown,
   init?: RequestInit,
 ): Promise<T> {
-  const res = await fetch(resolveApiUrl(path), {
+  const res = await requestApi(path, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -98,7 +106,7 @@ export async function patchJson<T>(
   body: unknown,
   init?: RequestInit,
 ): Promise<T> {
-  const res = await fetch(resolveApiUrl(path), {
+  const res = await requestApi(path, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
@@ -118,7 +126,7 @@ export async function putJson<T>(
   body: unknown,
   init?: RequestInit,
 ): Promise<T> {
-  const res = await fetch(resolveApiUrl(path), {
+  const res = await requestApi(path, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -137,7 +145,7 @@ export async function deleteJson<T>(
   path: string,
   init?: RequestInit,
 ): Promise<T> {
-  const res = await fetch(resolveApiUrl(path), {
+  const res = await requestApi(path, {
     method: 'DELETE',
     credentials: 'include',
     ...(init ?? {}),

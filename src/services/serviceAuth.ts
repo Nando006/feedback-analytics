@@ -1,3 +1,4 @@
+import { requestApi } from 'lib/utils/http';
 import { supabase } from 'src/supabase/supabaseClient';
 
 export type LoginPayload =
@@ -89,7 +90,7 @@ export async function ServiceLogin(
   payload: LoginPayload,
 ): Promise<{ ok: true } | { ok: false; status: number; payload: unknown }> {
   try {
-    const res = await fetch('/api/public/auth/login', {
+    const res = await requestApi('/api/public/auth/login', {
       method: 'POST',
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
@@ -121,7 +122,7 @@ export async function ServiceLogin(
 
 export async function ServiceLogout(): Promise<boolean> {
   await supabase.auth.signOut().catch(() => {});
-  const res = await fetch('/api/public/auth/logout', {
+  const res = await requestApi('/api/public/auth/logout', {
     method: 'POST',
     credentials: 'include',
   });
@@ -135,9 +136,8 @@ export async function ServiceResendConfirmation(
   | { ok: false; error: string; message: string; issues?: unknown }
 > {
   try {
-    const res = await fetch('/api/public/auth/resend-confirmation', {
+    const res = await requestApi('/api/public/auth/resend-confirmation', {
       method: 'POST',
-      credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email }),
     });
