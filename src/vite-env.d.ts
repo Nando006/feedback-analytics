@@ -5,6 +5,9 @@ declare const __APP_VERSION__: string;
 interface ImportMetaEnv {
   readonly VITE_SUPABASE_URL: string;
   readonly VITE_SUPABASE_ANON_KEY: string;
+  readonly VITE_API_BASE_URL?: string;
+  readonly GEMINI_API_KEY: string;
+  readonly PUBLIC_SITE_URL: string;
   // Adicione outras variáveis de ambiente que você usar aqui
 }
 

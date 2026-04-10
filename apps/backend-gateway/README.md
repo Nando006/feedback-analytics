@@ -1,0 +1,1 @@
+# API gateway/BFF (Express) para autenticação, sessão e orquestração.

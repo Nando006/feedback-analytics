@@ -1,0 +1,10 @@
+{
+  "name": "@feedback/backend-gateway",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "npm run server:dev --prefix ../..",
+    "lint": "npm run lint --prefix ../.."
+  }
+}

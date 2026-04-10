@@ -1,0 +1,12 @@
+{
+  "name": "@feedback/web",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "npm run dev --prefix ../..",
+    "build": "npm run build --prefix ../..",
+    "lint": "npm run lint --prefix ../..",
+    "test": "npm run test --prefix ../.."
+  }
+}
