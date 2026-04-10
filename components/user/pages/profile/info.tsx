@@ -8,15 +8,15 @@ export default function Info({
   collecting,
 }: EnterpriseAndCollectingData) {
   return (
-    <div>
+    <div className="font-work-sans">
       <div className="space-y-6 lg:col-span-2">
         <CardSimple>
           <div>
             <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-(--text-primary)">Objetivo</h2>
+              <h2 className="font-montserrat text-lg font-semibold text-(--text-primary)">Objetivo</h2>
             </div>
             <p className="max-w-2xl text-(--text-secondary)">
-              {collecting?.business_summary ?? 'Conte sobre sua empresa...'}
+              {collecting?.business_summary ?? 'Adicione informações sobre seu negócio...'}
             </p>
           </div>
           <p className="text-sm text-(--text-tertiary)">
@@ -27,7 +27,7 @@ export default function Info({
 
         <CardSimple>
           <div className="w-full">
-            <h2 className="mb-4 text-lg font-semibold text-(--text-primary)">
+            <h2 className="mb-4 font-montserrat text-lg font-semibold text-(--text-primary)">
               Informações de contato
             </h2>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">

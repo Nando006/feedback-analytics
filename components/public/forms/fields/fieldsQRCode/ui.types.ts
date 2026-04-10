@@ -1,6 +1,8 @@
 import type {
+  FeedbackAnswerValue,
   CustomerData,
   FeedbackData,
+  FeedbackQuestionPublic,
 } from 'lib/interfaces/contracts/qrcode.contract';
 
 /**
@@ -40,20 +42,65 @@ export interface FieldRatingProps {
 }
 
 /**
- * Props do formulário completo de feedback por QR Code.
+ * Props do bloco de perguntas dinâmicas do feedback.
+ * Usado em: components/public/forms/fields/fieldsQRCode/fieldDynamicQuestions.tsx.
+ */
+export interface FieldDynamicQuestionsProps {
+  questions: FeedbackQuestionPublic[];
+  answers: FeedbackData['answers'];
+  subanswers: FeedbackData['subanswers'];
+  onAnswerChange: (questionId: string, answerValue: FeedbackAnswerValue) => void;
+  onSubanswerChange: (
+    subquestionId: string,
+    answerValue: FeedbackAnswerValue,
+  ) => void;
+}
+
+/**
+ * Estado de apresentação do formulário público QR.
  * Usado em: components/public/forms/formQRCodeFeedback.tsx.
  */
-export interface FormQRCodeFeedbackProps {
+export interface PublicQrFeedbackFormViewState {
   formData: FeedbackData;
+  questions: FeedbackQuestionPublic[];
   customerData: CustomerData;
   showOptionalFields: boolean;
   error: string;
   isSubmitting: boolean;
-  onFormDataChange: (data: Partial<FeedbackData>) => void;
-  onCustomerDataChange: (
+}
+
+/**
+ * Ações de apresentação do formulário público QR.
+ * Usado em: components/public/forms/formQRCodeFeedback.tsx.
+ */
+export interface PublicQrFeedbackFormViewActions {
+  updateFormData: (data: Partial<FeedbackData>) => void;
+  updateAnswer: (questionId: string, answerValue: FeedbackAnswerValue) => void;
+  updateSubanswer: (
+    subquestionId: string,
+    answerValue: FeedbackAnswerValue,
+  ) => void;
+  updateCustomerData: (
     field: keyof CustomerData,
     value: string | undefined,
   ) => void;
-  onToggleOptionalFields: () => void;
-  onSubmit: (e: React.FormEvent) => void;
+  toggleOptionalFields: () => void;
+  submit: (event: React.FormEvent) => void;
+}
+
+/**
+ * View-model do formulário público QR.
+ * Usado em: pages/public/qrcode/useQrCodeFeedbackController.ts e renderer de templates públicos.
+ */
+export interface PublicQrFeedbackFormViewModel {
+  state: PublicQrFeedbackFormViewState;
+  actions: PublicQrFeedbackFormViewActions;
+}
+
+/**
+ * Props do formulário completo de feedback por QR Code.
+ * Usado em: components/public/forms/formQRCodeFeedback.tsx.
+ */
+export interface FormQRCodeFeedbackProps {
+  model: PublicQrFeedbackFormViewModel;
 }

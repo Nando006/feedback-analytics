@@ -5,10 +5,10 @@ export default function InsightsReportSummarySection({
 }: InsightsReportSummarySectionProps) {
   return (
     <div className="mt-4">
-      <h3 className="mb-2 text-base font-semibold text-[var(--text-primary)]">
+      <h3 className="font-montserrat mb-2 text-base font-semibold text-[var(--text-primary)]">
         Visão geral
       </h3>
-      <p className="whitespace-pre-wrap text-sm leading-relaxed text-[var(--text-primary)]">
+      <p className="whitespace-pre-wrap text-sm leading-relaxed font-work-sans text-[var(--text-primary)]">
         {summaryText}
       </p>
     </div>

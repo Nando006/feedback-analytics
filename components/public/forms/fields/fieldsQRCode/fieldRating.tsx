@@ -12,7 +12,7 @@ export default function FieldRating({ rating, onRatingChange }: FieldRatingProps
   return (
     <div>
       <label className="font-work-sans block text-sm font-medium text-(--text-primary) mb-3">
-        Como você avalia nossa experiência?
+        Como você avalia sua experiência?
       </label>
       <div className="flex justify-center gap-2">
         {[1, 2, 3, 4, 5].map((star) => (

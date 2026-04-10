@@ -9,6 +9,21 @@ vi.mock('src/services/serviceFeedbackQRCode', () => ({
 
 const mockServiceSubmitQrcodeFeedback = vi.mocked(ServiceSubmitQrcodeFeedback);
 
+const defaultAnswers = [
+  {
+    question_id: 'aaaaaaa1-aaaa-4aaa-8aaa-aaaaaaaaaaa1',
+    answer_value: 'BOA',
+  },
+  {
+    question_id: 'aaaaaaa2-aaaa-4aaa-8aaa-aaaaaaaaaaa2',
+    answer_value: 'OTIMA',
+  },
+  {
+    question_id: 'aaaaaaa3-aaaa-4aaa-8aaa-aaaaaaaaaaa3',
+    answer_value: 'MEDIANA',
+  },
+] as const;
+
 function createRequest(body: Record<string, string | undefined>) {
   const formData = new URLSearchParams();
 
@@ -53,6 +68,7 @@ describe('ActionPublicQrCodeFeedback', () => {
         catalog_item_id: '33333333-3333-4333-8333-333333333333',
         message: 'Ótimo produto',
         rating: '5',
+        answers: JSON.stringify(defaultAnswers),
       }),
     );
 
@@ -63,6 +79,8 @@ describe('ActionPublicQrCodeFeedback', () => {
       catalog_item_id: '33333333-3333-4333-8333-333333333333',
       message: 'Ótimo produto',
       rating: 5,
+      answers: defaultAnswers,
+      subanswers: [],
       channel: 'QRCODE',
       customer_name: undefined,
       customer_email: undefined,
@@ -87,6 +105,7 @@ describe('ActionPublicQrCodeFeedback', () => {
         collection_point_id: '22222222-2222-4222-8222-222222222222',
         message: 'Teste',
         rating: '5',
+        answers: JSON.stringify(defaultAnswers),
       }),
     );
 
@@ -125,6 +144,7 @@ describe('ActionPublicQrCodeFeedback', () => {
         collection_point_id: '22222222-2222-4222-8222-222222222222',
         message: 'Primeiro envio',
         rating: '5',
+        answers: JSON.stringify(defaultAnswers),
       }),
     );
 
@@ -134,6 +154,7 @@ describe('ActionPublicQrCodeFeedback', () => {
         collection_point_id: '22222222-2222-4222-8222-222222222222',
         message: 'Segundo envio mesmo QR',
         rating: '4',
+        answers: JSON.stringify(defaultAnswers),
       }),
     );
 
@@ -173,6 +194,7 @@ describe('ActionPublicQrCodeFeedback', () => {
         collection_point_id: '22222222-2222-4222-8222-222222222222',
         message: 'Feedback QR 1',
         rating: '5',
+        answers: JSON.stringify(defaultAnswers),
       }),
     );
 
@@ -182,6 +204,7 @@ describe('ActionPublicQrCodeFeedback', () => {
         collection_point_id: '44444444-4444-4444-8444-444444444444',
         message: 'Feedback QR 2',
         rating: '5',
+        answers: JSON.stringify(defaultAnswers),
       }),
     );
 

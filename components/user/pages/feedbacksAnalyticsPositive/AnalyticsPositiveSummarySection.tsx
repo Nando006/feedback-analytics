@@ -4,8 +4,8 @@ export default function AnalyticsPositiveSummarySection({
   summary,
 }: AnalyticsPositiveSummarySectionProps) {
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-(--quaternary-color)/10 bg-gradient-to-br from-(--bg-secondary) to-(--sixth-color) p-6 glass-card">
-      <h2 className="mb-2 text-lg font-semibold text-[var(--text-primary)]">
+    <div className="font-work-sans relative overflow-hidden rounded-2xl border border-(--quaternary-color)/10 bg-gradient-to-br from-(--bg-secondary) to-(--sixth-color) p-6 glass-card">
+      <h2 className="mb-2 text-lg font-montserrat font-semibold text-[var(--text-primary)]">
         Forças e destaques percebidos pelos clientes
       </h2>
       <p className="mb-4 text-sm text-[var(--text-tertiary)]">
@@ -18,7 +18,7 @@ export default function AnalyticsPositiveSummarySection({
           <div className="text-xs uppercase tracking-wide text-[var(--text-tertiary)]">
             Total positivos
           </div>
-          <div className="text-2xl font-semibold text-emerald-300">
+          <div className="text-2xl font-semibold text-(--positive)">
             {summary.sentiments.positive}
           </div>
         </div>
@@ -31,7 +31,7 @@ export default function AnalyticsPositiveSummarySection({
             {summary.topCategories.slice(0, 5).map((cat) => (
               <span
                 key={cat.name}
-                className="rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3 py-1 text-emerald-200">
+                className="rounded-full border border-(--positive)/40 bg-(--positive)/10 px-3 py-1 text-(--positive)">
                 {cat.name} ({cat.count})
               </span>
             ))}

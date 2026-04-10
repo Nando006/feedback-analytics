@@ -10,7 +10,7 @@ export async function ActionLogin({ request }: ActionFunctionArgs) {
 
   const result = await ServiceLogin({ email, password, remember });
 
-  if (result.ok) return redirect('/user/dashboard');
+  if (result.ok) return redirect('/user/dashboard?login=success');
 
   return new Response(JSON.stringify(result.payload), {
     status: result.status,

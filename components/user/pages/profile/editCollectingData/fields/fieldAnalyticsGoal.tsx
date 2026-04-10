@@ -5,7 +5,7 @@ const FieldAnalyticsGoal = memo(function FieldAnalyticsGoal({ defaultValue }: Fi
   const [characterCount, setCharacterCount] = useState(defaultValue.length);
 
   return (
-    <div className="group">
+    <div className="group font-work-sans">
       <label
         htmlFor="analytics_goal"
         className="mb-2 block text-sm font-medium text-(--text-secondary) transition-colors group-focus-within:text-(--tertiary-color)">
@@ -20,11 +20,11 @@ const FieldAnalyticsGoal = memo(function FieldAnalyticsGoal({ defaultValue }: Fi
           rows={4}
           defaultValue={defaultValue}
           onInput={(event) => setCharacterCount(event.currentTarget.value.length)}
-          placeholder="Ex: Identificar padrões de satisfação do cliente e áreas de melhoria no atendimento..."
+          placeholder="Instrua a IA sobre o que investigar nos feedbacks. Ex: Identificar os principais motivos de insatisfação com o atendimento."
         />
         <div className="mt-1.5 flex items-center justify-between">
           <p className="text-xs text-(--text-tertiary)">
-            Explique como deseja utilizar os feedbacks coletados
+            Este campo ajuda a IA a priorizar e filtrar o que você quer ver nos relatórios.
           </p>
           <span className="text-xs text-(--text-tertiary)">
             {characterCount} caracteres

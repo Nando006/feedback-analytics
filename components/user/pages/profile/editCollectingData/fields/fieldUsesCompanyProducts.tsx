@@ -51,7 +51,7 @@ const FieldUsesCompanyProducts = memo(function FieldUsesCompanyProducts({
   onChange,
 }: FieldUsesCompanyProductsProps) {
   return (
-    <div className="space-y-4 rounded-xl border border-(--quaternary-color)/10 bg-linear-to-br from-(--bg-secondary) to-(--sixth-color) p-5 transition-all duration-200 hover:border-(--quaternary-color)/18">
+    <div className="font-work-sans space-y-4 rounded-xl border border-(--quaternary-color)/10 bg-linear-to-br from-(--bg-secondary) to-(--sixth-color) p-5 transition-all duration-200 hover:border-(--quaternary-color)/18">
       <div>
         <h3 className="text-sm font-semibold text-(--text-primary)">Escopo da operação</h3>
         <p className="mt-1 text-xs leading-relaxed text-(--text-tertiary)">

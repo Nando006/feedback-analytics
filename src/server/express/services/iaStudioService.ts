@@ -1,16 +1,17 @@
 import { GoogleGenAI } from '@google/genai';
 import { createSupabaseServerClient } from '../supabase.js';
+import {
+  buildIaPromptByScope,
+  type FeedbackScopeType,
+  type PromptEnterpriseContext,
+  type PromptFeedbackInput,
+} from './iaStudioPromptBuilders.js';
 
 export type SupabaseServerClient = ReturnType<typeof createSupabaseServerClient>;
 
 export type Sentiment = 'positive' | 'negative' | 'neutral';
 
-export type FeedbackForAnalysis = {
-  id: string;
-  message: string;
-  rating: number | null;
-  created_at: string | null;
-};
+export type FeedbackForAnalysis = PromptFeedbackInput;
 
 export type IaFeedbackAnalysisItem = {
   feedback_id: string;
@@ -34,7 +35,16 @@ export type IaStudioResult = {
     keywords: string[];
   }[];
   globalInsights: IaGlobalInsights | null;
+  contexts: Array<{
+    scope_type: FeedbackScopeType;
+    catalog_item_id: string | null;
+    catalog_item_name: string | null;
+    analyzedCount: number;
+    globalInsights: IaGlobalInsights | null;
+  }>;
 };
+
+type IaStudioResultContext = IaStudioResult['contexts'][number];
 
 export type IaStudioOptions = {
   /**
@@ -42,15 +52,85 @@ export type IaStudioOptions = {
    * Default: 50, Máximo: 100.
    */
   limit?: number;
+  scope_type?: FeedbackScopeType;
+  catalog_item_id?: string;
+};
+
+const MIN_FEEDBACKS_FOR_RELEVANT_ANALYSIS = 10;
+
+type AnalysisBatch = {
+  scopeType: FeedbackScopeType;
+  catalogItemId: string | null;
+  catalogItemName: string | null;
+  feedbacks: FeedbackForAnalysis[];
+};
+
+type CollectingDataContext = {
+  company_objective?: string | null;
+  analytics_goal?: string | null;
+  business_summary?: string | null;
+  main_products_or_services?: string[] | null;
+};
+
+type RawFeedbackRow = {
+  id: string;
+  message: string;
+  rating: number | null;
+  created_at: string | null;
+  collection_points:
+    | {
+        id?: string | null;
+        name?: string | null;
+        type?: string | null;
+        identifier?: string | null;
+        catalog_item_id?: string | null;
+      }
+    | Array<{
+        id?: string | null;
+        name?: string | null;
+        type?: string | null;
+        identifier?: string | null;
+        catalog_item_id?: string | null;
+      }>
+    | null;
+};
+
+type RawCatalogItemRow = {
+  id: string;
+  name: string;
+  kind: string;
+  description: string | null;
+};
+
+type RawFeedbackQuestionAnswerRow = {
+  feedback_id: string;
+  question_id: string;
+  question_text_snapshot: string;
+  answer_value: 'PESSIMO' | 'RUIM' | 'MEDIANA' | 'BOA' | 'OTIMA';
+  answer_score: number;
+};
+
+type RawFeedbackSubquestionAnswerRow = {
+  feedback_id: string;
+  subquestion_id: string;
+  subquestion_text_snapshot: string;
+  answer_value: 'PESSIMO' | 'RUIM' | 'MEDIANA' | 'BOA' | 'OTIMA';
+  answer_score: number;
 };
 
 export class IaStudioServiceError extends Error {
+  public statusCode: number;
+
+  public code: string;
+
   constructor(
     message: string,
-    public statusCode: number,
-    public code: string,
+    statusCode: number,
+    code: string,
   ) {
     super(message);
+    this.statusCode = statusCode;
+    this.code = code;
   }
 }
 
@@ -81,82 +161,567 @@ function extractJsonFromText(raw: string): string {
   return text;
 }
 
-function buildIaPrompt(params: {
+function normalizeScopeType(kind: string | null | undefined): FeedbackScopeType {
+  const normalized = String(kind ?? '').toUpperCase();
+
+  if (normalized === 'PRODUCT') return 'PRODUCT';
+  if (normalized === 'SERVICE') return 'SERVICE';
+  if (normalized === 'DEPARTMENT') return 'DEPARTMENT';
+  return 'COMPANY';
+}
+
+function resolveCollectionPoint(
+  collectionPointRaw: RawFeedbackRow['collection_points'],
+) {
+  if (Array.isArray(collectionPointRaw)) {
+    return collectionPointRaw[0] ?? null;
+  }
+
+  return collectionPointRaw ?? null;
+}
+
+function buildEnterpriseContext(params: {
   enterpriseName: string | null;
-  companyObjective: string | null;
-  analyticsGoal: string | null;
-  businessSummary: string | null;
-  mainProductsOrServices: string[] | null;
-  feedbacks: FeedbackForAnalysis[];
-}): string {
-  const {
-    enterpriseName,
-    companyObjective,
-    analyticsGoal,
-    businessSummary,
-    mainProductsOrServices,
-    feedbacks,
-  } = params;
+  collecting: CollectingDataContext | null;
+}): PromptEnterpriseContext {
+  const { enterpriseName, collecting } = params;
 
-  const header = `Você é uma IA especialista em análise de feedbacks de clientes para empresas.
-Seu objetivo é:
-- Entender o contexto e os objetivos da empresa.
-- Analisar cada feedback individualmente.
-- Classificar o sentimento de cada feedback (positive, neutral, negative).
-- Categorizar o tema principal do feedback em poucas categorias de negócio.
-- Extrair palavras-chave importantes do texto.
-- Gerar insights acionáveis para ajudar a empresa a melhorar.
-
-Regras IMPORTANTES:
-- Responda SEMPRE em JSON válido.
-- Não inclua comentários, texto fora do JSON ou explicações adicionais.
-- Use apenas os valores 'positive', 'neutral' ou 'negative' em "sentiment".
-- Em "categories" e "keywords", use arrays de strings curtas (ex.: ["atendimento", "preço"]).`;
-
-  const enterpriseContext = {
+  return {
     enterprise_name: enterpriseName,
-    company_objective: companyObjective,
-    analytics_goal: analyticsGoal,
-    business_summary: businessSummary,
-    main_products_or_services: mainProductsOrServices,
+    company_objective: collecting?.company_objective ?? null,
+    analytics_goal: collecting?.analytics_goal ?? null,
+    business_summary: collecting?.business_summary ?? null,
+    main_products_or_services: collecting?.main_products_or_services ?? null,
   };
+}
 
-  const payload = {
-    enterprise: enterpriseContext,
-    feedbacks: feedbacks,
+function hasRequiredEnterpriseInfoForAnalysis(
+  collecting: CollectingDataContext | null,
+) {
+  if (!collecting) {
+    return false;
+  }
+
+  const hasCompanyObjective = String(collecting.company_objective ?? '').trim().length > 0;
+  const hasAnalyticsGoal = String(collecting.analytics_goal ?? '').trim().length > 0;
+  const hasBusinessSummary = String(collecting.business_summary ?? '').trim().length > 0;
+
+  return hasCompanyObjective && hasAnalyticsGoal && hasBusinessSummary;
+}
+
+const STRUCTURED_ANSWER_LABELS = new Set<string>([
+  'pessimo',
+  'ruim',
+  'mediana',
+  'boa',
+  'otima',
+]);
+
+const PORTUGUESE_STOPWORDS = new Set<string>([
+  'a',
+  'ao',
+  'aos',
+  'as',
+  'com',
+  'da',
+  'das',
+  'de',
+  'do',
+  'dos',
+  'e',
+  'em',
+  'na',
+  'nas',
+  'no',
+  'nos',
+  'o',
+  'os',
+  'para',
+  'por',
+  'que',
+  'sem',
+  'um',
+  'uma',
+]);
+
+function normalizeForComparison(value: string) {
+  return value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function tokenizeRelevantWords(value: string) {
+  return normalizeForComparison(value)
+    .split(' ')
+    .map((token) => token.trim())
+    .filter(
+      (token) =>
+        token.length >= 4 &&
+        !PORTUGUESE_STOPWORDS.has(token) &&
+        !STRUCTURED_ANSWER_LABELS.has(token),
+    );
+}
+
+function isGroundedInMessage(termNormalized: string, messageNormalized: string) {
+  if (!termNormalized || !messageNormalized) {
+    return false;
+  }
+
+  if (messageNormalized.includes(termNormalized)) {
+    return true;
+  }
+
+  const termTokens = tokenizeRelevantWords(termNormalized);
+  if (termTokens.length === 0) {
+    return false;
+  }
+
+  const messageTokens = new Set(tokenizeRelevantWords(messageNormalized));
+
+  return termTokens.some((token) => messageTokens.has(token));
+}
+
+function fallbackKeywordsFromMessage(message: string, maxCount: number) {
+  const tokens = tokenizeRelevantWords(message);
+  const unique = Array.from(new Set(tokens));
+  return unique.slice(0, maxCount);
+}
+
+function sanitizeTermList(params: {
+  terms: string[];
+  messageNormalized: string;
+  forbiddenTerms: Set<string>;
+  maxCount: number;
+}) {
+  const { terms, messageNormalized, forbiddenTerms, maxCount } = params;
+  const result: string[] = [];
+  const seen = new Set<string>();
+
+  for (const value of terms) {
+    const rawTerm = String(value ?? '').trim();
+    if (!rawTerm) continue;
+
+    const normalizedTerm = normalizeForComparison(rawTerm);
+    if (!normalizedTerm) continue;
+    if (forbiddenTerms.has(normalizedTerm)) continue;
+    if (!isGroundedInMessage(normalizedTerm, messageNormalized)) continue;
+    if (seen.has(normalizedTerm)) continue;
+
+    seen.add(normalizedTerm);
+    result.push(normalizedTerm);
+
+    if (result.length >= maxCount) {
+      break;
+    }
+  }
+
+  return result;
+}
+
+function sanitizeAnalysisTerms(params: {
+  feedback: FeedbackForAnalysis;
+  categories: string[];
+  keywords: string[];
+}) {
+  const { feedback, categories, keywords } = params;
+
+  const messageNormalized = normalizeForComparison(feedback.message ?? '');
+  const forbiddenTerms = new Set<string>(STRUCTURED_ANSWER_LABELS);
+
+  feedback.dynamic_answers.forEach((answer) => {
+    const normalizedAnswerValue = normalizeForComparison(answer.answer_value);
+    if (normalizedAnswerValue) {
+      forbiddenTerms.add(normalizedAnswerValue);
+    }
+
+    const normalizedQuestion = normalizeForComparison(answer.question_text_snapshot);
+    if (normalizedQuestion) {
+      forbiddenTerms.add(normalizedQuestion);
+    }
+  });
+
+  feedback.dynamic_subanswers.forEach((answer) => {
+    const normalizedAnswerValue = normalizeForComparison(answer.answer_value);
+    if (normalizedAnswerValue) {
+      forbiddenTerms.add(normalizedAnswerValue);
+    }
+
+    const normalizedSubquestion = normalizeForComparison(
+      answer.subquestion_text_snapshot,
+    );
+    if (normalizedSubquestion) {
+      forbiddenTerms.add(normalizedSubquestion);
+    }
+  });
+
+  let sanitizedKeywords = sanitizeTermList({
+    terms: keywords,
+    messageNormalized,
+    forbiddenTerms,
+    maxCount: 6,
+  });
+
+  if (sanitizedKeywords.length === 0) {
+    sanitizedKeywords = fallbackKeywordsFromMessage(feedback.message ?? '', 4);
+  }
+
+  let sanitizedCategories = sanitizeTermList({
+    terms: categories,
+    messageNormalized,
+    forbiddenTerms,
+    maxCount: 4,
+  });
+
+  if (sanitizedCategories.length === 0) {
+    sanitizedCategories = sanitizedKeywords.slice(0, 2);
+  }
+
+  return {
+    categories: sanitizedCategories,
+    keywords: sanitizedKeywords,
   };
+}
 
-  const expectedSchemaExample: {
-    feedbacks: IaFeedbackAnalysisItem[];
-    global_insights: IaGlobalInsights;
-  } = {
-    feedbacks: [
-      {
-        feedback_id: 'uuid-do-feedback',
-        sentiment: 'positive',
-        categories: ['atendimento', 'experiência'],
-        keywords: ['agilidade', 'cordialidade'],
+function applyExecutionFilter(
+  feedbacks: FeedbackForAnalysis[],
+  options?: IaStudioOptions,
+) {
+  const scope = options?.scope_type;
+  const catalogItemId = options?.catalog_item_id?.trim();
+
+  if (!scope && !catalogItemId) {
+    return feedbacks;
+  }
+
+  return feedbacks.filter((feedback) => {
+    const feedbackScope = normalizeScopeType(feedback.scope_type);
+    const feedbackCatalogItemId = feedback.catalog_item?.id ?? null;
+
+    if (scope === 'COMPANY') {
+      return feedbackScope === 'COMPANY';
+    }
+
+    if (scope && feedbackScope !== scope) {
+      return false;
+    }
+
+    if (catalogItemId) {
+      return feedbackCatalogItemId === catalogItemId;
+    }
+
+    if (scope) {
+      return feedbackScope === scope;
+    }
+
+    return feedbackCatalogItemId !== null;
+  });
+}
+
+function buildAnalysisBatches(
+  feedbacks: FeedbackForAnalysis[],
+  options?: IaStudioOptions,
+): AnalysisBatch[] {
+  const scope = options?.scope_type;
+  const catalogItemId = options?.catalog_item_id?.trim();
+
+  const companyFeedbacks = feedbacks.filter((feedback) =>
+    normalizeScopeType(feedback.scope_type) === 'COMPANY',
+  );
+
+  const itemBuckets = new Map<string, AnalysisBatch>();
+
+  feedbacks.forEach((feedback) => {
+    const feedbackScope = normalizeScopeType(feedback.scope_type);
+    const item = feedback.catalog_item;
+
+    if (feedbackScope === 'COMPANY' || !item?.id) {
+      return;
+    }
+
+    const key = `${feedbackScope}:${item.id}`;
+    const current = itemBuckets.get(key);
+
+    if (!current) {
+      itemBuckets.set(key, {
+        scopeType: feedbackScope,
+        catalogItemId: item.id,
+        catalogItemName: item.name,
+        feedbacks: [feedback],
+      });
+      return;
+    }
+
+    current.feedbacks.push(feedback);
+  });
+
+  const itemBatches = Array.from(itemBuckets.values());
+
+  if (scope === 'COMPANY') {
+    return companyFeedbacks.length > 0
+      ? [
+          {
+            scopeType: 'COMPANY',
+            catalogItemId: null,
+            catalogItemName: null,
+            feedbacks: companyFeedbacks,
+          },
+        ]
+      : [];
+  }
+
+  if (scope) {
+    const filteredByScope = itemBatches.filter((batch) => batch.scopeType === scope);
+
+    if (catalogItemId) {
+      return filteredByScope.filter((batch) => batch.catalogItemId === catalogItemId);
+    }
+
+    return filteredByScope;
+  }
+
+  if (catalogItemId) {
+    return itemBatches.filter((batch) => batch.catalogItemId === catalogItemId);
+  }
+
+  const batches: AnalysisBatch[] = [];
+
+  if (companyFeedbacks.length > 0) {
+    batches.push({
+      scopeType: 'COMPANY',
+      catalogItemId: null,
+      catalogItemName: null,
+      feedbacks: companyFeedbacks,
+    });
+  }
+
+  batches.push(...itemBatches);
+
+  return batches;
+}
+
+async function fetchFeedbacksForAnalysis(params: {
+  supabase: SupabaseServerClient;
+  enterpriseId: string;
+  limit: number;
+}) {
+  const { supabase, enterpriseId, limit } = params;
+
+  const { data: feedbacks, error: feedbackError } = await supabase
+    .from('feedback')
+    .select(
+      `
+      id,
+      message,
+      rating,
+      created_at,
+      collection_points(
+        id,
+        name,
+        type,
+        identifier,
+        catalog_item_id
+      )
+    `,
+    )
+    .eq('enterprise_id', enterpriseId)
+    .order('created_at', { ascending: false })
+    .limit(limit);
+
+  if (feedbackError) {
+    throw new IaStudioServiceError(
+      'Failed to fetch feedbacks for IA',
+      500,
+      'failed_to_fetch_feedbacks_for_ia',
+    );
+  }
+
+  const feedbackRows = (feedbacks ?? []) as RawFeedbackRow[];
+
+  const catalogItemIds = Array.from(
+    new Set(
+      feedbackRows
+        .map((feedback) => resolveCollectionPoint(feedback.collection_points)?.catalog_item_id)
+        .filter((id): id is string => typeof id === 'string' && id.length > 0),
+    ),
+  );
+
+  let catalogItemById = new Map<
+    string,
+    {
+      id: string;
+      name: string;
+      kind: 'PRODUCT' | 'SERVICE' | 'DEPARTMENT';
+      description: string | null;
+    }
+  >();
+
+  if (catalogItemIds.length > 0) {
+    const { data: catalogRows, error: catalogError } = await supabase
+      .from('catalog_items')
+      .select('id, name, kind, description')
+      .in('id', catalogItemIds);
+
+    if (catalogError) {
+      throw new IaStudioServiceError(
+        'Failed to fetch catalog items for IA',
+        500,
+        'failed_to_fetch_catalog_items_for_ia',
+      );
+    }
+
+    catalogItemById = new Map(
+      ((catalogRows ?? []) as RawCatalogItemRow[])
+        .map((row) => {
+          const scopeType = normalizeScopeType(row.kind);
+          if (scopeType === 'COMPANY') return null;
+
+          return [
+            row.id,
+            {
+              id: row.id,
+              name: row.name,
+              kind: scopeType,
+              description: row.description ?? null,
+            },
+          ] as const;
+        })
+        .filter(
+          (
+            entry,
+          ): entry is readonly [
+            string,
+            {
+              id: string;
+              name: string;
+              kind: 'PRODUCT' | 'SERVICE' | 'DEPARTMENT';
+              description: string | null;
+            },
+          ] => Boolean(entry),
+        ),
+    );
+  }
+
+  const feedbackIds = feedbackRows
+    .map((feedback) => feedback.id)
+    .filter((id): id is string => typeof id === 'string' && id.length > 0);
+
+  const answersByFeedbackId = new Map<
+    string,
+    Array<{
+      question_id: string;
+      question_text_snapshot: string;
+      answer_value: 'PESSIMO' | 'RUIM' | 'MEDIANA' | 'BOA' | 'OTIMA';
+      answer_score: number;
+    }>
+  >();
+
+  const subanswersByFeedbackId = new Map<
+    string,
+    Array<{
+      subquestion_id: string;
+      subquestion_text_snapshot: string;
+      answer_value: 'PESSIMO' | 'RUIM' | 'MEDIANA' | 'BOA' | 'OTIMA';
+      answer_score: number;
+    }>
+  >();
+
+  if (feedbackIds.length > 0) {
+    const { data: answerRows, error: answersError } = await supabase
+      .from('feedback_question_answers')
+      .select(
+        'feedback_id, question_id, question_text_snapshot, answer_value, answer_score, created_at',
+      )
+      .in('feedback_id', feedbackIds)
+      .order('created_at', { ascending: true });
+
+    if (answersError) {
+      throw new IaStudioServiceError(
+        'Failed to fetch feedback dynamic answers for IA',
+        500,
+        'failed_to_fetch_feedback_dynamic_answers_for_ia',
+      );
+    }
+
+    ((answerRows ?? []) as RawFeedbackQuestionAnswerRow[]).forEach((answer) => {
+      const current = answersByFeedbackId.get(answer.feedback_id) ?? [];
+
+      current.push({
+        question_id: answer.question_id,
+        question_text_snapshot: answer.question_text_snapshot,
+        answer_value: answer.answer_value,
+        answer_score: answer.answer_score,
+      });
+
+      answersByFeedbackId.set(answer.feedback_id, current);
+    });
+
+    const { data: subanswerRows, error: subanswersError } = await supabase
+      .from('feedback_subquestion_answers')
+      .select(
+        'feedback_id, subquestion_id, subquestion_text_snapshot, answer_value, answer_score, created_at',
+      )
+      .in('feedback_id', feedbackIds)
+      .order('created_at', { ascending: true });
+
+    if (subanswersError) {
+      throw new IaStudioServiceError(
+        'Failed to fetch feedback dynamic subanswers for IA',
+        500,
+        'failed_to_fetch_feedback_dynamic_subanswers_for_ia',
+      );
+    }
+
+    ((subanswerRows ?? []) as RawFeedbackSubquestionAnswerRow[]).forEach(
+      (subanswer) => {
+        const current = subanswersByFeedbackId.get(subanswer.feedback_id) ?? [];
+
+        current.push({
+          subquestion_id: subanswer.subquestion_id,
+          subquestion_text_snapshot: subanswer.subquestion_text_snapshot,
+          answer_value: subanswer.answer_value,
+          answer_score: subanswer.answer_score,
+        });
+
+        subanswersByFeedbackId.set(subanswer.feedback_id, current);
       },
-    ],
-    global_insights: {
-      summary:
-        'Resumo geral dos principais padrões encontrados nos feedbacks, em poucas frases.',
-      recommendations: [
-        'Sugestão objetiva 1 para melhorar a experiência.',
-        'Sugestão objetiva 2 para melhorar processos, produto ou atendimento.',
-      ],
-    },
-  };
+    );
+  }
 
-  return [
-    header,
-    '',
-    'Estrutura exata de resposta (NÃO altere as chaves):',
-    JSON.stringify(expectedSchemaExample, null, 2),
-    '',
-    'Dados de entrada (em JSON):',
-    JSON.stringify(payload),
-  ].join('\n');
+  return feedbackRows.map((feedback) => {
+    const collectionPoint = resolveCollectionPoint(feedback.collection_points);
+
+    const catalogItemId =
+      typeof collectionPoint?.catalog_item_id === 'string'
+        ? collectionPoint.catalog_item_id
+        : null;
+
+    const catalogItem = catalogItemId
+      ? (catalogItemById.get(catalogItemId) ?? null)
+      : null;
+
+    const scopeType = normalizeScopeType(catalogItem?.kind ?? null);
+
+    return {
+      id: feedback.id,
+      message: feedback.message,
+      rating: feedback.rating ?? null,
+      created_at: feedback.created_at ?? null,
+      scope_type: scopeType,
+      collection_point: {
+        id: collectionPoint?.id ?? null,
+        name: collectionPoint?.name ?? null,
+        type: collectionPoint?.type ?? null,
+        identifier: collectionPoint?.identifier ?? null,
+      },
+      catalog_item: catalogItem,
+      dynamic_answers: answersByFeedbackId.get(feedback.id) ?? [],
+      dynamic_subanswers: subanswersByFeedbackId.get(feedback.id) ?? [],
+    } satisfies FeedbackForAnalysis;
+  });
 }
 
 export async function analyzeFeedbacksForEnterprise(params: {
@@ -200,6 +765,14 @@ export async function analyzeFeedbacksForEnterprise(params: {
     );
   }
 
+  if (!hasRequiredEnterpriseInfoForAnalysis(collecting as CollectingDataContext | null)) {
+    throw new IaStudioServiceError(
+      'collecting_data_required_for_analysis',
+      422,
+      'collecting_data_required_for_analysis',
+    );
+  }
+
   // 3) Buscar nome da empresa a partir dos metadados do usuário (raw_user_meta_data.full_name)
   const { data: authData } = await supabase.auth.getUser();
   const enterpriseName =
@@ -212,36 +785,29 @@ export async function analyzeFeedbacksForEnterprise(params: {
       ? Math.min(options.limit, 100)
       : 50;
 
-  const { data: feedbacks, error: feedbackError } = await supabase
-    .from('feedback')
-    .select('id, message, rating, created_at')
-    .eq('enterprise_id', enterpriseId)
-    .order('created_at', { ascending: false })
-    .limit(limit);
+  const feedbacksForAnalysis = await fetchFeedbacksForAnalysis({
+    supabase,
+    enterpriseId,
+    limit,
+  });
 
-  if (feedbackError) {
-    throw new IaStudioServiceError(
-      'Failed to fetch feedbacks for IA',
-      500,
-      'failed_to_fetch_feedbacks_for_ia',
-    );
-  }
+  const feedbacksForExecution = applyExecutionFilter(feedbacksForAnalysis, options);
 
-  const feedbacksForAnalysis: FeedbackForAnalysis[] = (feedbacks ?? []).map(
-    (f) => ({
-      id: f.id as string,
-      message: f.message as string,
-      rating: (f.rating as number | null) ?? null,
-      created_at: (f.created_at as string | null) ?? null,
-    }),
-  );
-
-  if (feedbacksForAnalysis.length === 0) {
+  if (feedbacksForExecution.length === 0) {
     return {
       analyzedCount: 0,
       feedbacksAnalyzed: [],
       globalInsights: null,
+      contexts: [],
     };
+  }
+
+  if (feedbacksForExecution.length < MIN_FEEDBACKS_FOR_RELEVANT_ANALYSIS) {
+    throw new IaStudioServiceError(
+      'insufficient_feedbacks_for_analysis',
+      422,
+      'insufficient_feedbacks_for_analysis',
+    );
   }
 
   // 5) Evitar reprocessar feedbacks já analisados buscando os IDs já presentes em feedback_analysis
@@ -250,7 +816,7 @@ export async function analyzeFeedbacksForEnterprise(params: {
     .select('feedback_id')
     .in(
       'feedback_id',
-      feedbacksForAnalysis.map((f) => f.id),
+      feedbacksForExecution.map((f) => f.id),
     );
 
   if (existingAnalysisError) {
@@ -265,7 +831,7 @@ export async function analyzeFeedbacksForEnterprise(params: {
     (existingAnalysis ?? []).map((row) => row.feedback_id as string),
   );
 
-  const feedbacksToAnalyze = feedbacksForAnalysis.filter(
+  const feedbacksToAnalyze = feedbacksForExecution.filter(
     (f) => !alreadyAnalyzedIds.has(f.id),
   );
 
@@ -274,18 +840,25 @@ export async function analyzeFeedbacksForEnterprise(params: {
       analyzedCount: 0,
       feedbacksAnalyzed: [],
       globalInsights: null,
+      contexts: [],
     };
   }
 
-  // 6) Montar prompt para o Gemini com contexto da empresa + feedbacks
-  const prompt = buildIaPrompt({
+  const enterpriseContext = buildEnterpriseContext({
     enterpriseName,
-    companyObjective: collecting?.company_objective ?? null,
-    analyticsGoal: collecting?.analytics_goal ?? null,
-    businessSummary: collecting?.business_summary ?? null,
-    mainProductsOrServices: collecting?.main_products_or_services ?? null,
-    feedbacks: feedbacksToAnalyze,
+    collecting: collecting as CollectingDataContext | null,
   });
+
+  const analysisBatches = buildAnalysisBatches(feedbacksToAnalyze, options);
+
+  if (analysisBatches.length === 0) {
+    return {
+      analyzedCount: 0,
+      feedbacksAnalyzed: [],
+      globalInsights: null,
+      contexts: [],
+    };
+  }
 
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
@@ -298,71 +871,123 @@ export async function analyzeFeedbacksForEnterprise(params: {
 
   const ai = new GoogleGenAI({ apiKey });
 
-  const aiResponse = await ai.models.generateContent({
-    model: 'gemini-2.5-flash',
-    contents: prompt,
-  });
-
-  type AiResponseShape = {
-    text?: string | (() => string);
-  };
-
-  const maybeText = (aiResponse as AiResponseShape).text;
-  const rawText =
-    (typeof maybeText === 'function' ? maybeText() : maybeText) ?? '';
-
-  let parsed:
-    | {
-        feedbacks?: IaFeedbackAnalysisItem[];
-        global_insights?: IaGlobalInsights;
-      }
-    | null = null;
-
-  try {
-    const jsonString = extractJsonFromText(rawText);
-    parsed = JSON.parse(jsonString) as {
-      feedbacks?: IaFeedbackAnalysisItem[];
-      global_insights?: IaGlobalInsights;
-    };
-  } catch {
-    // Log detalhado fica por conta de quem chama
-    throw new IaStudioServiceError(
-      'Invalid AI response JSON',
-      502,
-      'invalid_ai_response',
-    );
-  }
-
-  const items = Array.isArray(parsed?.feedbacks) ? parsed!.feedbacks : [];
-
   const validSentiments: Sentiment[] = ['positive', 'negative', 'neutral'];
   const validSentimentsSet = new Set(validSentiments);
 
-  const rowsToInsert = items
-    .filter((item) => {
-      return (
-        typeof item.feedback_id === 'string' &&
-        validSentimentsSet.has(item.sentiment) &&
-        feedbacksToAnalyze.some((f) => f.id === item.feedback_id)
+  const rowsByFeedbackId = new Map<
+    string,
+    {
+      feedback_id: string;
+      sentiment: Sentiment;
+      categories: string[];
+      keywords: string[];
+    }
+  >();
+
+  const insightsContexts: IaStudioResultContext[] = [];
+
+  for (const batch of analysisBatches) {
+    const prompt = buildIaPromptByScope({
+      scopeType: batch.scopeType,
+      enterpriseContext,
+      feedbacks: batch.feedbacks,
+    });
+
+    const aiResponse = await ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents: prompt,
+    });
+
+    type AiResponseShape = {
+      text?: string | (() => string);
+    };
+
+    const maybeText = (aiResponse as AiResponseShape).text;
+    const rawText =
+      (typeof maybeText === 'function' ? maybeText() : maybeText) ?? '';
+
+    let parsed:
+      | {
+          feedbacks?: IaFeedbackAnalysisItem[];
+          global_insights?: IaGlobalInsights;
+        }
+      | null = null;
+
+    try {
+      const jsonString = extractJsonFromText(rawText);
+      parsed = JSON.parse(jsonString) as {
+        feedbacks?: IaFeedbackAnalysisItem[];
+        global_insights?: IaGlobalInsights;
+      };
+    } catch {
+      throw new IaStudioServiceError(
+        'Invalid AI response JSON',
+        502,
+        'invalid_ai_response',
       );
-    })
-    .map((item) => ({
-      feedback_id: item.feedback_id,
-      sentiment: item.sentiment,
-      categories: Array.isArray(item.categories)
-        ? item.categories
-        : ([] as string[]),
-      keywords: Array.isArray(item.keywords)
-        ? item.keywords
-        : ([] as string[]),
-    }));
+    }
+
+    insightsContexts.push({
+      scope_type: batch.scopeType,
+      catalog_item_id: batch.catalogItemId,
+      catalog_item_name: batch.catalogItemName,
+      globalInsights: parsed?.global_insights ?? null,
+      analyzedCount: batch.feedbacks.length,
+    });
+
+    const items = Array.isArray(parsed?.feedbacks) ? parsed.feedbacks : [];
+    const allowedFeedbackIds = new Set(batch.feedbacks.map((item) => item.id));
+    const feedbackById = new Map(batch.feedbacks.map((feedback) => [feedback.id, feedback]));
+
+    items.forEach((item) => {
+      if (
+        typeof item.feedback_id !== 'string' ||
+        !validSentimentsSet.has(item.sentiment) ||
+        !allowedFeedbackIds.has(item.feedback_id)
+      ) {
+        return;
+      }
+
+      const sourceFeedback = feedbackById.get(item.feedback_id);
+      if (!sourceFeedback) {
+        return;
+      }
+
+      const sanitizedTerms = sanitizeAnalysisTerms({
+        feedback: sourceFeedback,
+        categories: Array.isArray(item.categories)
+          ? item.categories
+          : ([] as string[]),
+        keywords: Array.isArray(item.keywords)
+          ? item.keywords
+          : ([] as string[]),
+      });
+
+      rowsByFeedbackId.set(item.feedback_id, {
+        feedback_id: item.feedback_id,
+        sentiment: item.sentiment,
+        categories: sanitizedTerms.categories,
+        keywords: sanitizedTerms.keywords,
+      });
+    });
+  }
+
+  const rowsToInsert = Array.from(rowsByFeedbackId.values());
+
+  const globalInsights =
+    insightsContexts.find(
+      (context) =>
+        context.scope_type === 'COMPANY' &&
+        context.catalog_item_id === null &&
+        context.globalInsights,
+    )?.globalInsights ?? insightsContexts[0]?.globalInsights ?? null;
 
   if (rowsToInsert.length === 0) {
-    // IA respondeu sem itens válidos; não é erro fatal, apenas não há novos dados para salvar
     return {
       analyzedCount: 0,
       feedbacksAnalyzed: [],
-      globalInsights: parsed?.global_insights ?? null,
+      globalInsights,
+      contexts: insightsContexts,
     };
   }
 
@@ -379,26 +1004,59 @@ export async function analyzeFeedbacksForEnterprise(params: {
     );
   }
 
-  // 7) Persistir relatório global de insights (summary + recommendations) por empresa
-  if (parsed?.global_insights) {
-    const summary = parsed.global_insights.summary ?? null;
-    const recommendations = parsed.global_insights.recommendations ?? null;
+  for (const context of insightsContexts) {
+    const summary = context.globalInsights?.summary?.trim() || null;
+    const recommendations =
+      context.globalInsights?.recommendations?.filter((value: string) =>
+        String(value ?? '').trim(),
+      ) ?? [];
 
-    try {
-      await supabase
-        .from('feedback_insights_report')
-        .upsert(
-          {
-            enterprise_id: enterpriseId,
-            summary,
-            recommendations,
-            updated_at: new Date().toISOString(),
-          },
-          { onConflict: 'enterprise_id' },
-        );
-    } catch {
-      // Não deve quebrar o fluxo principal se o relatório falhar
-      console.error('Falha ao salvar feedback_insights_report');
+    const hasMeaningfulData = summary || recommendations.length > 0;
+
+    if (!hasMeaningfulData) {
+      continue;
+    }
+
+    const payload = {
+      enterprise_id: enterpriseId,
+      scope_type: context.scope_type,
+      catalog_item_id: context.catalog_item_id,
+      catalog_item_name: context.catalog_item_name,
+      summary,
+      recommendations,
+      updated_at: new Date().toISOString(),
+    };
+
+    const { error: scopedUpsertError } = await supabase
+      .from('feedback_insights_report')
+      .upsert(payload, {
+        onConflict: 'enterprise_id,scope_type,catalog_item_id',
+      });
+
+    if (!scopedUpsertError) {
+      continue;
+    }
+
+    if (context.scope_type !== 'COMPANY' || context.catalog_item_id !== null) {
+      console.error('Falha ao salvar feedback_insights_report segmentado', scopedUpsertError);
+      continue;
+    }
+
+    const legacyPayload = {
+      enterprise_id: enterpriseId,
+      summary,
+      recommendations,
+      updated_at: new Date().toISOString(),
+    };
+
+    const { error: legacyUpsertError } = await supabase
+      .from('feedback_insights_report')
+      .upsert(legacyPayload, {
+        onConflict: 'enterprise_id',
+      });
+
+    if (legacyUpsertError) {
+      console.error('Falha ao salvar feedback_insights_report legado', legacyUpsertError);
     }
   }
 
@@ -412,7 +1070,8 @@ export async function analyzeFeedbacksForEnterprise(params: {
         categories: (row.categories ?? []) as string[],
         keywords: (row.keywords ?? []) as string[],
       })) ?? [],
-    globalInsights: parsed?.global_insights ?? null,
+    globalInsights,
+    contexts: insightsContexts,
   };
 }
 

@@ -30,7 +30,7 @@ export default function FieldDocument({
         name={name}
         inputMode="numeric"
         aria-invalid={error ? true : undefined}
-          className="h-12 w-full rounded-lg border border-(--quaternary-color)/18 bg-(--seventh-color) px-4 font-poppins text-(--text-primary) outline-none transition-colors hover:border-(--quaternary-color)/30 focus:border-(--primary-color)"
+        className="h-12 w-full rounded-lg border border-(--quaternary-color)/18 bg-(--seventh-color) px-4 font-poppins text-(--text-primary) outline-none transition-colors hover:border-(--quaternary-color)/30 focus:border-(--primary-color)"
         {...register}
         value={display}
         onChange={(e) => {

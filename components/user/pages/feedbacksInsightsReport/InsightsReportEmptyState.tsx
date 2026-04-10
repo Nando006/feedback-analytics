@@ -5,11 +5,11 @@ export default function InsightsReportEmptyState({
   onRefresh,
 }: InsightsReportEmptyStateProps) {
   return (
-    <div className="font-inter space-y-6">
+    <div className="font-work-sans space-y-6">
       <div className="relative overflow-hidden rounded-2xl border border-(--quaternary-color)/10 bg-gradient-to-br from-(--bg-secondary) to-(--sixth-color) p-6 glass-card">
         <div className="mb-4 flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-semibold text-[var(--text-primary)]">
+            <h2 className="text-lg font-semibold text-[var(--text-primary)] font-montserrat">
               Relatório de Insights da IA
             </h2>
             <p className="text-sm text-[var(--text-tertiary)]">
@@ -21,7 +21,7 @@ export default function InsightsReportEmptyState({
             type="button"
             onClick={onRefresh}
             disabled={refreshing}
-            className="btn-primary px-4 py-2 text-sm disabled:opacity-60">
+            className="btn-primary font-poppins px-4 py-2 text-sm disabled:opacity-60">
             {refreshing ? 'Atualizando...' : 'Gerar relatório com IA'}
           </button>
         </div>

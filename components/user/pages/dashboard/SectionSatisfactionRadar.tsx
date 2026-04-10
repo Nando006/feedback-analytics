@@ -38,10 +38,10 @@ export default function SectionSatisfactionRadar({
   ] as const;
 
   return (
-    <section className="rounded-2xl border border-(--quaternary-color)/10 bg-linear-to-br from-(--bg-secondary) to-(--sixth-color) p-6">
+    <section className="font-work-sans rounded-2xl border border-(--quaternary-color)/10 bg-linear-to-br from-(--bg-secondary) to-(--sixth-color) p-6">
       <header className="flex items-center justify-between gap-3">
         <div>
-          <h2 className="text-lg font-semibold text-(--text-primary)">Radar de satisfação</h2>
+          <h2 className="font-montserrat text-lg font-semibold text-(--text-primary)">Radar de satisfação</h2>
           <p className="text-sm text-(--text-tertiary)">
             Panorama resumido dos sentimentos capturados
           </p>
@@ -58,8 +58,8 @@ export default function SectionSatisfactionRadar({
                 <row.Icon className="text-sm" />
               </div>
               <div>
-                <div className="font-medium text-(--text-primary)">{row.label}</div>
-                <div className="text-xs text-(--text-tertiary)">Sentimentos mapeados no período</div>
+                <p className="font-medium text-(--text-primary)">{row.label}</p>
+                <p className="text-xs text-(--text-tertiary)">Sentimentos mapeados no período</p>
               </div>
             </div>
             <span className={`text-lg font-semibold ${row.valueClassName}`}>

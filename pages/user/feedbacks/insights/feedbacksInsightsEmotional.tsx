@@ -81,7 +81,7 @@ export default function FeedbacksInsigthsEmotional() {
   );
 
   return (
-    <div className="font-inter space-y-6">
+    <div className="font-work-sans space-y-6">
       <InsightsEmotionalThermometerSection
         summary={summary}
         positivePct={positivePct}

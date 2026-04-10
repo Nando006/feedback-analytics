@@ -1,4 +1,8 @@
 import type { QrCodeCatalogLoadData } from 'src/routes/load/loadQrCodeCatalog';
+import type {
+  QrCatalogQuestion,
+  QrCatalogQuestionInput,
+} from 'src/services/serviceCollectionPoints';
 
 /**
  * Props da página de QR Code por catálogo.
@@ -19,6 +23,8 @@ export interface QrCatalogActionResponse {
   active?: boolean;
   catalog_item_id?: string;
   collection_point_id?: string;
+  questions?: QrCatalogQuestion[];
+  questionsSaved?: boolean;
   error?: string;
 }
 
@@ -39,5 +45,10 @@ export interface QrCatalogItemCardProps {
   item: QrCodeCatalogLoadData['items'][number];
   enterpriseId: string;
   isPending: boolean;
+  isSavingQuestions: boolean;
   onToggle: (catalogItemId: string, isActive: boolean) => void;
+  onSaveQuestions: (
+    catalogItemId: string,
+    questions: QrCatalogQuestionInput[],
+  ) => void;
 }

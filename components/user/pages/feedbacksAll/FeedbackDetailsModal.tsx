@@ -2,6 +2,14 @@ import type { FeedbackDetailsModalProps } from './ui.types';
 
 import { formatDateTime } from 'lib/utils/FormatDate';
 
+const ANSWER_LABEL: Record<string, string> = {
+  PESSIMO: 'Péssimo',
+  RUIM: 'Ruim',
+  MEDIANA: 'Mediana',
+  BOA: 'Boa',
+  OTIMA: 'Ótima',
+};
+
 export default function FeedbackDetailsModal({
   selectedFeedback,
   onClose,
@@ -33,6 +41,8 @@ export default function FeedbackDetailsModal({
       ? (selectedFeedback.collection_points?.name || '').replace(/^QR Code\s*-\s*.+$/, 'QR Code')
       : (selectedFeedback.collection_points?.name || 'N/A');
 
+  const questionAnswers = selectedFeedback.feedback_question_answers ?? [];
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose}>
       <div className="absolute inset-0 bg-black/60" />
@@ -40,18 +50,18 @@ export default function FeedbackDetailsModal({
         className="relative max-h-[85vh] w-full max-w-3xl overflow-y-auto rounded-2xl border border-(--quaternary-color)/10 bg-gradient-to-br from-(--bg-secondary) to-(--sixth-color) p-6 glass-card"
         onClick={(e) => e.stopPropagation()}>
         <div className="mb-4 flex items-start justify-between">
-          <h2 className="text-lg font-semibold text-(--text-primary)">Detalhes do Feedback</h2>
+          <h2 className="font-montserrat text-lg font-semibold text-(--text-primary)">Detalhes do Feedback</h2>
           <button
             onClick={onClose}
-            className="btn-ghost px-3 py-1 text-sm">
+            className="btn-ghost font-poppins px-3 py-1 text-sm">
             Fechar
           </button>
         </div>
 
-        <div className="space-y-6 text-sm">
+        <div className="font-work-sans space-y-6 text-sm">
           <div className="space-y-2">
             <div className="flex flex-wrap items-center gap-4">
-              <span className="rounded-full border border-(--quaternary-color)/14 bg-(--seventh-color) px-3 py-1 text-xs font-medium text-(--text-secondary)">
+              <span className="rounded-full border border-(--quaternary-color)/14 bg-(--seventh-color) px-3 py-1 font-poppins text-xs font-medium text-(--text-secondary)">
                 Rating: {selectedFeedback.rating}
               </span>
               <span className="text-(--text-tertiary)">
@@ -69,7 +79,7 @@ export default function FeedbackDetailsModal({
           </div>
 
           <div className="space-y-2 rounded-xl border border-(--quaternary-color)/10 bg-(--seventh-color) p-4">
-            <h3 className="text-sm font-medium text-(--text-secondary)">Ponto de Coleta</h3>
+            <h3 className="text-sm font-montserrat font-medium text-(--text-secondary)">Ponto de Coleta</h3>
             {selectedFeedback.collection_points ? (
               <div className="grid grid-cols-1 gap-2 text-(--text-tertiary) md:grid-cols-3">
                 <div>
@@ -101,7 +111,32 @@ export default function FeedbackDetailsModal({
           </div>
 
           <div className="space-y-2 rounded-xl border border-(--quaternary-color)/10 bg-(--seventh-color) p-4">
-            <h3 className="text-sm font-medium text-(--text-secondary)">Dispositivo</h3>
+            <h3 className="text-sm font-montserrat font-medium text-(--text-secondary)">Perguntas Dinâmicas</h3>
+            {questionAnswers.length > 0 ? (
+              <div className="space-y-2">
+                {questionAnswers.slice(0, 3).map((answer, index) => (
+                  <div
+                    key={`${selectedFeedback.id}-question-answer-${answer.question_id}`}
+                    className="rounded-lg border border-(--quaternary-color)/10 bg-(--bg-secondary) px-3 py-2"
+                  >
+                    <p className="text-xs text-(--text-tertiary)">
+                      {index + 1}. {answer.question_text_snapshot}
+                    </p>
+                    <p className="mt-1 text-sm font-medium text-(--text-primary)">
+                      {ANSWER_LABEL[answer.answer_value] ?? answer.answer_value}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-sm text-(--text-tertiary)">
+                Este feedback não possui respostas das perguntas dinâmicas.
+              </div>
+            )}
+          </div>
+
+          <div className="space-y-2 rounded-xl border border-(--quaternary-color)/10 bg-(--seventh-color) p-4">
+            <h3 className="text-sm font-montserrat font-medium text-(--text-secondary)">Dispositivo</h3>
             {selectedFeedback.tracked_devices ? (
               <div className="grid grid-cols-1 gap-2 text-(--text-tertiary) md:grid-cols-2">
                 <div>
@@ -133,7 +168,7 @@ export default function FeedbackDetailsModal({
           </div>
 
           <div className="space-y-2 rounded-xl border border-(--quaternary-color)/10 bg-(--seventh-color) p-4">
-            <h3 className="text-sm font-medium text-(--text-secondary)">Cliente</h3>
+            <h3 className="text-sm font-montserrat font-medium text-(--text-secondary)">Cliente</h3>
             {selectedFeedback.tracked_devices?.customer ? (
               <div className="grid grid-cols-1 gap-2 text-(--text-tertiary) md:grid-cols-2">
                 <div>

@@ -18,7 +18,7 @@ export default function FeedbacksAnalyticsPositive() {
   }
 
   return (
-    <div className="font-inter space-y-6">
+    <div className="font-work-sans space-y-6">
       <AnalyticsPositiveSummarySection summary={summary} />
 
       <AnalyticsPositiveItemsSection items={items} />

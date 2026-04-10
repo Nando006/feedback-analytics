@@ -13,7 +13,7 @@ export default function StateSubmitted({
         text="Obrigado por compartilhar sua experiência conosco"
         icon={<SVGImageProfile />}
         children={
-          <div className="text-center">
+          <div className="font-work-sans text-center">
             <div className="w-16 h-16 bg-(--positive)/20 rounded-full flex items-center justify-center mx-auto mb-4">
               <svg
                 className="w-8 h-8 text-(--positive)"
@@ -28,17 +28,17 @@ export default function StateSubmitted({
                 />
               </svg>
             </div>
-            <p className="text-(--text-secondary) mb-6 font-work-sans">
+            <p className="text-(--text-secondary) mb-6">
               Seu feedback foi recebido com sucesso e será analisado pela nossa
               equipe.
             </p>
             {enterpriseName && (
-              <p className="font-work-sans text-sm text-(--text-tertiary) mb-6">
+              <p className="text-sm text-(--text-tertiary) mb-6">
                 <span className="font-medium">Empresa:</span> {enterpriseName}
               </p>
             )}
             <div className="bg-(--primary-color)/10 border border-(--primary-color)/20 rounded-lg p-4">
-              <p className="text-(--primary-color) text-sm font-work-sans">
+              <p className="text-(--primary-color) text-sm">
                 <strong>Feedback registrado!</strong>
                 <br />
                 Este dispositivo poderá enviar um novo feedback amanhã.

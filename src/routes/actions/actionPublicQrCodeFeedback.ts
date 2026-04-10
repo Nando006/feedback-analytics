@@ -1,6 +1,12 @@
 import type { ActionFunctionArgs } from 'react-router-dom';
 import { ServiceSubmitQrcodeFeedback } from 'src/services/serviceFeedbackQRCode';
 import { getPublicQrFeedbackErrorMessage } from 'lib/utils/publicQrFeedbackErrorMessage';
+import {
+  PUBLIC_QR_FEEDBACK_ERRORS,
+  getPublicQrFeedbackBaseValidationError,
+  parsePublicQrAnswersInput,
+  parsePublicQrSubanswersInput,
+} from 'lib/utils/publicQrFeedbackValidation';
 
 type HttpError = Error & {
   status?: number;
@@ -17,13 +23,22 @@ export async function ActionPublicQrCodeFeedback({
   const catalog_item_id = String(form.get('catalog_item_id') ?? '').trim();
   const message = String(form.get('message') ?? '').trim();
   const rating = Number(form.get('rating') ?? 0);
+  const answersRaw = String(form.get('answers') ?? '').trim();
+  const subanswersRaw = String(form.get('subanswers') ?? '').trim();
   const customer_name = String(form.get('customer_name') ?? '').trim();
   const customer_email = String(form.get('customer_email') ?? '').trim();
   const customer_gender_raw = String(form.get('customer_gender') ?? '').trim();
+  const answers = parsePublicQrAnswersInput(answersRaw);
+  const subanswers = parsePublicQrSubanswersInput(subanswersRaw);
+  const baseValidationError = getPublicQrFeedbackBaseValidationError({
+    enterprise_id,
+    rating,
+    message,
+  });
 
-  if (!enterprise_id) {
+  if (baseValidationError) {
     return new Response(
-      JSON.stringify({ error: 'ID da empresa não encontrado. Verifique o QR Code.' }),
+      JSON.stringify({ error: baseValidationError }),
       {
         status: 400,
         headers: { 'Content-Type': 'application/json' },
@@ -31,9 +46,9 @@ export async function ActionPublicQrCodeFeedback({
     );
   }
 
-  if (!rating) {
+  if (!answers) {
     return new Response(
-      JSON.stringify({ error: 'Por favor, selecione uma avaliação.' }),
+      JSON.stringify({ error: PUBLIC_QR_FEEDBACK_ERRORS.missingAnswers }),
       {
         status: 400,
         headers: { 'Content-Type': 'application/json' },
@@ -41,9 +56,9 @@ export async function ActionPublicQrCodeFeedback({
     );
   }
 
-  if (!message) {
+  if (!subanswers) {
     return new Response(
-      JSON.stringify({ error: 'Por favor, escreva seu feedback.' }),
+      JSON.stringify({ error: PUBLIC_QR_FEEDBACK_ERRORS.missingSubanswers }),
       {
         status: 400,
         headers: { 'Content-Type': 'application/json' },
@@ -58,6 +73,8 @@ export async function ActionPublicQrCodeFeedback({
       catalog_item_id: catalog_item_id || undefined,
       message,
       rating,
+      answers,
+      subanswers,
       channel: 'QRCODE',
       customer_name: customer_name || undefined,
       customer_email: customer_email || undefined,

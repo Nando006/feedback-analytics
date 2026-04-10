@@ -5,6 +5,23 @@ export const feedbackBaseSchema = z.object({
   enterprise_id: z.uuidv4(),
   rating: z.number().int().min(1).max(5),
   message: z.string().min(3).max(5000),
+  answers: z
+    .array(
+      z.object({
+        question_id: z.uuidv4(),
+        answer_value: z.enum(['PESSIMO', 'RUIM', 'MEDIANA', 'BOA', 'OTIMA']),
+      }),
+    )
+    .length(3),
+  subanswers: z
+    .array(
+      z.object({
+        subquestion_id: z.uuidv4(),
+        answer_value: z.enum(['PESSIMO', 'RUIM', 'MEDIANA', 'BOA', 'OTIMA']),
+      }),
+    )
+    .max(9)
+    .optional(),
 
   // opcionais
   customer_name: z.string().min(1).max(120).optional(),

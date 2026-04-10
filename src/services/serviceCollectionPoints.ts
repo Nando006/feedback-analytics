@@ -5,6 +5,35 @@ export type QrEnableResponse = { id: string; active: true };
 export type QrDisableResponse = { active: false };
 export type CatalogQrKind = 'PRODUCT' | 'SERVICE' | 'DEPARTMENT';
 
+export type QrCatalogSubquestion = {
+  id: string;
+  question_id: string;
+  subquestion_order: 1 | 2 | 3;
+  subquestion_text: string;
+  is_active: boolean;
+};
+
+export type QrCatalogQuestion = {
+  id: string;
+  question_order: 1 | 2 | 3;
+  question_text: string;
+  is_active: boolean;
+  subquestions: QrCatalogSubquestion[];
+};
+
+export type QrCatalogSubquestionInput = {
+  subquestion_order: 1 | 2 | 3;
+  subquestion_text: string;
+  is_active: boolean;
+};
+
+export type QrCatalogQuestionInput = {
+  question_order: 1 | 2 | 3;
+  question_text: string;
+  is_active: boolean;
+  subquestions: QrCatalogSubquestionInput[];
+};
+
 export type QrCatalogItemStatus = {
   catalog_item_id: string;
   name: string;
@@ -12,6 +41,7 @@ export type QrCatalogItemStatus = {
   kind: CatalogQrKind;
   active: boolean;
   collection_point_id: string | null;
+  questions: QrCatalogQuestion[];
 };
 
 export type QrCatalogStatusResponse = {
@@ -22,6 +52,11 @@ export type QrCatalogToggleResponse = {
   catalog_item_id: string;
   collection_point_id?: string;
   active: boolean;
+};
+
+export type QrCatalogSaveQuestionsResponse = {
+  catalog_item_id: string;
+  questions: QrCatalogQuestion[];
 };
 
 export function ServiceGetQrStatus() {
@@ -53,5 +88,15 @@ export function ServiceDisableQrByCatalogItem(catalog_item_id: string) {
   return postJson<QrCatalogToggleResponse>(
     '/api/protected/user/collection-points/qr/catalog/disable',
     { catalog_item_id },
+  );
+}
+
+export function ServiceSaveQrCatalogFeedbackQuestions(
+  catalog_item_id: string,
+  questions: QrCatalogQuestionInput[],
+) {
+  return postJson<QrCatalogSaveQuestionsResponse>(
+    '/api/protected/user/collection-points/qr/catalog/questions/upsert',
+    { catalog_item_id, questions },
   );
 }

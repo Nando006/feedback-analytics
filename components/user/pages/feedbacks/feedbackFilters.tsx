@@ -9,7 +9,7 @@ export default function FeedbackFilters({
   onLimitChange,
 }: FeedbackFiltersProps) {
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-(--quaternary-color)/10 bg-gradient-to-br from-(--bg-secondary) to-(--sixth-color) p-6 glass-card">
+    <div className="font-work-sans relative overflow-hidden rounded-2xl border border-(--quaternary-color)/10 bg-gradient-to-br from-(--bg-secondary) to-(--sixth-color) p-6 glass-card">
       <div className="flex flex-col gap-4 md:flex-row md:items-center">
         {/* Busca */}
         <div className="flex-1">
@@ -33,7 +33,7 @@ export default function FeedbackFilters({
                 e.target.value ? parseInt(e.target.value) : undefined,
               )
             }
-            className="rounded-xl border border-(--quaternary-color)/14 bg-(--seventh-color) px-3 py-3 text-(--text-primary) outline-none focus:border-(--primary-color) focus:ring-2 focus:ring-(--primary-color)/20">
+            className="rounded-xl border border-(--quaternary-color)/14 bg-(--seventh-color) px-3 py-3 font-poppins text-(--text-primary) outline-none focus:border-(--primary-color) focus:ring-2 focus:ring-(--primary-color)/20">
             <option value="">Todos os ratings</option>
             <option value="5">5 estrelas</option>
             <option value="4">4 estrelas</option>
@@ -51,14 +51,14 @@ export default function FeedbackFilters({
               onCategoryFilter(
                 e.target.value
                   ? (e.target.value as
-                      | 'COMPANY'
-                      | 'PRODUCT'
-                      | 'SERVICE'
-                      | 'DEPARTMENT')
+                    | 'COMPANY'
+                    | 'PRODUCT'
+                    | 'SERVICE'
+                    | 'DEPARTMENT')
                   : undefined,
               )
             }
-            className="rounded-xl border border-(--quaternary-color)/14 bg-(--seventh-color) px-3 py-3 text-(--text-primary) outline-none focus:border-(--primary-color) focus:ring-2 focus:ring-(--primary-color)/20">
+            className="rounded-xl border border-(--quaternary-color)/14 bg-(--seventh-color) px-3 py-3 font-poppins text-(--text-primary) outline-none focus:border-(--primary-color) focus:ring-2 focus:ring-(--primary-color)/20">
             <option value="">Todas as categorias</option>
             <option value="COMPANY">Empresa</option>
             <option value="PRODUCT">Produto</option>
@@ -86,7 +86,7 @@ export default function FeedbackFilters({
           <select
             value={filters.limit}
             onChange={(e) => onLimitChange(parseInt(e.target.value))}
-            className="rounded-xl border border-(--quaternary-color)/14 bg-(--seventh-color) px-3 py-3 text-(--text-primary) outline-none focus:border-(--primary-color) focus:ring-2 focus:ring-(--primary-color)/20">
+            className="rounded-xl border border-(--quaternary-color)/14 bg-(--seventh-color) px-3 py-3 font-poppins text-(--text-primary) outline-none focus:border-(--primary-color) focus:ring-2 focus:ring-(--primary-color)/20">
             <option value={5}>5</option>
             <option value={10}>10</option>
             <option value={20}>20</option>

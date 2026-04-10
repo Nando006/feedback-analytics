@@ -35,14 +35,14 @@ export default function Home() {
           <div className="pointer-events-none absolute inset-0" />
           <div className="container mx-auto px-6 py-16 md:py-24">
             <div className="grid gap-10 md:grid-cols-[1.2fr_1fr] items-center">
-              <div className="space-y-6">
-                <p className="font-work-sans inline-flex items-center rounded-full border border-(--quaternary-color)/24 bg-(--sixth-color)/14 px-4 py-1 text-xs font-semibold uppercase tracking-wide text-(--primary-color)">
+              <div className="font-work-sans space-y-6">
+                <p className="inline-flex items-center rounded-full border border-(--quaternary-color)/24 bg-(--sixth-color)/14 px-4 py-1 text-xs font-semibold uppercase tracking-wide text-(--primary-color)">
                   Feedback Analytics · IA
                 </p>
                 <h1 className="font-montserrat text-3xl leading-tight font-semibold md:text-4xl lg:text-5xl text-(--text-primary)">
                   Entenda seus clientes com análises inteligentes e rápidas.
                 </h1>
-                <p className="text-lg text-(--text-secondary) md:text-xl font-work-sans">
+                <p className="text-lg text-(--text-secondary) md:text-xl">
                   Colete, interprete e transforme feedbacks em decisões
                   concretas. Acompanhe sentimentos, tendências e recomendações
                   da IA em um só lugar.
@@ -55,11 +55,11 @@ export default function Home() {
                   </Link>
                   <button
                     onClick={() => setShowVideo(true)}
-                    className="font-poppins cursor-pointer rounded-lg border border-(--quaternary-color)/24 bg-(--quinary-color)/6 px-5 py-3 text-sm font-semibold text-(--primary-color) transition-colors hover:bg-(--quinary-color)/10">
+                    className="font-poppins cursor-pointer rounded-lg border border-(--quaternary-color)/80 dark:border-(--quaternary-color)/14 bg-(--quinary-color)/6 px-5 py-3 text-sm font-semibold text-(--primary-color) transition-colors hover:bg-(--quinary-color) dark:hover:bg-(--quinary-color)/10">
                     Ver como funciona
                   </button>
                 </div>
-                <div className="font-work-sans flex flex-row gap-2 text-sm text-(--text-tertiary) lg:gap-6">
+                <div className="flex flex-row gap-2 text-sm text-(--text-tertiary) lg:gap-6">
                   <span>Insights em tempo real</span>
                   <span className="w-[1px] bg-(--quaternary-color)/22" />
                   <span>Relatórios visuais</span>
@@ -69,14 +69,14 @@ export default function Home() {
               </div>
               <div className="relative">
                 <div className="absolute -inset-8 " />
-                <div className="relative overflow-hidden rounded-2xl border border-(--quaternary-color)/14 bg-linear-to-br from-(--sixth-color) to-(--seventh-color) p-6">
+                <div className="font-work-sans relative overflow-hidden rounded-2xl shadow-md border border-(--quaternary-color)/60  dark:border-(--quaternary-color)/14 dark:bg-linear-to-br dark:from-(--sixth-color) dark:to-(--seventh-color) bg-white p-6">
                   <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-(--primary-color) via-(--secondary-color) to-(--tertiary-color)" />
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-(--text-tertiary) font-work-sans">
+                      <p className="text-sm text-(--text-tertiary)">
                         Clima geral
                       </p>
-                      <p className="font-work-sans text-2xl font-semibold text-(--positive)">
+                      <p className="text-2xl font-semibold text-(--positive)">
                         Positivo
                       </p>
                     </div>
@@ -86,7 +86,7 @@ export default function Home() {
                   </div>
                   <div className="mt-6 space-y-4">
                     <div>
-                      <div className="flex items-center justify-between text-sm text-(--text-secondary) font-work-sans">
+                      <div className="flex items-center justify-between text-sm text-(--text-secondary)">
                         <span>Positivos</span>
                         <span>62%</span>
                       </div>
@@ -98,7 +98,7 @@ export default function Home() {
                       </div>
                     </div>
                     <div>
-                      <div className="flex items-center justify-between text-sm text-(--text-secondary) font-work-sans">
+                      <div className="flex items-center justify-between text-sm text-(--text-secondary)">
                         <span>Neutros</span>
                         <span>24%</span>
                       </div>
@@ -110,7 +110,7 @@ export default function Home() {
                       </div>
                     </div>
                     <div>
-                      <div className="flex items-center justify-between text-sm text-(--text-secondary) font-work-sans">
+                      <div className="flex items-center justify-between text-sm text-(--text-secondary)">
                         <span>Negativos</span>
                         <span>14%</span>
                       </div>
@@ -122,12 +122,14 @@ export default function Home() {
                       </div>
                     </div>
                   </div>
-                  <div className="mt-6 rounded-xl border border-(--quaternary-color)/14 bg-linear-to-br from-(--quinary-color)/6 to-(--bg-secondary) p-4">
-                    <p className="text-sm font-semibold text-(--text-primary) font-work-sans">
+                  <div className="mt-6 rounded-xl border border-(--quaternary-color)/80 dark:border-(--quaternary-color)/14 bg-linear-to-br from-(--quinary-color)/6 to-(--bg-secondary)/30 p-4">
+                    <p className="text-sm font-semibold text-(--text-primary)">
                       Recomendações da IA
                     </p>
-                    <ul className="mt-3 space-y-2 text-sm text-(--text-secondary) font-work-sans">
-                      <li>• Reforce canais que receberam elogios recentes.</li>
+                    <ul className="mt-3 space-y-2 text-sm text-(--text-secondary)">
+                      <li>
+                        • Reforce canais que receberam elogios recentes.
+                      </li>
                       <li>
                         • Aja rápido em filas de atendimento mais citadas.
                       </li>
@@ -148,7 +150,7 @@ export default function Home() {
             {highlights.map((item) => (
               <div
                 key={item.title}
-                className="cursor-pointer rounded-2xl border border-(--quaternary-color)/12 bg-linear-to-br from-(--seventh-color) to-(--sixth-color) p-5 transition-colors hover:border-(--primary-color)/20 hover:bg-(--seventh-color)">
+                className="font-work-sans cursor-pointer rounded-2xl border border-(--quaternary-color)/80 dark:border-(--quaternary-color)/14 dark:bg-linear-to-br dark:from-(--sixth-color) dark:to-(--seventh-color) bg-white p-5 transition hover:border-(--primary-color)/60 dark:hover:border-(--primary-color)/20 hover:bg-(--seventh-color) shadow-md hover:shadow-lg">
                 <div className={`mb-4 h-1.5 w-20 rounded-full bg-gradient-to-r ${item.bar}`} />
                 <span className={`font-poppins inline-flex rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-wide ${item.accentBg} ${item.accentText}`}>
                   Destaque
@@ -156,7 +158,7 @@ export default function Home() {
                 <h3 className="text-lg font-semibold text-(--text-primary) font-montserrat">
                   {item.title}
                 </h3>
-                <p className="mt-2 text-sm text-(--text-secondary) font-work-sans">
+                <p className="mt-2 text-sm text-(--text-secondary)">
                   {item.desc}
                 </p>
               </div>
