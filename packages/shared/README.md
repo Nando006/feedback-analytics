@@ -1,0 +1,1 @@
+# Utilitarios compartilhados entre apps e serviços

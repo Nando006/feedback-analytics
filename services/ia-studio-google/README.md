@@ -1,0 +1,1 @@
+# Serviço de dominio de IA, com deploy e versionamento independentes.

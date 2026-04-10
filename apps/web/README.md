@@ -1,0 +1,1 @@
+# Aplicação frontend web (React + Vite)
