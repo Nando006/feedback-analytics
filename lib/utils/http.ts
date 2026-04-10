@@ -8,6 +8,29 @@ type HttpError = Error & {
   code?: string;
 };
 
+// Fazer o frontend passar a suportar API em domínio separado, usando a variável de ambiente VITE_API_BASE_URL
+const API_BASE_URL = String(import.meta.env.VITE_API_BASE_URL ?? '')
+  .trim()
+  .replace(/\/+$/, '');
+
+function resolveApiUrl(path: string): string {
+  const value = String(path ?? '').trim();
+
+  if (!value) {
+    return API_BASE_URL || '/';
+  }
+
+  if (/^https?:\/\//i.test(value)) {
+    return value;
+  }
+
+  const normalizedPath = value.startsWith('/') ? value : `/${value}`;
+
+  return API_BASE_URL
+    ? `${API_BASE_URL}${normalizedPath}`
+    : normalizedPath;
+}
+
 async function throwIfNotOk(res: Response): Promise<void> {
   if (res.ok) return;
 
@@ -40,7 +63,11 @@ async function throwIfNotOk(res: Response): Promise<void> {
 }
 
 export async function getJson<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(path, { credentials: 'include', ...(init ?? {}) });
+  const res = await fetch(resolveApiUrl(path), {
+    credentials: 'include',
+    ...(init ?? {}),
+  });
+
   await throwIfNotOk(res);
 
   return res.json() as Promise<T>;
@@ -51,7 +78,7 @@ export async function postJson<T>(
   body: unknown,
   init?: RequestInit,
 ): Promise<T> {
-  const res = await fetch(path, {
+  const res = await fetch(resolveApiUrl(path), {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -71,7 +98,7 @@ export async function patchJson<T>(
   body: unknown,
   init?: RequestInit,
 ): Promise<T> {
-  const res = await fetch(path, {
+  const res = await fetch(resolveApiUrl(path), {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
@@ -91,7 +118,7 @@ export async function putJson<T>(
   body: unknown,
   init?: RequestInit,
 ): Promise<T> {
-  const res = await fetch(path, {
+  const res = await fetch(resolveApiUrl(path), {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -110,7 +137,7 @@ export async function deleteJson<T>(
   path: string,
   init?: RequestInit,
 ): Promise<T> {
-  const res = await fetch(path, {
+  const res = await fetch(resolveApiUrl(path), {
     method: 'DELETE',
     credentials: 'include',
     ...(init ?? {}),
