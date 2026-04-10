@@ -14,11 +14,63 @@ import { EndpointsIAStudio } from './endpoints/protected/EndpoitsIAStudio.js';
 import { EndpointResendConfirmation } from './endpoints/public/EndpointResendConfirmation.js';
 
 
+function readAllowedOrigins(): Set<string> {
+  const defaults = [
+    'http://localhost:5173',
+    'http://localhost:4173',
+  ];
+
+  const fromEnv = String(process.env.CORS_ALLOWED_ORIGINS ?? '')
+    .split(',')
+    .map((value) => value.trim())
+    .filter((value) => value.length > 0);
+
+  const publicSiteUrl = String(process.env.PUBLIC_SITE_URL ?? '').trim();
+
+  if (publicSiteUrl.length > 0) {
+    fromEnv.push(publicSiteUrl);
+  }
+
+  return new Set([...defaults, ...fromEnv]);
+}
+
+const allowedOrigins = readAllowedOrigins();
+
+function corsMiddleware(
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction,
+) {
+  const origin = req.headers.origin;
+
+  if (origin&& allowedOrigins.has(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Vary', 'Origin');
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader(
+      'Access-Control-Allow-Headers',
+      'Content-Type, Authorization',
+    );
+    res.setHeader(
+      'Access-Control-Allow-Methods',
+      'GET,POST,PUT,PATCH,DELETE,OPTIONS',
+    );
+  }
+
+  // Responde preflight cedo para reduzir latência no navegador
+  if (req.method === 'OPTIONS') {
+    return res.status(204).end();
+  }
+
+  return next();
+}
+
 // Criando o servidor.
 const app = express();
 
-// Configurando o express para usar JSON.
-app.use(express.json());
+// CORS precisa vir antes dos endpoints
+app.use(corsMiddleware);
+
 // Suporte a application/x-www-form-urlencoded (formularios)
 app.use(express.urlencoded({ extended: true }));
 

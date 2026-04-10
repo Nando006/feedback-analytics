@@ -1,0 +1,43 @@
+name: Deploy Web (Vercel)
+
+on:
+  push:
+    branches: [main, homolog]
+    paths-ignore:
+      - "src/server/**"
+      - "database/**"
+      - "services/ia-studio/**"
+  workflow_dispatch:
+
+jobs:
+  deploy-web:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependecies
+        run: npm ci
+
+      - name: Deploy preview (homolog)
+        if: github.ref_name == 'homolog'
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_WEB }}
+        run: npx vercel deploy --yes --token "$VERCEL_TOKEN" --local-config vercel.web.json
+
+      - name: Deploy production (main)
+        if: github.ref_name == 'main'
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_WEB }}
+        run: npx vercel deploy --yes --prod --token "$VERCEL_TOKEN" --local-config vercel.web.json

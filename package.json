@@ -3,14 +3,25 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "workspaces": [
+    "apps/*",
+    "services/*",
+    "packages/*"
+  ],
   "scripts": {
     "dev": "vite",
     "server:dev": "tsx src/server/express/index.ts",
-    "dev:all": "concurrently -n web,api -c green,cyan \"npm:dev\" \"npm:server:dev\"",
+    "dev:web": "npm run dev -w @feedback/web",
+    "dev:api": "npm run dev -w @feedback/backend-gateway",
+    "dev:all": "concurrently -n web,api -c green,cyan \"npm:dev:web\" \"npm:dev:api\"",
     "build": "vite build",
+    "build:web": "npm run build -w @feedback/web",
     "lint": "eslint .",
+    "lint:web": "npm run lint -w @feedback/web",
+    "lint:api": "npm run lint -w @feedback/backend-gateway",
     "preview": "vite preview",
-    "test": "vitest"
+    "test": "vitest",
+    "test:web": "npm run test -w @feedback/web"
   },
   "dependencies": {
     "@google/genai": "^1.29.1",
