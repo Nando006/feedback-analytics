@@ -12,19 +12,26 @@ Servico remoto de dominio de IA para execucao independente do gateway principal.
 
 ```json
 {
-	"user_id": "uuid-do-usuario",
-	"options": {
-		"limit": 50,
-		"scope_type": "COMPANY",
-		"catalog_item_id": "uuid-opcional"
-	}
+	"enterprise_context": {
+		"enterprise_name": "Empresa Exemplo",
+		"company_objective": "Melhorar experiencia do cliente",
+		"analytics_goal": "Identificar causas de insatisfacao",
+		"business_summary": "Rede de atendimento com produtos e servicos",
+		"main_products_or_services": ["Produto A", "Servico B"]
+	},
+	"batches": [
+		{
+			"scope_type": "COMPANY",
+			"catalog_item_id": null,
+			"catalog_item_name": null,
+			"feedbacks": []
+		}
+	]
 }
 ```
 
 ## Variaveis de ambiente
 
-- `VITE_SUPABASE_URL`
-- `SUPABASE_SERVICE_ROLE_KEY`
 - `GEMINI_API_KEY`
 - `IA_ANALYZE_INTERNAL_TOKEN` (opcional, para validar chamadas internas)
 

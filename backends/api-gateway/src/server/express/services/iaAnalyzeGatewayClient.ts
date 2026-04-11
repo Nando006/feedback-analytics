@@ -1,23 +1,13 @@
-import {
-  analyzeFeedbacksForEnterprise,
-  IaAnalyzeServiceError,
-  type SupabaseServerClient,
-  type IaAnalyzeOptions,
-} from './iaAnalyzeService.js';
+import { IaAnalyzeServiceError } from './iaAnalyzeErrors.js';
 import type {
-  IaAnalyzeRunResponse,
   IaAnalyzeRemoteRunRequest,
+  IaAnalyzeRemoteRunResponse,
 } from 'lib/interfaces/contracts/ia-analyze.contract.js';
-
-export type RunIaAnalyzeAnalysisParams = {
-  supabase: SupabaseServerClient;
-  userId: string;
-  options?: IaAnalyzeOptions;
-};
 
 type IaAnalyzeExecutionMode = 'local' | 'remote';
 
 const DEFAULT_REMOTE_TIMEOUT_MS = 20_000;
+const DEFAULT_LOCAL_IA_ANALYZE_URL = 'http://localhost:4100';
 
 function getExecutionMode(): IaAnalyzeExecutionMode {
   const rawMode = String(process.env.IA_ANALYZE_EXECUTION_MODE ?? 'local')
@@ -68,15 +58,6 @@ function isObject(value: unknown): value is Record<string, unknown> {
   return !!value && typeof value === 'object' && !Array.isArray(value);
 }
 
-async function parseJsonSafe(res: { json: () => Promise<unknown> }) {
-  try {
-    const payload = (await res.json()) as unknown;
-    return isObject(payload) ? payload : null;
-  } catch {
-    return null;
-  }
-}
-
 function normalizeStatusCode(status: number): number {
   if (status >= 400 && status <= 599) {
     return status;
@@ -106,26 +87,40 @@ function toIaAnalyzeServiceError(params: {
   return new IaAnalyzeServiceError(message, normalizeStatusCode(status), code);
 }
 
-async function runLocalIaAnalyzeAnalysis(
-  params: RunIaAnalyzeAnalysisParams,
-): Promise<IaAnalyzeRunResponse> {
-  return analyzeFeedbacksForEnterprise({
-    supabase: params.supabase,
-    userId: params.userId,
-    options: params.options,
-  });
+function resolvePrimaryBaseUrl(): string {
+  const mode = getExecutionMode();
+  const remoteBaseUrl = getRemoteBaseUrl();
+
+  if (mode === 'remote') {
+    if (!remoteBaseUrl) {
+      throw new IaAnalyzeServiceError(
+        'Missing IA Analyze remote URL',
+        500,
+        'missing_ia_analyze_remote_url',
+      );
+    }
+
+    return remoteBaseUrl;
+  }
+
+  return remoteBaseUrl ?? DEFAULT_LOCAL_IA_ANALYZE_URL;
 }
 
-async function runRemoteIaAnalyzeAnalysis(
-  params: RunIaAnalyzeAnalysisParams,
-  remoteBaseUrl: string,
-): Promise<IaAnalyzeRunResponse> {
-  const endpoint = buildRemoteEndpoint(remoteBaseUrl);
+async function parseJsonSafe(response: Response) {
+  try {
+    const payload = (await response.json()) as unknown;
+    return isObject(payload) ? payload : null;
+  } catch {
+    return null;
+  }
+}
+
+async function postAnalysisToService(
+  baseUrl: string,
+  requestBody: IaAnalyzeRemoteRunRequest,
+): Promise<IaAnalyzeRemoteRunResponse> {
+  const endpoint = buildRemoteEndpoint(baseUrl);
   const timeoutMs = getRemoteTimeoutMs();
-  const requestBody: IaAnalyzeRemoteRunRequest = {
-    user_id: params.userId,
-    options: params.options,
-  };
   const remoteToken = getRemoteToken();
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
@@ -140,7 +135,7 @@ async function runRemoteIaAnalyzeAnalysis(
     abortController.abort();
   }, timeoutMs);
 
-  let response: Awaited<ReturnType<typeof fetch>>;
+  let response: Response;
 
   try {
     response = await fetch(endpoint, {
@@ -149,20 +144,10 @@ async function runRemoteIaAnalyzeAnalysis(
       body: JSON.stringify(requestBody),
       signal: abortController.signal,
     });
-  } catch (error) {
+  } catch {
     clearTimeout(timeoutHandle);
-
-    if (shouldFallbackToLocal()) {
-      console.warn(
-        '[IA Analyze] Falha de rede/timeout no modo remoto. Usando execucao local por fallback.',
-        error,
-      );
-
-      return runLocalIaAnalyzeAnalysis(params);
-    }
-
     throw new IaAnalyzeServiceError(
-      'Failed to call remote IA Analyze',
+      `Failed to call IA Analyze service at ${baseUrl}`,
       502,
       'failed_remote_ia_analyze_request',
     );
@@ -173,31 +158,15 @@ async function runRemoteIaAnalyzeAnalysis(
   const payload = await parseJsonSafe(response);
 
   if (!response.ok) {
-    if (shouldFallbackToLocal() && response.status >= 500) {
-      console.warn(
-        `[IA Analyze] Erro remoto ${response.status}. Usando execucao local por fallback.`,
-      );
-
-      return runLocalIaAnalyzeAnalysis(params);
-    }
-
     throw toIaAnalyzeServiceError({
       status: response.status,
       payload,
       defaultCode: 'remote_ia_analyze_error',
-      defaultMessage: `Remote IA Analyze returned status ${response.status}`,
+      defaultMessage: `IA Analyze service returned status ${response.status}`,
     });
   }
 
-  if (!isObject(payload)) {
-    throw new IaAnalyzeServiceError(
-      'Invalid remote IA Analyze response',
-      502,
-      'invalid_remote_ia_analyze_response',
-    );
-  }
-
-  if (typeof payload.analyzedCount !== 'number') {
+  if (!isObject(payload) || !Array.isArray(payload.analyses) || !Array.isArray(payload.contexts)) {
     throw new IaAnalyzeServiceError(
       'Invalid remote IA Analyze response shape',
       502,
@@ -205,35 +174,28 @@ async function runRemoteIaAnalyzeAnalysis(
     );
   }
 
-  return payload as unknown as IaAnalyzeRunResponse;
+  return payload as unknown as IaAnalyzeRemoteRunResponse;
 }
 
 export async function runIaAnalyzeAnalysis(
-  params: RunIaAnalyzeAnalysisParams,
-): Promise<IaAnalyzeRunResponse> {
-  const mode = getExecutionMode();
+  requestBody: IaAnalyzeRemoteRunRequest,
+): Promise<IaAnalyzeRemoteRunResponse> {
+  const primaryBaseUrl = resolvePrimaryBaseUrl();
 
-  if (mode === 'remote') {
-    const remoteBaseUrl = getRemoteBaseUrl();
+  try {
+    return await postAnalysisToService(primaryBaseUrl, requestBody);
+  } catch (error) {
+    const canFallbackToLocal =
+      shouldFallbackToLocal() && primaryBaseUrl !== DEFAULT_LOCAL_IA_ANALYZE_URL;
 
-    if (!remoteBaseUrl) {
-      if (shouldFallbackToLocal()) {
-        console.warn(
-          '[IA Analyze] IA_ANALYZE_REMOTE_URL ausente no modo remote. Usando execucao local por fallback.',
-        );
-
-        return runLocalIaAnalyzeAnalysis(params);
-      } else {
-        throw new IaAnalyzeServiceError(
-          'Missing IA Analyze remote URL',
-          500,
-          'missing_ia_analyze_remote_url',
-        );
-      }
+    if (!canFallbackToLocal) {
+      throw error;
     }
 
-    return runRemoteIaAnalyzeAnalysis(params, remoteBaseUrl);
-  }
+    console.warn(
+      `[IA Analyze] Falha ao chamar ${primaryBaseUrl}. Tentando fallback local ${DEFAULT_LOCAL_IA_ANALYZE_URL}.`,
+    );
 
-  return runLocalIaAnalyzeAnalysis(params);
+    return postAnalysisToService(DEFAULT_LOCAL_IA_ANALYZE_URL, requestBody);
+  }
 }

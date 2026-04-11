@@ -1,7 +1,5 @@
 import express from 'express';
 import { requireAuth } from '../../middleware/auth.js';
-import { IaAnalyzeServiceError } from '../../services/iaAnalyzeService.js';
-import { runIaAnalyzeAnalysis } from '../../services/iaAnalyzeGatewayClient.js';
 import { API_ERROR_INTERNAL_SERVER_ERROR } from 'lib/constants/server/errors.js';
 import { sendTypedError } from 'lib/utils/sendTypedError.js';
 import type {
@@ -9,6 +7,7 @@ import type {
   IaAnalyzeRunResponse,
   IaAnalyzeScopeType,
 } from 'lib/interfaces/contracts/ia-analyze.contract.js';
+import { analyzeFeedbacksForEnterprise, IaAnalyzeServiceError } from 'server/express/services/iaAnalyzeService.js';
 
 function parseScopeType(value: unknown): IaAnalyzeScopeType | undefined {
   const normalized = String(value ?? '')
@@ -49,7 +48,7 @@ export function EndpointsIAAnalyze(app: express.Express) {
           : undefined;
 
       try {
-        const result = await runIaAnalyzeAnalysis({
+        const result = await analyzeFeedbacksForEnterprise({
           supabase,
           userId: user.id,
           options: { limit, scope_type, catalog_item_id },

@@ -8,7 +8,7 @@
     "lint": "eslint --config ./eslint.config.js src"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.53.0",
+    "@google/genai": "^1.49.0",
     "dotenv": "^17.2.1",
     "express": "^5.1.0"
   },

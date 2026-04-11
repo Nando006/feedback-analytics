@@ -5,8 +5,6 @@ on:
     branches: [main, homolog]
     paths:
       - "services/ia-analyze/**"
-      - "shared/lib/services/iaAnalyzeService.ts"
-      - "shared/lib/services/iaAnalyzePromptBuilders.ts"
       - "shared/lib/interfaces/contracts/ia-analyze.contract.ts"
       - "services/ia-analyze/package.json"
       - "services/ia-analyze/package-lock.json"
