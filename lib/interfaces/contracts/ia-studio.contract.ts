@@ -26,6 +26,8 @@ export interface IaStudioAnalyzedItem {
   id: string;
   feedback_id: string;
   sentiment: IaStudioSentiment;
+  categories: string[];
+  keywords: string[];
 }
 
 /**
