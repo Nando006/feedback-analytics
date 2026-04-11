@@ -1,4 +1,4 @@
-name: Deploy API (Vercel)
+name: Deploy Api Gateway (Vercel)
 
 on:
   push:
@@ -14,7 +14,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  deploy-api:
+  deploy-api-gateway:
     runs-on: ubuntu-latest
 
     steps:
@@ -40,7 +40,7 @@ jobs:
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_API }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_API_GATEWAY }}
         run: npx vercel deploy --yes --token "$VERCEL_TOKEN" --local-config backends/api-gateway/vercel.json
 
       - name: Deploy production (main)
@@ -48,5 +48,5 @@ jobs:
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_API }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_API_GATEWAY }}
         run: npx vercel deploy --yes --prod --token "$VERCEL_TOKEN" --local-config backends/api-gateway/vercel.json
