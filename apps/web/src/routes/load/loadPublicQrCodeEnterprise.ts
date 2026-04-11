@@ -1,5 +1,5 @@
 import { ServiceGetEnterprisePublic } from 'src/services/serviceEnterprise';
-import type { FeedbackQuestionPublic } from 'lib/interfaces/contracts/qrcode.contract';
+import type { FeedbackQuestionPublic } from 'lib/interfaces/contracts/qrcode/question.contract';
 
 export type PublicQrCodeEnterpriseLoadData = {
   enterpriseId: string | null;

@@ -2,7 +2,7 @@ import { IaAnalyzeServiceError } from './iaAnalyzeErrors.js';
 import type {
   IaAnalyzeRemoteRunRequest,
   IaAnalyzeRemoteRunResponse,
-} from 'lib/interfaces/contracts/ia-analyze.contract.js';
+} from 'lib/interfaces/contracts/ia-analyze/remote.contract.js';
 
 type IaAnalyzeExecutionMode = 'local' | 'remote';
 

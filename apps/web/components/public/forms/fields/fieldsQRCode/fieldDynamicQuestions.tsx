@@ -1,4 +1,4 @@
-import type { FeedbackAnswerValue } from 'lib/interfaces/contracts/qrcode.contract';
+import type { FeedbackAnswerValue } from 'lib/interfaces/contracts/qrcode/question.contract';
 import type { FieldDynamicQuestionsProps } from './ui.types';
 
 const ANSWER_OPTIONS: Array<{ value: FeedbackAnswerValue; label: string }> = [

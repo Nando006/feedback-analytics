@@ -1,8 +1,13 @@
+/**
+ * Utilitarios de sentimento para o dominio ia-analyze.
+ * Define os sentimentos validos e as regras minimas para aceitar
+ * itens retornados pela IA antes do processamento no engine.
+ */
+
 import type {
-  IaAnalyzeFeedbackInput,
-  IaAnalyzeRemoteFeedbackAnalysis,
   IaAnalyzeSentiment,
-} from '../../../shared/lib/interfaces/contracts/ia-analyze.contract.js';
+} from '../../../shared/lib/interfaces/contracts/ia-analyze/scope.contract.js';
+import type { CanProcessAnalyzedItemParams } from '../types/sentimentAnalysis.types.js';
 
 export const VALID_SENTIMENTS: IaAnalyzeSentiment[] = [
   'positive',
@@ -24,10 +29,7 @@ export function isValidSentiment(value: unknown): value is IaAnalyzeSentiment {
  * Valida se um item retornado pela IA esta apto para processamento.
  * Serve para garantir referencia de feedback valida e sentimento tipado.
  */
-export function canProcessAnalyzedItem(params: {
-  item: IaAnalyzeRemoteFeedbackAnalysis;
-  feedbackById: Map<string, IaAnalyzeFeedbackInput>;
-}): boolean {
+export function canProcessAnalyzedItem(params: CanProcessAnalyzedItemParams): boolean {
   const { item, feedbackById } = params;
 
   return (

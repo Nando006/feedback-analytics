@@ -1,13 +1,22 @@
+/**
+ * Motor de dominio da analise de IA no servico ia-analyze.
+ * Orquestra batches recebidos do gateway, chama o cliente de IA,
+ * sanitiza os termos analisados e devolve analyses + contexts sem acesso a banco.
+ */
+
 import { normalizeForComparison } from '../lib/normalizeForComparison.js';
 import { createIaApiClient, IaApiClientError } from './iaApiClient.js';
 import { canProcessAnalyzedItem } from './sentimentAnalysis.js';
 import type {
-  IaAnalyzeContext,
-  IaAnalyzeFeedbackInput,
   IaAnalyzeRemoteFeedbackAnalysis,
   IaAnalyzeRemoteRunRequest,
   IaAnalyzeRemoteRunResponse,
-} from '../../../shared/lib/interfaces/contracts/ia-analyze.contract.js';
+} from '../../../shared/lib/interfaces/contracts/ia-analyze/remote.contract.js';
+import type { IaAnalyzeContext } from '../../../shared/lib/interfaces/contracts/ia-analyze/analysis.contract.js';
+import type {
+  SanitizeAnalysisTermsParams,
+  SanitizeTermListParams,
+} from '../types/iaAnalyzeEngine.types.js';
 
 /**
  * Erro de dominio do servico de IA com status HTTP e codigo tipado.
@@ -113,12 +122,7 @@ function fallbackKeywordsFromMessage(message: string, maxCount: number) {
  * Limpa, deduplica e limita termos com base em regras de negocio.
  * Serve para padronizar categories/keywords antes de persistir no gateway.
  */
-function sanitizeTermList(params: {
-  terms: string[];
-  messageNormalized: string;
-  forbiddenTerms: Set<string>;
-  maxCount: number;
-}) {
+function sanitizeTermList(params: SanitizeTermListParams) {
   const { terms, messageNormalized, forbiddenTerms, maxCount } = params;
   const result: string[] = [];
   const seen = new Set<string>();
@@ -148,11 +152,7 @@ function sanitizeTermList(params: {
  * Sanitiza o resultado de analise de um unico feedback.
  * Serve para remover ruido de respostas dinamicas e reforcar rastreabilidade no texto.
  */
-function sanitizeAnalysisTerms(params: {
-  feedback: IaAnalyzeFeedbackInput;
-  categories: string[];
-  keywords: string[];
-}) {
+function sanitizeAnalysisTerms(params: SanitizeAnalysisTermsParams) {
   const { feedback, categories, keywords } = params;
 
   const messageNormalized = normalizeForComparison(feedback.message ?? '');

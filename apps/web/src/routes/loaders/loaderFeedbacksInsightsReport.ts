@@ -1,6 +1,6 @@
 import type { LoaderFunctionArgs } from 'react-router-dom';
 import { loadFeedbackInsightsReportData } from 'src/routes/load/loadFeedbackInsightsReport';
-import type { IaAnalyzeScopeType } from 'lib/interfaces/contracts/ia-analyze.contract';
+import type { IaAnalyzeScopeType } from 'lib/interfaces/contracts/ia-analyze/scope.contract';
 
 function parseScopeType(value: string | null): IaAnalyzeScopeType | undefined {
   const normalized = String(value ?? '').trim().toUpperCase();

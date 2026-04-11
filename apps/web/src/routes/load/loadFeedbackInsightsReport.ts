@@ -3,10 +3,10 @@ import type {
   FeedbackInsightsReport,
 } from 'lib/interfaces/domain/feedback.domain';
 import type { CollectingDataEnterprise } from 'lib/interfaces/entities/enterprise.entity';
+import type { IaAnalyzeRunRequest } from 'lib/interfaces/contracts/ia-analyze/run.contract';
 import type {
-  IaAnalyzeRunRequest,
   IaAnalyzeScopeType,
-} from 'lib/interfaces/contracts/ia-analyze.contract';
+} from 'lib/interfaces/contracts/ia-analyze/scope.contract';
 import { ServiceGetFeedbackInsightsReport } from 'src/services/serviceFeedbacks';
 import { loadFeedbackAnalysisData } from 'src/routes/load/loadFeedbackAnalysis';
 import { ServiceGetCollectingDataEnterprise } from 'src/services/serviceEnterprise';

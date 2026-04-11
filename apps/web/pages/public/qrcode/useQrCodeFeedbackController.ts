@@ -3,9 +3,9 @@ import { useFetcher } from 'react-router-dom';
 import { useToast } from 'components/public/forms/messages/useToast';
 import type {
   CustomerData,
-  FeedbackAnswerValue,
   FeedbackData,
-} from 'lib/interfaces/contracts/qrcode.contract';
+} from 'lib/interfaces/contracts/qrcode/feedback.contract';
+import type { FeedbackAnswerValue } from 'lib/interfaces/contracts/qrcode/question.contract';
 import {
   REQUIRED_QUESTION_COUNT,
   filterAnswersForQuestions,

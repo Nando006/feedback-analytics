@@ -3,12 +3,16 @@ import { IaAnalyzeServiceError } from './iaAnalyzeErrors.js';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type {
   IaAnalyzeFeedbackInput,
-  IaAnalyzeRemoteRunRequest,
+} from 'lib/interfaces/contracts/ia-analyze/input.contract.js';
+import type { IaAnalyzeRemoteRunRequest } from 'lib/interfaces/contracts/ia-analyze/remote.contract.js';
+import type {
   IaAnalyzeRunRequest,
   IaAnalyzeRunResponse,
+} from 'lib/interfaces/contracts/ia-analyze/run.contract.js';
+import type {
   IaAnalyzeScopeType,
   IaAnalyzeSentiment,
-} from 'lib/interfaces/contracts/ia-analyze.contract.js';
+} from 'lib/interfaces/contracts/ia-analyze/scope.contract.js';
 
 export { IaAnalyzeServiceError };
 

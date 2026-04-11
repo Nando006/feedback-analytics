@@ -1,4 +1,4 @@
-import type { FeedbackQuestionPublic } from './qrcode.contract';
+import type { FeedbackQuestionPublic } from './qrcode/question.contract';
 
 /**
  * Resposta mínima de empresa usada na validação de QR Code.

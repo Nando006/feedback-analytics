@@ -10,7 +10,7 @@ import type {
 import type {
   IaAnalyzeRunRequest,
   IaAnalyzeRunResponse,
-} from 'lib/interfaces/contracts/ia-analyze.contract';
+} from 'lib/interfaces/contracts/ia-analyze/run.contract';
 import { getJson, postJson } from 'lib/utils/http';
 
 export function ServiceGetFeedbacks(filters: FeedbackFilters = {}) {

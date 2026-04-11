@@ -2,7 +2,7 @@ import type { ActionFunctionArgs } from 'react-router-dom';
 import { ServiceRunFeedbackIAAnalysis } from 'src/services/serviceFeedbacks';
 import { INTENT_FEEDBACK_RUN_IA } from 'lib/constants/routes/intents';
 import { ACTION_ERROR_INVALID_INTENT } from 'lib/constants/routes/errors';
-import type { IaAnalyzeScopeType } from 'lib/interfaces/contracts/ia-analyze.contract';
+import type { IaAnalyzeScopeType } from 'lib/interfaces/contracts/ia-analyze/scope.contract';
 
 type HttpActionError = Error & {
   status?: number;

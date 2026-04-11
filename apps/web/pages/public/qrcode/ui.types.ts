@@ -1,6 +1,6 @@
 import type {
   FeedbackQuestionPublic,
-} from 'lib/interfaces/contracts/qrcode.contract';
+} from 'lib/interfaces/contracts/qrcode/question.contract';
 import type { PublicQrFeedbackFormViewModel } from 'components/public/forms/fields/fieldsQRCode/ui.types';
 
 /**

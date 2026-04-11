@@ -2,7 +2,7 @@ import type {
   FeedbackAnswerValue,
   FeedbackQuestionAnswerInput,
   FeedbackSubquestionAnswerInput,
-} from 'lib/interfaces/contracts/qrcode.contract';
+} from 'lib/interfaces/contracts/qrcode/question.contract';
 import { REQUIRED_QUESTION_COUNT } from './publicQrFeedbackForm';
 
 export const MAX_SUBANSWER_COUNT = 9;

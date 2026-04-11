@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx src/index.ts",
-    "lint": "eslint --config ./eslint.config.js src lib"
+    "lint": "eslint --config ./eslint.config.js src lib types"
   },
   "dependencies": {
     "@google/genai": "^1.49.0",

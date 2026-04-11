@@ -3,7 +3,7 @@ import type {
   FeedbackQuestionAnswerInput,
   FeedbackQuestionPublic,
   FeedbackSubquestionAnswerInput,
-} from 'lib/interfaces/contracts/qrcode.contract';
+} from 'lib/interfaces/contracts/qrcode/question.contract';
 import {
   filterAnswersForQuestions,
   filterSubanswersForQuestions,

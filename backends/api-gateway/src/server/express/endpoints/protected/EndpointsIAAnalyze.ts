@@ -5,8 +5,8 @@ import { sendTypedError } from 'lib/utils/sendTypedError.js';
 import type {
   IaAnalyzeRunRequest,
   IaAnalyzeRunResponse,
-  IaAnalyzeScopeType,
-} from 'lib/interfaces/contracts/ia-analyze.contract.js';
+} from 'lib/interfaces/contracts/ia-analyze/run.contract.js';
+import type { IaAnalyzeScopeType } from 'lib/interfaces/contracts/ia-analyze/scope.contract.js';
 import { analyzeFeedbacksForEnterprise, IaAnalyzeServiceError } from 'server/express/services/iaAnalyzeService.js';
 
 function parseScopeType(value: unknown): IaAnalyzeScopeType | undefined {

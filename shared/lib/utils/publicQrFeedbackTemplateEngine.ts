@@ -1,7 +1,7 @@
 import type {
   FeedbackQuestionPublic,
-  QrPublicContext,
-} from 'lib/interfaces/contracts/qrcode.contract';
+} from 'lib/interfaces/contracts/qrcode/question.contract';
+import type { QrPublicContext } from 'lib/interfaces/contracts/qrcode/feedback.contract';
 
 export type PublicQrFeedbackScope =
   | 'COMPANY'

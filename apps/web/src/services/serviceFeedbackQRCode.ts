@@ -1,5 +1,5 @@
 import type { QrcodeFeedbackPayload } from 'lib/schemas/public/feedbackSchema';
-import type { QrcodeFeedbackResponse } from 'lib/interfaces/contracts/qrcode.contract';
+import type { QrcodeFeedbackResponse } from 'lib/interfaces/contracts/qrcode/response.contract';
 import { postJson } from 'lib/utils/http';
 
 export function ServiceSubmitQrcodeFeedback(payload: QrcodeFeedbackPayload) {

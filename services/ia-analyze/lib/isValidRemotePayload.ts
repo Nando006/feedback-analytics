@@ -1,5 +1,5 @@
 import { isObject } from './isObject.js';
-import type { IaAnalyzeRemoteRunRequest } from '../../../shared/lib/interfaces/contracts/ia-analyze.contract.js';
+import type { IaAnalyzeRemoteRunRequest } from '../../../shared/lib/interfaces/contracts/ia-analyze/remote.contract.js';
 
 /**
  * Valida estrutura minima esperada no contrato interno gateway -> servico.

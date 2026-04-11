@@ -1,27 +1,22 @@
+/**
+ * Construtores de prompt do dominio ia-analyze.
+ * Define instrucoes por escopo e monta o payload textual enviado ao modelo,
+ * buscando respostas JSON consistentes para o pipeline de analise.
+ */
+
+import type { IaAnalyzeScopeType } from '../../../shared/lib/interfaces/contracts/ia-analyze/scope.contract.js';
 import type {
-  IaAnalyzeEnterpriseContext,
-  IaAnalyzeFeedbackInput,
-  IaAnalyzeScopeType,
-} from '../../../shared/lib/interfaces/contracts/ia-analyze.contract.js';
-
-type PromptExpectedFeedbackItem = {
-  feedback_id: string;
-  sentiment: 'positive' | 'neutral' | 'negative';
-  categories: string[];
-  keywords: string[];
-};
-
-type PromptExpectedGlobalInsights = {
-  summary?: string;
-  recommendations?: string[];
-};
+  BuildIaPromptByScopeParams,
+  PromptExpectedSchema,
+  ScopeInstructionsByType,
+} from '../types/iaAnalyzePromptBuilders.types.js';
 
 /**
  * Retorna instrucoes especificas por escopo de analise.
  * Serve para guiar o modelo conforme contexto de empresa, produto, servico ou departamento.
  */
 function getScopeInstructions(scopeType: IaAnalyzeScopeType) {
-  const instructionsByScope: Record<IaAnalyzeScopeType, string[]> = {
+  const instructionsByScope: ScopeInstructionsByType = {
     COMPANY: [
       'Contexto: feedbacks gerais da empresa (visao ampla da experiencia).',
       'Priorize categorias como atendimento, comunicacao, preco, ambiente, experiencia geral e confianca.',
@@ -51,11 +46,7 @@ function getScopeInstructions(scopeType: IaAnalyzeScopeType) {
  * Monta o prompt final enviado ao modelo com contexto e schema esperado.
  * Serve para padronizar a resposta da IA e reduzir variacao de formato.
  */
-export function buildIaPromptByScope(params: {
-  scopeType: IaAnalyzeScopeType;
-  enterpriseContext: IaAnalyzeEnterpriseContext;
-  feedbacks: IaAnalyzeFeedbackInput[];
-}): string {
+export function buildIaPromptByScope(params: BuildIaPromptByScopeParams): string {
   const { scopeType, enterpriseContext, feedbacks } = params;
 
   const header = `Voce e uma IA especialista em analise de feedbacks de clientes para empresas.
@@ -80,10 +71,7 @@ Regras IMPORTANTES:
 
   const scopeInstructions = getScopeInstructions(scopeType);
 
-  const expectedSchemaExample: {
-    feedbacks: PromptExpectedFeedbackItem[];
-    global_insights: PromptExpectedGlobalInsights;
-  } = {
+  const expectedSchemaExample: PromptExpectedSchema = {
     feedbacks: [
       {
         feedback_id: 'uuid-do-feedback',

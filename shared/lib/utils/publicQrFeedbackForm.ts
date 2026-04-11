@@ -2,8 +2,8 @@ import type {
   FeedbackQuestionAnswerInput,
   FeedbackQuestionPublic,
   FeedbackSubquestionAnswerInput,
-  QrPublicContext,
-} from 'lib/interfaces/contracts/qrcode.contract';
+} from 'lib/interfaces/contracts/qrcode/question.contract';
+import type { QrPublicContext } from 'lib/interfaces/contracts/qrcode/feedback.contract';
 
 export const REQUIRED_QUESTION_COUNT = 3;
 

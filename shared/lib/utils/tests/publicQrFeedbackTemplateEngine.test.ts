@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { FeedbackQuestionPublic } from 'lib/interfaces/contracts/qrcode.contract';
+import type { FeedbackQuestionPublic } from 'lib/interfaces/contracts/qrcode/question.contract';
 import {
   resolvePublicQrFeedbackScope,
   resolvePublicQrFeedbackScopeFromItemKind,

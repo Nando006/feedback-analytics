@@ -1,9 +1,15 @@
+/**
+ * Arquivo de entrada HTTP do servico ia-analyze.
+ * Centraliza os endpoints internos de health e analise,
+ * valida autorizacao e payload, e delega a execucao para o motor de IA.
+ */
+
 import 'dotenv/config';
 import express from 'express';
 import { IaAnalyzeServiceError, runIaAnalyzeEngine } from './iaAnalyzeEngine.js';
 import { isInternalRequestAuthorized } from '../lib/isInternalRequestAuthorized.js';
 import { isValidRemotePayload } from '../lib/isValidRemotePayload.js';
-import type { IaAnalyzeRemoteRunResponse } from '../../../shared/lib/interfaces/contracts/ia-analyze.contract.js';
+import type { IaAnalyzeRemoteRunResponse } from '../../../shared/lib/interfaces/contracts/ia-analyze/remote.contract.js';
 
 const app = express();
 
