@@ -3,8 +3,8 @@ import { Outlet, useFetcher, useLoaderData } from 'react-router-dom';
 import Header from 'components/user/layout/Header';
 import Sidebar from 'components/user/layout/Sidebar';
 import type { CollectingDataEnterprise, Enterprise } from 'lib/interfaces/entities/enterprise.entity';
-import { getCookie, setCookie } from 'lib/utils/cookies';
-import { INTENT_LOGOUT } from 'lib/constants/routes/intents';
+import { getCookie, setCookie } from 'src/lib/utils/cookies';
+import { INTENT_LOGOUT } from 'src/lib/constants/routes/intents';
 
 export default function User() {
   const logoutFetcher = useFetcher();

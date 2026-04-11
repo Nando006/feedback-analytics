@@ -14,11 +14,11 @@ import {
   hasAllRequiredSubanswers,
   orderAnswersByQuestions,
   orderSubanswersByQuestions,
-} from 'lib/utils/publicQrFeedbackForm';
+} from 'src/lib/utils/publicQrFeedbackForm';
 import {
   PUBLIC_QR_FEEDBACK_ERRORS,
   getPublicQrFeedbackBaseValidationError,
-} from 'lib/utils/publicQrFeedbackValidation';
+} from 'src/lib/utils/publicQrFeedbackValidation';
 import type {
   QrCodeFeedbackControllerParams,
   QrCodeFeedbackControllerResult,

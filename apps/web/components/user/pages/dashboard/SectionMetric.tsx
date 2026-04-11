@@ -1,5 +1,5 @@
 import MetricCard from "components/user/shared/cards/MetricCard";
-import FormatToCurrencyReal from "lib/utils/FormatToReal";
+import FormatToCurrencyReal from "src/lib/utils/FormatToReal";
 import {
   FaComments,
   FaFrown,

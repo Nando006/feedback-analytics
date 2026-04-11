@@ -32,8 +32,6 @@
     "../../shared/lib/schemas/**/*.ts"
   ],
   "exclude": [
-    "../../shared/lib/utils/**",
-    "../../shared/lib/mock/**",
     "../../shared/lib/**/tests/**"
   ]
 }

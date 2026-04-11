@@ -1,7 +1,7 @@
 import type { FieldFormProps } from '../ui.types';
 import { useState } from 'react';
 
-// import { getPasswordStrength } from 'lib/utils/passwordStrength';
+// import { getPasswordStrength } from 'src/lib/utils/passwordStrength';
 
 export default function FieldPassword({
   id,

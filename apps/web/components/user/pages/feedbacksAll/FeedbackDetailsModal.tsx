@@ -1,6 +1,6 @@
 import type { FeedbackDetailsModalProps } from './ui.types';
 
-import { formatDateTime } from 'lib/utils/FormatDate';
+import { formatDateTime } from 'src/lib/utils/FormatDate';
 
 const ANSWER_LABEL: Record<string, string> = {
   PESSIMO: 'Péssimo',

@@ -1,12 +1,12 @@
 import type { ActionFunctionArgs } from 'react-router-dom';
 import { ServiceSubmitQrcodeFeedback } from 'src/services/serviceFeedbackQRCode';
-import { getPublicQrFeedbackErrorMessage } from 'lib/utils/publicQrFeedbackErrorMessage';
+import { getPublicQrFeedbackErrorMessage } from 'src/lib/utils/publicQrFeedbackErrorMessage';
 import {
   PUBLIC_QR_FEEDBACK_ERRORS,
   getPublicQrFeedbackBaseValidationError,
   parsePublicQrAnswersInput,
   parsePublicQrSubanswersInput,
-} from 'lib/utils/publicQrFeedbackValidation';
+} from 'src/lib/utils/publicQrFeedbackValidation';
 
 type HttpError = Error & {
   status?: number;

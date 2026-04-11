@@ -1,7 +1,7 @@
 import express from 'express';
 import { requireAuth } from '../../middleware/auth.js';
-import { API_ERROR_INTERNAL_SERVER_ERROR } from 'lib/constants/server/errors.js';
-import { sendTypedError } from 'lib/utils/sendTypedError.js';
+import { API_ERROR_INTERNAL_SERVER_ERROR } from 'server/constants/errors.js';
+import { sendTypedError } from 'server/utils/sendTypedError.js';
 import type {
   IaAnalyzeRunRequest,
   IaAnalyzeRunResponse,

@@ -10,11 +10,11 @@ import {
   INTENT_PROFILE_UPDATE_EMAIL,
   INTENT_PROFILE_UPDATE_FULL_NAME,
   INTENT_PROFILE_VERIFY_PHONE,
-} from 'lib/constants/routes/intents';
+} from 'src/lib/constants/routes/intents';
 import {
   ACTION_ERROR_INVALID_INTENT,
   ACTION_ERROR_INVALID_PAYLOAD,
-} from 'lib/constants/routes/errors';
+} from 'src/lib/constants/routes/errors';
 
 export async function ActionProfile({ request }: ActionFunctionArgs) {
   const form = await request.formData();

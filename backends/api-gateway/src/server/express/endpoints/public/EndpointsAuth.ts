@@ -6,8 +6,8 @@ import {
   API_ERROR_EMAIL_NOT_CONFIRMED,
   API_ERROR_INVALID_CREDENTIALS,
   API_ERROR_INVALID_PAYLOAD,
-} from 'lib/constants/server/errors.js';
-import { sendTypedError } from 'lib/utils/sendTypedError.js';
+} from 'server/constants/errors.js';
+import { sendTypedError } from 'server/utils/sendTypedError.js';
 
 type LoginEndpointErrorCode =
   | typeof API_ERROR_INVALID_PAYLOAD

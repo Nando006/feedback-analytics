@@ -3,7 +3,7 @@ import { useSubmit, useActionData } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { phoneStartSchema, phoneVerifySchema } from 'lib/schemas/user/phoneSchema';
-import { INTENT_PROFILE_START_PHONE, INTENT_PROFILE_VERIFY_PHONE } from 'lib/constants/routes/intents';
+import { INTENT_PROFILE_START_PHONE, INTENT_PROFILE_VERIFY_PHONE } from 'src/lib/constants/routes/intents';
 import { useToast } from 'components/public/forms/messages/useToast';
 import { FaCircleCheck, FaCircleExclamation, FaPaperPlane, FaPenToSquare, FaPhone, FaXmark } from 'react-icons/fa6';
 import type { ActionData } from 'lib/interfaces/contracts/action-data.contract';

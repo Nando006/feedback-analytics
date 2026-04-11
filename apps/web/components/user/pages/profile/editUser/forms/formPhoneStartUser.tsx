@@ -6,7 +6,7 @@ import {
   phoneStartSchema,
   type PhoneStartFormValues,
 } from 'lib/schemas/user/phoneSchema';
-import { INTENT_PROFILE_START_PHONE } from 'lib/constants/routes/intents';
+import { INTENT_PROFILE_START_PHONE } from 'src/lib/constants/routes/intents';
 import { useToast } from 'components/public/forms/messages/useToast';
 import { FaCircleExclamation, FaPhone } from 'react-icons/fa6';
 import type { ActionData } from 'lib/interfaces/contracts/action-data.contract';

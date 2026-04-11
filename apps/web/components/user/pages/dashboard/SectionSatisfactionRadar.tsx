@@ -1,5 +1,5 @@
 import { FaFrown, FaMeh, FaSmile } from 'react-icons/fa';
-import FormatToCurrencyReal from 'lib/utils/FormatToReal';
+import FormatToCurrencyReal from 'src/lib/utils/FormatToReal';
 import type { SectionSatisfactionRadarProps } from './ui.types';
 
 export default function SectionSatisfactionRadar({

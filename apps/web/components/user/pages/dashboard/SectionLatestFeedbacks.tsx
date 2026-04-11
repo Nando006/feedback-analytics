@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { FaArrowRight, FaStar } from 'react-icons/fa';
-import { truncateMessage } from 'lib/utils/truncateText';
-import { formatDateTime } from 'lib/utils/FormatDate';
+import { truncateMessage } from 'src/lib/utils/truncateText';
+import { formatDateTime } from 'src/lib/utils/FormatDate';
 import type { LatestFeedbacksProps } from './ui.types';
 
 const ANSWER_LABEL: Record<string, string> = {

@@ -6,7 +6,7 @@ import {
 import {
   INTENT_QR_DISABLE,
   INTENT_QR_ENABLE,
-} from 'lib/constants/routes/intents';
+} from 'src/lib/constants/routes/intents';
 
 type QrToggleIntent = typeof INTENT_QR_ENABLE | typeof INTENT_QR_DISABLE;
 

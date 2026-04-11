@@ -3,7 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { nameSchema, type NameFormValues } from 'lib/schemas/user/nameSchema';
 import { useForm } from 'react-hook-form';
 import { useSubmit, useActionData } from 'react-router-dom';
-import { INTENT_PROFILE_UPDATE_FULL_NAME } from 'lib/constants/routes/intents';
+import { INTENT_PROFILE_UPDATE_FULL_NAME } from 'src/lib/constants/routes/intents';
 import { useToast } from 'components/public/forms/messages/useToast';
 import { FaCircleExclamation } from 'react-icons/fa6';
 import type { ActionData } from 'lib/interfaces/contracts/action-data.contract';

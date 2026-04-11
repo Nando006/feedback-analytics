@@ -1,8 +1,8 @@
 import type { RegisterFieldDocumentProps } from '../ui.types';
 import { useEffect, useState } from 'react';
 
-import { digitsOnly } from 'lib/utils/digitsOnly';
-import { formatDocumentInput } from 'lib/utils/formatDocumentInput';
+import { digitsOnly } from 'src/lib/utils/digitsOnly';
+import { formatDocumentInput } from 'src/lib/utils/formatDocumentInput';
 
 export default function FieldDocument({
   id,

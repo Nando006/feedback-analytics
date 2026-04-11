@@ -1,8 +1,8 @@
 import type { FieldFormProps } from '../ui.types';
 import { useState } from 'react';
 
-import { digitsOnly } from 'lib/utils/digitsOnly';
-import { formatPhoneInputBR } from 'lib/utils/formatPhoneInputBR';
+import { digitsOnly } from 'src/lib/utils/digitsOnly';
+import { formatPhoneInputBR } from 'src/lib/utils/formatPhoneInputBR';
 
 export default function FieldPhoneRegister({
   id,

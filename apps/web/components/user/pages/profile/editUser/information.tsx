@@ -1,7 +1,7 @@
 
 import { nameSchema } from 'lib/schemas/user/nameSchema';
 import { emailUpdateSchema } from 'lib/schemas/user/emailUpdateSchema';
-import { INTENT_PROFILE_UPDATE_FULL_NAME, INTENT_PROFILE_UPDATE_EMAIL } from 'lib/constants/routes/intents';
+import { INTENT_PROFILE_UPDATE_FULL_NAME, INTENT_PROFILE_UPDATE_EMAIL } from 'src/lib/constants/routes/intents';
 import { FaEnvelope, FaLightbulb, FaPenToSquare, FaShieldHalved, FaUser } from 'react-icons/fa6';
 import EditableFieldFixed from './EditableFieldFixed';
 import PhoneEditableField from './PhoneEditableField';
