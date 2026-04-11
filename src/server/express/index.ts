@@ -71,6 +71,8 @@ const app = express();
 // CORS precisa vir antes dos endpoints
 app.use(corsMiddleware);
 
+app.use(express.json());
+
 // Suporte a application/x-www-form-urlencoded (formularios)
 app.use(express.urlencoded({ extended: true }));
 
