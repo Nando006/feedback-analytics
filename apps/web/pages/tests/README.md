@@ -72,7 +72,7 @@ npm test pages/tests -- --watch
 
 ### Setup Global
 
-O arquivo `shared/lib/utils/tests/setup.ts` contém:
+O arquivo `apps/web/tests/setup.ts` contém:
 
 - Importação do `@testing-library/jest-dom`
 - Mocks globais para `react-router-dom`

@@ -52,6 +52,6 @@ export default defineConfig({
   test: {
     globals: true, // Permite usar `describe`, `it`, `expect` sem precisar importar
     environment: 'jsdom', // Simula um ambiente de navegador (DOM) para testes de componentes React
-    setupFiles: [path.resolve(__dirname, '../../shared/lib/utils/tests/setup.ts')],
+    setupFiles: [path.resolve(__dirname, './tests/setup.ts')],
   },
 });
