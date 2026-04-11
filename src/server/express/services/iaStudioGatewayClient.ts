@@ -4,7 +4,10 @@ import {
   type SupabaseServerClient,
   type IaStudioOptions,
 } from './iaStudioService.js';
-import type { IaStudioRunResponse } from '../../../../lib/interfaces/contracts/ia-studio.contract.js';
+import type {
+  IaStudioRunResponse,
+  IaStudioRemoteRunRequest,
+} from '../../../../lib/interfaces/contracts/ia-studio.contract.js';
 
 export type RunIaStudioAnalysisParams = {
   supabase: SupabaseServerClient;
@@ -13,11 +16,6 @@ export type RunIaStudioAnalysisParams = {
 };
 
 type IaStudioExecutionMode = 'local' | 'remote';
-
-type IaStudioRemoteRunRequest = {
-  user_id: string;
-  options?: IaStudioOptions;
-};
 
 const DEFAULT_REMOTE_TIMEOUT_MS = 20_000;
 
@@ -36,6 +34,11 @@ function getRemoteBaseUrl(): string | null {
   }
 
   return rawValue.replace(/\/+$/, '');
+}
+
+function getRemoteToken(): string | null {
+  const rawValue = String(process.env.IA_STUDIO_REMOTE_TOKEN ?? '').trim();
+  return rawValue.length > 0 ? rawValue : null;
 }
 
 function shouldFallbackToLocal(): boolean {
@@ -123,6 +126,14 @@ async function runRemoteIaStudioAnalysis(
     user_id: params.userId,
     options: params.options,
   };
+  const remoteToken = getRemoteToken();
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  };
+
+  if (remoteToken) {
+    headers['x-ia-studio-token'] = remoteToken;
+  }
 
   const abortController = new AbortController();
   const timeoutHandle = setTimeout(() => {
@@ -134,9 +145,7 @@ async function runRemoteIaStudioAnalysis(
   try {
     response = await fetch(endpoint, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers,
       body: JSON.stringify(requestBody),
       signal: abortController.signal,
     });

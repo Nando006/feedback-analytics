@@ -24,6 +24,14 @@ export interface IaStudioRunRequest {
 }
 
 /**
+ * Payload interno entre gateway e serviço remoto de IA.
+ */
+export interface IaStudioRemoteRunRequest {
+  user_id: string;
+  options?: IaStudioRunRequest;
+}
+
+/**
  * Item de feedback efetivament analisado
  */
 export interface IaStudioAnalyzedItem {
