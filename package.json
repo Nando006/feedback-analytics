@@ -9,19 +9,19 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --config apps/web/vite.config.ts",
     "server:ia-studio:dev": "tsx services/ia-studio/src/index.ts",
     "dev:web": "npm run dev -w @feedback/web",
     "dev:api": "npm run dev -w @feedback/backend-gateway",
     "server:dev": "tsx apps/backend-gateway/src/server/express/index.ts",
     "dev:all": "concurrently -n web,api -c green,cyan \"npm:dev:web\" \"npm:dev:api\"",
-    "build": "vite build",
+    "build": "vite build --config apps/web/vite.config.ts",
     "build:web": "npm run build -w @feedback/web",
-    "lint": "eslint .",
-    "lint:web": "npm run lint -w @feedback/web",
-    "lint:api": "npm run lint -w @feedback/backend-gateway",
-    "preview": "vite preview",
-    "test": "vitest",
+    "lint": "npm run lint:api && npm run lint:web",
+    "lint:web": "eslint --config apps/web/eslint.config.js apps/web",
+    "lint:api": "eslint apps/backend-gateway lib services",
+    "preview": "vite preview --config apps/web/vite.config.ts",
+    "test": "vitest --config apps/web/vite.config.ts",
     "test:web": "npm run test -w @feedback/web"
   },
   "dependencies": {

@@ -1,19 +1,7 @@
 {
-  "compilerOptions": {
-    "baseUrl": ".",
-    "paths": {
-      "components/*": ["apps/web/components/*"],
-      "pages/*": ["apps/web/pages/*"],
-      "layouts/*": ["apps/web/layouts/*"],
-      "lib/*": ["lib/*"],
-      "src/*": ["apps/web/src/*"],
-      "server/*": ["apps/backend-gateway/src/server/*"],
-      "styles/*": ["apps/web/styles/*"]
-    }
-  },
   "files": [],
   "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
+    { "path": "./apps/web/tsconfig.json" },
+    { "path": "./apps/backend-gateway/tsconfig.json" }
   ]
 }

@@ -4,9 +4,9 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "npm run dev --prefix ../..",
-    "build": "npm run build --prefix ../..",
-    "lint": "npm run lint --prefix ../..",
-    "test": "npm run test --prefix ../.."
+    "dev": "vite --config vite.config.ts",
+    "build": "vite build --config vite.config.ts",
+    "lint": "eslint --config ./eslint.config.js .",
+    "test": "vitest --config ./vite.config.ts"
   }
 }
