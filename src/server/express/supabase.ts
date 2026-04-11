@@ -55,7 +55,20 @@ export function createSupabaseServerClient(
           };
 
           for (const { name, value, options } of cookiesToSet) {
-            res.cookie(name, value, { ...base, ...(options ?? {}) });
+            // Primeiro mantém o que o Supabase trouxe (expires, maxAge, etc.),
+            // depois força política de segurança definida pela API.
+            const mergedOptions = {
+              ...(options ?? {}),
+              ...base,
+            };
+
+            // Em cross-site, garantimos explicitamente os dois atributos.
+            if (sameSite === 'none') {
+              mergedOptions.sameSite = 'none';
+              mergedOptions.secure = true;
+            }
+
+            res.cookie(name, value, mergedOptions);
           }
         },
       },
