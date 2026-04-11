@@ -35,7 +35,7 @@ export default defineConfig({
       layouts: path.resolve(__dirname, './layouts'),
       pages: path.resolve(__dirname, './pages'),
       server: path.resolve(__dirname, '../backend-gateway/src/server'),
-      lib: path.resolve(__dirname, '../../lib'),
+      lib: path.resolve(__dirname, '../../shared/lib'),
       components: path.resolve(__dirname, './components'),
       styles: path.resolve(__dirname, './styles'),
     },
@@ -52,6 +52,6 @@ export default defineConfig({
   test: {
     globals: true, // Permite usar `describe`, `it`, `expect` sem precisar importar
     environment: 'jsdom', // Simula um ambiente de navegador (DOM) para testes de componentes React
-    setupFiles: [path.resolve(__dirname, '../../lib/utils/tests/setup.ts')],
+    setupFiles: [path.resolve(__dirname, '../../shared/lib/utils/tests/setup.ts')],
   },
 });

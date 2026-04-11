@@ -4,9 +4,9 @@ import tseslint from 'typescript-eslint'
 import { globalIgnores } from 'eslint/config'
 
 export default tseslint.config([
-  globalIgnores(['dist', 'apps/web/dist']),
+  globalIgnores(['dist']),
   {
-    files: ['apps/backend-gateway/**/*.{ts,tsx}', 'services/**/*.{ts,tsx}', 'lib/**/*.{ts,tsx}'],
+    files: ['src/**/*.{ts,tsx}'],
     extends: [js.configs.recommended, tseslint.configs.recommended],
     languageOptions: {
       ecmaVersion: 2022,

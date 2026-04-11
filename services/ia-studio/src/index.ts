@@ -11,7 +11,7 @@ import type {
   IaStudioRemoteRunRequest,
   IaStudioRunResponse,
   IaStudioScopeType,
-} from '../../../lib/interfaces/contracts/ia-studio.contract.js';
+} from '../../../shared/lib/interfaces/contracts/ia-studio.contract.js';
 
 function isObject(value: unknown): value is Record<string, unknown> {
   return !!value && typeof value === 'object' && !Array.isArray(value);

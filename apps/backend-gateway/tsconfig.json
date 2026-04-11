@@ -21,19 +21,19 @@
     "baseUrl": "../..",
     "ignoreDeprecations": "6.0",
     "paths": {
-      "lib/*": ["lib/*"],
+      "lib/*": ["shared/lib/*"],
       "server/*": ["apps/backend-gateway/src/server/*"]
     }
   },
   "include": [
     "src/server/**/*.ts",
     "src/server/**/*.d.ts",
-    "../../lib/interfaces/**/*.ts",
-    "../../lib/schemas/**/*.ts"
+    "../../shared/lib/interfaces/**/*.ts",
+    "../../shared/lib/schemas/**/*.ts"
   ],
   "exclude": [
-    "../../lib/utils/**",
-    "../../lib/mock/**",
-    "../../lib/**/tests/**"
+    "../../shared/lib/utils/**",
+    "../../shared/lib/mock/**",
+    "../../shared/lib/**/tests/**"
   ]
 }

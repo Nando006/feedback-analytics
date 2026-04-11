@@ -1,19 +1,16 @@
 {
-  "name": "@feedback/backend-gateway",
+  "name": "@feedback/ia-studio",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "tsx src/server/express/index.ts",
+    "dev": "tsx src/index.ts",
     "lint": "eslint --config ./eslint.config.js src"
   },
   "dependencies": {
-    "@google/genai": "^1.29.1",
-    "@supabase/ssr": "^0.6.1",
     "@supabase/supabase-js": "^2.53.0",
     "dotenv": "^17.2.1",
-    "express": "^5.1.0",
-    "zod": "^4.0.13"
+    "express": "^5.1.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.30.1",

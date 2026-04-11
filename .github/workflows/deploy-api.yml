@@ -5,10 +5,11 @@ on:
     branches: [main, homolog]
     paths:
       - "apps/backend-gateway/src/server/**"
-      - "lib/**"
+      - "shared/lib/**"
       - "database/**"
       - "apps/backend-gateway/vercel.json"
-      - "package.json"
+      - "apps/backend-gateway/package.json"
+      - "apps/backend-gateway/package-lock.json"
       - ".github/workflows/deploy-api.yml"
   workflow_dispatch:
 
@@ -25,9 +26,14 @@ jobs:
         with:
           node-version: "20"
           cache: "npm"
+          cache-dependency-path: |
+            apps/backend-gateway/package-lock.json
+            shared/lib/package-lock.json
 
       - name: Install dependencies
-        run: npm ci
+        run: |
+          npm ci --prefix shared/lib
+          npm ci --prefix apps/backend-gateway
 
       - name: Deploy preview (homolog)
         if: github.ref_name == 'homolog'
