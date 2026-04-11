@@ -2,7 +2,7 @@ import type {
   IaAnalyzeEnterpriseContext,
   IaAnalyzeFeedbackInput,
   IaAnalyzeScopeType,
-} from '../../../../shared/lib/interfaces/contracts/ia-analyze.contract.js';
+} from '../../../shared/lib/interfaces/contracts/ia-analyze.contract.js';
 
 type PromptExpectedFeedbackItem = {
   feedback_id: string;
@@ -16,6 +16,10 @@ type PromptExpectedGlobalInsights = {
   recommendations?: string[];
 };
 
+/**
+ * Retorna instrucoes especificas por escopo de analise.
+ * Serve para guiar o modelo conforme contexto de empresa, produto, servico ou departamento.
+ */
 function getScopeInstructions(scopeType: IaAnalyzeScopeType) {
   const instructionsByScope: Record<IaAnalyzeScopeType, string[]> = {
     COMPANY: [
@@ -43,6 +47,10 @@ function getScopeInstructions(scopeType: IaAnalyzeScopeType) {
   return instructionsByScope[scopeType];
 }
 
+/**
+ * Monta o prompt final enviado ao modelo com contexto e schema esperado.
+ * Serve para padronizar a resposta da IA e reduzir variacao de formato.
+ */
 export function buildIaPromptByScope(params: {
   scopeType: IaAnalyzeScopeType;
   enterpriseContext: IaAnalyzeEnterpriseContext;

@@ -1,38 +1,9 @@
 import 'dotenv/config';
 import express from 'express';
-import { IaAnalyzeServiceError, runIaAnalyzeEngine } from './ia/iaAnalyzeEngine.js';
-import type {
-  IaAnalyzeRemoteRunRequest,
-  IaAnalyzeRemoteRunResponse,
-} from '../../../shared/lib/interfaces/contracts/ia-analyze.contract.js';
-
-function isObject(value: unknown): value is Record<string, unknown> {
-  return !!value && typeof value === 'object' && !Array.isArray(value);
-}
-
-function isValidRemotePayload(value: unknown): value is IaAnalyzeRemoteRunRequest {
-  if (!isObject(value)) {
-    return false;
-  }
-
-  if (!isObject(value.enterprise_context)) {
-    return false;
-  }
-
-  return Array.isArray(value.batches);
-}
-
-function isInternalRequestAuthorized(req: express.Request): boolean {
-  const expectedToken = String(process.env.IA_ANALYZE_INTERNAL_TOKEN ?? '').trim();
-
-  if (!expectedToken) {
-    return true;
-  }
-
-  const providedToken = String(req.get('x-ia-analyze-token') ?? '').trim();
-
-  return providedToken.length > 0 && providedToken === expectedToken;
-}
+import { IaAnalyzeServiceError, runIaAnalyzeEngine } from './iaAnalyzeEngine.js';
+import { isInternalRequestAuthorized } from '../lib/isInternalRequestAuthorized.js';
+import { isValidRemotePayload } from '../lib/isValidRemotePayload.js';
+import type { IaAnalyzeRemoteRunResponse } from '../../../shared/lib/interfaces/contracts/ia-analyze.contract.js';
 
 const app = express();
 

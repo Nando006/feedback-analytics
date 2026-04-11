@@ -1,15 +1,18 @@
-import { GoogleGenAI } from '@google/genai';
-import { buildIaPromptByScope } from './iaAnalyzePromptBuilders.js';
+import { normalizeForComparison } from '../lib/normalizeForComparison.js';
+import { createIaApiClient, IaApiClientError } from './iaApiClient.js';
+import { canProcessAnalyzedItem } from './sentimentAnalysis.js';
 import type {
   IaAnalyzeContext,
   IaAnalyzeFeedbackInput,
-  IaAnalyzeInsights,
   IaAnalyzeRemoteFeedbackAnalysis,
   IaAnalyzeRemoteRunRequest,
   IaAnalyzeRemoteRunResponse,
-  IaAnalyzeSentiment,
-} from '../../../../shared/lib/interfaces/contracts/ia-analyze.contract.js';
+} from '../../../shared/lib/interfaces/contracts/ia-analyze.contract.js';
 
+/**
+ * Erro de dominio do servico de IA com status HTTP e codigo tipado.
+ * Serve para o endpoint retornar falhas de forma padronizada.
+ */
 export class IaAnalyzeServiceError extends Error {
   public statusCode: number;
 
@@ -57,40 +60,10 @@ const PORTUGUESE_STOPWORDS = new Set<string>([
   'uma',
 ]);
 
-function extractJsonFromText(raw: string): string {
-  let text = raw.trim();
-
-  if (text.startsWith('```')) {
-    const firstLineEnd = text.indexOf('\n');
-    if (firstLineEnd !== -1) {
-      text = text.slice(firstLineEnd + 1);
-      const lastFenceIndex = text.lastIndexOf('```');
-      if (lastFenceIndex !== -1) {
-        text = text.slice(0, lastFenceIndex);
-      }
-      text = text.trim();
-    }
-  }
-
-  const firstBrace = text.indexOf('{');
-  const lastBrace = text.lastIndexOf('}');
-  if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
-    return text.slice(firstBrace, lastBrace + 1).trim();
-  }
-
-  return text;
-}
-
-function normalizeForComparison(value: string) {
-  return value
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
-}
-
+/**
+ * Quebra texto em termos relevantes para validacao semantica.
+ * Serve para cruzar termos da IA com o conteudo real da mensagem.
+ */
 function tokenizeRelevantWords(value: string) {
   return normalizeForComparison(value)
     .split(' ')
@@ -103,6 +76,10 @@ function tokenizeRelevantWords(value: string) {
     );
 }
 
+/**
+ * Verifica se um termo da IA esta ancorado na mensagem original.
+ * Serve para evitar categorias/keywords inventadas ou fora do contexto.
+ */
 function isGroundedInMessage(termNormalized: string, messageNormalized: string) {
   if (!termNormalized || !messageNormalized) {
     return false;
@@ -122,12 +99,20 @@ function isGroundedInMessage(termNormalized: string, messageNormalized: string) 
   return termTokens.some((token) => messageTokens.has(token));
 }
 
+/**
+ * Gera fallback de keywords a partir da propria mensagem do cliente.
+ * Serve para manter saida util quando a IA nao retorna termos aproveitaveis.
+ */
 function fallbackKeywordsFromMessage(message: string, maxCount: number) {
   const tokens = tokenizeRelevantWords(message);
   const unique = Array.from(new Set(tokens));
   return unique.slice(0, maxCount);
 }
 
+/**
+ * Limpa, deduplica e limita termos com base em regras de negocio.
+ * Serve para padronizar categories/keywords antes de persistir no gateway.
+ */
 function sanitizeTermList(params: {
   terms: string[];
   messageNormalized: string;
@@ -159,6 +144,10 @@ function sanitizeTermList(params: {
   return result;
 }
 
+/**
+ * Sanitiza o resultado de analise de um unico feedback.
+ * Serve para remover ruido de respostas dinamicas e reforcar rastreabilidade no texto.
+ */
 function sanitizeAnalysisTerms(params: {
   feedback: IaAnalyzeFeedbackInput;
   categories: string[];
@@ -223,11 +212,10 @@ function sanitizeAnalysisTerms(params: {
   };
 }
 
-type ParsedIaResponse = {
-  feedbacks?: IaAnalyzeRemoteFeedbackAnalysis[];
-  global_insights?: IaAnalyzeInsights;
-};
-
+/**
+ * Executa a analise de IA para batches preparados pelo gateway.
+ * Serve como nucleo do dominio ia-analyze sem qualquer acesso a banco de dados.
+ */
 export async function runIaAnalyzeEngine(
   request: IaAnalyzeRemoteRunRequest,
 ): Promise<IaAnalyzeRemoteRunResponse> {
@@ -249,9 +237,7 @@ export async function runIaAnalyzeEngine(
     );
   }
 
-  const ai = new GoogleGenAI({ apiKey });
-  const validSentiments: IaAnalyzeSentiment[] = ['positive', 'negative', 'neutral'];
-  const validSentimentsSet = new Set(validSentiments);
+  const iaApiClient = createIaApiClient(apiKey);
 
   const analysesByFeedbackId = new Map<string, IaAnalyzeRemoteFeedbackAnalysis>();
   const contexts: IaAnalyzeContext[] = [];
@@ -261,30 +247,23 @@ export async function runIaAnalyzeEngine(
       continue;
     }
 
-    const prompt = buildIaPromptByScope({
-      scopeType: batch.scope_type,
-      enterpriseContext: request.enterprise_context,
-      feedbacks: batch.feedbacks,
-    });
-
-    const aiResponse = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: prompt,
-    });
-
-    type AiResponseShape = {
-      text?: string | (() => string);
-    };
-
-    const maybeText = (aiResponse as AiResponseShape).text;
-    const rawText = (typeof maybeText === 'function' ? maybeText() : maybeText) ?? '';
-
-    let parsed: ParsedIaResponse | null = null;
+    let parsed: Awaited<ReturnType<typeof iaApiClient.analyzeBatch>>;
 
     try {
-      const jsonString = extractJsonFromText(rawText);
-      parsed = JSON.parse(jsonString) as ParsedIaResponse;
-    } catch {
+      parsed = await iaApiClient.analyzeBatch({
+        scopeType: batch.scope_type,
+        enterpriseContext: request.enterprise_context,
+        feedbacks: batch.feedbacks,
+      });
+    } catch (error) {
+      if (error instanceof IaApiClientError && error.code === 'failed_ia_request') {
+        throw new IaAnalyzeServiceError(
+          'Failed to call model API',
+          502,
+          'failed_ia_request',
+        );
+      }
+
       throw new IaAnalyzeServiceError(
         'Invalid AI response JSON',
         502,
@@ -304,11 +283,7 @@ export async function runIaAnalyzeEngine(
     const items = Array.isArray(parsed?.feedbacks) ? parsed.feedbacks : [];
 
     items.forEach((item) => {
-      if (
-        typeof item.feedback_id !== 'string' ||
-        !validSentimentsSet.has(item.sentiment) ||
-        !feedbackById.has(item.feedback_id)
-      ) {
+      if (!canProcessAnalyzedItem({ item, feedbackById })) {
         return;
       }
 
