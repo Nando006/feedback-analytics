@@ -6,9 +6,16 @@ import {
 } from '../../services/iaStudioService.js';
 import { API_ERROR_INTERNAL_SERVER_ERROR } from '../../../../../lib/constants/server/errors.js';
 import { sendTypedError } from '../../../../../lib/utils/sendTypedError.js';
+import type {
+  IaStudioRunRequest,
+  IaStudioRunResponse,
+  IaStudioScopeType,
+} from '../../../../../lib/interfaces/contracts/ia-studio.contract.js';
 
-function parseScopeType(value: unknown) {
-  const normalized = String(value ?? '').trim().toUpperCase();
+function parseScopeType(value: unknown): IaStudioScopeType | undefined {
+  const normalized = String(value ?? '')
+    .trim()
+    .toUpperCase();
 
   if (
     normalized === 'COMPANY' ||
@@ -29,17 +36,18 @@ export function EndpointsIAStudio(app: express.Express) {
     async (req, res) => {
       const supabase = req.supabase!;
       const user = req.user!;
+      const body = (req.body ?? {}) as IaStudioRunRequest;
 
       const limit =
-        typeof req.body?.limit === 'number' && req.body.limit > 0
-          ? req.body.limit
+        typeof body.limit === 'number' && body.limit > 0
+          ? body.limit
           : undefined;
 
-      const scope_type = parseScopeType(req.body?.scope_type);
+      const scope_type = parseScopeType(body.scope_type);
       const catalog_item_id =
-        typeof req.body?.catalog_item_id === 'string' &&
-        req.body.catalog_item_id.trim().length > 0
-          ? req.body.catalog_item_id.trim()
+        typeof body.catalog_item_id === 'string' &&
+        body.catalog_item_id.trim().length > 0
+          ? body.catalog_item_id.trim()
           : undefined;
 
       try {
@@ -49,7 +57,7 @@ export function EndpointsIAStudio(app: express.Express) {
           options: { limit, scope_type, catalog_item_id },
         });
 
-        return res.json(result);
+        return res.json(result satisfies IaStudioRunResponse);
       } catch (error) {
         if (error instanceof IaStudioServiceError) {
           if (error.code === 'invalid_ai_response') {
@@ -63,6 +71,6 @@ export function EndpointsIAStudio(app: express.Express) {
         console.error('Erro inesperado no endpoint IA Studio:', error);
         return sendTypedError(res, 500, API_ERROR_INTERNAL_SERVER_ERROR);
       }
-    },
+    }
   );
 }
