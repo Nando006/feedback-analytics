@@ -20,7 +20,12 @@ export function createSupabaseServerClient(
   opts?: { remember?: boolean },
 ) {
   const isProd = process.env.NODE_ENV === 'production';
-  // const cookies = parseCookies(req.headers.cookie);
+  const crossSiteCookie = String(process.env.COOKIE_CROSS_SITE ?? '').trim() === 'true';
+
+  // Em ambientes cruzados (web e api em subdomínios diferentes da Vercel),
+  // use SameSite=None + Secure para o browser aceitar o cookie de sessão.
+  const sameSite: 'lax' | 'none' =
+    isProd && crossSiteCookie ? 'none' : 'lax';
 
   return createServerClient(
     process.env.VITE_SUPABASE_URL as string,
@@ -39,14 +44,16 @@ export function createSupabaseServerClient(
           if (res.headersSent || res.writableEnded) {
             return;
           }
+
           const remember = opts?.remember === true;
           const base = {
             httpOnly: true,
-            secure: isProd,
-            sameSite: 'lax' as const,
+            secure: sameSite === 'none' ? true : isProd,
+            sameSite,
             path: '/',
             ...(remember ? { maxAge: 60 * 60 * 24 * 30 * 1000 } : {}),
           };
+
           for (const { name, value, options } of cookiesToSet) {
             res.cookie(name, value, { ...base, ...(options ?? {}) });
           }
