@@ -1,9 +1,6 @@
 import express from 'express';
 import { requireAuth } from '../../middleware/auth.js';
-import {
-  analyzeFeedbacksForEnterprise,
-  IaStudioServiceError,
-} from '../../services/iaStudioService.js';
+import { IaStudioServiceError } from '../../services/iaStudioService.js';
 import { API_ERROR_INTERNAL_SERVER_ERROR } from '../../../../../lib/constants/server/errors.js';
 import { sendTypedError } from '../../../../../lib/utils/sendTypedError.js';
 import type {
@@ -11,6 +8,7 @@ import type {
   IaStudioRunResponse,
   IaStudioScopeType,
 } from '../../../../../lib/interfaces/contracts/ia-studio.contract.js';
+import { runIaStudioAnalysis } from '../../services/iaStudioGatewayClient.js';
 
 function parseScopeType(value: unknown): IaStudioScopeType | undefined {
   const normalized = String(value ?? '')
@@ -51,7 +49,7 @@ export function EndpointsIAStudio(app: express.Express) {
           : undefined;
 
       try {
-        const result = await analyzeFeedbacksForEnterprise({
+        const result = await runIaStudioAnalysis({
           supabase,
           userId: user.id,
           options: { limit, scope_type, catalog_item_id },
