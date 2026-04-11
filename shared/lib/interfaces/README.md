@@ -10,7 +10,7 @@ Este diretório contém apenas contratos de tipagem compartilhados no projeto.
 
 - `contracts/`
   - Contratos de entrada/saída reutilizáveis entre frontend e backend (payloads e responses).
-  - Ex.: `qrcode.contract.ts`, `enterprise.contract.ts`, `action-data.contract.ts`
+  - Ex.: `qrcode/question.contract.ts`, `ia-analyze/run.contract.ts`, `enterprise.contract.ts`, `action-data.contract.ts`
 
 - `domain/`
   - Tipos de domínio reutilizáveis entre services, loaders, pages e components.
