@@ -1,6 +1,7 @@
 import express from 'express';
 import { requireAuth } from '../../middleware/auth.js';
 import { IaStudioServiceError } from '../../services/iaStudioService.js';
+import { runIaStudioAnalysis } from '../../services/iaStudioGatewayClient.js';
 import { API_ERROR_INTERNAL_SERVER_ERROR } from '../../../../../lib/constants/server/errors.js';
 import { sendTypedError } from '../../../../../lib/utils/sendTypedError.js';
 import type {
@@ -8,7 +9,6 @@ import type {
   IaStudioRunResponse,
   IaStudioScopeType,
 } from '../../../../../lib/interfaces/contracts/ia-studio.contract.js';
-import { runIaStudioAnalysis } from '../../services/iaStudioGatewayClient.js';
 
 function parseScopeType(value: unknown): IaStudioScopeType | undefined {
   const normalized = String(value ?? '')
@@ -59,7 +59,6 @@ export function EndpointsIAStudio(app: express.Express) {
       } catch (error) {
         if (error instanceof IaStudioServiceError) {
           if (error.code === 'invalid_ai_response') {
-            // Se for problema de JSON da IA, vale logar o detalhe se existir no ambiente de logs
             console.error('Resposta inválida da IA no IA Studio:', error);
           }
 
