@@ -4,7 +4,7 @@ import type {
   CollectingDataEnterprise,
   UpdateCollectingDataPayload,
 } from 'lib/interfaces/entities/enterprise.entity';
-import { getJson, patchJson } from 'lib/utils/http';
+import { getJson, patchJson } from 'src/lib/utils/http';
 
 export function ServiceGetEnterprise() {
   return getJson<ApiEnterpriseResponse>('/api/protected/user/enterprise');

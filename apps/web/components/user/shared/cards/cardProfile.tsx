@@ -1,5 +1,5 @@
 import SVGImageProfile from 'components/svg/imageProfile';
-import { useTruncatedText } from 'lib/utils/truncateText';
+import { useTruncatedText } from 'src/lib/utils/truncateText';
 import { FaSignOutAlt } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import type { CardProfileProps } from './ui.types';

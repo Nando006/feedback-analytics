@@ -1,9 +1,9 @@
 import express from 'express';
-import { sendTypedError } from 'lib/utils/sendTypedError.js';
+import { sendTypedError } from 'server/utils/sendTypedError.js';
 import {
   API_ERROR_INTERNAL_ERROR,
   API_ERROR_INVALID_PAYLOAD,
-} from 'lib/constants/server/errors.js';
+} from 'server/constants/errors.js';
 import { createSupabaseServerClient } from '../../supabase.js';
 import z from 'zod';
 

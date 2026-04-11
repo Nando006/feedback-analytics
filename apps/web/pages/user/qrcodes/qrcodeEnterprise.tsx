@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useFetcher, useLoaderData, useRouteLoaderData } from 'react-router-dom';
-import { getQrCodeUrl } from 'lib/utils/qrcode';
+import { getQrCodeUrl } from 'src/lib/utils/qrcode';
 import { useToast } from 'components/public/forms/messages/useToast';
 import type { Enterprise } from 'lib/interfaces/entities/enterprise.entity';
 import type { AuthUser } from 'lib/interfaces/entities/auth-user.entity';
@@ -8,7 +8,7 @@ import type { LoaderQrCodeEnterprise } from 'src/routes/loaders/loaderQrCodeEnte
 import {
   INTENT_QR_DISABLE,
   INTENT_QR_ENABLE,
-} from 'lib/constants/routes/intents';
+} from 'src/lib/constants/routes/intents';
 import SectionQrHeader from 'components/user/pages/qrcodeEnterprise/SectionQrHeader';
 import SectionQrInstructions from 'components/user/pages/qrcodeEnterprise/SectionQrInstructions';
 import SectionQrCodeDisplay from 'components/user/pages/qrcodeEnterprise/SectionQrCodeDisplay';

@@ -1,7 +1,7 @@
 import CardSimple from 'components/user/shared/cards/cardSimple';
 import type { EnterpriseAndCollectingData } from 'lib/interfaces/entities/enterprise.entity';
-import { formatDocument } from 'lib/utils/formatDocument';
-import { formatPhone } from 'lib/utils/formatPhone';
+import { formatDocument } from 'src/lib/utils/formatDocument';
+import { formatPhone } from 'src/lib/utils/formatPhone';
 
 export default function Info({
   enterprise,

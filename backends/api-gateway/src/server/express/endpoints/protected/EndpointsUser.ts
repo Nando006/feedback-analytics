@@ -6,8 +6,8 @@ import {
   API_ERROR_INVALID_PAYLOAD,
   API_ERROR_UPDATE_FAILED,
   API_ERROR_VERIFY_FAILED,
-} from 'lib/constants/server/errors.js';
-import { sendTypedError } from 'lib/utils/sendTypedError.js';
+} from 'server/constants/errors.js';
+import { sendTypedError } from 'server/utils/sendTypedError.js';
 
 export function EndpointsUser(app: express.Express) {
   app.get('/api/protected/user/auth_user', requireAuth, async (req, res) => {

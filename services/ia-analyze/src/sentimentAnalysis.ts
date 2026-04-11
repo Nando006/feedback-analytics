@@ -6,7 +6,7 @@
 
 import type {
   IaAnalyzeSentiment,
-} from '../../../shared/lib/interfaces/contracts/ia-analyze/scope.contract.js';
+} from '../../../shared/interfaces/contracts/ia-analyze/scope.contract.js';
 import type { CanProcessAnalyzedItemParams } from '../types/sentimentAnalysis.types.js';
 
 export const VALID_SENTIMENTS: IaAnalyzeSentiment[] = [

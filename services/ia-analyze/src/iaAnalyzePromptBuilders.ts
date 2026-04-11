@@ -4,7 +4,7 @@
  * buscando respostas JSON consistentes para o pipeline de analise.
  */
 
-import type { IaAnalyzeScopeType } from '../../../shared/lib/interfaces/contracts/ia-analyze/scope.contract.js';
+import type { IaAnalyzeScopeType } from '../../../shared/interfaces/contracts/ia-analyze/scope.contract.js';
 import type {
   BuildIaPromptByScopeParams,
   PromptExpectedSchema,

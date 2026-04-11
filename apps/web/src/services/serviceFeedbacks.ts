@@ -11,7 +11,7 @@ import type {
   IaAnalyzeRunRequest,
   IaAnalyzeRunResponse,
 } from 'lib/interfaces/contracts/ia-analyze/run.contract';
-import { getJson, postJson } from 'lib/utils/http';
+import { getJson, postJson } from 'src/lib/utils/http';
 
 export function ServiceGetFeedbacks(filters: FeedbackFilters = {}) {
   const params = new URLSearchParams();

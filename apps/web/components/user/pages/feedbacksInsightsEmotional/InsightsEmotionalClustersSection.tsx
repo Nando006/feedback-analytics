@@ -1,6 +1,6 @@
 import type { InsightsEmotionalClustersSectionProps } from './ui.types';
 
-import { sentimentLabel } from 'lib/utils/sentiment';
+import { sentimentLabel } from 'src/lib/utils/sentiment';
 
 export default function InsightsEmotionalClustersSection({
   clusters,

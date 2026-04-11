@@ -11,8 +11,8 @@ import {
   API_ERROR_PHONE_TAKEN,
   API_ERROR_SIGNUP_FAILED,
   type ApiRegisterErrorCode,
-} from 'lib/constants/server/errors.js';
-import { sendTypedError } from 'lib/utils/sendTypedError.js';
+} from 'server/constants/errors.js';
+import { sendTypedError } from 'server/utils/sendTypedError.js';
 
 function mapSupabaseRegisterError(rawMessage?: string): {
   http: number;

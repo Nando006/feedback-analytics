@@ -7,7 +7,7 @@ import {
   INTENT_FEEDBACK_SETTINGS_SAVE_DEPARTMENTS_CATALOG,
   INTENT_FEEDBACK_SETTINGS_SAVE_PRODUCTS_CATALOG,
   INTENT_FEEDBACK_SETTINGS_SAVE_SERVICES_CATALOG,
-} from 'lib/constants/routes/intents';
+} from 'src/lib/constants/routes/intents';
 import { ServiceUpdateCollectingDataEnterprise } from 'src/services/serviceEnterprise';
 import type { ActionFunctionArgs } from 'react-router-dom';
 

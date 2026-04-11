@@ -5,7 +5,7 @@ import type {
 import type {
   PublicQrFeedbackScope,
   PublicQrFeedbackTemplateKey,
-} from 'lib/utils/publicQrFeedbackTemplateEngine';
+} from 'src/lib/utils/publicQrFeedbackTemplateEngine';
 
 export type PublicQrFeedbackTemplateRendererProps = {
   scope: PublicQrFeedbackScope;

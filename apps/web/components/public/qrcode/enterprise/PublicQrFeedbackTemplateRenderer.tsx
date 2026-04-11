@@ -1,7 +1,7 @@
 import FormQRCodeFeedback from 'components/public/forms/formQRCodeFeedback';
 import {
   resolvePublicQrFeedbackTemplate,
-} from 'lib/utils/publicQrFeedbackTemplateEngine';
+} from 'src/lib/utils/publicQrFeedbackTemplateEngine';
 import type {
   FeedbackTemplateRegistry,
   PublicQrFeedbackTemplateRendererProps,

@@ -3,7 +3,7 @@ import { useSubmit, useActionData } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { emailUpdateSchema } from 'lib/schemas/user/emailUpdateSchema';
-import { INTENT_PROFILE_UPDATE_EMAIL } from 'lib/constants/routes/intents';
+import { INTENT_PROFILE_UPDATE_EMAIL } from 'src/lib/constants/routes/intents';
 import { useToast } from 'components/public/forms/messages/useToast';
 import { FaCircleExclamation, FaCircleInfo } from 'react-icons/fa6';
 import type { ActionData } from 'lib/interfaces/contracts/action-data.contract';

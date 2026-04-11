@@ -1,6 +1,6 @@
 import type { AnalyticsAllItemsSectionProps } from './ui.types';
 
-import { sentimentLabel } from 'lib/utils/sentiment';
+import { sentimentLabel } from 'src/lib/utils/sentiment';
 
 function sentimentClass(sentiment: 'positive' | 'neutral' | 'negative') {
   if (sentiment === 'positive') {

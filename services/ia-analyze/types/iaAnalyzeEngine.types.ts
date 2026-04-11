@@ -1,4 +1,4 @@
-import type { IaAnalyzeFeedbackInput } from '../../../shared/lib/interfaces/contracts/ia-analyze/input.contract.js';
+import type { IaAnalyzeFeedbackInput } from '../../../shared/interfaces/contracts/ia-analyze/input.contract.js';
 
 /**
  * Tipos internos do motor de analise do dominio ia-analyze.

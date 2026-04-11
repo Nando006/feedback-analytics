@@ -5,11 +5,11 @@ on:
     branches: [main, homolog]
     paths:
       - "services/ia-analyze/**"
-      - "shared/lib/interfaces/contracts/ia-analyze/**"
+      - "shared/interfaces/contracts/ia-analyze/**"
       - "services/ia-analyze/package.json"
       - "services/ia-analyze/package-lock.json"
-      - "shared/lib/package.json"
-      - "shared/lib/package-lock.json"
+      - "shared/package.json"
+      - "shared/package-lock.json"
       - ".github/workflows/deploy-ia-analyze.yml"
   workflow_dispatch:
 
@@ -28,11 +28,11 @@ jobs:
           cache: "npm"
           cache-dependency-path: |
             services/ia-analyze/package-lock.json
-            shared/lib/package-lock.json
+            shared/package-lock.json
 
       - name: Install dependencies
         run: |
-          npm ci --prefix shared/lib
+          npm ci --prefix shared
           npm ci --prefix services/ia-analyze
 
       - name: Deploy preview (homolog)

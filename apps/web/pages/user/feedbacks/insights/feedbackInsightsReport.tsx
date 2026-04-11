@@ -10,7 +10,7 @@ import type {
   FeedbackAnalysisSummary,
 } from 'lib/interfaces/domain/feedback.domain';
 import type { LoaderFeedbacksInsightsReport } from 'src/routes/loaders/loaderFeedbacksInsightsReport';
-import { INTENT_FEEDBACK_RUN_IA } from 'lib/constants/routes/intents';
+import { INTENT_FEEDBACK_RUN_IA } from 'src/lib/constants/routes/intents';
 import InsightsReportLoadingState from 'components/user/pages/feedbacksInsightsReport/InsightsReportLoadingState';
 import InsightsReportErrorState from 'components/user/pages/feedbacksInsightsReport/InsightsReportErrorState';
 import InsightsReportHeaderSection from 'components/user/pages/feedbacksInsightsReport/InsightsReportHeaderSection';

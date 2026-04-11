@@ -1,4 +1,4 @@
-import { requestApi } from 'lib/utils/http';
+import { requestApi } from 'src/lib/utils/http';
 import { supabase } from 'src/supabase/supabaseClient';
 
 export type LoginPayload =

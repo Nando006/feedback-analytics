@@ -1,7 +1,7 @@
 import type {
   IaAnalyzeFeedbackInput,
-} from '../../../shared/lib/interfaces/contracts/ia-analyze/input.contract.js';
-import type { IaAnalyzeRemoteFeedbackAnalysis } from '../../../shared/lib/interfaces/contracts/ia-analyze/remote.contract.js';
+} from '../../../shared/interfaces/contracts/ia-analyze/input.contract.js';
+import type { IaAnalyzeRemoteFeedbackAnalysis } from '../../../shared/interfaces/contracts/ia-analyze/remote.contract.js';
 
 /**
  * Tipos do modulo de validacao de sentimento do dominio ia-analyze.
