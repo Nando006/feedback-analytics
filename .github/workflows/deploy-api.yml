@@ -4,12 +4,12 @@ on:
   push:
     branches: [main, homolog]
     paths:
-      - "apps/backend-gateway/src/server/**"
+      - "backends/api-gateway/src/server/**"
       - "shared/lib/**"
       - "database/**"
-      - "apps/backend-gateway/vercel.json"
-      - "apps/backend-gateway/package.json"
-      - "apps/backend-gateway/package-lock.json"
+      - "backends/api-gateway/vercel.json"
+      - "backends/api-gateway/package.json"
+      - "backends/api-gateway/package-lock.json"
       - ".github/workflows/deploy-api.yml"
   workflow_dispatch:
 
@@ -27,13 +27,13 @@ jobs:
           node-version: "20"
           cache: "npm"
           cache-dependency-path: |
-            apps/backend-gateway/package-lock.json
+            backends/api-gateway/package-lock.json
             shared/lib/package-lock.json
 
       - name: Install dependencies
         run: |
           npm ci --prefix shared/lib
-          npm ci --prefix apps/backend-gateway
+          npm ci --prefix backends/api-gateway
 
       - name: Deploy preview (homolog)
         if: github.ref_name == 'homolog'
@@ -41,7 +41,7 @@ jobs:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_API }}
-        run: npx vercel deploy --yes --token "$VERCEL_TOKEN" --local-config apps/backend-gateway/vercel.json
+        run: npx vercel deploy --yes --token "$VERCEL_TOKEN" --local-config backends/api-gateway/vercel.json
 
       - name: Deploy production (main)
         if: github.ref_name == 'main'
@@ -49,4 +49,4 @@ jobs:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_API }}
-        run: npx vercel deploy --yes --prod --token "$VERCEL_TOKEN" --local-config apps/backend-gateway/vercel.json
+        run: npx vercel deploy --yes --prod --token "$VERCEL_TOKEN" --local-config backends/api-gateway/vercel.json

@@ -4,7 +4,7 @@ on:
   push:
     branches: [main, homolog]
     paths-ignore:
-      - "apps/backend-gateway/**"
+      - "backends/api-gateway/**"
       - "database/**"
       - "services/ia-studio/**"
   workflow_dispatch:

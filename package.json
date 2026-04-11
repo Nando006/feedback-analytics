@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "npm run dev --prefix apps/web",
     "dev:web": "npm run dev --prefix apps/web",
-    "dev:api": "npm run dev --prefix apps/backend-gateway",
+    "dev:api": "npm run dev --prefix backends/api-gateway",
     "dev:ia": "npm run dev --prefix services/ia-studio",
     "server:dev": "npm run dev:api",
     "server:ia-studio:dev": "npm run dev:ia",
@@ -15,7 +15,7 @@
     "build:web": "npm run build --prefix apps/web",
     "lint": "npm run lint:api && npm run lint:web && npm run lint:ia",
     "lint:web": "npm run lint --prefix apps/web",
-    "lint:api": "npm run lint --prefix apps/backend-gateway",
+    "lint:api": "npm run lint --prefix backends/api-gateway",
     "lint:ia": "npm run lint --prefix services/ia-studio",
     "preview": "npm run preview --prefix apps/web",
     "test": "npm run test --prefix apps/web",

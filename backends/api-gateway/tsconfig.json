@@ -22,7 +22,7 @@
     "ignoreDeprecations": "6.0",
     "paths": {
       "lib/*": ["shared/lib/*"],
-      "server/*": ["apps/backend-gateway/src/server/*"]
+      "server/*": ["backends/api-gateway/src/server/*"]
     }
   },
   "include": [

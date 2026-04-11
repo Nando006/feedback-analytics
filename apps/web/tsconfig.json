@@ -31,7 +31,7 @@
       "layouts/*": ["layouts/*"],
       "lib/*": ["../../shared/lib/*"],
       "src/*": ["src/*"],
-      "server/*": ["../backend-gateway/src/server/*"],
+      "server/*": ["../../backends/api-gateway/src/server/*"],
       "styles/*": ["styles/*"]
     }
   },
