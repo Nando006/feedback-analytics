@@ -6,7 +6,6 @@ import type {
   FeedbackInsightsReport,
   FeedbackAnalysisOptions,
   FeedbackInsightsReportOptions,
-  FeedbackInsightScopeType,
 } from 'lib/interfaces/domain/feedback.domain';
 import type {
   IaStudioRunRequest,

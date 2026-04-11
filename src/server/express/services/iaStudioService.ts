@@ -6,10 +6,15 @@ import {
   type PromptEnterpriseContext,
   type PromptFeedbackInput,
 } from './iaStudioPromptBuilders.js';
+import type {
+  IaStudioRunResponse,
+  IaStudioInsights,
+  IaStudioSentiment,
+} from '../../../../lib/interfaces/contracts/ia-studio.contract.js';
 
 export type SupabaseServerClient = ReturnType<typeof createSupabaseServerClient>;
 
-export type Sentiment = 'positive' | 'negative' | 'neutral';
+export type Sentiment = IaStudioSentiment;
 
 export type FeedbackForAnalysis = PromptFeedbackInput;
 
@@ -20,29 +25,9 @@ export type IaFeedbackAnalysisItem = {
   keywords: string[];
 };
 
-export type IaGlobalInsights = {
-  summary?: string;
-  recommendations?: string[];
-};
+export type IaGlobalInsights = IaStudioInsights;
 
-export type IaStudioResult = {
-  analyzedCount: number;
-  feedbacksAnalyzed: {
-    id: string;
-    feedback_id: string;
-    sentiment: Sentiment;
-    categories: string[];
-    keywords: string[];
-  }[];
-  globalInsights: IaGlobalInsights | null;
-  contexts: Array<{
-    scope_type: FeedbackScopeType;
-    catalog_item_id: string | null;
-    catalog_item_name: string | null;
-    analyzedCount: number;
-    globalInsights: IaGlobalInsights | null;
-  }>;
-};
+export type IaStudioResult = IaStudioRunResponse;
 
 type IaStudioResultContext = IaStudioResult['contexts'][number];
 
