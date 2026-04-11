@@ -2,7 +2,11 @@
  * Escopos aceitos para execução de análise IA.
  * Usado em: Frontend (filtros), gateway e serviço ia-studio
  */
-export type IaStudioScopeType = | 'COMPANY' | 'PRODUCT' | 'SERVICE' | 'DEPARTMENT';
+export type IaStudioScopeType =
+  | 'COMPANY'
+  | 'PRODUCT'
+  | 'SERVICE'
+  | 'DEPARTMENT';
 
 /**
  * Sentimento padrão retornado pela análise.
@@ -46,7 +50,7 @@ export interface IaStudioContext {
   catalog_item_id: string | null;
   catalog_item_name: string | null;
   analyzedCount: number;
-  globalInsights: IaStudioInsights | null
+  globalInsights: IaStudioInsights | null;
 }
 
 /**
