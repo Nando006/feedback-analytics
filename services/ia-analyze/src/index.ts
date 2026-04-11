@@ -9,7 +9,7 @@ import express from 'express';
 import { IaAnalyzeServiceError, runIaAnalyzeEngine } from './iaAnalyzeEngine.js';
 import { isInternalRequestAuthorized } from '../lib/isInternalRequestAuthorized.js';
 import { isValidRemotePayload } from '../lib/isValidRemotePayload.js';
-import type { IaAnalyzeRemoteRunResponse } from '../../../shared/lib/interfaces/contracts/ia-analyze/remote.contract.js';
+import type { IaAnalyzeRemoteRunResponse } from '../../../shared/interfaces/contracts/ia-analyze/remote.contract.js';
 
 const app = express();
 

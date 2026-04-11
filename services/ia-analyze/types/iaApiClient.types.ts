@@ -1,10 +1,10 @@
 import type {
   IaAnalyzeEnterpriseContext,
   IaAnalyzeFeedbackInput,
-} from '../../../shared/lib/interfaces/contracts/ia-analyze/input.contract.js';
-import type { IaAnalyzeScopeType } from '../../../shared/lib/interfaces/contracts/ia-analyze/scope.contract.js';
-import type { IaAnalyzeInsights } from '../../../shared/lib/interfaces/contracts/ia-analyze/analysis.contract.js';
-import type { IaAnalyzeRemoteFeedbackAnalysis } from '../../../shared/lib/interfaces/contracts/ia-analyze/remote.contract.js';
+} from '../../../shared/interfaces/contracts/ia-analyze/input.contract.js';
+import type { IaAnalyzeScopeType } from '../../../shared/interfaces/contracts/ia-analyze/scope.contract.js';
+import type { IaAnalyzeInsights } from '../../../shared/interfaces/contracts/ia-analyze/analysis.contract.js';
+import type { IaAnalyzeRemoteFeedbackAnalysis } from '../../../shared/interfaces/contracts/ia-analyze/remote.contract.js';
 
 /**
  * Tipos do cliente de IA do dominio ia-analyze.

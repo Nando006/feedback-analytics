@@ -24,11 +24,11 @@ jobs:
           cache: "npm"
           cache-dependency-path: |
             apps/web/package-lock.json
-            shared/lib/package-lock.json
+            shared/package-lock.json
 
       - name: Install dependecies
         run: |
-          npm ci --prefix shared/lib
+          npm ci --prefix shared
           npm ci --prefix apps/web
 
       - name: Deploy preview (homolog)

@@ -11,8 +11,8 @@ import type {
   IaAnalyzeRemoteFeedbackAnalysis,
   IaAnalyzeRemoteRunRequest,
   IaAnalyzeRemoteRunResponse,
-} from '../../../shared/lib/interfaces/contracts/ia-analyze/remote.contract.js';
-import type { IaAnalyzeContext } from '../../../shared/lib/interfaces/contracts/ia-analyze/analysis.contract.js';
+} from '../../../shared/interfaces/contracts/ia-analyze/remote.contract.js';
+import type { IaAnalyzeContext } from '../../../shared/interfaces/contracts/ia-analyze/analysis.contract.js';
 import type {
   SanitizeAnalysisTermsParams,
   SanitizeTermListParams,
