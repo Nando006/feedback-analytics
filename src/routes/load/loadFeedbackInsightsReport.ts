@@ -1,13 +1,20 @@
 import type {
   FeedbackAnalysisSummary,
-  FeedbackInsightScopeType,
-  FeedbackInsightsReportOptions,
   FeedbackInsightsReport,
 } from 'lib/interfaces/domain/feedback.domain';
 import type { CollectingDataEnterprise } from 'lib/interfaces/entities/enterprise.entity';
+import type {
+  IaStudioRunRequest,
+  IaStudioScopeType,
+} from 'lib/interfaces/contracts/ia-studio.contract';
 import { ServiceGetFeedbackInsightsReport } from 'src/services/serviceFeedbacks';
 import { loadFeedbackAnalysisData } from 'src/routes/load/loadFeedbackAnalysis';
 import { ServiceGetCollectingDataEnterprise } from 'src/services/serviceEnterprise';
+
+type FeedbackInsightsReportFilterOptions = Pick<
+  IaStudioRunRequest,
+  'scope_type' | 'catalog_item_id'
+>;
 
 type InsightsCatalogItemOption = {
   id: string;
@@ -18,14 +25,14 @@ type InsightsCatalogItemOption = {
 export type FeedbackInsightsReportLoadData = {
   report: FeedbackInsightsReport | null;
   summary: FeedbackAnalysisSummary | null;
-  availableScopes: FeedbackInsightScopeType[];
+  availableScopes: IaStudioScopeType[];
   catalogItemOptions: InsightsCatalogItemOption[];
   analysisGuard: {
     canAnalyze: boolean;
     message: string | null;
   };
   filters: {
-    scope_type: FeedbackInsightScopeType;
+    scope_type: IaStudioScopeType;
     catalog_item_id: string | null;
   };
   error: string | null;
@@ -44,12 +51,12 @@ function hasRequiredEnterpriseInfo(collecting: CollectingDataEnterprise | null) 
 }
 
 export async function loadFeedbackInsightsReportData(
-  options?: FeedbackInsightsReportOptions,
+  options?: FeedbackInsightsReportFilterOptions,
 ): Promise<FeedbackInsightsReportLoadData> {
   const collectingData = await ServiceGetCollectingDataEnterprise().catch(() => null);
   const canAnalyze = hasRequiredEnterpriseInfo(collectingData);
 
-  const availableScopes: FeedbackInsightScopeType[] = ['COMPANY'];
+  const availableScopes: IaStudioScopeType[] = ['COMPANY'];
   const catalogItemOptions: InsightsCatalogItemOption[] = [];
 
   const productItems = collectingData?.catalog_products ?? [];

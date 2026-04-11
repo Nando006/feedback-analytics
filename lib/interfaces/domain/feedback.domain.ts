@@ -1,3 +1,5 @@
+import type { IaStudioScopeType } from 'lib/interfaces/contracts/ia-studio.contract';
+
 /**
  * Cliente identificado no dispositivo associado ao feedback.
  * Usado em: lib/interfaces/domain/feedback.domain.ts (composição de TrackedDevice).
@@ -146,7 +148,7 @@ export type FeedbackCategory =
   | 'SERVICE'
   | 'DEPARTMENT';
 
-export type FeedbackInsightScopeType = FeedbackCategory;
+export type FeedbackInsightScopeType = IaStudioScopeType;
 
 /**
  * Sentimento classificado para um feedback analisado.
