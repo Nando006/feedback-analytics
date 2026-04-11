@@ -4,15 +4,15 @@ import type {
 } from 'lib/interfaces/domain/feedback.domain';
 import type { CollectingDataEnterprise } from 'lib/interfaces/entities/enterprise.entity';
 import type {
-  IaStudioRunRequest,
-  IaStudioScopeType,
-} from 'lib/interfaces/contracts/ia-studio.contract';
+  IaAnalyzeRunRequest,
+  IaAnalyzeScopeType,
+} from 'lib/interfaces/contracts/ia-analyze.contract';
 import { ServiceGetFeedbackInsightsReport } from 'src/services/serviceFeedbacks';
 import { loadFeedbackAnalysisData } from 'src/routes/load/loadFeedbackAnalysis';
 import { ServiceGetCollectingDataEnterprise } from 'src/services/serviceEnterprise';
 
 type FeedbackInsightsReportFilterOptions = Pick<
-  IaStudioRunRequest,
+  IaAnalyzeRunRequest,
   'scope_type' | 'catalog_item_id'
 >;
 
@@ -25,14 +25,14 @@ type InsightsCatalogItemOption = {
 export type FeedbackInsightsReportLoadData = {
   report: FeedbackInsightsReport | null;
   summary: FeedbackAnalysisSummary | null;
-  availableScopes: IaStudioScopeType[];
+  availableScopes: IaAnalyzeScopeType[];
   catalogItemOptions: InsightsCatalogItemOption[];
   analysisGuard: {
     canAnalyze: boolean;
     message: string | null;
   };
   filters: {
-    scope_type: IaStudioScopeType;
+    scope_type: IaAnalyzeScopeType;
     catalog_item_id: string | null;
   };
   error: string | null;
@@ -56,7 +56,7 @@ export async function loadFeedbackInsightsReportData(
   const collectingData = await ServiceGetCollectingDataEnterprise().catch(() => null);
   const canAnalyze = hasRequiredEnterpriseInfo(collectingData);
 
-  const availableScopes: IaStudioScopeType[] = ['COMPANY'];
+  const availableScopes: IaAnalyzeScopeType[] = ['COMPANY'];
   const catalogItemOptions: InsightsCatalogItemOption[] = [];
 
   const productItems = collectingData?.catalog_products ?? [];

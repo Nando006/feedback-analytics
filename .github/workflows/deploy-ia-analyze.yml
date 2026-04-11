@@ -1,22 +1,22 @@
-name: Deploy IA Studio Service (Vercel)
+name: Deploy IA Analyze Service (Vercel)
 
 on:
   push:
     branches: [main, homolog]
     paths:
-      - "services/ia-studio/**"
-      - "shared/lib/services/iaStudioService.ts"
-      - "shared/lib/services/iaStudioPromptBuilders.ts"
-      - "shared/lib/interfaces/contracts/ia-studio.contract.ts"
-      - "services/ia-studio/package.json"
-      - "services/ia-studio/package-lock.json"
+      - "services/ia-analyze/**"
+      - "shared/lib/services/iaAnalyzeService.ts"
+      - "shared/lib/services/iaAnalyzePromptBuilders.ts"
+      - "shared/lib/interfaces/contracts/ia-analyze.contract.ts"
+      - "services/ia-analyze/package.json"
+      - "services/ia-analyze/package-lock.json"
       - "shared/lib/package.json"
       - "shared/lib/package-lock.json"
-      - ".github/workflows/deploy-ia-studio.yml"
+      - ".github/workflows/deploy-ia-analyze.yml"
   workflow_dispatch:
 
 jobs:
-  deploy-ia-studio:
+  deploy-ia-analyze:
     runs-on: ubuntu-latest
 
     steps:
@@ -29,26 +29,26 @@ jobs:
           node-version: "20"
           cache: "npm"
           cache-dependency-path: |
-            services/ia-studio/package-lock.json
+            services/ia-analyze/package-lock.json
             shared/lib/package-lock.json
 
       - name: Install dependencies
         run: |
           npm ci --prefix shared/lib
-          npm ci --prefix services/ia-studio
+          npm ci --prefix services/ia-analyze
 
       - name: Deploy preview (homolog)
         if: github.ref_name == 'homolog'
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets['VERCEL_PROJECT_ID_IA_STUDIO'] }}
-        run: npx vercel deploy --yes --token "$VERCEL_TOKEN" --local-config services/ia-studio/vercel.json
+          VERCEL_PROJECT_ID: ${{ secrets['VERCEL_PROJECT_ID_IA_ANALYZE'] }}
+        run: npx vercel deploy --yes --token "$VERCEL_TOKEN" --local-config services/ia-analyze/vercel.json
 
       - name: Deploy production (main)
         if: github.ref_name == 'main'
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets['VERCEL_PROJECT_ID_IA_STUDIO'] }}
-        run: npx vercel deploy --yes --prod --token "$VERCEL_TOKEN" --local-config services/ia-studio/vercel.json
+          VERCEL_PROJECT_ID: ${{ secrets['VERCEL_PROJECT_ID_IA_ANALYZE'] }}
+        run: npx vercel deploy --yes --prod --token "$VERCEL_TOKEN" --local-config services/ia-analyze/vercel.json

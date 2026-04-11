@@ -1,16 +1,16 @@
 import express from 'express';
 import { requireAuth } from '../../middleware/auth.js';
-import { IaStudioServiceError } from '../../services/iaStudioService.js';
-import { runIaStudioAnalysis } from '../../services/iaStudioGatewayClient.js';
+import { IaAnalyzeServiceError } from '../../services/iaAnalyzeService.js';
+import { runIaAnalyzeAnalysis } from '../../services/iaAnalyzeGatewayClient.js';
 import { API_ERROR_INTERNAL_SERVER_ERROR } from 'lib/constants/server/errors.js';
 import { sendTypedError } from 'lib/utils/sendTypedError.js';
 import type {
-  IaStudioRunRequest,
-  IaStudioRunResponse,
-  IaStudioScopeType,
-} from 'lib/interfaces/contracts/ia-studio.contract.js';
+  IaAnalyzeRunRequest,
+  IaAnalyzeRunResponse,
+  IaAnalyzeScopeType,
+} from 'lib/interfaces/contracts/ia-analyze.contract.js';
 
-function parseScopeType(value: unknown): IaStudioScopeType | undefined {
+function parseScopeType(value: unknown): IaAnalyzeScopeType | undefined {
   const normalized = String(value ?? '')
     .trim()
     .toUpperCase();
@@ -27,14 +27,14 @@ function parseScopeType(value: unknown): IaStudioScopeType | undefined {
   return undefined;
 }
 
-export function EndpointsIAStudio(app: express.Express) {
+export function EndpointsIAAnalyze(app: express.Express) {
   app.post(
-    '/api/protected/ia-studio/send-message',
+    '/api/protected/ia-analyze/send-message',
     requireAuth,
     async (req, res) => {
       const supabase = req.supabase!;
       const user = req.user!;
-      const body = (req.body ?? {}) as IaStudioRunRequest;
+      const body = (req.body ?? {}) as IaAnalyzeRunRequest;
 
       const limit =
         typeof body.limit === 'number' && body.limit > 0
@@ -49,23 +49,23 @@ export function EndpointsIAStudio(app: express.Express) {
           : undefined;
 
       try {
-        const result = await runIaStudioAnalysis({
+        const result = await runIaAnalyzeAnalysis({
           supabase,
           userId: user.id,
           options: { limit, scope_type, catalog_item_id },
         });
 
-        return res.json(result satisfies IaStudioRunResponse);
+        return res.json(result satisfies IaAnalyzeRunResponse);
       } catch (error) {
-        if (error instanceof IaStudioServiceError) {
+        if (error instanceof IaAnalyzeServiceError) {
           if (error.code === 'invalid_ai_response') {
-            console.error('Resposta inválida da IA no IA Studio:', error);
+            console.error('Resposta inválida da IA no IA Analyze:', error);
           }
 
           return sendTypedError(res, error.statusCode, error.code);
         }
 
-        console.error('Erro inesperado no endpoint IA Studio:', error);
+        console.error('Erro inesperado no endpoint IA Analyze:', error);
         return sendTypedError(res, 500, API_ERROR_INTERNAL_SERVER_ERROR);
       }
     }

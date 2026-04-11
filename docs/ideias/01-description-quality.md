@@ -73,7 +73,7 @@ Exemplos:
 1. Migration SQL para adicionar coluna `description_quality`.
 2. Atualizar contrato/tipos de `feedback_analysis` no backend.
 3. Atualizar prompt da IA com regra objetiva de classificacao.
-4. Atualizar `iaStudioService` para validar e salvar o novo campo.
+4. Atualizar `iaAnalyzeService` para validar e salvar o novo campo.
 5. Atualizar leitura de relatorio para usar esse sinal como prioridade.
 6. Adicionar testes unitarios:
 - parse/validacao do campo

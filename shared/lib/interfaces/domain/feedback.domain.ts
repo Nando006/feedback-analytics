@@ -1,4 +1,4 @@
-import type { IaStudioScopeType } from 'lib/interfaces/contracts/ia-studio.contract';
+import type { IaAnalyzeScopeType } from 'lib/interfaces/contracts/ia-analyze.contract';
 
 /**
  * Cliente identificado no dispositivo associado ao feedback.
@@ -148,7 +148,7 @@ export type FeedbackCategory =
   | 'SERVICE'
   | 'DEPARTMENT';
 
-export type FeedbackInsightScopeType = IaStudioScopeType;
+export type FeedbackInsightScopeType = IaAnalyzeScopeType;
 
 /**
  * Sentimento classificado para um feedback analisado.

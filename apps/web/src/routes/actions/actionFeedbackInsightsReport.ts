@@ -2,14 +2,14 @@ import type { ActionFunctionArgs } from 'react-router-dom';
 import { ServiceRunFeedbackIAAnalysis } from 'src/services/serviceFeedbacks';
 import { INTENT_FEEDBACK_RUN_IA } from 'lib/constants/routes/intents';
 import { ACTION_ERROR_INVALID_INTENT } from 'lib/constants/routes/errors';
-import type { IaStudioScopeType } from 'lib/interfaces/contracts/ia-studio.contract';
+import type { IaAnalyzeScopeType } from 'lib/interfaces/contracts/ia-analyze.contract';
 
 type HttpActionError = Error & {
   status?: number;
   code?: string;
 };
 
-function parseScopeType(value: FormDataEntryValue | null): IaStudioScopeType | undefined {
+function parseScopeType(value: FormDataEntryValue | null): IaAnalyzeScopeType | undefined {
   const normalized = String(value ?? '').trim().toUpperCase();
 
   if (

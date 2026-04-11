@@ -6,7 +6,7 @@ on:
     paths-ignore:
       - "backends/api-gateway/**"
       - "database/**"
-      - "services/ia-studio/**"
+      - "services/ia-analyze/**"
   workflow_dispatch:
 
 jobs:

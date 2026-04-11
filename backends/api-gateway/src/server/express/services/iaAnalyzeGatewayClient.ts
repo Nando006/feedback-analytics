@@ -1,26 +1,26 @@
 import {
   analyzeFeedbacksForEnterprise,
-  IaStudioServiceError,
+  IaAnalyzeServiceError,
   type SupabaseServerClient,
-  type IaStudioOptions,
-} from './iaStudioService.js';
+  type IaAnalyzeOptions,
+} from './iaAnalyzeService.js';
 import type {
-  IaStudioRunResponse,
-  IaStudioRemoteRunRequest,
-} from 'lib/interfaces/contracts/ia-studio.contract.js';
+  IaAnalyzeRunResponse,
+  IaAnalyzeRemoteRunRequest,
+} from 'lib/interfaces/contracts/ia-analyze.contract.js';
 
-export type RunIaStudioAnalysisParams = {
+export type RunIaAnalyzeAnalysisParams = {
   supabase: SupabaseServerClient;
   userId: string;
-  options?: IaStudioOptions;
+  options?: IaAnalyzeOptions;
 };
 
-type IaStudioExecutionMode = 'local' | 'remote';
+type IaAnalyzeExecutionMode = 'local' | 'remote';
 
 const DEFAULT_REMOTE_TIMEOUT_MS = 20_000;
 
-function getExecutionMode(): IaStudioExecutionMode {
-  const rawMode = String(process.env.IA_STUDIO_EXECUTION_MODE ?? 'local')
+function getExecutionMode(): IaAnalyzeExecutionMode {
+  const rawMode = String(process.env.IA_ANALYZE_EXECUTION_MODE ?? 'local')
     .trim()
     .toLowerCase();
 
@@ -28,7 +28,7 @@ function getExecutionMode(): IaStudioExecutionMode {
 }
 
 function getRemoteBaseUrl(): string | null {
-  const rawValue = String(process.env.IA_STUDIO_REMOTE_URL ?? '').trim();
+  const rawValue = String(process.env.IA_ANALYZE_REMOTE_URL ?? '').trim();
   if (!rawValue) {
     return null;
   }
@@ -37,12 +37,12 @@ function getRemoteBaseUrl(): string | null {
 }
 
 function getRemoteToken(): string | null {
-  const rawValue = String(process.env.IA_STUDIO_REMOTE_TOKEN ?? '').trim();
+  const rawValue = String(process.env.IA_ANALYZE_REMOTE_TOKEN ?? '').trim();
   return rawValue.length > 0 ? rawValue : null;
 }
 
 function shouldFallbackToLocal(): boolean {
-  const rawValue = String(process.env.IA_STUDIO_REMOTE_FALLBACK_LOCAL ?? 'true')
+  const rawValue = String(process.env.IA_ANALYZE_REMOTE_FALLBACK_LOCAL ?? 'true')
     .trim()
     .toLowerCase();
 
@@ -50,7 +50,7 @@ function shouldFallbackToLocal(): boolean {
 }
 
 function getRemoteTimeoutMs(): number {
-  const rawValue = String(process.env.IA_STUDIO_REMOTE_TIMEOUT_MS ?? '').trim();
+  const rawValue = String(process.env.IA_ANALYZE_REMOTE_TIMEOUT_MS ?? '').trim();
   const parsed = Number(rawValue);
 
   if (Number.isFinite(parsed) && parsed > 0) {
@@ -61,7 +61,7 @@ function getRemoteTimeoutMs(): number {
 }
 
 function buildRemoteEndpoint(baseUrl: string): string {
-  return `${baseUrl}/internal/ia-studio/analyze`;
+  return `${baseUrl}/internal/ia-analyze/analyze`;
 }
 
 function isObject(value: unknown): value is Record<string, unknown> {
@@ -85,7 +85,7 @@ function normalizeStatusCode(status: number): number {
   return 502;
 }
 
-function toIaStudioServiceError(params: {
+function toIaAnalyzeServiceError(params: {
   status: number;
   payload: Record<string, unknown> | null;
   defaultCode: string;
@@ -103,12 +103,12 @@ function toIaStudioServiceError(params: {
       ? payload.message.trim()
       : defaultMessage;
 
-  return new IaStudioServiceError(message, normalizeStatusCode(status), code);
+  return new IaAnalyzeServiceError(message, normalizeStatusCode(status), code);
 }
 
-async function runLocalIaStudioAnalysis(
-  params: RunIaStudioAnalysisParams,
-): Promise<IaStudioRunResponse> {
+async function runLocalIaAnalyzeAnalysis(
+  params: RunIaAnalyzeAnalysisParams,
+): Promise<IaAnalyzeRunResponse> {
   return analyzeFeedbacksForEnterprise({
     supabase: params.supabase,
     userId: params.userId,
@@ -116,13 +116,13 @@ async function runLocalIaStudioAnalysis(
   });
 }
 
-async function runRemoteIaStudioAnalysis(
-  params: RunIaStudioAnalysisParams,
+async function runRemoteIaAnalyzeAnalysis(
+  params: RunIaAnalyzeAnalysisParams,
   remoteBaseUrl: string,
-): Promise<IaStudioRunResponse> {
+): Promise<IaAnalyzeRunResponse> {
   const endpoint = buildRemoteEndpoint(remoteBaseUrl);
   const timeoutMs = getRemoteTimeoutMs();
-  const requestBody: IaStudioRemoteRunRequest = {
+  const requestBody: IaAnalyzeRemoteRunRequest = {
     user_id: params.userId,
     options: params.options,
   };
@@ -132,7 +132,7 @@ async function runRemoteIaStudioAnalysis(
   };
 
   if (remoteToken) {
-    headers['x-ia-studio-token'] = remoteToken;
+    headers['x-ia-analyze-token'] = remoteToken;
   }
 
   const abortController = new AbortController();
@@ -154,17 +154,17 @@ async function runRemoteIaStudioAnalysis(
 
     if (shouldFallbackToLocal()) {
       console.warn(
-        '[IA Studio] Falha de rede/timeout no modo remoto. Usando execucao local por fallback.',
+        '[IA Analyze] Falha de rede/timeout no modo remoto. Usando execucao local por fallback.',
         error,
       );
 
-      return runLocalIaStudioAnalysis(params);
+      return runLocalIaAnalyzeAnalysis(params);
     }
 
-    throw new IaStudioServiceError(
-      'Failed to call remote IA Studio',
+    throw new IaAnalyzeServiceError(
+      'Failed to call remote IA Analyze',
       502,
-      'failed_remote_ia_studio_request',
+      'failed_remote_ia_analyze_request',
     );
   }
 
@@ -175,42 +175,42 @@ async function runRemoteIaStudioAnalysis(
   if (!response.ok) {
     if (shouldFallbackToLocal() && response.status >= 500) {
       console.warn(
-        `[IA Studio] Erro remoto ${response.status}. Usando execucao local por fallback.`,
+        `[IA Analyze] Erro remoto ${response.status}. Usando execucao local por fallback.`,
       );
 
-      return runLocalIaStudioAnalysis(params);
+      return runLocalIaAnalyzeAnalysis(params);
     }
 
-    throw toIaStudioServiceError({
+    throw toIaAnalyzeServiceError({
       status: response.status,
       payload,
-      defaultCode: 'remote_ia_studio_error',
-      defaultMessage: `Remote IA Studio returned status ${response.status}`,
+      defaultCode: 'remote_ia_analyze_error',
+      defaultMessage: `Remote IA Analyze returned status ${response.status}`,
     });
   }
 
   if (!isObject(payload)) {
-    throw new IaStudioServiceError(
-      'Invalid remote IA Studio response',
+    throw new IaAnalyzeServiceError(
+      'Invalid remote IA Analyze response',
       502,
-      'invalid_remote_ia_studio_response',
+      'invalid_remote_ia_analyze_response',
     );
   }
 
   if (typeof payload.analyzedCount !== 'number') {
-    throw new IaStudioServiceError(
-      'Invalid remote IA Studio response shape',
+    throw new IaAnalyzeServiceError(
+      'Invalid remote IA Analyze response shape',
       502,
-      'invalid_remote_ia_studio_response_shape',
+      'invalid_remote_ia_analyze_response_shape',
     );
   }
 
-  return payload as unknown as IaStudioRunResponse;
+  return payload as unknown as IaAnalyzeRunResponse;
 }
 
-export async function runIaStudioAnalysis(
-  params: RunIaStudioAnalysisParams,
-): Promise<IaStudioRunResponse> {
+export async function runIaAnalyzeAnalysis(
+  params: RunIaAnalyzeAnalysisParams,
+): Promise<IaAnalyzeRunResponse> {
   const mode = getExecutionMode();
 
   if (mode === 'remote') {
@@ -219,21 +219,21 @@ export async function runIaStudioAnalysis(
     if (!remoteBaseUrl) {
       if (shouldFallbackToLocal()) {
         console.warn(
-          '[IA Studio] IA_STUDIO_REMOTE_URL ausente no modo remote. Usando execucao local por fallback.',
+          '[IA Analyze] IA_ANALYZE_REMOTE_URL ausente no modo remote. Usando execucao local por fallback.',
         );
 
-        return runLocalIaStudioAnalysis(params);
+        return runLocalIaAnalyzeAnalysis(params);
       } else {
-        throw new IaStudioServiceError(
-          'Missing IA Studio remote URL',
+        throw new IaAnalyzeServiceError(
+          'Missing IA Analyze remote URL',
           500,
-          'missing_ia_studio_remote_url',
+          'missing_ia_analyze_remote_url',
         );
       }
     }
 
-    return runRemoteIaStudioAnalysis(params, remoteBaseUrl);
+    return runRemoteIaAnalyzeAnalysis(params, remoteBaseUrl);
   }
 
-  return runLocalIaStudioAnalysis(params);
+  return runLocalIaAnalyzeAnalysis(params);
 }

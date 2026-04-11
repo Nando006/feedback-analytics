@@ -8,9 +8,9 @@ import type {
   FeedbackInsightsReportOptions,
 } from 'lib/interfaces/domain/feedback.domain';
 import type {
-  IaStudioRunRequest,
-  IaStudioRunResponse,
-} from 'lib/interfaces/contracts/ia-studio.contract';
+  IaAnalyzeRunRequest,
+  IaAnalyzeRunResponse,
+} from 'lib/interfaces/contracts/ia-analyze.contract';
 import { getJson, postJson } from 'lib/utils/http';
 
 export function ServiceGetFeedbacks(filters: FeedbackFilters = {}) {
@@ -81,12 +81,12 @@ export function ServiceGetFeedbackInsightsReport(
   );
 }
 
-export type FeedbackIaRunResult = Pick<IaStudioRunResponse, 'analyzedCount' | 'globalInsights'>;
-export type FeedbackIaRunOptions = IaStudioRunRequest;
+export type FeedbackIaRunResult = Pick<IaAnalyzeRunResponse, 'analyzedCount' | 'globalInsights'>;
+export type FeedbackIaRunOptions = IaAnalyzeRunRequest;
 
 export function ServiceRunFeedbackIAAnalysis(options?: FeedbackIaRunOptions) {
   return postJson<FeedbackIaRunResult>(
-    '/api/protected/ia-studio/send-message',
+    '/api/protected/ia-analyze/send-message',
     options ?? {},
   );
 }

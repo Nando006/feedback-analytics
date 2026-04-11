@@ -1,8 +1,8 @@
 /**
  * Escopos aceitos para execução de análise IA.
- * Usado em: Frontend (filtros), gateway e serviço ia-studio
+ * Usado em: Frontend (filtros), gateway e serviço ia-analyze
  */
-export type IaStudioScopeType =
+export type IaAnalyzeScopeType =
   | 'COMPANY'
   | 'PRODUCT'
   | 'SERVICE'
@@ -11,33 +11,33 @@ export type IaStudioScopeType =
 /**
  * Sentimento padrão retornado pela análise.
  */
-export type IaStudioSentiment = 'positive' | 'neutral' | 'negative';
+export type IaAnalyzeSentiment = 'positive' | 'neutral' | 'negative';
 
 /**
  * Payload para executar analise IA
- * Usado em: POST /api/protected/ia-studio/send-message
+ * Usado em: POST /api/protected/ia-analyze/send-message
  */
-export interface IaStudioRunRequest {
+export interface IaAnalyzeRunRequest {
   limit?: number;
-  scope_type?: IaStudioScopeType;
+  scope_type?: IaAnalyzeScopeType;
   catalog_item_id?: string;
 }
 
 /**
  * Payload interno entre gateway e serviço remoto de IA.
  */
-export interface IaStudioRemoteRunRequest {
+export interface IaAnalyzeRemoteRunRequest {
   user_id: string;
-  options?: IaStudioRunRequest;
+  options?: IaAnalyzeRunRequest;
 }
 
 /**
  * Item de feedback efetivament analisado
  */
-export interface IaStudioAnalyzedItem {
+export interface IaAnalyzeAnalyzedItem {
   id: string;
   feedback_id: string;
-  sentiment: IaStudioSentiment;
+  sentiment: IaAnalyzeSentiment;
   categories: string[];
   keywords: string[];
 }
@@ -45,7 +45,7 @@ export interface IaStudioAnalyzedItem {
 /**
  * Bloco de insights textuais
  */
-export interface IaStudioInsights {
+export interface IaAnalyzeInsights {
   summary?: string;
   recommendations?: string[];
 }
@@ -53,28 +53,28 @@ export interface IaStudioInsights {
 /**
  * Contexto de insights por escopo/item
  */
-export interface IaStudioContext {
-  scope_type: IaStudioScopeType;
+export interface IaAnalyzeContext {
+  scope_type: IaAnalyzeScopeType;
   catalog_item_id: string | null;
   catalog_item_name: string | null;
   analyzedCount: number;
-  globalInsights: IaStudioInsights | null;
+  globalInsights: IaAnalyzeInsights | null;
 }
 
 /**
  * Resposta da execução de analise IA.
  */
-export interface IaStudioRunResponse {
+export interface IaAnalyzeRunResponse {
   analyzedCount: number;
-  feedbacksAnalyzed: IaStudioAnalyzedItem[];
-  globalInsights: IaStudioInsights | null;
-  contexts: IaStudioContext[];
+  feedbacksAnalyzed: IaAnalyzeAnalyzedItem[];
+  globalInsights: IaAnalyzeInsights | null;
+  contexts: IaAnalyzeContext[];
 }
 
 /**
  * Erro padrão de contrato da API de IA
  */
-export interface IaStudioRunErrorResponse {
+export interface IaAnalyzeRunErrorResponse {
   error: string;
   message?: string;
   issues?: unknown;

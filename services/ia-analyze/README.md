@@ -1,12 +1,12 @@
-# IA Studio Service
+# IA Analyze Service
 
 Servico remoto de dominio de IA para execucao independente do gateway principal.
 
 ## Endpoints internos
 
 - `GET /internal/health`
-- `GET /internal/ia-studio/health`
-- `POST /internal/ia-studio/analyze`
+- `GET /internal/ia-analyze/health`
+- `POST /internal/ia-analyze/analyze`
 
 ## Payload de analise
 
@@ -26,12 +26,12 @@ Servico remoto de dominio de IA para execucao independente do gateway principal.
 - `VITE_SUPABASE_URL`
 - `SUPABASE_SERVICE_ROLE_KEY`
 - `GEMINI_API_KEY`
-- `IA_STUDIO_INTERNAL_TOKEN` (opcional, para validar chamadas internas)
+- `IA_ANALYZE_INTERNAL_TOKEN` (opcional, para validar chamadas internas)
 
 ## Execucao local
 
 Executar na raiz do repositorio:
 
 ```bash
-npm run server:ia-studio:dev
+npm run server:ia-analyze:dev
 ```

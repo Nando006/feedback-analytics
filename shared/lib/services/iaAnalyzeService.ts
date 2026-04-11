@@ -4,12 +4,12 @@ import {
   type FeedbackScopeType,
   type PromptEnterpriseContext,
   type PromptFeedbackInput,
-} from './iaStudioPromptBuilders.js';
+} from './iaAnalyzePromptBuilders.js';
 import type {
-  IaStudioRunResponse,
-  IaStudioInsights,
-  IaStudioSentiment,
-} from '../interfaces/contracts/ia-studio.contract.js';
+  IaAnalyzeRunResponse,
+  IaAnalyzeInsights,
+  IaAnalyzeSentiment,
+} from '../interfaces/contracts/ia-analyze.contract.js';
 
 export type SupabaseServerClient = {
   from: (table: string) => any;
@@ -26,7 +26,7 @@ export type SupabaseServerClient = {
   };
 };
 
-export type Sentiment = IaStudioSentiment;
+export type Sentiment = IaAnalyzeSentiment;
 
 export type FeedbackForAnalysis = PromptFeedbackInput;
 
@@ -37,13 +37,13 @@ export type IaFeedbackAnalysisItem = {
   keywords: string[];
 };
 
-export type IaGlobalInsights = IaStudioInsights;
+export type IaGlobalInsights = IaAnalyzeInsights;
 
-export type IaStudioResult = IaStudioRunResponse;
+export type IaAnalyzeResult = IaAnalyzeRunResponse;
 
-type IaStudioResultContext = IaStudioResult['contexts'][number];
+type IaAnalyzeResultContext = IaAnalyzeResult['contexts'][number];
 
-export type IaStudioOptions = {
+export type IaAnalyzeOptions = {
   /**
    * Quantidade máxima de feedbacks a serem enviados para a IA.
    * Default: 50, Máximo: 100.
@@ -115,7 +115,7 @@ type RawFeedbackSubquestionAnswerRow = {
   answer_score: number;
 };
 
-export class IaStudioServiceError extends Error {
+export class IaAnalyzeServiceError extends Error {
   public statusCode: number;
 
   public code: string;
@@ -385,7 +385,7 @@ function sanitizeAnalysisTerms(params: {
 
 function applyExecutionFilter(
   feedbacks: FeedbackForAnalysis[],
-  options?: IaStudioOptions,
+  options?: IaAnalyzeOptions,
 ) {
   const scope = options?.scope_type;
   const catalogItemId = options?.catalog_item_id?.trim();
@@ -420,7 +420,7 @@ function applyExecutionFilter(
 
 function buildAnalysisBatches(
   feedbacks: FeedbackForAnalysis[],
-  options?: IaStudioOptions,
+  options?: IaAnalyzeOptions,
 ): AnalysisBatch[] {
   const scope = options?.scope_type;
   const catalogItemId = options?.catalog_item_id?.trim();
@@ -529,7 +529,7 @@ async function fetchFeedbacksForAnalysis(params: {
     .limit(limit);
 
   if (feedbackError) {
-    throw new IaStudioServiceError(
+    throw new IaAnalyzeServiceError(
       'Failed to fetch feedbacks for IA',
       500,
       'failed_to_fetch_feedbacks_for_ia',
@@ -563,7 +563,7 @@ async function fetchFeedbacksForAnalysis(params: {
       .in('id', catalogItemIds);
 
     if (catalogError) {
-      throw new IaStudioServiceError(
+      throw new IaAnalyzeServiceError(
         'Failed to fetch catalog items for IA',
         500,
         'failed_to_fetch_catalog_items_for_ia',
@@ -636,7 +636,7 @@ async function fetchFeedbacksForAnalysis(params: {
       .order('created_at', { ascending: true });
 
     if (answersError) {
-      throw new IaStudioServiceError(
+      throw new IaAnalyzeServiceError(
         'Failed to fetch feedback dynamic answers for IA',
         500,
         'failed_to_fetch_feedback_dynamic_answers_for_ia',
@@ -665,7 +665,7 @@ async function fetchFeedbacksForAnalysis(params: {
       .order('created_at', { ascending: true });
 
     if (subanswersError) {
-      throw new IaStudioServiceError(
+      throw new IaAnalyzeServiceError(
         'Failed to fetch feedback dynamic subanswers for IA',
         500,
         'failed_to_fetch_feedback_dynamic_subanswers_for_ia',
@@ -724,8 +724,8 @@ async function fetchFeedbacksForAnalysis(params: {
 export async function analyzeFeedbacksForEnterprise(params: {
   supabase: SupabaseServerClient;
   userId: string;
-  options?: IaStudioOptions;
-}): Promise<IaStudioResult> {
+  options?: IaAnalyzeOptions;
+}): Promise<IaAnalyzeResult> {
   const { supabase, userId, options } = params;
 
   // 1) Descobrir a empresa do usuário autenticado
@@ -736,7 +736,7 @@ export async function analyzeFeedbacksForEnterprise(params: {
     .single();
 
   if (enterpriseError || !enterpriseRow) {
-    throw new IaStudioServiceError(
+    throw new IaAnalyzeServiceError(
       'Enterprise not found',
       404,
       'enterprise_not_found',
@@ -755,7 +755,7 @@ export async function analyzeFeedbacksForEnterprise(params: {
     .maybeSingle();
 
   if (collectingError) {
-    throw new IaStudioServiceError(
+    throw new IaAnalyzeServiceError(
       'Failed to fetch collecting data',
       500,
       'failed_to_fetch_collecting_data',
@@ -763,7 +763,7 @@ export async function analyzeFeedbacksForEnterprise(params: {
   }
 
   if (!hasRequiredEnterpriseInfoForAnalysis(collecting as CollectingDataContext | null)) {
-    throw new IaStudioServiceError(
+    throw new IaAnalyzeServiceError(
       'collecting_data_required_for_analysis',
       422,
       'collecting_data_required_for_analysis',
@@ -800,7 +800,7 @@ export async function analyzeFeedbacksForEnterprise(params: {
   }
 
   if (feedbacksForExecution.length < MIN_FEEDBACKS_FOR_RELEVANT_ANALYSIS) {
-    throw new IaStudioServiceError(
+    throw new IaAnalyzeServiceError(
       'insufficient_feedbacks_for_analysis',
       422,
       'insufficient_feedbacks_for_analysis',
@@ -817,7 +817,7 @@ export async function analyzeFeedbacksForEnterprise(params: {
     );
 
   if (existingAnalysisError) {
-    throw new IaStudioServiceError(
+    throw new IaAnalyzeServiceError(
       'Failed to fetch existing analysis',
       500,
       'failed_to_fetch_existing_analysis',
@@ -825,7 +825,11 @@ export async function analyzeFeedbacksForEnterprise(params: {
   }
 
   const alreadyAnalyzedIds = new Set(
-    (existingAnalysis ?? []).map((row) => row.feedback_id as string),
+    (existingAnalysis ?? [])
+      .map((row: { feedback_id: string | null }) => row.feedback_id)
+      .filter((feedbackId: string | null): feedbackId is string =>
+        typeof feedbackId === 'string' && feedbackId.length > 0,
+      ),
   );
 
   const feedbacksToAnalyze = feedbacksForExecution.filter(
@@ -859,7 +863,7 @@ export async function analyzeFeedbacksForEnterprise(params: {
 
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
-    throw new IaStudioServiceError(
+    throw new IaAnalyzeServiceError(
       'Missing Gemini API key',
       500,
       'missing_gemini_api_key',
@@ -881,7 +885,7 @@ export async function analyzeFeedbacksForEnterprise(params: {
     }
   >();
 
-  const insightsContexts: IaStudioResultContext[] = [];
+  const insightsContexts: IaAnalyzeResultContext[] = [];
 
   for (const batch of analysisBatches) {
     const prompt = buildIaPromptByScope({
@@ -917,7 +921,7 @@ export async function analyzeFeedbacksForEnterprise(params: {
         global_insights?: IaGlobalInsights;
       };
     } catch {
-      throw new IaStudioServiceError(
+      throw new IaAnalyzeServiceError(
         'Invalid AI response JSON',
         502,
         'invalid_ai_response',
@@ -994,7 +998,7 @@ export async function analyzeFeedbacksForEnterprise(params: {
     .select('id, feedback_id, sentiment, categories, keywords');
 
   if (insertError) {
-    throw new IaStudioServiceError(
+    throw new IaAnalyzeServiceError(
       'Failed to save feedback analysis',
       500,
       'failed_to_save_feedback_analysis',
@@ -1060,7 +1064,13 @@ export async function analyzeFeedbacksForEnterprise(params: {
   return {
     analyzedCount: rowsToInsert.length,
     feedbacksAnalyzed:
-      inserted?.map((row) => ({
+      inserted?.map((row: {
+        id: string;
+        feedback_id: string;
+        sentiment: Sentiment;
+        categories: string[] | null;
+        keywords: string[] | null;
+      }) => ({
         id: row.id as string,
         feedback_id: row.feedback_id as string,
         sentiment: row.sentiment as Sentiment,
