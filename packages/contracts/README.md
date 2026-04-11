@@ -1,1 +1,0 @@
-# Contratos compartilhados (DTOs, Tipos e erros de integração)

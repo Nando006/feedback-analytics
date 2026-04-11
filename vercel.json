@@ -2,11 +2,11 @@
   "version": 2,
   "builds": [
     {
-      "src": "src/server/express/index.ts",
+      "src": "backends/api-gateway/src/server/express/index.ts",
       "use": "@vercel/node"
     },
     {
-      "src": "package.json",
+      "src": "apps/web/package.json",
       "use": "@vercel/static-build",
       "config": {
         "distDir": "dist"
@@ -16,7 +16,7 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "/src/server/express/index.ts"
+      "destination": "/backends/api-gateway/src/server/express/index.ts"
     },
     {
       "source": "/(.*)",

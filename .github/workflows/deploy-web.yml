@@ -4,10 +4,9 @@ on:
   push:
     branches: [main, homolog]
     paths-ignore:
-      - "src/server/**"
+      - "backends/api-gateway/**"
       - "database/**"
-      - "services/ia-studio/**"
-      - "services/ia-studio-google/**"
+      - "services/ia-analyze/**"
   workflow_dispatch:
 
 jobs:
@@ -23,9 +22,14 @@ jobs:
         with:
           node-version: "20"
           cache: "npm"
+          cache-dependency-path: |
+            apps/web/package-lock.json
+            shared/lib/package-lock.json
 
       - name: Install dependecies
-        run: npm ci
+        run: |
+          npm ci --prefix shared/lib
+          npm ci --prefix apps/web
 
       - name: Deploy preview (homolog)
         if: github.ref_name == 'homolog'
@@ -33,7 +37,7 @@ jobs:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_WEB }}
-        run: npx vercel deploy --yes --token "$VERCEL_TOKEN" --local-config vercel.web.json
+        run: npx vercel deploy --yes --token "$VERCEL_TOKEN" --local-config apps/web/vercel.json
 
       - name: Deploy production (main)
         if: github.ref_name == 'main'
@@ -41,4 +45,4 @@ jobs:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_WEB }}
-        run: npx vercel deploy --yes --prod --token "$VERCEL_TOKEN" --local-config vercel.web.json
+        run: npx vercel deploy --yes --prod --token "$VERCEL_TOKEN" --local-config apps/web/vercel.json

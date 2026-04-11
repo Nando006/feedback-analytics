@@ -19,9 +19,18 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
+          cache-dependency-path: |
+            apps/web/package-lock.json
+            backends/api-gateway/package-lock.json
+            services/ia-analyze/package-lock.json
+            shared/lib/package-lock.json
 
       - name: Install dependencies
-        run: npm install
+        run: |
+          npm ci --prefix shared/lib
+          npm ci --prefix backends/api-gateway
+          npm ci --prefix apps/web
+          npm ci --prefix services/ia-analyze
 
       - name: Run linter
         run: npm run lint
