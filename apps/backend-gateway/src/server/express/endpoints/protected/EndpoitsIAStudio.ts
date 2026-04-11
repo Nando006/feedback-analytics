@@ -2,13 +2,13 @@ import express from 'express';
 import { requireAuth } from '../../middleware/auth.js';
 import { IaStudioServiceError } from '../../services/iaStudioService.js';
 import { runIaStudioAnalysis } from '../../services/iaStudioGatewayClient.js';
-import { API_ERROR_INTERNAL_SERVER_ERROR } from '../../../../../lib/constants/server/errors.js';
-import { sendTypedError } from '../../../../../lib/utils/sendTypedError.js';
+import { API_ERROR_INTERNAL_SERVER_ERROR } from 'lib/constants/server/errors.js';
+import { sendTypedError } from 'lib/utils/sendTypedError.js';
 import type {
   IaStudioRunRequest,
   IaStudioRunResponse,
   IaStudioScopeType,
-} from '../../../../../lib/interfaces/contracts/ia-studio.contract.js';
+} from 'lib/interfaces/contracts/ia-studio.contract.js';
 
 function parseScopeType(value: unknown): IaStudioScopeType | undefined {
   const normalized = String(value ?? '')

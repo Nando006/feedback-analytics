@@ -4,16 +4,16 @@ on:
   push:
     branches: [main, homolog]
     paths:
-      - "services/ia-studio-google/**"
-      - "src/server/express/services/iaStudioService.ts"
-      - "src/server/express/services/iaStudioPromptBuilders.ts"
+      - "services/ia-studio/**"
+      - "apps/backend-gateway/src/server/express/services/iaStudioService.ts"
+      - "apps/backend-gateway/src/server/express/services/iaStudioPromptBuilders.ts"
       - "lib/interfaces/contracts/ia-studio.contract.ts"
       - "package.json"
-      - ".github/workflows/deploy-ia-studio-google.yml"
+      - ".github/workflows/deploy-ia-studio.yml"
   workflow_dispatch:
 
 jobs:
-  deploy-ia-studio-google:
+  deploy-ia-studio:
     runs-on: ubuntu-latest
 
     steps:
@@ -35,7 +35,7 @@ jobs:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets['VERCEL_PROJECT_ID_IA_STUDIO'] }}
-        run: npx vercel deploy --yes --token "$VERCEL_TOKEN" --local-config services/ia-studio-google/vercel.json
+        run: npx vercel deploy --yes --token "$VERCEL_TOKEN" --local-config services/ia-studio/vercel.json
 
       - name: Deploy production (main)
         if: github.ref_name == 'main'
@@ -43,4 +43,4 @@ jobs:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets['VERCEL_PROJECT_ID_IA_STUDIO'] }}
-        run: npx vercel deploy --yes --prod --token "$VERCEL_TOKEN" --local-config services/ia-studio-google/vercel.json
+        run: npx vercel deploy --yes --prod --token "$VERCEL_TOKEN" --local-config services/ia-studio/vercel.json

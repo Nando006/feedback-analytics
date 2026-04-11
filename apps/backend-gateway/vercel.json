@@ -2,14 +2,14 @@
   "version": 2,
   "builds": [
     {
-      "src": "src/server/express/index.ts",
+      "src": "apps/backend-gateway/src/server/express/index.ts",
       "use": "@vercel/node"
     }
   ],
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "/src/server/express/index.ts"
+      "destination": "/apps/backend-gateway/src/server/express/index.ts"
     }
   ]
 }

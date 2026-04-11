@@ -1,13 +1,13 @@
 import express from 'express';
-import { loginSchema } from '../../../../../lib/schemas/public/loginSchema.js';
+import { loginSchema } from 'lib/schemas/public/loginSchema.js';
 import { createSupabaseServerClient } from '../../supabase.js';
 import {
   API_ERROR_INTERNAL_ERROR,
   API_ERROR_EMAIL_NOT_CONFIRMED,
   API_ERROR_INVALID_CREDENTIALS,
   API_ERROR_INVALID_PAYLOAD,
-} from '../../../../../lib/constants/server/errors.js';
-import { sendTypedError } from '../../../../../lib/utils/sendTypedError.js';
+} from 'lib/constants/server/errors.js';
+import { sendTypedError } from 'lib/utils/sendTypedError.js';
 
 type LoginEndpointErrorCode =
   | typeof API_ERROR_INVALID_PAYLOAD

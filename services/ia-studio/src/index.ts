@@ -6,7 +6,7 @@ import {
   IaStudioServiceError,
   type IaStudioOptions,
   type SupabaseServerClient,
-} from '../../../src/server/express/services/iaStudioService.js';
+} from '../../../apps/backend-gateway/src/server/express/services/iaStudioService.js';
 import type {
   IaStudioRemoteRunRequest,
   IaStudioRunResponse,
@@ -123,11 +123,11 @@ app.disable('x-powered-by');
 app.use(express.json());
 
 app.get('/internal/health', (_req, res) => {
-  return res.status(200).json({ ok: true, service: 'ia-studio-google' });
+  return res.status(200).json({ ok: true, service: 'ia-studio' });
 });
 
 app.get('/internal/ia-studio/health', (_req, res) => {
-  return res.status(200).json({ ok: true, service: 'ia-studio-google' });
+  return res.status(200).json({ ok: true, service: 'ia-studio' });
 });
 
 app.post('/internal/ia-studio/analyze', async (req, res) => {
@@ -170,7 +170,7 @@ app.post('/internal/ia-studio/analyze', async (req, res) => {
       });
     }
 
-    console.error('[ia-studio-google] unexpected error:', error);
+    console.error('[ia-studio] unexpected error:', error);
 
     return res.status(500).json({
       error: 'internal_server_error',
@@ -183,7 +183,7 @@ if (process.env.VERCEL !== '1') {
   const port = Number(process.env.PORT ?? 4100);
 
   app.listen(port, () => {
-    console.log(`[ia-studio-google] running at http://localhost:${port}`);
+    console.log(`[ia-studio] running at http://localhost:${port}`);
   });
 }
 

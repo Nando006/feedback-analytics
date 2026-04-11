@@ -7,7 +7,7 @@ import {
 import type {
   IaStudioRunResponse,
   IaStudioRemoteRunRequest,
-} from '../../../../lib/interfaces/contracts/ia-studio.contract.js';
+} from 'lib/interfaces/contracts/ia-studio.contract.js';
 
 export type RunIaStudioAnalysisParams = {
   supabase: SupabaseServerClient;

@@ -1,4 +1,4 @@
-# IA Studio Google Service
+# IA Studio Service
 
 Servico remoto de dominio de IA para execucao independente do gateway principal.
 

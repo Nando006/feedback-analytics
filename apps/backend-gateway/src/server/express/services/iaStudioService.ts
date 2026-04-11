@@ -10,7 +10,7 @@ import type {
   IaStudioRunResponse,
   IaStudioInsights,
   IaStudioSentiment,
-} from '../../../../lib/interfaces/contracts/ia-studio.contract.js';
+} from 'lib/interfaces/contracts/ia-studio.contract.js';
 
 export type SupabaseServerClient = ReturnType<typeof createSupabaseServerClient>;
 

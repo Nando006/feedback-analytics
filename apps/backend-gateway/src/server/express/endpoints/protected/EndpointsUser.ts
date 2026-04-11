@@ -1,13 +1,13 @@
 import express from 'express';
 import { requireAuth } from '../../middleware/auth.js';
-import { emailUpdateSchema } from '../../../../../lib/schemas/user/emailUpdateSchema.js';
-import { metadadosUpdateSchema } from '../../../../../lib/schemas/user/metadadosUpdateSchema.js';
+import { emailUpdateSchema } from 'lib/schemas/user/emailUpdateSchema.js';
+import { metadadosUpdateSchema } from 'lib/schemas/user/metadadosUpdateSchema.js';
 import {
   API_ERROR_INVALID_PAYLOAD,
   API_ERROR_UPDATE_FAILED,
   API_ERROR_VERIFY_FAILED,
-} from '../../../../../lib/constants/server/errors.js';
-import { sendTypedError } from '../../../../../lib/utils/sendTypedError.js';
+} from 'lib/constants/server/errors.js';
+import { sendTypedError } from 'lib/utils/sendTypedError.js';
 
 export function EndpointsUser(app: express.Express) {
   app.get('/api/protected/user/auth_user', requireAuth, async (req, res) => {

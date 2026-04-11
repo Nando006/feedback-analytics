@@ -10,10 +10,10 @@
   ],
   "scripts": {
     "dev": "vite",
-    "server:dev": "tsx src/server/express/index.ts",
-    "server:ia-studio:dev": "tsx services/ia-studio-google/src/index.ts",
+    "server:ia-studio:dev": "tsx services/ia-studio/src/index.ts",
     "dev:web": "npm run dev -w @feedback/web",
     "dev:api": "npm run dev -w @feedback/backend-gateway",
+    "server:dev": "tsx apps/backend-gateway/src/server/express/index.ts",
     "dev:all": "concurrently -n web,api -c green,cyan \"npm:dev:web\" \"npm:dev:api\"",
     "build": "vite build",
     "build:web": "npm run build -w @feedback/web",

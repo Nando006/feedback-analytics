@@ -8,8 +8,8 @@ import {
   API_ERROR_UNABLE_TO_ACTIVATE_QR,
   API_ERROR_UNABLE_TO_CREATE_QR_CP,
   API_ERROR_UNABLE_TO_DISABLE_QR,
-} from '../../../../../lib/constants/server/errors.js';
-import { sendTypedError } from '../../../../../lib/utils/sendTypedError.js';
+} from 'lib/constants/server/errors.js';
+import { sendTypedError } from 'lib/utils/sendTypedError.js';
 
 type CatalogKind = 'PRODUCT' | 'SERVICE' | 'DEPARTMENT';
 

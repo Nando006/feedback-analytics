@@ -2,14 +2,14 @@
   "version": 2,
   "builds": [
     {
-      "src": "services/ia-studio-google/src/index.ts",
+      "src": "services/ia-studio/src/index.ts",
       "use": "@vercel/node"
     }
   ],
   "rewrites": [
     {
       "source": "/(.*)",
-      "destination": "/services/ia-studio-google/src/index.ts"
+      "destination": "/services/ia-studio/src/index.ts"
     }
   ]
 }

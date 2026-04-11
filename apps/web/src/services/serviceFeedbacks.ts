@@ -11,7 +11,7 @@ import type {
   IaStudioRunRequest,
   IaStudioRunResponse,
 } from 'lib/interfaces/contracts/ia-studio.contract';
-import { getJson, postJson } from '../../lib/utils/http';
+import { getJson, postJson } from 'lib/utils/http';
 
 export function ServiceGetFeedbacks(filters: FeedbackFilters = {}) {
   const params = new URLSearchParams();

@@ -4,10 +4,10 @@ on:
   push:
     branches: [main, homolog]
     paths:
-      - "src/server/**"
+      - "apps/backend-gateway/src/server/**"
       - "lib/**"
       - "database/**"
-      - "vercel.api.json"
+      - "apps/backend-gateway/vercel.json"
       - "package.json"
       - ".github/workflows/deploy-api.yml"
   workflow_dispatch:
@@ -35,7 +35,7 @@ jobs:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_API }}
-        run: npx vercel deploy --yes --token "$VERCEL_TOKEN" --local-config vercel.api.json
+        run: npx vercel deploy --yes --token "$VERCEL_TOKEN" --local-config apps/backend-gateway/vercel.json
 
       - name: Deploy production (main)
         if: github.ref_name == 'main'
@@ -43,4 +43,4 @@ jobs:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_API }}
-        run: npx vercel deploy --yes --prod --token "$VERCEL_TOKEN" --local-config vercel.api.json
+        run: npx vercel deploy --yes --prod --token "$VERCEL_TOKEN" --local-config apps/backend-gateway/vercel.json

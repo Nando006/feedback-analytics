@@ -8,9 +8,9 @@ import {
   API_ERROR_FAILED_TO_FETCH_FEEDBACK_INSIGHTS_REPORT,
   API_ERROR_FAILED_TO_FETCH_STATS,
   API_ERROR_INTERNAL_SERVER_ERROR,
-} from '../../../../../lib/constants/server/errors.js';
-import { normalizeFeedbackAnalysisRows } from '../../../../../lib/utils/normalizeFeedbackAnalysisRows.js';
-import { sendTypedError } from '../../../../../lib/utils/sendTypedError.js';
+} from 'lib/constants/server/errors.js';
+import { normalizeFeedbackAnalysisRows } from 'lib/utils/normalizeFeedbackAnalysisRows.js';
+import { sendTypedError } from 'lib/utils/sendTypedError.js';
 
 type FeedbackQuestionAnswerRow = {
   feedback_id: string;

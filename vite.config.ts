@@ -17,22 +17,28 @@ function getGitVersionTag(): string {
 }
 
 const gitVersion = getGitVersionTag();
+const webRoot = path.resolve(__dirname, './apps/web');
 
 // https://vite.dev/config/
 export default defineConfig({
+  root: webRoot,
   plugins: [react(), tailwindcss()],
   define: {
     __APP_VERSION__: JSON.stringify(gitVersion),
   },
+  build: {
+    outDir: path.resolve(__dirname, './dist'),
+    emptyOutDir: true,
+  },
   resolve: {
     alias: {
-      src: path.resolve(__dirname, './src'),
-      layouts: path.resolve(__dirname, './layouts'),
-      pages: path.resolve(__dirname, './pages'),
-      server: path.resolve(__dirname, './src/server'),
+      src: path.resolve(__dirname, './apps/web/src'),
+      layouts: path.resolve(__dirname, './apps/web/layouts'),
+      pages: path.resolve(__dirname, './apps/web/pages'),
+      server: path.resolve(__dirname, './apps/backend-gateway/src/server'),
       lib: path.resolve(__dirname, './lib'),
-      components: path.resolve(__dirname, './components'),
-      styles: path.resolve(__dirname, './styles'),
+      components: path.resolve(__dirname, './apps/web/components'),
+      styles: path.resolve(__dirname, './apps/web/styles'),
     },
   },
   server: {
@@ -47,6 +53,6 @@ export default defineConfig({
   test: {
     globals: true, // Permite usar `describe`, `it`, `expect` sem precisar importar
     environment: 'jsdom', // Simula um ambiente de navegador (DOM) para testes de componentes React
-    setupFiles: ['./lib/utils/tests/setup.ts'],
+    setupFiles: [path.resolve(__dirname, './lib/utils/tests/setup.ts')],
   },
 });

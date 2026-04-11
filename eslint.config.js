@@ -21,7 +21,7 @@ export default tseslint.config([
     },
   },
   {
-    files: ['components/**/*.{ts,tsx}', 'pages/**/*.{ts,tsx}'],
+    files: ['apps/web/components/**/*.{ts,tsx}', 'apps/web/pages/**/*.{ts,tsx}'],
     ignores: ['**/ui.types.ts'],
     rules: {
       'no-restricted-syntax': [

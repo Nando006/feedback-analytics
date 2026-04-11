@@ -2,12 +2,13 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "components/*": ["components/*"],
-      "pages/*": ["pages/*"],
-      "layouts/*": ["layouts/*"],
+      "components/*": ["apps/web/components/*"],
+      "pages/*": ["apps/web/pages/*"],
+      "layouts/*": ["apps/web/layouts/*"],
       "lib/*": ["lib/*"],
-      "src/*": ["src/*"],
-      "server/*": ["src/server/*"]
+      "src/*": ["apps/web/src/*"],
+      "server/*": ["apps/backend-gateway/src/server/*"],
+      "styles/*": ["apps/web/styles/*"]
     }
   },
   "files": [],

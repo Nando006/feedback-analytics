@@ -1,5 +1,5 @@
 import type { AuthUser } from 'lib/interfaces/entities/auth-user.entity';
-import { getJson } from '../../lib/utils/http';
+import { getJson } from 'lib/utils/http';
 
 type MetadadosResponse = {
   user: {

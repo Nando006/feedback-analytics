@@ -1,5 +1,5 @@
 import express from 'express';
-import { enterpriseUpdateSchema } from '../../../../../lib/schemas/user/enterpriseUpdateSchema.js';
+import { enterpriseUpdateSchema } from 'lib/schemas/user/enterpriseUpdateSchema.js';
 import { requireAuth } from '../../middleware/auth.js';
 import {
   API_ERROR_COLLECTING_DATA_NOT_FOUND,
@@ -7,8 +7,8 @@ import {
   API_ERROR_ENTERPRISE_NOT_FOUND,
   API_ERROR_INVALID_PAYLOAD,
   API_ERROR_UPSERT_FAILED,
-} from '../../../../../lib/constants/server/errors.js';
-import { sendTypedError } from '../../../../../lib/utils/sendTypedError.js';
+} from 'lib/constants/server/errors.js';
+import { sendTypedError } from 'lib/utils/sendTypedError.js';
 
 type CatalogItemKind = 'PRODUCT' | 'SERVICE' | 'DEPARTMENT';
 
