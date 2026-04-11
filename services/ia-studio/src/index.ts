@@ -6,7 +6,7 @@ import {
   IaStudioServiceError,
   type IaStudioOptions,
   type SupabaseServerClient,
-} from '../../../apps/backend-gateway/src/server/express/services/iaStudioService.js';
+} from '../../../shared/lib/services/iaStudioService.js';
 import type {
   IaStudioRemoteRunRequest,
   IaStudioRunResponse,

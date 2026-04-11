@@ -5,13 +5,13 @@ on:
     branches: [main, homolog]
     paths:
       - "services/ia-studio/**"
-      - "apps/backend-gateway/src/server/express/services/iaStudioService.ts"
-      - "apps/backend-gateway/src/server/express/services/iaStudioPromptBuilders.ts"
+      - "shared/lib/services/iaStudioService.ts"
+      - "shared/lib/services/iaStudioPromptBuilders.ts"
       - "shared/lib/interfaces/contracts/ia-studio.contract.ts"
       - "services/ia-studio/package.json"
       - "services/ia-studio/package-lock.json"
-      - "apps/backend-gateway/package.json"
-      - "apps/backend-gateway/package-lock.json"
+      - "shared/lib/package.json"
+      - "shared/lib/package-lock.json"
       - ".github/workflows/deploy-ia-studio.yml"
   workflow_dispatch:
 
@@ -29,14 +29,12 @@ jobs:
           node-version: "20"
           cache: "npm"
           cache-dependency-path: |
-            apps/backend-gateway/package-lock.json
             services/ia-studio/package-lock.json
             shared/lib/package-lock.json
 
       - name: Install dependencies
         run: |
           npm ci --prefix shared/lib
-          npm ci --prefix apps/backend-gateway
           npm ci --prefix services/ia-studio
 
       - name: Deploy preview (homolog)
