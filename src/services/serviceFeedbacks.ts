@@ -6,8 +6,11 @@ import type {
   FeedbackInsightsReport,
   FeedbackAnalysisOptions,
   FeedbackInsightsReportOptions,
-  FeedbackInsightScopeType,
 } from 'lib/interfaces/domain/feedback.domain';
+import type {
+  IaStudioRunRequest,
+  IaStudioRunResponse,
+} from 'lib/interfaces/contracts/ia-studio.contract';
 import { getJson, postJson } from '../../lib/utils/http';
 
 export function ServiceGetFeedbacks(filters: FeedbackFilters = {}) {
@@ -78,19 +81,8 @@ export function ServiceGetFeedbackInsightsReport(
   );
 }
 
-export interface FeedbackIaRunResult {
-  analyzedCount: number;
-  globalInsights: {
-    summary?: string;
-    recommendations?: string[];
-  } | null;
-}
-
-export type FeedbackIaRunOptions = {
-  limit?: number;
-  scope_type?: FeedbackInsightScopeType;
-  catalog_item_id?: string;
-};
+export type FeedbackIaRunResult = Pick<IaStudioRunResponse, 'analyzedCount' | 'globalInsights'>;
+export type FeedbackIaRunOptions = IaStudioRunRequest;
 
 export function ServiceRunFeedbackIAAnalysis(options?: FeedbackIaRunOptions) {
   return postJson<FeedbackIaRunResult>(

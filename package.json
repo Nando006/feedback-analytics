@@ -11,6 +11,7 @@
   "scripts": {
     "dev": "vite",
     "server:dev": "tsx src/server/express/index.ts",
+    "server:ia-studio:dev": "tsx services/ia-studio-google/src/index.ts",
     "dev:web": "npm run dev -w @feedback/web",
     "dev:api": "npm run dev -w @feedback/backend-gateway",
     "dev:all": "concurrently -n web,api -c green,cyan \"npm:dev:web\" \"npm:dev:api\"",

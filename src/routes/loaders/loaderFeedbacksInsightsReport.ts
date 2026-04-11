@@ -1,8 +1,8 @@
 import type { LoaderFunctionArgs } from 'react-router-dom';
 import { loadFeedbackInsightsReportData } from 'src/routes/load/loadFeedbackInsightsReport';
-import type { FeedbackInsightScopeType } from 'lib/interfaces/domain/feedback.domain';
+import type { IaStudioScopeType } from 'lib/interfaces/contracts/ia-studio.contract';
 
-function parseScopeType(value: string | null): FeedbackInsightScopeType | undefined {
+function parseScopeType(value: string | null): IaStudioScopeType | undefined {
   const normalized = String(value ?? '').trim().toUpperCase();
 
   if (
