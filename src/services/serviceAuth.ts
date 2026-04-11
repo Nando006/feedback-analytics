@@ -90,6 +90,11 @@ export async function ServiceLogin(
   payload: LoginPayload,
 ): Promise<{ ok: true } | { ok: false; status: number; payload: unknown }> {
   try {
+    const formBody = new URLSearchParams();
+    formBody.set('email', payload.email);
+    formBody.set('password', payload.password);
+    formBody.set('remember', payload.remember ? 'true' : 'false');
+
     const res = await requestApi('/api/public/auth/login', {
       method: 'POST',
       credentials: 'include',
