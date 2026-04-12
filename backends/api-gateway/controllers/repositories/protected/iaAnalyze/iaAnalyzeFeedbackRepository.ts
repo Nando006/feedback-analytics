@@ -2,14 +2,14 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type {
   IaAnalyzeAnalyzedItem,
   IaAnalyzeContext,
-} from 'lib/interfaces/contracts/ia-analyze/analysis.contract.js';
+} from '../../../../../../shared/interfaces/contracts/ia-analyze/analysis.contract.js';
 import type {
   IaAnalyzeFeedbackInput,
-} from 'lib/interfaces/contracts/ia-analyze/input.contract.js';
+} from '../../../../../../shared/interfaces/contracts/ia-analyze/input.contract.js';
 import type {
   IaAnalyzeSentiment,
   IaAnalyzeScopeType,
-} from 'lib/interfaces/contracts/ia-analyze/scope.contract.js';
+} from '../../../../../../shared/interfaces/contracts/ia-analyze/scope.contract.js';
 import { IaAnalyzeServiceError } from '../../../services/iaAnalyze/iaAnalyzeErrors.js';
 
 type SupabaseServerClient = SupabaseClient;
