@@ -5,6 +5,13 @@ Acesse o [mapeamento de personas](https://www.notion.so/Sobre-o-projeto-Entenda-
 ## Arquitetura e Stack
 Este sistema está estruturado em uma arquitetura Single Page Application(SPA), com uma API Sidecar (BFF - Backend for Frontend), implantada em um ambiente Serverless. [Veja mais detalhes sobre a arquitetura](https://www.notion.so/Arquitetura-Inicial-25600a4f151281619875ef9e5c29b159?source=copy_link).
 
+Para o padrao de servicos externos por impacto (dominio compartilhado x dominio dedicado), consulte services/README.md.
+
+Deploy em Vercel segue configuracao por dominio:
+- apps/web/vercel.json
+- backends/api-gateway/vercel.json
+- services/ia-analyze/vercel.json
+
 ### Tech Stack
 - Cliente (React App):
     - React 19, Vite, TypeScript.
