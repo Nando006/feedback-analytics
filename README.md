@@ -12,6 +12,9 @@ Deploy em Vercel segue configuracao por dominio:
 - backends/api-gateway/vercel.json
 - services/ia-analyze/vercel.json
 
+Observacao: vercel.json na raiz e mantido por compatibilidade com checks automaticos da integracao Git da Vercel.
+O deploy oficial do projeto continua sendo executado por dominio nos workflows com --local-config.
+
 ### Tech Stack
 - Cliente (React App):
     - React 19, Vite, TypeScript.
