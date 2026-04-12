@@ -4,6 +4,8 @@
 
 Finalizar a separacao de deploy por dominio no monorepo e remover o arquivo vercel.json da raiz sem quebrar checks de PR.
 
+Para contexto arquitetural e estrategia geral, consulte docs/deploy/vercel-overview.md.
+
 ## Escopo
 
 - Web: apps/web
@@ -16,23 +18,34 @@ Finalizar a separacao de deploy por dominio no monorepo e remover o arquivo verc
 2. Gateway com CORS e cookies preparados para cross-site.
 3. Pipelines de deploy por dominio funcionando no GitHub Actions.
 
+## Estrategia para plano gratuito
+
+1. Deploy automatico somente em main (producao).
+2. Deploy de homolog apenas manual via workflow_dispatch.
+3. Evitar esteira dupla: usar GitHub Actions como unica fonte de deploy.
+
 ## Passo 1 - Reconfigurar projetos na Vercel
 
 1. Projeto feedback-analytics-web:
-- Root Directory: apps/web
+- Root Directory: . (raiz do repositorio)
 - Build Command: npm run build
 - Output Directory: dist
 - Framework Preset: Vite
 
 2. Projeto feedback-analytics-api:
-- Root Directory: backends/api-gateway
+- Root Directory: . (raiz do repositorio)
 - Framework Preset: Other
-- Install Command: npm ci --prefix ../shared && npm ci
+- Install Command: npm ci --prefix shared && npm ci --prefix backends/api-gateway
 
 3. Projeto feedback-analytics-service-ia-analysis:
-- Root Directory: services/ia-analyze
+- Root Directory: . (raiz do repositorio)
 - Framework Preset: Other
-- Install Command: npm ci --prefix ../shared && npm ci
+- Install Command: npm ci --prefix shared && npm ci --prefix services/ia-analyze
+
+5. Validar vercel.json por dominio com caminhos relativos a raiz do repositorio:
+- Web (apps/web/vercel.json): src deve ser apps/web/package.json
+- API (backends/api-gateway/vercel.json): src deve ser backends/api-gateway/index.ts
+- IA (services/ia-analyze/vercel.json): src deve ser services/ia-analyze/src/index.ts
 
 4. Variaveis de ambiente por projeto:
 - Web: VITE_API_BASE_URL apontando para o dominio da API Gateway
@@ -71,6 +84,24 @@ Finalizar a separacao de deploy por dominio no monorepo e remover o arquivo verc
 4. Preflight OPTIONS retornando 204 para origens permitidas.
 5. Preflight OPTIONS retornando 403 para origem nao permitida.
 6. Endpoint de IA funcionando com token interno quando modo remoto estiver ativo.
+
+## Troubleshooting rapido
+
+1. Dominio *.vercel.app retornando 404 NOT_FOUND:
+- Em branch homolog, deploy padrao e Preview; use a URL de Preview do check/Action.
+- O dominio principal do projeto responde o deploy de Production (main ou --prod).
+
+2. Deploy com status completed, mas pagina 404:
+- Verificar se o vercel.json do dominio usa caminhos com prefixo de dominio partindo da raiz.
+- Verificar se o projeto correto esta conectado ao repositorio em Settings > Git.
+
+3. Checks da Vercel no PR aparecem, mas URLs nao abrem:
+- Confirmar se o projeto nao foi desconectado do Git por engano.
+- Reexecutar um novo deploy de preview apos ajustar Root Directory/vercel.json.
+
+4. Rollup falha para resolver import "zod" em shared/schemas:
+- Garantir alias de zod no Vite apontando para node_modules do web.
+- Validar build local do web antes de novo deploy.
 
 ## Remocao final do arquivo da raiz
 

@@ -1,6 +1,7 @@
 import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 import * as path from 'path';
+import { existsSync } from 'fs';
 import tailwindcss from '@tailwindcss/vite';
 import { execSync } from 'child_process';
 
@@ -18,6 +19,21 @@ function getGitVersionTag(): string {
 
 const gitVersion = getGitVersionTag();
 
+function resolveSharedPath(): string {
+  const candidates = [
+    path.resolve(__dirname, '../../shared'),
+    path.resolve(__dirname, './shared'),
+    path.resolve(process.cwd(), 'shared'),
+    path.resolve(process.cwd(), '../../shared'),
+  ];
+
+  const found = candidates.find((candidate) => existsSync(candidate));
+
+  return found ?? path.resolve(__dirname, '../../shared');
+}
+
+const sharedPath = resolveSharedPath();
+
 // https://vite.dev/config/
 export default defineConfig({
   root: __dirname,
@@ -31,11 +47,13 @@ export default defineConfig({
   },
   resolve: {
     alias: {
+      // Shared schemas are imported from ../../shared; force zod to resolve from web deps.
+      zod: path.resolve(__dirname, './node_modules/zod'),
       src: path.resolve(__dirname, './src'),
       layouts: path.resolve(__dirname, './layouts'),
       pages: path.resolve(__dirname, './pages'),
       server: path.resolve(__dirname, '../../backends/api-gateway'),
-      lib: path.resolve(__dirname, '../../shared'),
+      lib: sharedPath,
       components: path.resolve(__dirname, './components'),
       styles: path.resolve(__dirname, './styles'),
     },

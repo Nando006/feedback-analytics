@@ -2,7 +2,7 @@ import { IaAnalyzeServiceError } from './iaAnalyzeErrors.js';
 import type {
   IaAnalyzeRemoteRunRequest,
   IaAnalyzeRemoteRunResponse,
-} from 'lib/interfaces/contracts/ia-analyze/remote.contract.js';
+} from 'lib/interfaces/contracts/ia-analyze/remote.contract';
 
 type IaAnalyzeExecutionMode = 'local' | 'remote';
 
@@ -199,3 +199,4 @@ export async function runIaAnalyzeAnalysis(
     return postAnalysisToService(DEFAULT_LOCAL_IA_ANALYZE_URL, requestBody);
   }
 }
+

@@ -27,6 +27,69 @@ function normalizeOrigin(rawValue: string): string | null {
   }
 }
 
+function normalizeHost(rawValue: string): string | null {
+  const value = String(rawValue ?? '').trim().toLowerCase();
+
+  if (!value) {
+    return null;
+  }
+
+  try {
+    return new URL(`http://${value}`).hostname.toLowerCase();
+  } catch {
+    return null;
+  }
+}
+
+function extractVercelProjectSuffix(hostname: string, projectSlug: string): string | null {
+  const normalizedHostname = String(hostname ?? '').trim().toLowerCase();
+  const normalizedProjectSlug = String(projectSlug ?? '').trim().toLowerCase();
+
+  if (!normalizedHostname || !normalizedProjectSlug) {
+    return null;
+  }
+
+  const productionHostname = `${normalizedProjectSlug}.vercel.app`;
+
+  if (normalizedHostname === productionHostname) {
+    return '.vercel.app';
+  }
+
+  if (
+    normalizedHostname.startsWith(`${normalizedProjectSlug}-`) &&
+    normalizedHostname.endsWith('.vercel.app')
+  ) {
+    return normalizedHostname.slice(normalizedProjectSlug.length);
+  }
+
+  return null;
+}
+
+function readVercelPairConfig() {
+  const rawEnabled = String(process.env.CORS_ALLOW_VERCEL_PROJECT_PAIR ?? '')
+    .trim()
+    .toLowerCase();
+  const vercelEnv = String(process.env.VERCEL_ENV ?? '')
+    .trim()
+    .toLowerCase();
+  const enabled =
+    rawEnabled === 'true' || (rawEnabled !== 'false' && vercelEnv === 'preview');
+
+  return {
+    enabled,
+    webProjectSlug: String(
+      process.env.CORS_VERCEL_WEB_PROJECT_SLUG ?? 'feedback-analytics-web',
+    )
+      .trim()
+      .toLowerCase(),
+    apiProjectSlug: String(
+      process.env.CORS_VERCEL_API_PROJECT_SLUG ?? 'feedback-analytics-api',
+    )
+      .trim()
+      .toLowerCase(),
+  };
+}
+
 function readAllowedOrigins(): Set<string> {
   const defaults = ['http://localhost:5173', 'http://localhost:4173']
     .map((value) => normalizeOrigin(value))
@@ -49,8 +112,41 @@ function readAllowedOrigins(): Set<string> {
 }
 
 const allowedOrigins = readAllowedOrigins();
+const vercelPairConfig = readVercelPairConfig();
 
-function resolveAllowedOrigin(originHeader?: string): string | null {
+function isAllowedByVercelProjectPair(params: {
+  origin: string;
+  requestHostHeader?: string;
+}) {
+  if (!vercelPairConfig.enabled) {
+    return false;
+  }
+
+  const originHostname = normalizeHost(new URL(params.origin).hostname);
+  const requestHostname = normalizeHost(String(params.requestHostHeader ?? ''));
+
+  if (!originHostname || !requestHostname) {
+    return false;
+  }
+
+  const webSuffix = extractVercelProjectSuffix(
+    originHostname,
+    vercelPairConfig.webProjectSlug,
+  );
+  const apiSuffix = extractVercelProjectSuffix(
+    requestHostname,
+    vercelPairConfig.apiProjectSlug,
+  );
+
+  return webSuffix !== null && apiSuffix !== null && webSuffix === apiSuffix;
+}
+
+function resolveAllowedOrigin(params: {
+  originHeader?: string;
+  requestHostHeader?: string;
+}): string | null {
+  const { originHeader, requestHostHeader } = params;
+
   if (!originHeader) {
     return null;
   }
@@ -61,7 +157,20 @@ function resolveAllowedOrigin(originHeader?: string): string | null {
     return null;
   }
 
-  return allowedOrigins.has(normalizedOrigin) ? normalizedOrigin : null;
+  if (allowedOrigins.has(normalizedOrigin)) {
+    return normalizedOrigin;
+  }
+
+  if (
+    isAllowedByVercelProjectPair({
+      origin: normalizedOrigin,
+      requestHostHeader,
+    })
+  ) {
+    return normalizedOrigin;
+  }
+
+  return null;
 }
 
 function corsMiddleware(
@@ -71,7 +180,12 @@ function corsMiddleware(
 ) {
   const originHeader =
     typeof req.headers.origin === 'string' ? req.headers.origin : undefined;
-  const allowedOrigin = resolveAllowedOrigin(originHeader);
+  const requestHostHeader =
+    typeof req.headers.host === 'string' ? req.headers.host : undefined;
+  const allowedOrigin = resolveAllowedOrigin({
+    originHeader,
+    requestHostHeader,
+  });
 
   if (allowedOrigin) {
     res.setHeader('Access-Control-Allow-Origin', allowedOrigin);

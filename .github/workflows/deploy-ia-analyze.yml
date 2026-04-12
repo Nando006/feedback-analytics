@@ -2,7 +2,7 @@ name: Deploy IA Analyze Service (Vercel)
 
 on:
   push:
-    branches: [main, homolog]
+    branches: [main]
     paths:
       - "services/ia-analyze/**"
       - "shared/interfaces/contracts/ia-analyze/**"

@@ -11,16 +11,16 @@ import {
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type {
   IaAnalyzeFeedbackInput,
-} from 'lib/interfaces/contracts/ia-analyze/input.contract.js';
-import type { IaAnalyzeRemoteRunRequest } from 'lib/interfaces/contracts/ia-analyze/remote.contract.js';
+} from 'lib/interfaces/contracts/ia-analyze/input.contract';
+import type { IaAnalyzeRemoteRunRequest } from 'lib/interfaces/contracts/ia-analyze/remote.contract';
 import type {
   IaAnalyzeRunRequest,
   IaAnalyzeRunResponse,
-} from 'lib/interfaces/contracts/ia-analyze/run.contract.js';
+} from 'lib/interfaces/contracts/ia-analyze/run.contract';
 import type {
   IaAnalyzeScopeType,
   IaAnalyzeSentiment,
-} from 'lib/interfaces/contracts/ia-analyze/scope.contract.js';
+} from 'lib/interfaces/contracts/ia-analyze/scope.contract';
 
 export { IaAnalyzeServiceError };
 
@@ -363,3 +363,4 @@ export async function analyzeFeedbacksForEnterprise(params: {
     contexts: insightsContexts,
   };
 }
+

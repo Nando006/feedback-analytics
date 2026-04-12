@@ -7,8 +7,8 @@ import {
   API_ERROR_UNABLE_TO_CREATE_QR_CP,
   API_ERROR_UNABLE_TO_DISABLE_QR,
   API_ERROR_UPDATE_FAILED,
-} from 'server/constants/errors.js';
-import { sendTypedError } from 'server/utils/sendTypedError.js';
+} from 'server/constants/errors';
+import { sendTypedError } from 'server/utils/sendTypedError';
 import {
   getCatalogKind,
   hasValidQuestionLength,
@@ -720,3 +720,4 @@ export async function disableCatalogQrHandler(req: Request, res: Response) {
     active: false,
   });
 }
+

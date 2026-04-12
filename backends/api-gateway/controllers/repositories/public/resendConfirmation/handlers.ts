@@ -1,11 +1,11 @@
 import type { Request, Response } from 'express';
 import z from 'zod';
 import { createSupabaseServerClient } from '../../../../database/supabase.js';
-import { sendTypedError } from 'server/utils/sendTypedError.js';
+import { sendTypedError } from 'server/utils/sendTypedError';
 import {
   API_ERROR_INTERNAL_ERROR,
   API_ERROR_INVALID_PAYLOAD,
-} from 'server/constants/errors.js';
+} from 'server/constants/errors';
 
 const resendConfirmationSchema = z.object({
   email: z.email({ error: 'E-mail inválido' }),
@@ -114,3 +114,4 @@ export async function resendConfirmationHandler(req: Request, res: Response) {
     });
   }
 }
+

@@ -2,7 +2,7 @@ name: Deploy Api Gateway (Vercel)
 
 on:
   push:
-    branches: [main, homolog]
+    branches: [main]
     paths:
       - "backends/api-gateway/**"
       - "shared/interfaces/**"
