@@ -65,6 +65,10 @@ function extractVercelProjectSuffix(hostname: string, projectSlug: string): stri
   return null;
 }
 
+function isVercelProjectHostname(hostname: string, projectSlug: string): boolean {
+  return extractVercelProjectSuffix(hostname, projectSlug) !== null;
+}
+
 function readVercelPairConfig() {
   const rawEnabled = String(process.env.CORS_ALLOW_VERCEL_PROJECT_PAIR ?? '')
     .trim()
@@ -138,7 +142,17 @@ function isAllowedByVercelProjectPair(params: {
     vercelPairConfig.apiProjectSlug,
   );
 
-  return webSuffix !== null && apiSuffix !== null && webSuffix === apiSuffix;
+  // Caso ideal: ambos os projetos compartilham o mesmo sufixo de preview (mesma branch/alias).
+  if (webSuffix !== null && apiSuffix !== null && webSuffix === apiSuffix) {
+    return true;
+  }
+
+  // Fallback: alguns aliases de preview variam entre projetos (ex.: -nando006 vs -git-homolog).
+  // Ainda assim, permitimos se origem e host pertencem aos slugs configurados de web/api.
+  return (
+    isVercelProjectHostname(originHostname, vercelPairConfig.webProjectSlug) &&
+    isVercelProjectHostname(requestHostname, vercelPairConfig.apiProjectSlug)
+  );
 }
 
 function resolveAllowedOrigin(params: {
