@@ -7,7 +7,10 @@ import type {
   IaAnalyzeRunResponse,
 } from 'lib/interfaces/contracts/ia-analyze/run.contract.js';
 import type { IaAnalyzeScopeType } from 'lib/interfaces/contracts/ia-analyze/scope.contract.js';
-import { analyzeFeedbacksForEnterprise, IaAnalyzeServiceError } from 'server/express/controllers/iaAnalyze/iaAnalyzeService.js';
+import {
+  analyzeFeedbacksForEnterprise,
+  IaAnalyzeServiceError,
+} from 'server/express/controllers/services/iaAnalyze/iaAnalyzeService.js';
 
 function parseScopeType(value: unknown): IaAnalyzeScopeType | undefined {
   const normalized = String(value ?? '')
