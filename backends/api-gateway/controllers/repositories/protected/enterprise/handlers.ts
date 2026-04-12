@@ -1,6 +1,6 @@
 import express from 'express';
 import { enterpriseUpdateSchema } from 'lib/schemas/user/enterpriseUpdateSchema.js';
-import { requireAuth } from '../../../middleware/auth.js';
+import { requireAuth } from '../../../../middleware/auth.js';
 import {
   API_ERROR_COLLECTING_DATA_NOT_FOUND,
   API_ERROR_EMPTY_PAYLOAD,

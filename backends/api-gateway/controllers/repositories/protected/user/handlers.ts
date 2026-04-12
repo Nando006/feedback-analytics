@@ -1,5 +1,5 @@
 import express from 'express';
-import { requireAuth } from '../../../middleware/auth.js';
+import { requireAuth } from '../../../../middleware/auth.js';
 import { emailUpdateSchema } from 'lib/schemas/user/emailUpdateSchema.js';
 import { metadadosUpdateSchema } from 'lib/schemas/user/metadadosUpdateSchema.js';
 import {

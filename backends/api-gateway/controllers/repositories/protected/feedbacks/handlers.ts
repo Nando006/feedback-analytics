@@ -1,5 +1,5 @@
 import express from 'express';
-import { requireAuth } from '../../../middleware/auth.js';
+import { requireAuth } from '../../../../middleware/auth.js';
 import {
   API_ERROR_ENTERPRISE_NOT_FOUND,
   API_ERROR_FAILED_TO_COUNT_FEEDBACKS,
