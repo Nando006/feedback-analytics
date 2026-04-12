@@ -91,6 +91,10 @@ Finalizar a separacao de deploy por dominio no monorepo e remover o arquivo verc
 - Confirmar se o projeto nao foi desconectado do Git por engano.
 - Reexecutar um novo deploy de preview apos ajustar Root Directory/vercel.json.
 
+4. Rollup falha para resolver import "zod" em shared/schemas:
+- Garantir alias de zod no Vite apontando para node_modules do web.
+- Validar build local do web antes de novo deploy.
+
 ## Remocao final do arquivo da raiz
 
 1. Remover vercel.json da raiz.

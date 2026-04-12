@@ -31,6 +31,8 @@ export default defineConfig({
   },
   resolve: {
     alias: {
+      // Shared schemas are imported from ../../shared; force zod to resolve from web deps.
+      zod: path.resolve(__dirname, './node_modules/zod'),
       src: path.resolve(__dirname, './src'),
       layouts: path.resolve(__dirname, './layouts'),
       pages: path.resolve(__dirname, './pages'),
