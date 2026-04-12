@@ -1,6 +1,5 @@
 import express from 'express';
 import { enterpriseUpdateSchema } from 'lib/schemas/user/enterpriseUpdateSchema.js';
-import { requireAuth } from '../../../../middleware/auth.js';
 import {
   API_ERROR_COLLECTING_DATA_NOT_FOUND,
   API_ERROR_EMPTY_PAYLOAD,
@@ -61,6 +60,45 @@ type CollectingDataPayload = {
   catalog_services?: CatalogItemInput[] | null;
   catalog_departments?: CatalogItemInput[] | null;
   company_feedback_questions?: CompanyFeedbackQuestionInput[] | null;
+};
+
+type CatalogItemIdRow = {
+  id: string;
+};
+
+type CatalogItemSnapshotRow = {
+  id: string;
+  enterprise_id: string;
+  kind: string;
+  name: string;
+  description: string | null;
+  status: string;
+  sort_order: number | null;
+  created_at: string | null;
+  updated_at: string | null;
+};
+
+type CompanyFeedbackSubquestionSnapshotRow = {
+  id: string;
+  question_id: string;
+  subquestion_order: number | string | null;
+  subquestion_text: string | null;
+  is_active: boolean | null;
+  created_at: string | null;
+  updated_at: string | null;
+};
+
+type CompanyFeedbackQuestionSnapshotRow = {
+  id: string;
+  enterprise_id: string;
+  scope_type: string;
+  catalog_item_id: string | null;
+  question_order: number | string | null;
+  question_text: string | null;
+  is_active: boolean | null;
+  created_at: string | null;
+  updated_at: string | null;
+  subquestions?: CompanyFeedbackSubquestionSnapshotRow[] | null;
 };
 
 const DEFAULT_COMPANY_FEEDBACK_QUESTIONS: CompanyFeedbackQuestionInput[] = [
@@ -146,7 +184,8 @@ async function syncCatalogItemsByKind(params: {
     return { error: true as const };
   }
 
-  const existingIds = new Set((existing ?? []).map((row) => row.id));
+  const existingRows = (existing ?? []) as CatalogItemIdRow[];
+  const existingIds = new Set(existingRows.map((row) => row.id));
   const updateRows = normalizedItems
     .filter((item) => item.id && existingIds.has(item.id))
     .map((item) => ({
@@ -186,10 +225,10 @@ async function syncCatalogItemsByKind(params: {
   const incomingKnownIds = new Set(
     normalizedItems
       .map((item) => item.id)
-      .filter((id): id is string => Boolean(id) && existingIds.has(id)),
+      .filter((id): id is string => typeof id === 'string' && existingIds.has(id)),
   );
 
-  const staleIds = (existing ?? [])
+  const staleIds = existingRows
     .map((row) => row.id)
     .filter((id) => !incomingKnownIds.has(id));
 
@@ -235,10 +274,12 @@ async function getCatalogSnapshot(
     };
   }
 
+  const catalogRows = data as CatalogItemSnapshotRow[];
+
   return {
-    catalog_products: data.filter((item) => item.kind === 'PRODUCT'),
-    catalog_services: data.filter((item) => item.kind === 'SERVICE'),
-    catalog_departments: data.filter((item) => item.kind === 'DEPARTMENT'),
+    catalog_products: catalogRows.filter((item) => item.kind === 'PRODUCT'),
+    catalog_services: catalogRows.filter((item) => item.kind === 'SERVICE'),
+    catalog_departments: catalogRows.filter((item) => item.kind === 'DEPARTMENT'),
   };
 }
 
@@ -365,7 +406,9 @@ async function getCompanyFeedbackQuestionsSnapshot(
     return [];
   }
 
-  const normalizedData = data.map((item) => ({
+  const questionRows = data as CompanyFeedbackQuestionSnapshotRow[];
+
+  const normalizedData = questionRows.map((item) => ({
     ...item,
     question_order: Number(item.question_order),
     subquestions: Array.isArray(item.subquestions)
@@ -1019,32 +1062,4 @@ export async function upsertCollectingDataHandler(
       company_feedback_questions: companyFeedbackQuestions,
     },
   });
-}
-
-export function EndpointsEnterprise(app: express.Express) {
-  app.get('/api/protected/user/enterprise', requireAuth, getEnterpriseHandler);
-
-  app.patch(
-    '/api/protected/user/enterprise',
-    requireAuth,
-    patchEnterpriseHandler,
-  );
-
-  app.get(
-    '/api/protected/user/collecting_data',
-    requireAuth,
-    getCollectingDataHandler,
-  );
-
-  app.patch(
-    '/api/protected/user/collecting_data',
-    requireAuth,
-    patchCollectingDataHandler,
-  );
-
-  app.put(
-    '/api/protected/user/collecting_data',
-    requireAuth,
-    upsertCollectingDataHandler,
-  );
 }

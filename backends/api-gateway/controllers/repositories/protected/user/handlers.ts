@@ -1,5 +1,4 @@
 import express from 'express';
-import { requireAuth } from '../../../../middleware/auth.js';
 import { emailUpdateSchema } from 'lib/schemas/user/emailUpdateSchema.js';
 import { metadadosUpdateSchema } from 'lib/schemas/user/metadadosUpdateSchema.js';
 import {
@@ -113,34 +112,4 @@ export async function verifyUserPhoneHandler(
   if (error) return sendTypedError(res, 400, API_ERROR_VERIFY_FAILED);
   return res.json({ ok: true });
 }
-
-export function EndpointsUser(app: express.Express) {
-  app.get('/api/protected/user/auth_user', requireAuth, getAuthUserHandler);
-
-  app.patch(
-    '/api/protected/user/email',
-    requireAuth,
-    patchUserEmailHandler,
-  );
-
-  app.patch(
-    '/api/protected/user/metadados',
-    requireAuth,
-    patchUserMetadadosHandler,
-  );
-
-  app.post(
-    '/api/protected/user/phone/start',
-    requireAuth,
-    startUserPhoneVerificationHandler,
-  );
-
-  app.post(
-    '/api/protected/user/phone/verify',
-    requireAuth,
-    verifyUserPhoneHandler,
-  );
-}
-
-
 
