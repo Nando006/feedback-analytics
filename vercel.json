@@ -1,20 +1,26 @@
 {
   "version": 2,
-  "redirects": [
+  "builds": [
     {
-      "source": "/api/:path*",
-      "destination": "https://feedback-analytics-api.vercel.app/api/:path*",
-      "permanent": false
+      "src": "backends/api-gateway/index.ts",
+      "use": "@vercel/node"
     },
     {
-      "source": "/internal/:path*",
-      "destination": "https://feedback-analytics-service-ia-analy.vercel.app/internal/:path*",
-      "permanent": false
+      "src": "apps/web/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
+      }
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/backends/api-gateway/index.ts"
     },
     {
-      "source": "/:path*",
-      "destination": "https://feedback-analytics-web.vercel.app/:path*",
-      "permanent": false
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ]
 }
