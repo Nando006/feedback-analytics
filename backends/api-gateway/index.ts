@@ -250,6 +250,9 @@ EndpointsFeedbacks(app);
 EndpointsUser(app);
 EndpointsIAAnalyze(app);
 
-// Iniciando o servidor.
-const port = Number(process.env.PORT ?? 3000);
-app.listen(port);
+if (process.env.VERCEL !== '1') {
+  const port = Number(process.env.PORT ?? 3000);
+  app.listen(port);
+}
+
+export default app;
