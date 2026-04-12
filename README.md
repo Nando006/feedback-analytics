@@ -14,6 +14,7 @@ Deploy em Vercel segue configuracao por dominio:
 
 Observacao: vercel.json na raiz e mantido por compatibilidade com checks automaticos da integracao Git da Vercel.
 O deploy oficial do projeto continua sendo executado por dominio nos workflows com --local-config.
+Para remover o arquivo da raiz com seguranca, siga o runbook em docs/deploy/vercel-monorepo-domain-cutover.md.
 
 ### Tech Stack
 - Cliente (React App):
