@@ -2,7 +2,7 @@
   "version": 2,
   "builds": [
     {
-      "src": "backends/api-gateway/src/server/express/index.ts",
+      "src": "backends/api-gateway/index.ts",
       "use": "@vercel/node"
     },
     {
@@ -16,7 +16,7 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "/backends/api-gateway/src/server/express/index.ts"
+      "destination": "/backends/api-gateway/index.ts"
     },
     {
       "source": "/(.*)",

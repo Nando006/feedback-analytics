@@ -6,7 +6,7 @@ import {
   patchCollectingDataHandler,
   patchEnterpriseHandler,
   upsertCollectingDataHandler,
-} from 'server/express/controllers/repositories/enterprise/handlers.js';
+} from '../../controllers/repositories/enterprise/handlers.js';
 
 export function EndpointsEnterprise(app: express.Express) {
   app.get('/api/protected/user/enterprise', requireAuth, getEnterpriseHandler);

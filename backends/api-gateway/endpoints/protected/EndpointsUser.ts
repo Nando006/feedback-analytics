@@ -6,7 +6,7 @@ import {
   patchUserMetadadosHandler,
   startUserPhoneVerificationHandler,
   verifyUserPhoneHandler,
-} from 'server/express/controllers/repositories/user/handlers.js';
+} from '../../controllers/repositories/user/handlers.js';
 
 export function EndpointsUser(app: express.Express) {
   app.get('/api/protected/user/auth_user', requireAuth, getAuthUserHandler);

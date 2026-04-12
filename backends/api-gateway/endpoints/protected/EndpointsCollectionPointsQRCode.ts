@@ -8,7 +8,7 @@ import {
   getQrCatalogHandler,
   getQrStatusHandler,
   upsertCatalogQuestionsHandler,
-} from 'server/express/controllers/repositories/collectionPointsQr/handlers.js';
+} from '../../controllers/repositories/collectionPointsQr/handlers.js';
 
 export function EndpointsCollectionPointsQRCode(app: express.Express) {
   app.get(

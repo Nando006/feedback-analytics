@@ -7,7 +7,7 @@ import {
   fetchFeedbacksForAnalysis,
   insertFeedbackAnalysisRows,
   upsertFeedbackInsightsReports,
-} from 'server/express/controllers/repositories/iaAnalyze/iaAnalyzeFeedbackRepository.js';
+} from '../../repositories/iaAnalyze/iaAnalyzeFeedbackRepository.js';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type {
   IaAnalyzeFeedbackInput,
