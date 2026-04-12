@@ -1,8 +1,13 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type {
+  IaAnalyzeAnalyzedItem,
+  IaAnalyzeContext,
+} from 'lib/interfaces/contracts/ia-analyze/analysis.contract.js';
+import type {
   IaAnalyzeFeedbackInput,
 } from 'lib/interfaces/contracts/ia-analyze/input.contract.js';
 import type {
+  IaAnalyzeSentiment,
   IaAnalyzeScopeType,
 } from 'lib/interfaces/contracts/ia-analyze/scope.contract.js';
 import { IaAnalyzeServiceError } from 'server/express/controllers/services/iaAnalyze/iaAnalyzeErrors.js';
@@ -10,6 +15,20 @@ import { IaAnalyzeServiceError } from 'server/express/controllers/services/iaAna
 type SupabaseServerClient = SupabaseClient;
 
 type FeedbackForAnalysis = IaAnalyzeFeedbackInput;
+
+export type CollectingDataContext = {
+  company_objective?: string | null;
+  analytics_goal?: string | null;
+  business_summary?: string | null;
+  main_products_or_services?: string[] | null;
+};
+
+type FeedbackAnalysisInsertRow = {
+  feedback_id: string;
+  sentiment: IaAnalyzeSentiment;
+  categories: string[];
+  keywords: string[];
+};
 
 type RawFeedbackRow = {
   id: string;
@@ -295,4 +314,194 @@ export async function fetchFeedbacksForAnalysis(params: {
       dynamic_subanswers: subanswersByFeedbackId.get(feedback.id) ?? [],
     } satisfies FeedbackForAnalysis;
   });
+}
+
+export async function fetchEnterpriseContextForAnalysis(params: {
+  supabase: SupabaseServerClient;
+  userId: string;
+}): Promise<{
+  enterpriseId: string;
+  collecting: CollectingDataContext | null;
+  enterpriseName: string | null;
+}> {
+  const { supabase, userId } = params;
+
+  const { data: enterpriseRow, error: enterpriseError } = await supabase
+    .from('enterprise')
+    .select('id')
+    .eq('auth_user_id', userId)
+    .single();
+
+  if (enterpriseError || !enterpriseRow) {
+    throw new IaAnalyzeServiceError(
+      'Enterprise not found',
+      404,
+      'enterprise_not_found',
+    );
+  }
+
+  const enterpriseId = enterpriseRow.id as string;
+
+  const { data: collecting, error: collectingError } = await supabase
+    .from('collecting_data_enterprise')
+    .select(
+      'company_objective, analytics_goal, business_summary, main_products_or_services',
+    )
+    .eq('enterprise_id', enterpriseId)
+    .maybeSingle();
+
+  if (collectingError) {
+    throw new IaAnalyzeServiceError(
+      'Failed to fetch collecting data',
+      500,
+      'failed_to_fetch_collecting_data',
+    );
+  }
+
+  const { data: authData } = await supabase.auth.getUser();
+  const enterpriseName =
+    (authData.user?.user_metadata as { full_name?: string } | null)
+      ?.full_name ?? null;
+
+  return {
+    enterpriseId,
+    collecting: (collecting as CollectingDataContext | null) ?? null,
+    enterpriseName,
+  };
+}
+
+export async function fetchAlreadyAnalyzedFeedbackIds(params: {
+  supabase: SupabaseServerClient;
+  feedbackIds: string[];
+}): Promise<Set<string>> {
+  const { supabase, feedbackIds } = params;
+
+  if (feedbackIds.length === 0) {
+    return new Set<string>();
+  }
+
+  const { data: existingAnalysis, error: existingAnalysisError } = await supabase
+    .from('feedback_analysis')
+    .select('feedback_id')
+    .in('feedback_id', feedbackIds);
+
+  if (existingAnalysisError) {
+    throw new IaAnalyzeServiceError(
+      'Failed to fetch existing analysis',
+      500,
+      'failed_to_fetch_existing_analysis',
+    );
+  }
+
+  return new Set(
+    (existingAnalysis ?? [])
+      .map((row: { feedback_id: string | null }) => row.feedback_id)
+      .filter((feedbackId: string | null): feedbackId is string =>
+        typeof feedbackId === 'string' && feedbackId.length > 0,
+      ),
+  );
+}
+
+export async function insertFeedbackAnalysisRows(params: {
+  supabase: SupabaseServerClient;
+  rows: FeedbackAnalysisInsertRow[];
+}): Promise<IaAnalyzeAnalyzedItem[]> {
+  const { supabase, rows } = params;
+
+  if (rows.length === 0) {
+    return [];
+  }
+
+  const { data: inserted, error: insertError } = await supabase
+    .from('feedback_analysis')
+    .insert(rows)
+    .select('id, feedback_id, sentiment, categories, keywords');
+
+  if (insertError) {
+    throw new IaAnalyzeServiceError(
+      'Failed to save feedback analysis',
+      500,
+      'failed_to_save_feedback_analysis',
+    );
+  }
+
+  return (
+    inserted?.map((row: {
+      id: string;
+      feedback_id: string;
+      sentiment: IaAnalyzeSentiment;
+      categories: string[] | null;
+      keywords: string[] | null;
+    }) => ({
+      id: row.id,
+      feedback_id: row.feedback_id,
+      sentiment: row.sentiment,
+      categories: row.categories ?? [],
+      keywords: row.keywords ?? [],
+    })) ?? []
+  );
+}
+
+export async function upsertFeedbackInsightsReports(params: {
+  supabase: SupabaseServerClient;
+  enterpriseId: string;
+  contexts: IaAnalyzeContext[];
+}): Promise<void> {
+  const { supabase, enterpriseId, contexts } = params;
+
+  for (const context of contexts) {
+    const summary = context.globalInsights?.summary?.trim() || null;
+    const recommendations =
+      context.globalInsights?.recommendations?.filter((value: string) =>
+        String(value ?? '').trim(),
+      ) ?? [];
+
+    const hasMeaningfulData = summary || recommendations.length > 0;
+
+    if (!hasMeaningfulData) {
+      continue;
+    }
+
+    const payload = {
+      enterprise_id: enterpriseId,
+      scope_type: context.scope_type,
+      catalog_item_id: context.catalog_item_id,
+      catalog_item_name: context.catalog_item_name,
+      summary,
+      recommendations,
+      updated_at: new Date().toISOString(),
+    };
+
+    const { error: scopedUpsertError } = await supabase
+      .from('feedback_insights_report')
+      .upsert(payload, {
+        onConflict: 'enterprise_id,scope_type,catalog_item_id',
+      });
+
+    if (!scopedUpsertError) {
+      continue;
+    }
+
+    if (context.scope_type !== 'COMPANY' || context.catalog_item_id !== null) {
+      console.error('Falha ao salvar feedback_insights_report segmentado', scopedUpsertError);
+      continue;
+    }
+
+    const legacyPayload = {
+      enterprise_id: enterpriseId,
+      summary,
+      recommendations,
+      updated_at: new Date().toISOString(),
+    };
+
+    const { error: legacyUpsertError } = await supabase
+      .from('feedback_insights_report')
+      .upsert(legacyPayload, {
+        onConflict: 'enterprise_id',
+      });
+
+    if (legacyUpsertError) {
+      console.error('Falha ao salvar feedback_insights_report legado', legacyUpsertError);
+    }
+  }
 }
