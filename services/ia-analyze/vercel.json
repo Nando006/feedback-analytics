@@ -2,14 +2,14 @@
   "version": 2,
   "builds": [
     {
-      "src": "services/ia-analyze/src/index.ts",
+      "src": "src/index.ts",
       "use": "@vercel/node"
     }
   ],
   "rewrites": [
     {
       "source": "/(.*)",
-      "destination": "/services/ia-analyze/src/index.ts"
+      "destination": "/src/index.ts"
     }
   ]
 }
