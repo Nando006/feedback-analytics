@@ -11,27 +11,23 @@ import {
 export function EndpointsUser(app: express.Express) {
   app.get('/api/protected/user/auth_user', requireAuth, getAuthUserHandler);
 
-  app.patch(
-    '/api/protected/user/email',
-    requireAuth,
-    patchUserEmailHandler,
-  );
+  app.patch('/api/protected/user/email', requireAuth, patchUserEmailHandler);
 
   app.patch(
     '/api/protected/user/metadados',
     requireAuth,
-    patchUserMetadadosHandler,
+    patchUserMetadadosHandler
   );
 
   app.post(
     '/api/protected/user/phone/start',
     requireAuth,
-    startUserPhoneVerificationHandler,
+    startUserPhoneVerificationHandler
   );
 
   app.post(
     '/api/protected/user/phone/verify',
     requireAuth,
-    verifyUserPhoneHandler,
+    verifyUserPhoneHandler
   );
 }

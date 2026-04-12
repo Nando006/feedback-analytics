@@ -5,7 +5,7 @@ import type {
 import type {
   IaAnalyzeScopeType,
 } from 'lib/interfaces/contracts/ia-analyze/scope.contract.js';
-import { IaAnalyzeServiceError } from './iaAnalyzeErrors.js';
+import { IaAnalyzeServiceError } from 'server/express/controllers/services/iaAnalyze/iaAnalyzeErrors.js';
 
 type SupabaseServerClient = SupabaseClient;
 
