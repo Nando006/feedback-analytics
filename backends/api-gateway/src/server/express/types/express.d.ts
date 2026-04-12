@@ -1,4 +1,4 @@
-import type { createSupabaseServerClient } from '../supabase';
+import type { createSupabaseServerClient } from '../database/supabase';
 
 declare global {
   namespace Express {
