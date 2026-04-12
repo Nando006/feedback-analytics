@@ -34,6 +34,11 @@ Finalizar a separacao de deploy por dominio no monorepo e remover o arquivo verc
 - Framework Preset: Other
 - Install Command: npm ci --prefix ../shared && npm ci
 
+5. Validar vercel.json por dominio com caminhos relativos ao Root Directory:
+- Web (apps/web/vercel.json): src deve ser package.json
+- API (backends/api-gateway/vercel.json): src deve ser index.ts
+- IA (services/ia-analyze/vercel.json): src deve ser src/index.ts
+
 4. Variaveis de ambiente por projeto:
 - Web: VITE_API_BASE_URL apontando para o dominio da API Gateway
 - API: PUBLIC_SITE_URL, CORS_ALLOWED_ORIGINS, COOKIE_CROSS_SITE, IA_ANALYZE_REMOTE_*
@@ -71,6 +76,20 @@ Finalizar a separacao de deploy por dominio no monorepo e remover o arquivo verc
 4. Preflight OPTIONS retornando 204 para origens permitidas.
 5. Preflight OPTIONS retornando 403 para origem nao permitida.
 6. Endpoint de IA funcionando com token interno quando modo remoto estiver ativo.
+
+## Troubleshooting rapido
+
+1. Dominio *.vercel.app retornando 404 NOT_FOUND:
+- Em branch homolog, deploy padrao e Preview; use a URL de Preview do check/Action.
+- O dominio principal do projeto responde o deploy de Production (main ou --prod).
+
+2. Deploy com status completed, mas pagina 404:
+- Verificar se o vercel.json do dominio usa caminhos relativos ao Root Directory.
+- Verificar se o projeto correto esta conectado ao repositorio em Settings > Git.
+
+3. Checks da Vercel no PR aparecem, mas URLs nao abrem:
+- Confirmar se o projeto nao foi desconectado do Git por engano.
+- Reexecutar um novo deploy de preview apos ajustar Root Directory/vercel.json.
 
 ## Remocao final do arquivo da raiz
 
