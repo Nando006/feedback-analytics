@@ -27,6 +27,7 @@
   },
   "include": [
     "index.ts",
+    "express.d.ts",
     "controllers/**/*.ts",
     "database/**/*.ts",
     "endpoints/**/*.ts",
