@@ -12,6 +12,7 @@ import type {
   IaAnalyzeRemoteRunRequest,
   IaAnalyzeRemoteRunResponse,
 } from '../../../shared/interfaces/contracts/ia-analyze/remote.contract.js';
+import type { IaAnalyzeFeedbackInput } from '../../../shared/interfaces/contracts/ia-analyze/input.contract.js';
 import type { IaAnalyzeContext } from '../../../shared/interfaces/contracts/ia-analyze/analysis.contract.js';
 import type {
   SanitizeAnalysisTermsParams,
@@ -279,7 +280,11 @@ export async function runIaAnalyzeEngine(
       globalInsights: parsed?.global_insights ?? null,
     });
 
-    const feedbackById = new Map(batch.feedbacks.map((feedback) => [feedback.id, feedback]));
+    const feedbackById = new Map<string, IaAnalyzeFeedbackInput>(
+      batch.feedbacks.map(
+        (feedback): [string, IaAnalyzeFeedbackInput] => [feedback.id, feedback],
+      ),
+    );
     const items = Array.isArray(parsed?.feedbacks) ? parsed.feedbacks : [];
 
     items.forEach((item) => {
