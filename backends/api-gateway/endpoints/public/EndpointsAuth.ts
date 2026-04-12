@@ -1,6 +1,6 @@
 import express from 'express';
 import { loginSchema } from 'lib/schemas/public/loginSchema.js';
-import { createSupabaseServerClient } from '../../supabase.js';
+import { createSupabaseServerClient } from '../../database/supabase.js';
 import {
   API_ERROR_INTERNAL_ERROR,
   API_ERROR_EMAIL_NOT_CONFIRMED,

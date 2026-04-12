@@ -4,7 +4,7 @@ import {
   API_ERROR_INTERNAL_ERROR,
   API_ERROR_INVALID_PAYLOAD,
 } from 'server/constants/errors.js';
-import { createSupabaseServerClient } from '../../supabase.js';
+import { createSupabaseServerClient } from '../../database/supabase.js';
 import z from 'zod';
 
 const resendConfirmationSchema = z.object({

@@ -1,6 +1,6 @@
 import express from 'express';
 import { registerSchema } from 'lib/schemas/public/registerSchema.js';
-import { createSupabaseServerClient } from '../../supabase.js';
+import { createSupabaseServerClient } from '../../database/supabase.js';
 import {
   API_ERROR_DATABASE_ERROR,
   API_ERROR_DOCUMENT_REQUIRED,

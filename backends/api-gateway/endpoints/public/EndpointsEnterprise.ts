@@ -1,5 +1,5 @@
 import express from 'express';
-import { createSupabaseServerClient } from '../../supabase.js';
+import { createSupabaseServerClient } from '../../database/supabase.js';
 import {
   API_ERROR_ENTERPRISE_ID_REQUIRED,
   API_ERROR_ENTERPRISE_NOT_FOUND,
