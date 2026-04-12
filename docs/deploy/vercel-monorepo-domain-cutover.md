@@ -27,25 +27,25 @@ Para contexto arquitetural e estrategia geral, consulte docs/deploy/vercel-overv
 ## Passo 1 - Reconfigurar projetos na Vercel
 
 1. Projeto feedback-analytics-web:
-- Root Directory: apps/web
+- Root Directory: . (raiz do repositorio)
 - Build Command: npm run build
 - Output Directory: dist
 - Framework Preset: Vite
 
 2. Projeto feedback-analytics-api:
-- Root Directory: backends/api-gateway
+- Root Directory: . (raiz do repositorio)
 - Framework Preset: Other
-- Install Command: npm ci --prefix ../shared && npm ci
+- Install Command: npm ci --prefix shared && npm ci --prefix backends/api-gateway
 
 3. Projeto feedback-analytics-service-ia-analysis:
-- Root Directory: services/ia-analyze
+- Root Directory: . (raiz do repositorio)
 - Framework Preset: Other
-- Install Command: npm ci --prefix ../shared && npm ci
+- Install Command: npm ci --prefix shared && npm ci --prefix services/ia-analyze
 
-5. Validar vercel.json por dominio com caminhos relativos ao Root Directory:
-- Web (apps/web/vercel.json): src deve ser package.json
-- API (backends/api-gateway/vercel.json): src deve ser index.ts
-- IA (services/ia-analyze/vercel.json): src deve ser src/index.ts
+5. Validar vercel.json por dominio com caminhos relativos a raiz do repositorio:
+- Web (apps/web/vercel.json): src deve ser apps/web/package.json
+- API (backends/api-gateway/vercel.json): src deve ser backends/api-gateway/index.ts
+- IA (services/ia-analyze/vercel.json): src deve ser services/ia-analyze/src/index.ts
 
 4. Variaveis de ambiente por projeto:
 - Web: VITE_API_BASE_URL apontando para o dominio da API Gateway
@@ -92,7 +92,7 @@ Para contexto arquitetural e estrategia geral, consulte docs/deploy/vercel-overv
 - O dominio principal do projeto responde o deploy de Production (main ou --prod).
 
 2. Deploy com status completed, mas pagina 404:
-- Verificar se o vercel.json do dominio usa caminhos relativos ao Root Directory.
+- Verificar se o vercel.json do dominio usa caminhos com prefixo de dominio partindo da raiz.
 - Verificar se o projeto correto esta conectado ao repositorio em Settings > Git.
 
 3. Checks da Vercel no PR aparecem, mas URLs nao abrem:

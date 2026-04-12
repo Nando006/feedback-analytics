@@ -1,12 +1,12 @@
 import express from 'express';
-import { emailUpdateSchema } from 'lib/schemas/user/emailUpdateSchema.js';
-import { metadadosUpdateSchema } from 'lib/schemas/user/metadadosUpdateSchema.js';
+import { emailUpdateSchema } from 'lib/schemas/user/emailUpdateSchema';
+import { metadadosUpdateSchema } from 'lib/schemas/user/metadadosUpdateSchema';
 import {
   API_ERROR_INVALID_PAYLOAD,
   API_ERROR_UPDATE_FAILED,
   API_ERROR_VERIFY_FAILED,
-} from 'server/constants/errors.js';
-import { sendTypedError } from 'server/utils/sendTypedError.js';
+} from 'server/constants/errors';
+import { sendTypedError } from 'server/utils/sendTypedError';
 
 export async function getAuthUserHandler(
   req: express.Request,
@@ -112,4 +112,5 @@ export async function verifyUserPhoneHandler(
   if (error) return sendTypedError(res, 400, API_ERROR_VERIFY_FAILED);
   return res.json({ ok: true });
 }
+
 

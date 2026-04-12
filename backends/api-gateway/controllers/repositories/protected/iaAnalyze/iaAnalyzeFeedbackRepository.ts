@@ -2,14 +2,14 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type {
   IaAnalyzeAnalyzedItem,
   IaAnalyzeContext,
-} from 'lib/interfaces/contracts/ia-analyze/analysis.contract.js';
+} from 'lib/interfaces/contracts/ia-analyze/analysis.contract';
 import type {
   IaAnalyzeFeedbackInput,
-} from 'lib/interfaces/contracts/ia-analyze/input.contract.js';
+} from 'lib/interfaces/contracts/ia-analyze/input.contract';
 import type {
   IaAnalyzeSentiment,
   IaAnalyzeScopeType,
-} from 'lib/interfaces/contracts/ia-analyze/scope.contract.js';
+} from 'lib/interfaces/contracts/ia-analyze/scope.contract';
 import { IaAnalyzeServiceError } from '../../../services/iaAnalyze/iaAnalyzeErrors.js';
 
 type SupabaseServerClient = SupabaseClient;
@@ -505,3 +505,4 @@ export async function upsertFeedbackInsightsReports(params: {
     }
   }
 }
+

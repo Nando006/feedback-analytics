@@ -1,13 +1,13 @@
 import type { Request, Response } from 'express';
-import { loginSchema } from 'lib/schemas/public/loginSchema.js';
+import { loginSchema } from 'lib/schemas/public/loginSchema';
 import { createSupabaseServerClient } from '../../../../database/supabase.js';
 import {
   API_ERROR_INTERNAL_ERROR,
   API_ERROR_EMAIL_NOT_CONFIRMED,
   API_ERROR_INVALID_CREDENTIALS,
   API_ERROR_INVALID_PAYLOAD,
-} from 'server/constants/errors.js';
-import { sendTypedError } from 'server/utils/sendTypedError.js';
+} from 'server/constants/errors';
+import { sendTypedError } from 'server/utils/sendTypedError';
 
 type LoginEndpointErrorCode =
   | typeof API_ERROR_INVALID_PAYLOAD
@@ -147,3 +147,4 @@ export async function logoutHandler(req: Request, res: Response) {
     return res.status(500).json({ ok: false });
   }
 }
+

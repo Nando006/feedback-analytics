@@ -21,7 +21,9 @@
     "baseUrl": "../..",
     "ignoreDeprecations": "6.0",
     "paths": {
+      "lib/*.js": ["shared/*.ts"],
       "lib/*": ["shared/*"],
+      "server/*.js": ["backends/api-gateway/*.ts"],
       "server/*": ["backends/api-gateway/*"]
     }
   },
