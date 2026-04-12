@@ -8,6 +8,10 @@
   ],
   "rewrites": [
     {
+      "source": "/",
+      "destination": "/internal/health"
+    },
+    {
       "source": "/(.*)",
       "destination": "/services/ia-analyze/src/index.ts"
     }

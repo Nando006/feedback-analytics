@@ -10,7 +10,6 @@
     "dev:ia": "npm run dev --prefix services/ia-analyze",
     "server:dev": "npm run dev:api",
     "server:ia-analyze:dev": "npm run dev:ia",
-    "dev:all": "echo \"Use dois terminais: npm run dev:web e npm run dev:api\"",
     "build": "npm run build --prefix apps/web",
     "build:web": "npm run build --prefix apps/web",
     "lint": "npm run lint:api && npm run lint:web && npm run lint:ia",

@@ -7,8 +7,8 @@ import {
   API_ERROR_UNABLE_TO_CREATE_QR_CP,
   API_ERROR_UNABLE_TO_DISABLE_QR,
   API_ERROR_UPDATE_FAILED,
-} from 'server/constants/errors';
-import { sendTypedError } from 'server/utils/sendTypedError';
+} from '../../../../constants/errors.js';
+import { sendTypedError } from '../../../../utils/sendTypedError.js';
 import {
   getCatalogKind,
   hasValidQuestionLength,

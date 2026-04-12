@@ -1,12 +1,12 @@
 import express from 'express';
-import { emailUpdateSchema } from 'lib/schemas/user/emailUpdateSchema';
-import { metadadosUpdateSchema } from 'lib/schemas/user/metadadosUpdateSchema';
+import { emailUpdateSchema } from '../../../../../../shared/schemas/user/emailUpdateSchema.js';
+import { metadadosUpdateSchema } from '../../../../../../shared/schemas/user/metadadosUpdateSchema.js';
 import {
   API_ERROR_INVALID_PAYLOAD,
   API_ERROR_UPDATE_FAILED,
   API_ERROR_VERIFY_FAILED,
-} from 'server/constants/errors';
-import { sendTypedError } from 'server/utils/sendTypedError';
+} from '../../../../constants/errors.js';
+import { sendTypedError } from '../../../../utils/sendTypedError.js';
 
 export async function getAuthUserHandler(
   req: express.Request,

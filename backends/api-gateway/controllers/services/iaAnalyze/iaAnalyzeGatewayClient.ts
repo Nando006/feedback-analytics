@@ -2,12 +2,14 @@ import { IaAnalyzeServiceError } from './iaAnalyzeErrors.js';
 import type {
   IaAnalyzeRemoteRunRequest,
   IaAnalyzeRemoteRunResponse,
-} from 'lib/interfaces/contracts/ia-analyze/remote.contract';
+} from '../../../../../shared/interfaces/contracts/ia-analyze/remote.contract.js';
 
 type IaAnalyzeExecutionMode = 'local' | 'remote';
 
 const DEFAULT_REMOTE_TIMEOUT_MS = 20_000;
 const DEFAULT_LOCAL_IA_ANALYZE_URL = 'http://localhost:4100';
+const DEFAULT_PREVIEW_IA_ANALYZE_ALIAS_URL =
+  'https://feedback-analytics-service-ia-analysis-homolog.vercel.app';
 
 function getExecutionMode(): IaAnalyzeExecutionMode {
   const rawMode = String(process.env.IA_ANALYZE_EXECUTION_MODE ?? 'local')
@@ -17,13 +19,38 @@ function getExecutionMode(): IaAnalyzeExecutionMode {
   return rawMode === 'remote' ? 'remote' : 'local';
 }
 
-function getRemoteBaseUrl(): string | null {
-  const rawValue = String(process.env.IA_ANALYZE_REMOTE_URL ?? '').trim();
-  if (!rawValue) {
+function normalizeBaseUrl(rawValue: string): string | null {
+  const value = String(rawValue ?? '').trim();
+
+  if (!value) {
     return null;
   }
 
-  return rawValue.replace(/\/+$/, '');
+  return value.replace(/\/+$/, '');
+}
+
+function getRemoteBaseUrl(): string | null {
+  return normalizeBaseUrl(process.env.IA_ANALYZE_REMOTE_URL ?? '');
+}
+
+function getPreviewAliasBaseUrl(): string | null {
+  const fromEnv = normalizeBaseUrl(
+    process.env.IA_ANALYZE_REMOTE_PREVIEW_ALIAS_URL ?? '',
+  );
+
+  if (fromEnv) {
+    return fromEnv;
+  }
+
+  const vercelEnv = String(process.env.VERCEL_ENV ?? '')
+    .trim()
+    .toLowerCase();
+
+  if (vercelEnv !== 'preview') {
+    return null;
+  }
+
+  return DEFAULT_PREVIEW_IA_ANALYZE_ALIAS_URL;
 }
 
 function getRemoteToken(): string | null {
@@ -90,9 +117,11 @@ function toIaAnalyzeServiceError(params: {
 function resolvePrimaryBaseUrl(): string {
   const mode = getExecutionMode();
   const remoteBaseUrl = getRemoteBaseUrl();
+  const previewAliasBaseUrl = getPreviewAliasBaseUrl();
+  const resolvedRemoteBaseUrl = remoteBaseUrl ?? previewAliasBaseUrl;
 
   if (mode === 'remote') {
-    if (!remoteBaseUrl) {
+    if (!resolvedRemoteBaseUrl) {
       throw new IaAnalyzeServiceError(
         'Missing IA Analyze remote URL',
         500,
@@ -100,10 +129,10 @@ function resolvePrimaryBaseUrl(): string {
       );
     }
 
-    return remoteBaseUrl;
+    return resolvedRemoteBaseUrl;
   }
 
-  return remoteBaseUrl ?? DEFAULT_LOCAL_IA_ANALYZE_URL;
+  return resolvedRemoteBaseUrl ?? DEFAULT_LOCAL_IA_ANALYZE_URL;
 }
 
 async function parseJsonSafe(response: Response) {

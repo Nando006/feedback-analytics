@@ -1,11 +1,11 @@
 import type { Request, Response } from 'express';
-import { API_ERROR_INTERNAL_SERVER_ERROR } from 'server/constants/errors';
-import { sendTypedError } from 'server/utils/sendTypedError';
+import { API_ERROR_INTERNAL_SERVER_ERROR } from '../../../../constants/errors.js';
+import { sendTypedError } from '../../../../utils/sendTypedError.js';
 import type {
   IaAnalyzeRunRequest,
   IaAnalyzeRunResponse,
-} from 'lib/interfaces/contracts/ia-analyze/run.contract';
-import type { IaAnalyzeScopeType } from 'lib/interfaces/contracts/ia-analyze/scope.contract';
+} from '../../../../../../shared/interfaces/contracts/ia-analyze/run.contract.js';
+import type { IaAnalyzeScopeType } from '../../../../../../shared/interfaces/contracts/ia-analyze/scope.contract.js';
 import {
   analyzeFeedbacksForEnterprise,
   IaAnalyzeServiceError,

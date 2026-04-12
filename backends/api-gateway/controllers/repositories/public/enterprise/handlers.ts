@@ -4,8 +4,8 @@ import {
   API_ERROR_ENTERPRISE_ID_REQUIRED,
   API_ERROR_ENTERPRISE_NOT_FOUND,
   API_ERROR_INTERNAL_SERVER_ERROR,
-} from 'server/constants/errors';
-import { sendTypedError } from 'server/utils/sendTypedError';
+} from '../../../../constants/errors.js';
+import { sendTypedError } from '../../../../utils/sendTypedError.js';
 
 export async function getPublicEnterpriseHandler(req: Request, res: Response) {
   const { id } = req.params;

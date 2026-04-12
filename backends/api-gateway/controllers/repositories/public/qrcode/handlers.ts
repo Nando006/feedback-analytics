@@ -1,6 +1,6 @@
 import crypto from 'node:crypto';
 import type { Request, Response } from 'express';
-import { qrcodeFeedbackSchema } from 'lib/schemas/public/feedbackSchema';
+import { qrcodeFeedbackSchema } from '../../../../../../shared/schemas/public/feedbackSchema.js';
 import { createSupabaseServerClient } from '../../../../database/supabase.js';
 import {
   API_ERROR_COLLECTION_POINT_ERROR,
@@ -12,8 +12,8 @@ import {
   API_ERROR_ENTERPRISE_NOT_FOUND,
   API_ERROR_FEEDBACK_INSERT_FAILED,
   API_ERROR_INVALID_PAYLOAD,
-} from 'server/constants/errors';
-import { sendTypedError } from 'server/utils/sendTypedError';
+} from '../../../../constants/errors.js';
+import { sendTypedError } from '../../../../utils/sendTypedError.js';
 
 function mapAnswerScore(answerValue: string): number {
   switch (answerValue) {

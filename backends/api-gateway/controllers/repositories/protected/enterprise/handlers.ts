@@ -1,13 +1,13 @@
 import express from 'express';
-import { enterpriseUpdateSchema } from 'lib/schemas/user/enterpriseUpdateSchema';
+import { enterpriseUpdateSchema } from '../../../../../../shared/schemas/user/enterpriseUpdateSchema.js';
 import {
   API_ERROR_COLLECTING_DATA_NOT_FOUND,
   API_ERROR_EMPTY_PAYLOAD,
   API_ERROR_ENTERPRISE_NOT_FOUND,
   API_ERROR_INVALID_PAYLOAD,
   API_ERROR_UPSERT_FAILED,
-} from 'server/constants/errors';
-import { sendTypedError } from 'server/utils/sendTypedError';
+} from '../../../../constants/errors.js';
+import { sendTypedError } from '../../../../utils/sendTypedError.js';
 
 type CatalogItemKind = 'PRODUCT' | 'SERVICE' | 'DEPARTMENT';
 

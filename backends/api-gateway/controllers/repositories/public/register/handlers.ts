@@ -1,5 +1,5 @@
 import type { Request, Response } from 'express';
-import { registerSchema } from 'lib/schemas/public/registerSchema';
+import { registerSchema } from '../../../../../../shared/schemas/public/registerSchema.js';
 import { createSupabaseServerClient } from '../../../../database/supabase.js';
 import {
   API_ERROR_DATABASE_ERROR,
@@ -11,8 +11,8 @@ import {
   API_ERROR_EMAIL_TAKEN,
   API_ERROR_DOCUMENT_REQUIRED,
   type ApiRegisterErrorCode,
-} from 'server/constants/errors';
-import { sendTypedError } from 'server/utils/sendTypedError';
+} from '../../../../constants/errors.js';
+import { sendTypedError } from '../../../../utils/sendTypedError.js';
 
 function mapSupabaseRegisterError(rawMessage?: string): {
   http: number;

@@ -2,6 +2,10 @@
   "version": 2,
   "builds": [
     {
+      "src": "backends/api-gateway/index.ts",
+      "use": "@vercel/node"
+    },
+    {
       "src": "apps/web/package.json",
       "use": "@vercel/static-build",
       "config": {
@@ -10,6 +14,10 @@
     }
   ],
   "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/backends/api-gateway/index.ts"
+    },
     {
       "source": "/assets/(.*)",
       "destination": "/apps/web/assets/$1"
