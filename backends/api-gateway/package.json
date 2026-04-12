@@ -4,8 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "tsx src/server/express/index.ts",
-    "lint": "eslint --config ./eslint.config.js src"
+    "dev": "tsx index.ts",
+    "lint": "eslint --config ./eslint.config.js ."
   },
   "dependencies": {
     "@supabase/ssr": "^0.6.1",

@@ -1,45 +1,33 @@
-import { runIaAnalyzeAnalysis } from './iaAnalyzeGatewayClient.js';
-import { IaAnalyzeServiceError } from './iaAnalyzeErrors.js';
 import type { SupabaseClient } from '@supabase/supabase-js';
+import type {
+  IaAnalyzeAnalyzedItem,
+  IaAnalyzeContext,
+} from 'lib/interfaces/contracts/ia-analyze/analysis.contract.js';
 import type {
   IaAnalyzeFeedbackInput,
 } from 'lib/interfaces/contracts/ia-analyze/input.contract.js';
-import type { IaAnalyzeRemoteRunRequest } from 'lib/interfaces/contracts/ia-analyze/remote.contract.js';
 import type {
-  IaAnalyzeRunRequest,
-  IaAnalyzeRunResponse,
-} from 'lib/interfaces/contracts/ia-analyze/run.contract.js';
-import type {
-  IaAnalyzeScopeType,
   IaAnalyzeSentiment,
+  IaAnalyzeScopeType,
 } from 'lib/interfaces/contracts/ia-analyze/scope.contract.js';
+import { IaAnalyzeServiceError } from '../../services/iaAnalyze/iaAnalyzeErrors.js';
 
-export { IaAnalyzeServiceError };
+type SupabaseServerClient = SupabaseClient;
 
-export type SupabaseServerClient = SupabaseClient;
+type FeedbackForAnalysis = IaAnalyzeFeedbackInput;
 
-export type Sentiment = IaAnalyzeSentiment;
-
-export type FeedbackForAnalysis = IaAnalyzeFeedbackInput;
-
-export type IaAnalyzeResult = IaAnalyzeRunResponse;
-
-export type IaAnalyzeOptions = IaAnalyzeRunRequest;
-
-const MIN_FEEDBACKS_FOR_RELEVANT_ANALYSIS = 10;
-
-type AnalysisBatch = {
-  scopeType: IaAnalyzeScopeType;
-  catalogItemId: string | null;
-  catalogItemName: string | null;
-  feedbacks: FeedbackForAnalysis[];
-};
-
-type CollectingDataContext = {
+export type CollectingDataContext = {
   company_objective?: string | null;
   analytics_goal?: string | null;
   business_summary?: string | null;
   main_products_or_services?: string[] | null;
+};
+
+type FeedbackAnalysisInsertRow = {
+  feedback_id: string;
+  sentiment: IaAnalyzeSentiment;
+  categories: string[];
+  keywords: string[];
 };
 
 type RawFeedbackRow = {
@@ -107,157 +95,11 @@ function resolveCollectionPoint(
   return collectionPointRaw ?? null;
 }
 
-function buildEnterpriseContext(params: {
-  enterpriseName: string | null;
-  collecting: CollectingDataContext | null;
-}) {
-  const { enterpriseName, collecting } = params;
-
-  return {
-    enterprise_name: enterpriseName,
-    company_objective: collecting?.company_objective ?? null,
-    analytics_goal: collecting?.analytics_goal ?? null,
-    business_summary: collecting?.business_summary ?? null,
-    main_products_or_services: collecting?.main_products_or_services ?? null,
-  };
-}
-
-function hasRequiredEnterpriseInfoForAnalysis(
-  collecting: CollectingDataContext | null,
-) {
-  if (!collecting) {
-    return false;
-  }
-
-  const hasCompanyObjective = String(collecting.company_objective ?? '').trim().length > 0;
-  const hasAnalyticsGoal = String(collecting.analytics_goal ?? '').trim().length > 0;
-  const hasBusinessSummary = String(collecting.business_summary ?? '').trim().length > 0;
-
-  return hasCompanyObjective && hasAnalyticsGoal && hasBusinessSummary;
-}
-
-function applyExecutionFilter(
-  feedbacks: FeedbackForAnalysis[],
-  options?: IaAnalyzeOptions,
-) {
-  const scope = options?.scope_type;
-  const catalogItemId = options?.catalog_item_id?.trim();
-
-  if (!scope && !catalogItemId) {
-    return feedbacks;
-  }
-
-  return feedbacks.filter((feedback) => {
-    const feedbackScope = normalizeScopeType(feedback.scope_type);
-    const feedbackCatalogItemId = feedback.catalog_item?.id ?? null;
-
-    if (scope === 'COMPANY') {
-      return feedbackScope === 'COMPANY';
-    }
-
-    if (scope && feedbackScope !== scope) {
-      return false;
-    }
-
-    if (catalogItemId) {
-      return feedbackCatalogItemId === catalogItemId;
-    }
-
-    if (scope) {
-      return feedbackScope === scope;
-    }
-
-    return feedbackCatalogItemId !== null;
-  });
-}
-
-function buildAnalysisBatches(
-  feedbacks: FeedbackForAnalysis[],
-  options?: IaAnalyzeOptions,
-): AnalysisBatch[] {
-  const scope = options?.scope_type;
-  const catalogItemId = options?.catalog_item_id?.trim();
-
-  const companyFeedbacks = feedbacks.filter((feedback) =>
-    normalizeScopeType(feedback.scope_type) === 'COMPANY',
-  );
-
-  const itemBuckets = new Map<string, AnalysisBatch>();
-
-  feedbacks.forEach((feedback) => {
-    const feedbackScope = normalizeScopeType(feedback.scope_type);
-    const item = feedback.catalog_item;
-
-    if (feedbackScope === 'COMPANY' || !item?.id) {
-      return;
-    }
-
-    const key = `${feedbackScope}:${item.id}`;
-    const current = itemBuckets.get(key);
-
-    if (!current) {
-      itemBuckets.set(key, {
-        scopeType: feedbackScope,
-        catalogItemId: item.id,
-        catalogItemName: item.name,
-        feedbacks: [feedback],
-      });
-      return;
-    }
-
-    current.feedbacks.push(feedback);
-  });
-
-  const itemBatches = Array.from(itemBuckets.values());
-
-  if (scope === 'COMPANY') {
-    return companyFeedbacks.length > 0
-      ? [
-          {
-            scopeType: 'COMPANY',
-            catalogItemId: null,
-            catalogItemName: null,
-            feedbacks: companyFeedbacks,
-          },
-        ]
-      : [];
-  }
-
-  if (scope) {
-    const filteredByScope = itemBatches.filter((batch) => batch.scopeType === scope);
-
-    if (catalogItemId) {
-      return filteredByScope.filter((batch) => batch.catalogItemId === catalogItemId);
-    }
-
-    return filteredByScope;
-  }
-
-  if (catalogItemId) {
-    return itemBatches.filter((batch) => batch.catalogItemId === catalogItemId);
-  }
-
-  const batches: AnalysisBatch[] = [];
-
-  if (companyFeedbacks.length > 0) {
-    batches.push({
-      scopeType: 'COMPANY',
-      catalogItemId: null,
-      catalogItemName: null,
-      feedbacks: companyFeedbacks,
-    });
-  }
-
-  batches.push(...itemBatches);
-
-  return batches;
-}
-
-async function fetchFeedbacksForAnalysis(params: {
+export async function fetchFeedbacksForAnalysis(params: {
   supabase: SupabaseServerClient;
   enterpriseId: string;
   limit: number;
-}) {
+}): Promise<FeedbackForAnalysis[]> {
   const { supabase, enterpriseId, limit } = params;
 
   const { data: feedbacks, error: feedbackError } = await supabase
@@ -474,12 +316,15 @@ async function fetchFeedbacksForAnalysis(params: {
   });
 }
 
-export async function analyzeFeedbacksForEnterprise(params: {
+export async function fetchEnterpriseContextForAnalysis(params: {
   supabase: SupabaseServerClient;
   userId: string;
-  options?: IaAnalyzeOptions;
-}): Promise<IaAnalyzeResult> {
-  const { supabase, userId, options } = params;
+}): Promise<{
+  enterpriseId: string;
+  collecting: CollectingDataContext | null;
+  enterpriseName: string | null;
+}> {
+  const { supabase, userId } = params;
 
   const { data: enterpriseRow, error: enterpriseError } = await supabase
     .from('enterprise')
@@ -502,7 +347,7 @@ export async function analyzeFeedbacksForEnterprise(params: {
     .select(
       'company_objective, analytics_goal, business_summary, main_products_or_services',
     )
-    .eq('enterprise_id', enterpriseRow.id)
+    .eq('enterprise_id', enterpriseId)
     .maybeSingle();
 
   if (collectingError) {
@@ -513,56 +358,32 @@ export async function analyzeFeedbacksForEnterprise(params: {
     );
   }
 
-  if (!hasRequiredEnterpriseInfoForAnalysis(collecting as CollectingDataContext | null)) {
-    throw new IaAnalyzeServiceError(
-      'collecting_data_required_for_analysis',
-      422,
-      'collecting_data_required_for_analysis',
-    );
-  }
-
   const { data: authData } = await supabase.auth.getUser();
   const enterpriseName =
     (authData.user?.user_metadata as { full_name?: string } | null)
       ?.full_name ?? null;
 
-  const limit =
-    typeof options?.limit === 'number' && options.limit > 0
-      ? Math.min(options.limit, 100)
-      : 50;
-
-  const feedbacksForAnalysis = await fetchFeedbacksForAnalysis({
-    supabase,
+  return {
     enterpriseId,
-    limit,
-  });
+    collecting: (collecting as CollectingDataContext | null) ?? null,
+    enterpriseName,
+  };
+}
 
-  const feedbacksForExecution = applyExecutionFilter(feedbacksForAnalysis, options);
+export async function fetchAlreadyAnalyzedFeedbackIds(params: {
+  supabase: SupabaseServerClient;
+  feedbackIds: string[];
+}): Promise<Set<string>> {
+  const { supabase, feedbackIds } = params;
 
-  if (feedbacksForExecution.length === 0) {
-    return {
-      analyzedCount: 0,
-      feedbacksAnalyzed: [],
-      globalInsights: null,
-      contexts: [],
-    };
-  }
-
-  if (feedbacksForExecution.length < MIN_FEEDBACKS_FOR_RELEVANT_ANALYSIS) {
-    throw new IaAnalyzeServiceError(
-      'insufficient_feedbacks_for_analysis',
-      422,
-      'insufficient_feedbacks_for_analysis',
-    );
+  if (feedbackIds.length === 0) {
+    return new Set<string>();
   }
 
   const { data: existingAnalysis, error: existingAnalysisError } = await supabase
     .from('feedback_analysis')
     .select('feedback_id')
-    .in(
-      'feedback_id',
-      feedbacksForExecution.map((feedback) => feedback.id),
-    );
+    .in('feedback_id', feedbackIds);
 
   if (existingAnalysisError) {
     throw new IaAnalyzeServiceError(
@@ -572,109 +393,28 @@ export async function analyzeFeedbacksForEnterprise(params: {
     );
   }
 
-  const alreadyAnalyzedIds = new Set(
+  return new Set(
     (existingAnalysis ?? [])
       .map((row: { feedback_id: string | null }) => row.feedback_id)
       .filter((feedbackId: string | null): feedbackId is string =>
         typeof feedbackId === 'string' && feedbackId.length > 0,
       ),
   );
+}
 
-  const feedbacksToAnalyze = feedbacksForExecution.filter(
-    (feedback) => !alreadyAnalyzedIds.has(feedback.id),
-  );
+export async function insertFeedbackAnalysisRows(params: {
+  supabase: SupabaseServerClient;
+  rows: FeedbackAnalysisInsertRow[];
+}): Promise<IaAnalyzeAnalyzedItem[]> {
+  const { supabase, rows } = params;
 
-  if (feedbacksToAnalyze.length === 0) {
-    return {
-      analyzedCount: 0,
-      feedbacksAnalyzed: [],
-      globalInsights: null,
-      contexts: [],
-    };
-  }
-
-  const enterpriseContext = buildEnterpriseContext({
-    enterpriseName,
-    collecting: collecting as CollectingDataContext | null,
-  });
-
-  const analysisBatches = buildAnalysisBatches(feedbacksToAnalyze, options);
-
-  if (analysisBatches.length === 0) {
-    return {
-      analyzedCount: 0,
-      feedbacksAnalyzed: [],
-      globalInsights: null,
-      contexts: [],
-    };
-  }
-
-  const remotePayload: IaAnalyzeRemoteRunRequest = {
-    enterprise_context: enterpriseContext,
-    batches: analysisBatches.map((batch) => ({
-      scope_type: batch.scopeType,
-      catalog_item_id: batch.catalogItemId,
-      catalog_item_name: batch.catalogItemName,
-      feedbacks: batch.feedbacks,
-    })),
-  };
-
-  const remoteResult = await runIaAnalyzeAnalysis(remotePayload);
-
-  const validSentiments: Sentiment[] = ['positive', 'negative', 'neutral'];
-  const validSentimentsSet = new Set(validSentiments);
-  const allowedFeedbackIds = new Set(feedbacksToAnalyze.map((feedback) => feedback.id));
-
-  const rowsByFeedbackId = new Map<
-    string,
-    {
-      feedback_id: string;
-      sentiment: Sentiment;
-      categories: string[];
-      keywords: string[];
-    }
-  >();
-
-  remoteResult.analyses.forEach((item) => {
-    if (
-      typeof item.feedback_id !== 'string' ||
-      !validSentimentsSet.has(item.sentiment) ||
-      !allowedFeedbackIds.has(item.feedback_id)
-    ) {
-      return;
-    }
-
-    rowsByFeedbackId.set(item.feedback_id, {
-      feedback_id: item.feedback_id,
-      sentiment: item.sentiment,
-      categories: Array.isArray(item.categories) ? item.categories : [],
-      keywords: Array.isArray(item.keywords) ? item.keywords : [],
-    });
-  });
-
-  const rowsToInsert = Array.from(rowsByFeedbackId.values());
-  const insightsContexts = remoteResult.contexts;
-
-  const globalInsights =
-    insightsContexts.find(
-      (context) =>
-        context.scope_type === 'COMPANY' &&
-        context.catalog_item_id === null &&
-        context.globalInsights,
-    )?.globalInsights ?? insightsContexts[0]?.globalInsights ?? null;
-
-  if (rowsToInsert.length === 0) {
-    return {
-      analyzedCount: 0,
-      feedbacksAnalyzed: [],
-      globalInsights,
-      contexts: insightsContexts,
-    };
+  if (rows.length === 0) {
+    return [];
   }
 
   const { data: inserted, error: insertError } = await supabase
     .from('feedback_analysis')
-    .insert(rowsToInsert)
+    .insert(rows)
     .select('id, feedback_id, sentiment, categories, keywords');
 
   if (insertError) {
@@ -685,7 +425,31 @@ export async function analyzeFeedbacksForEnterprise(params: {
     );
   }
 
-  for (const context of insightsContexts) {
+  return (
+    inserted?.map((row: {
+      id: string;
+      feedback_id: string;
+      sentiment: IaAnalyzeSentiment;
+      categories: string[] | null;
+      keywords: string[] | null;
+    }) => ({
+      id: row.id,
+      feedback_id: row.feedback_id,
+      sentiment: row.sentiment,
+      categories: row.categories ?? [],
+      keywords: row.keywords ?? [],
+    })) ?? []
+  );
+}
+
+export async function upsertFeedbackInsightsReports(params: {
+  supabase: SupabaseServerClient;
+  enterpriseId: string;
+  contexts: IaAnalyzeContext[];
+}): Promise<void> {
+  const { supabase, enterpriseId, contexts } = params;
+
+  for (const context of contexts) {
     const summary = context.globalInsights?.summary?.trim() || null;
     const recommendations =
       context.globalInsights?.recommendations?.filter((value: string) =>
@@ -740,24 +504,4 @@ export async function analyzeFeedbacksForEnterprise(params: {
       console.error('Falha ao salvar feedback_insights_report legado', legacyUpsertError);
     }
   }
-
-  return {
-    analyzedCount: rowsToInsert.length,
-    feedbacksAnalyzed:
-      inserted?.map((row: {
-        id: string;
-        feedback_id: string;
-        sentiment: Sentiment;
-        categories: string[] | null;
-        keywords: string[] | null;
-      }) => ({
-        id: row.id,
-        feedback_id: row.feedback_id,
-        sentiment: row.sentiment,
-        categories: row.categories ?? [],
-        keywords: row.keywords ?? [],
-      })) ?? [],
-    globalInsights,
-    contexts: insightsContexts,
-  };
 }

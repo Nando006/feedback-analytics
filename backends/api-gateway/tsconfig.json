@@ -22,12 +22,19 @@
     "ignoreDeprecations": "6.0",
     "paths": {
       "lib/*": ["shared/*"],
-      "server/*": ["backends/api-gateway/src/server/*"]
+      "server/*": ["backends/api-gateway/*"]
     }
   },
   "include": [
-    "src/server/**/*.ts",
-    "src/server/**/*.d.ts",
+    "index.ts",
+    "controllers/**/*.ts",
+    "database/**/*.ts",
+    "endpoints/**/*.ts",
+    "middleware/**/*.ts",
+    "constants/**/*.ts",
+    "utils/**/*.ts",
+    "types/**/*.ts",
+    "types/**/*.d.ts",
     "../../shared/interfaces/**/*.ts",
     "../../shared/schemas/**/*.ts"
   ],

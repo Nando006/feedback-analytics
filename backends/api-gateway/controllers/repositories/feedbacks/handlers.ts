@@ -1,5 +1,5 @@
 import express from 'express';
-import { requireAuth } from '../../middleware/auth.js';
+import { requireAuth } from '../../../middleware/auth.js';
 import {
   API_ERROR_ENTERPRISE_NOT_FOUND,
   API_ERROR_FAILED_TO_COUNT_FEEDBACKS,
@@ -58,9 +58,10 @@ function parseInsightScopeType(rawValue: unknown) {
   return undefined;
 }
 
-export function EndpointsFeedbacks(app: express.Express) {
-  // Busca feedbacks da empresa com paginação
-  app.get('/api/protected/user/feedbacks', requireAuth, async (req, res) => {
+export async function getFeedbacksHandler(
+  req: express.Request,
+  res: express.Response,
+) {
     const supabase = req.supabase!;
     const user = req.user!;
 
@@ -386,13 +387,12 @@ export function EndpointsFeedbacks(app: express.Express) {
       console.error('Erro ao buscar feedbacks:', error);
       return sendTypedError(res, 500, API_ERROR_INTERNAL_SERVER_ERROR);
     }
-  });
+}
 
-  // Busca estatísticas dos feedbacks
-  app.get(
-    '/api/protected/user/feedbacks/stats',
-    requireAuth,
-    async (req, res) => {
+export async function getFeedbacksStatsHandler(
+  req: express.Request,
+  res: express.Response,
+) {
       const supabase = req.supabase!;
       const user = req.user!;
 
@@ -451,14 +451,12 @@ export function EndpointsFeedbacks(app: express.Express) {
         console.error('Erro ao buscar estatísticas:', error);
         return sendTypedError(res, 500, API_ERROR_INTERNAL_SERVER_ERROR);
       }
-    },
-  );
+}
 
-  // Relatório global de insights (resumo + recomendações) gerado pela IA
-  app.get(
-    '/api/protected/user/feedbacks/insights/report',
-    requireAuth,
-    async (req, res) => {
+export async function getFeedbacksInsightsReportHandler(
+  req: express.Request,
+  res: express.Response,
+) {
       const supabase = req.supabase!;
       const user = req.user!;
       const scopeType = parseInsightScopeType(req.query.scope_type) ?? 'COMPANY';
@@ -560,14 +558,12 @@ export function EndpointsFeedbacks(app: express.Express) {
         console.error('Erro ao buscar relatório de insights (IA):', error);
         return sendTypedError(res, 500, API_ERROR_INTERNAL_SERVER_ERROR);
       }
-    },
-  );
+}
 
-  // Busca análises de feedbacks geradas pela IA (feedback_analysis)
-  app.get(
-    '/api/protected/user/feedbacks/analysis',
-    requireAuth,
-    async (req, res) => {
+export async function getFeedbacksAnalysisHandler(
+  req: express.Request,
+  res: express.Response,
+) {
       const supabase = req.supabase!;
       const user = req.user!;
 
@@ -802,6 +798,26 @@ export function EndpointsFeedbacks(app: express.Express) {
         console.error('Erro ao buscar análises de feedbacks (IA):', error);
         return sendTypedError(res, 500, API_ERROR_INTERNAL_SERVER_ERROR);
       }
-    },
+}
+
+export function EndpointsFeedbacks(app: express.Express) {
+  app.get('/api/protected/user/feedbacks', requireAuth, getFeedbacksHandler);
+
+  app.get(
+    '/api/protected/user/feedbacks/stats',
+    requireAuth,
+    getFeedbacksStatsHandler,
+  );
+
+  app.get(
+    '/api/protected/user/feedbacks/insights/report',
+    requireAuth,
+    getFeedbacksInsightsReportHandler,
+  );
+
+  app.get(
+    '/api/protected/user/feedbacks/analysis',
+    requireAuth,
+    getFeedbacksAnalysisHandler,
   );
 }
