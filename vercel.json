@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "redirects": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://feedback-analytics-api.vercel.app/api/:path*",
+      "permanent": false
+    },
+    {
+      "source": "/internal/:path*",
+      "destination": "https://feedback-analytics-service-ia-analy.vercel.app/internal/:path*",
+      "permanent": false
+    },
+    {
+      "source": "/:path*",
+      "destination": "https://feedback-analytics-web.vercel.app/:path*",
+      "permanent": false
+    }
+  ]
+}
