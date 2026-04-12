@@ -1,0 +1,85 @@
+# Runbook de Cutover Vercel por Dominio
+
+## Objetivo
+
+Finalizar a separacao de deploy por dominio no monorepo e remover o arquivo vercel.json da raiz sem quebrar checks de PR.
+
+## Escopo
+
+- Web: apps/web
+- API Gateway: backends/api-gateway
+- IA Analyze: services/ia-analyze
+
+## Pre-condicoes tecnicas
+
+1. Frontend sem chamadas diretas para /api fora da camada HTTP central.
+2. Gateway com CORS e cookies preparados para cross-site.
+3. Pipelines de deploy por dominio funcionando no GitHub Actions.
+
+## Passo 1 - Reconfigurar projetos na Vercel
+
+1. Projeto feedback-analytics-web:
+- Root Directory: apps/web
+- Build Command: npm run build
+- Output Directory: dist
+- Framework Preset: Vite
+
+2. Projeto feedback-analytics-api:
+- Root Directory: backends/api-gateway
+- Framework Preset: Other
+- Install Command: npm ci --prefix ../shared && npm ci
+
+3. Projeto feedback-analytics-service-ia-analysis:
+- Root Directory: services/ia-analyze
+- Framework Preset: Other
+- Install Command: npm ci --prefix ../shared && npm ci
+
+4. Variaveis de ambiente por projeto:
+- Web: VITE_API_BASE_URL apontando para o dominio da API Gateway
+- API: PUBLIC_SITE_URL, CORS_ALLOWED_ORIGINS, COOKIE_CROSS_SITE, IA_ANALYZE_REMOTE_*
+- IA Analyze: IA_ANALYZE_INTERNAL_TOKEN e GEMINI_API_KEY
+
+## Passo 2 - Desvincular ou desativar o projeto raiz
+
+1. Abrir o projeto raiz feedback-analytics na Vercel.
+2. Em Settings > Git:
+- Desconectar o repositorio, ou
+- Desativar Automatic Deployments para Preview e Production.
+3. Garantir que os checks de Vercel no PR fiquem somente para:
+- feedback-analytics-web
+- feedback-analytics-api
+- feedback-analytics-service-ia-analysis
+
+## Passo 3 - Padronizar frontend para cliente HTTP central
+
+1. Validar regra de lint que bloqueia fetch direto para /api.
+2. Validar que todas as chamadas passam por src/lib/utils/http.
+3. Manter VITE_API_BASE_URL configurado por ambiente.
+
+## Passo 4 - Ajustar CORS e cookies cross-site no gateway
+
+1. Definir PUBLIC_SITE_URL com o dominio publico do frontend.
+2. Definir CORS_ALLOWED_ORIGINS com todas as origens permitidas separadas por virgula.
+3. Definir COOKIE_CROSS_SITE=true em producao quando web e api estiverem em dominios diferentes.
+4. Manter NODE_ENV=production para garantir cookie secure.
+
+## Validacao de cutover
+
+1. Login e logout com cookie funcionando no dominio web.
+2. Cadastro publico funcionando via dominio da API.
+3. Chamada protegida retornando 200 com credentials include.
+4. Preflight OPTIONS retornando 204 para origens permitidas.
+5. Preflight OPTIONS retornando 403 para origem nao permitida.
+6. Endpoint de IA funcionando com token interno quando modo remoto estiver ativo.
+
+## Remocao final do arquivo da raiz
+
+1. Remover vercel.json da raiz.
+2. Atualizar README para remover observacao de compatibilidade da raiz.
+3. Abrir PR e validar checks.
+
+## Rollback rapido
+
+1. Restaurar vercel.json na raiz.
+2. Reativar projeto raiz da Vercel se necessario.
+3. Reexecutar deploy por dominio apos correcao de configuracao.

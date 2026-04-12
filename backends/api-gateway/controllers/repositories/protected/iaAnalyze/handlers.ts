@@ -9,7 +9,7 @@ import type { IaAnalyzeScopeType } from 'lib/interfaces/contracts/ia-analyze/sco
 import {
   analyzeFeedbacksForEnterprise,
   IaAnalyzeServiceError,
-} from '../../services/iaAnalyze/iaAnalyzeService.js';
+} from '../../../services/iaAnalyze/iaAnalyzeService.js';
 
 function parseScopeType(value: unknown): IaAnalyzeScopeType | undefined {
   const normalized = String(value ?? '')

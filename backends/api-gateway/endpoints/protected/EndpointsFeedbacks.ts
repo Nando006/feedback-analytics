@@ -5,7 +5,7 @@ import {
   getFeedbacksHandler,
   getFeedbacksInsightsReportHandler,
   getFeedbacksStatsHandler,
-} from '../../controllers/repositories/feedbacks/handlers.js';
+} from '../../controllers/repositories/protected/feedbacks/handlers.js';
 
 export function EndpointsFeedbacks(app: express.Express) {
   app.get('/api/protected/user/feedbacks', requireAuth, getFeedbacksHandler);

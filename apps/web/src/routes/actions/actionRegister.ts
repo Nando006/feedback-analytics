@@ -1,4 +1,5 @@
 import type { ActionFunctionArgs } from 'react-router-dom';
+import { requestApi } from 'src/lib/utils/http';
 
 function getRegisterFallbackByStatus(status: number) {
   if (status === 429) {
@@ -53,7 +54,7 @@ export async function ActionRegister({ request }: ActionFunctionArgs) {
   };
 
   try {
-    const res = await fetch('/api/public/auth/register', {
+    const res = await requestApi('/api/public/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),

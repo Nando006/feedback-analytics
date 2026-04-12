@@ -1,5 +1,4 @@
 import express from 'express';
-import { requireAuth } from '../../../middleware/auth.js';
 import {
   API_ERROR_ENTERPRISE_NOT_FOUND,
   API_ERROR_FAILED_TO_COUNT_FEEDBACKS,
@@ -28,6 +27,25 @@ type FeedbackCollectionPoint = {
   identifier?: string | null;
   catalog_item_id?: string | null;
 };
+
+type IdRow = {
+  id: string;
+};
+
+type CatalogItemRow = {
+  id: string;
+  name: string;
+  kind: string | null;
+};
+
+type FeedbackStatsRow = {
+  rating: number;
+};
+
+type FeedbackListRow = {
+  id: string;
+  collection_points: FeedbackCollectionPoint | FeedbackCollectionPoint[] | null;
+} & Record<string, unknown>;
 
 function resolveCollectionPoint(
   collectionPointRaw:
@@ -117,7 +135,8 @@ export async function getFeedbacksHandler(
               return sendTypedError(res, 500, API_ERROR_FAILED_TO_FETCH_FEEDBACKS);
             }
 
-            filteredCollectionPointIds = (companyCollectionPoints ?? []).map((cp) => cp.id);
+            const companyCollectionPointRows = (companyCollectionPoints ?? []) as IdRow[];
+            filteredCollectionPointIds = companyCollectionPointRows.map((cp) => cp.id);
           }
         } else {
           let catalogQuery = supabase
@@ -139,7 +158,8 @@ export async function getFeedbacksHandler(
             return sendTypedError(res, 500, API_ERROR_FAILED_TO_FETCH_FEEDBACKS);
           }
 
-          const catalogItemIds = (catalogItems ?? []).map((catalogItem) => catalogItem.id);
+          const catalogItemRows = (catalogItems ?? []) as IdRow[];
+          const catalogItemIds = catalogItemRows.map((catalogItem) => catalogItem.id);
 
           if (catalogItemIds.length === 0) {
             filteredCollectionPointIds = [];
@@ -154,7 +174,8 @@ export async function getFeedbacksHandler(
               return sendTypedError(res, 500, API_ERROR_FAILED_TO_FETCH_FEEDBACKS);
             }
 
-            filteredCollectionPointIds = (catalogCollectionPoints ?? []).map((cp) => cp.id);
+            const catalogCollectionPointRows = (catalogCollectionPoints ?? []) as IdRow[];
+            filteredCollectionPointIds = catalogCollectionPointRows.map((cp) => cp.id);
           }
         }
       }
@@ -262,9 +283,11 @@ export async function getFeedbacksHandler(
       const hasNextPage = page < totalPages;
       const hasPreviousPage = page > 1;
 
+      const feedbackRows = (feedbacks ?? []) as FeedbackListRow[];
+
       const catalogItemIds = Array.from(
         new Set(
-          (feedbacks ?? [])
+          feedbackRows
             .map((feedback) => resolveCollectionPoint(feedback.collection_points)?.catalog_item_id)
             .filter((id): id is string => typeof id === 'string' && id.length > 0),
         ),
@@ -282,8 +305,10 @@ export async function getFeedbacksHandler(
           return sendTypedError(res, 500, API_ERROR_FAILED_TO_FETCH_FEEDBACKS);
         }
 
+        const catalogRowsTyped = (catalogRows ?? []) as CatalogItemRow[];
+
         catalogItemById = new Map(
-          (catalogRows ?? [])
+          catalogRowsTyped
             .map((row) => {
               const normalizedKind = String(row.kind ?? '').toUpperCase();
               const kind =
@@ -304,7 +329,7 @@ export async function getFeedbacksHandler(
 
       }
 
-      const normalizedFeedbacks = (feedbacks ?? []).map((feedback) => {
+      const normalizedFeedbacks = feedbackRows.map((feedback) => {
         const collectionPoint = resolveCollectionPoint(feedback.collection_points);
 
         if (!collectionPoint) {
@@ -419,18 +444,19 @@ export async function getFeedbacksStatsHandler(
         }
 
         // Calcular estatísticas
-        const totalFeedbacks = stats?.length || 0;
+        const statsRows = (stats ?? []) as FeedbackStatsRow[];
+        const totalFeedbacks = statsRows.length;
         const averageRating =
           totalFeedbacks > 0
-            ? stats.reduce((sum, f) => sum + f.rating, 0) / totalFeedbacks
+            ? statsRows.reduce((sum, f) => sum + f.rating, 0) / totalFeedbacks
             : 0;
 
         const ratingDistribution = {
-          1: stats?.filter((f) => f.rating === 1).length || 0,
-          2: stats?.filter((f) => f.rating === 2).length || 0,
-          3: stats?.filter((f) => f.rating === 3).length || 0,
-          4: stats?.filter((f) => f.rating === 4).length || 0,
-          5: stats?.filter((f) => f.rating === 5).length || 0,
+          1: statsRows.filter((f) => f.rating === 1).length,
+          2: statsRows.filter((f) => f.rating === 2).length,
+          3: statsRows.filter((f) => f.rating === 3).length,
+          4: statsRows.filter((f) => f.rating === 4).length,
+          5: statsRows.filter((f) => f.rating === 5).length,
         };
 
         const positiveFeedbacks = ratingDistribution[4] + ratingDistribution[5];
@@ -605,7 +631,8 @@ export async function getFeedbacksAnalysisHandler(
                 return sendTypedError(res, 500, API_ERROR_FAILED_TO_FETCH_FEEDBACK_ANALYSIS);
               }
 
-              filteredCollectionPointIds = (companyCollectionPoints ?? []).map((cp) => cp.id);
+              const companyCollectionPointRows = (companyCollectionPoints ?? []) as IdRow[];
+              filteredCollectionPointIds = companyCollectionPointRows.map((cp) => cp.id);
             }
           } else if (catalogItemId) {
             const pointsQuery = supabase
@@ -639,7 +666,8 @@ export async function getFeedbacksAnalysisHandler(
                 return sendTypedError(res, 500, API_ERROR_FAILED_TO_FETCH_FEEDBACK_ANALYSIS);
               }
 
-              filteredCollectionPointIds = (points ?? []).map((cp) => cp.id);
+              const pointRows = (points ?? []) as IdRow[];
+              filteredCollectionPointIds = pointRows.map((cp) => cp.id);
             }
           } else if (scopeType) {
             const { data: catalogItems, error: catalogItemsError } = await supabase
@@ -652,7 +680,8 @@ export async function getFeedbacksAnalysisHandler(
               return sendTypedError(res, 500, API_ERROR_FAILED_TO_FETCH_FEEDBACK_ANALYSIS);
             }
 
-            const catalogIds = (catalogItems ?? []).map((item) => item.id);
+            const catalogItemRows = (catalogItems ?? []) as IdRow[];
+            const catalogIds = catalogItemRows.map((item) => item.id);
 
             if (catalogIds.length === 0) {
               filteredCollectionPointIds = [];
@@ -667,7 +696,8 @@ export async function getFeedbacksAnalysisHandler(
                 return sendTypedError(res, 500, API_ERROR_FAILED_TO_FETCH_FEEDBACK_ANALYSIS);
               }
 
-              filteredCollectionPointIds = (points ?? []).map((cp) => cp.id);
+              const pointRows = (points ?? []) as IdRow[];
+              filteredCollectionPointIds = pointRows.map((cp) => cp.id);
             }
           }
         }
@@ -798,26 +828,4 @@ export async function getFeedbacksAnalysisHandler(
         console.error('Erro ao buscar análises de feedbacks (IA):', error);
         return sendTypedError(res, 500, API_ERROR_INTERNAL_SERVER_ERROR);
       }
-}
-
-export function EndpointsFeedbacks(app: express.Express) {
-  app.get('/api/protected/user/feedbacks', requireAuth, getFeedbacksHandler);
-
-  app.get(
-    '/api/protected/user/feedbacks/stats',
-    requireAuth,
-    getFeedbacksStatsHandler,
-  );
-
-  app.get(
-    '/api/protected/user/feedbacks/insights/report',
-    requireAuth,
-    getFeedbacksInsightsReportHandler,
-  );
-
-  app.get(
-    '/api/protected/user/feedbacks/analysis',
-    requireAuth,
-    getFeedbacksAnalysisHandler,
-  );
 }

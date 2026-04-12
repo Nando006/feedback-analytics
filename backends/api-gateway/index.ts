@@ -13,22 +13,36 @@ import { EndpointsUser } from './endpoints/protected/EndpointsUser.js';
 import { EndpointsIAAnalyze } from './endpoints/protected/EndpointsIAAnalyze.js';
 import { EndpointResendConfirmation } from './endpoints/public/EndpointResendConfirmation.js';
 
+function normalizeOrigin(rawValue: string): string | null {
+  const value = String(rawValue ?? '').trim();
+
+  if (!value) {
+    return null;
+  }
+
+  try {
+    return new URL(value).origin;
+  } catch {
+    return null;
+  }
+}
 
 function readAllowedOrigins(): Set<string> {
-  const defaults = [
-    'http://localhost:5173',
-    'http://localhost:4173',
-  ];
+  const defaults = ['http://localhost:5173', 'http://localhost:4173']
+    .map((value) => normalizeOrigin(value))
+    .filter((value): value is string => value !== null);
 
   const fromEnv = String(process.env.CORS_ALLOWED_ORIGINS ?? '')
     .split(',')
-    .map((value) => value.trim())
-    .filter((value) => value.length > 0);
+    .map((value) => normalizeOrigin(value))
+    .filter((value): value is string => value !== null);
 
-  const publicSiteUrl = String(process.env.PUBLIC_SITE_URL ?? '').trim();
+  const publicSiteOrigin = normalizeOrigin(
+    String(process.env.PUBLIC_SITE_URL ?? ''),
+  );
 
-  if (publicSiteUrl.length > 0) {
-    fromEnv.push(publicSiteUrl);
+  if (publicSiteOrigin) {
+    fromEnv.push(publicSiteOrigin);
   }
 
   return new Set([...defaults, ...fromEnv]);
@@ -36,29 +50,56 @@ function readAllowedOrigins(): Set<string> {
 
 const allowedOrigins = readAllowedOrigins();
 
+function resolveAllowedOrigin(originHeader?: string): string | null {
+  if (!originHeader) {
+    return null;
+  }
+
+  const normalizedOrigin = normalizeOrigin(originHeader);
+
+  if (!normalizedOrigin) {
+    return null;
+  }
+
+  return allowedOrigins.has(normalizedOrigin) ? normalizedOrigin : null;
+}
+
 function corsMiddleware(
   req: express.Request,
   res: express.Response,
   next: express.NextFunction,
 ) {
-  const origin = req.headers.origin;
+  const originHeader =
+    typeof req.headers.origin === 'string' ? req.headers.origin : undefined;
+  const allowedOrigin = resolveAllowedOrigin(originHeader);
 
-  if (origin&& allowedOrigins.has(origin)) {
-    res.setHeader('Access-Control-Allow-Origin', origin);
-    res.setHeader('Vary', 'Origin');
+  if (allowedOrigin) {
+    res.setHeader('Access-Control-Allow-Origin', allowedOrigin);
+    res.setHeader('Vary', 'Origin, Access-Control-Request-Headers');
     res.setHeader('Access-Control-Allow-Credentials', 'true');
+
+    const requestedHeaders = req.headers['access-control-request-headers'];
     res.setHeader(
       'Access-Control-Allow-Headers',
-      'Content-Type, Authorization',
+      typeof requestedHeaders === 'string' && requestedHeaders.trim().length > 0
+        ? requestedHeaders
+        : 'Content-Type, Authorization',
     );
+
     res.setHeader(
       'Access-Control-Allow-Methods',
       'GET,POST,PUT,PATCH,DELETE,OPTIONS',
     );
+
+    res.setHeader('Access-Control-Max-Age', '86400');
   }
 
   // Responde preflight cedo para reduzir latência no navegador
   if (req.method === 'OPTIONS') {
+    if (originHeader && !allowedOrigin) {
+      return res.status(403).end();
+    }
+
     return res.status(204).end();
   }
 
