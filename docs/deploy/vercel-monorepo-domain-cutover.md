@@ -4,6 +4,8 @@
 
 Finalizar a separacao de deploy por dominio no monorepo e remover o arquivo vercel.json da raiz sem quebrar checks de PR.
 
+Para contexto arquitetural e estrategia geral, consulte docs/deploy/vercel-overview.md.
+
 ## Escopo
 
 - Web: apps/web
@@ -15,6 +17,12 @@ Finalizar a separacao de deploy por dominio no monorepo e remover o arquivo verc
 1. Frontend sem chamadas diretas para /api fora da camada HTTP central.
 2. Gateway com CORS e cookies preparados para cross-site.
 3. Pipelines de deploy por dominio funcionando no GitHub Actions.
+
+## Estrategia para plano gratuito
+
+1. Deploy automatico somente em main (producao).
+2. Deploy de homolog apenas manual via workflow_dispatch.
+3. Evitar esteira dupla: usar GitHub Actions como unica fonte de deploy.
 
 ## Passo 1 - Reconfigurar projetos na Vercel
 
