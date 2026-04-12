@@ -63,6 +63,10 @@ Para contexto arquitetural e estrategia geral, consulte docs/deploy/vercel-overv
 - feedback-analytics-api
 - feedback-analytics-service-ia-analysis
 
+4. Em cada projeto de dominio (web/api/ia), em Settings > Git:
+- Desativar Automatic Deployments de Preview e Production quando o deploy oficial for via GitHub Actions.
+- Manter somente deploy via CLI/token do workflow para evitar esteira dupla e consumo duplicado de quota.
+
 ## Passo 3 - Padronizar frontend para cliente HTTP central
 
 1. Validar regra de lint que bloqueia fetch direto para /api.
