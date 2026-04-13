@@ -29,6 +29,8 @@
       "components/*": ["components/*"],
       "pages/*": ["pages/*"],
       "layouts/*": ["layouts/*"],
+      "lib/utils/*": ["src/lib/utils/*"],
+      "lib/constants/*": ["src/lib/constants/*"],
       "lib/*": ["../../shared/*"],
       "src/*": ["src/*"],
       "server/*": ["../../backends/api-gateway/*"],

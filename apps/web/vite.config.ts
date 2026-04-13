@@ -53,6 +53,8 @@ export default defineConfig({
       layouts: path.resolve(__dirname, './layouts'),
       pages: path.resolve(__dirname, './pages'),
       server: path.resolve(__dirname, '../../backends/api-gateway'),
+      'lib/utils': path.resolve(__dirname, './src/lib/utils'),
+      'lib/constants': path.resolve(__dirname, './src/lib/constants'),
       lib: sharedPath,
       components: path.resolve(__dirname, './components'),
       styles: path.resolve(__dirname, './styles'),
