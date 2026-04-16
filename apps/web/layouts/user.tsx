@@ -1,13 +1,32 @@
 import { useEffect, useRef, useState } from 'react';
-import { Outlet, useFetcher, useLoaderData } from 'react-router-dom';
+import { Outlet, useFetcher, useLoaderData, useNavigation } from 'react-router-dom';
 import Header from 'components/user/layout/Header';
 import Sidebar from 'components/user/layout/Sidebar';
+import DashboardSkeleton from 'components/user/pages/dashboard/DashboardSkeleton';
+import ProfileSkeleton from 'components/user/pages/profile/ProfileSkeleton';
+import QrCodeEnterpriseSkeleton from 'components/user/pages/qrcodes/QrCodeEnterpriseSkeleton';
+import QrCodeProductsSkeleton from 'components/user/pages/qrcodes/QrCodeProductsSkeleton';
+import QrCodeServicesSkeleton from 'components/user/pages/qrcodes/QrCodeServicesSkeleton';
+import QrCodeDepartmentsSkeleton from 'components/user/pages/qrcodes/QrCodeDepartmentsSkeleton';
+import FeedbacksAllSkeleton from 'components/user/pages/feedbacks/FeedbacksAllSkeleton';
+import FeedbackDetailsSkeleton from 'components/user/pages/feedbacks/FeedbackDetailsSkeleton';
+import FeedbacksAnalyticsAllSkeleton from 'components/user/pages/feedbacks/analytics/FeedbacksAnalyticsAllSkeleton';
+import FeedbacksAnalyticsPositiveSkeleton from 'components/user/pages/feedbacks/analytics/FeedbacksAnalyticsPositiveSkeleton';
+import FeedbacksAnalyticsNegativeSkeleton from 'components/user/pages/feedbacks/analytics/FeedbacksAnalyticsNegativeSkeleton';
+import InsightsReportSkeleton from 'components/user/pages/feedbacks/insights/InsightsReportSkeleton';
+import InsightsEmotionalSkeleton from 'components/user/pages/feedbacks/insights/InsightsEmotionalSkeleton';
+import InsightsStatisticsSkeleton from 'components/user/pages/feedbacks/insights/InsightsStatisticsSkeleton';
+import EditCustomersSkeleton from 'components/user/pages/edit/EditCustomersSkeleton';
+import EditProfileSkeleton from 'components/user/pages/edit/EditProfileSkeleton';
+import EditCollectingDataSkeleton from 'components/user/pages/edit/EditCollectingDataSkeleton';
+import EditFeedbackSettingsSkeleton from 'components/user/pages/edit/EditFeedbackSettingsSkeleton';
 import type { CollectingDataEnterprise, Enterprise } from 'lib/interfaces/entities/enterprise.entity';
 import { getCookie, setCookie } from 'src/lib/utils/cookies';
 import { INTENT_LOGOUT } from 'src/lib/constants/routes/intents';
 
 export default function User() {
   const logoutFetcher = useFetcher();
+  const navigation = useNavigation();
   const { enterprise, collecting } = useLoaderData() as {
     enterprise: Enterprise;
     collecting: CollectingDataEnterprise | null;
@@ -18,6 +37,41 @@ export default function User() {
   const [isHoverActivator, setIsHoverActivator] = useState(false);
   const closeTimerRef = useRef<number | null>(null);
   const isSigningOut = logoutFetcher.state !== 'idle';
+  const isRouteLoading = navigation.state === 'loading';
+  const pendingPathname = navigation.location?.pathname ?? '';
+
+  const pendingContent = (() => {
+    if (!isRouteLoading) {
+      return <Outlet />;
+    }
+
+    if (pendingPathname === '/user/dashboard') return <DashboardSkeleton />;
+    if (pendingPathname === '/user/profile') return <ProfileSkeleton />;
+
+    if (pendingPathname === '/user/qrcode/enterprise') return <QrCodeEnterpriseSkeleton />;
+    if (pendingPathname === '/user/qrcode/products') return <QrCodeProductsSkeleton />;
+    if (pendingPathname === '/user/qrcode/services') return <QrCodeServicesSkeleton />;
+    if (pendingPathname === '/user/qrcode/departments') return <QrCodeDepartmentsSkeleton />;
+
+    if (pendingPathname === '/user/feedbacks/all') return <FeedbacksAllSkeleton />;
+    if (pendingPathname.startsWith('/user/feedbacks/') && !pendingPathname.startsWith('/user/feedbacks/analytics/')) {
+      return <FeedbackDetailsSkeleton />;
+    }
+    if (pendingPathname === '/user/feedbacks/analytics/all') return <FeedbacksAnalyticsAllSkeleton />;
+    if (pendingPathname === '/user/feedbacks/analytics/positive') return <FeedbacksAnalyticsPositiveSkeleton />;
+    if (pendingPathname === '/user/feedbacks/analytics/negative') return <FeedbacksAnalyticsNegativeSkeleton />;
+
+    if (pendingPathname === '/user/insights/reports') return <InsightsReportSkeleton />;
+    if (pendingPathname === '/user/insights/emotional') return <InsightsEmotionalSkeleton />;
+    if (pendingPathname === '/user/insights/statistics') return <InsightsStatisticsSkeleton />;
+
+    if (pendingPathname === '/user/edit/customers') return <EditCustomersSkeleton />;
+    if (pendingPathname === '/user/edit/profile') return <EditProfileSkeleton />;
+    if (pendingPathname === '/user/edit/collecting-data-enterprise') return <EditCollectingDataSkeleton />;
+    if (pendingPathname === '/user/edit/feedback-settings') return <EditFeedbackSettingsSkeleton />;
+
+    return <Outlet />;
+  })();
 
   function handleSignOut() {
     if (isSigningOut) return;
@@ -124,7 +178,7 @@ export default function User() {
             !isOverlayMode && isSidebarOpen ? 'pl-72' : 'pl-0'
           }`}>
           <div className="bg-(--bg-primary) p-4 md:p-5">
-            <Outlet />
+            {pendingContent}
           </div>
         </main>
       </div>
