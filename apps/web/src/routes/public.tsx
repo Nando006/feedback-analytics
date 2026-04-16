@@ -11,6 +11,10 @@ import AuthSuccess from 'pages/public/authSuccess';
 import ErrorPage from 'components/globals/handling/errorPage';
 import { LoaderPublicQrCodeEnterprise } from './loaders/loaderPublicQrCodeEnterprise';
 import { ActionPublicQrCodeFeedback } from './actions/actionPublicQrCodeFeedback';
+import ForgotPassword from 'pages/public/forgotPassword';
+import { ActionForgotPassword } from './actions/actionForgotPassword';
+import ResetPassword from 'pages/public/resetPassword';
+import { ActionResetPassword } from './actions/actionResetPassword';
 
 export function RoutePublic() {
   return (
@@ -31,6 +35,16 @@ export function RoutePublic() {
         path="register"
         element={<Register />}
         action={ActionRegister}
+      />
+      <Route 
+        path="forgot-password"
+        element={<ForgotPassword />}
+        action={ActionForgotPassword}
+      />
+      <Route 
+        path="auth/reset-password"
+        element={<ResetPassword />}
+        action={ActionResetPassword}
       />
       <Route
         path="feedback/qrcode"

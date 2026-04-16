@@ -4,6 +4,7 @@ import {
   getAuthUserHandler,
   patchUserEmailHandler,
   patchUserMetadadosHandler,
+  resetPasswordHandler,
   startUserPhoneVerificationHandler,
   verifyUserPhoneHandler,
 } from '../../controllers/repositories/protected/user/handlers.js';
@@ -29,5 +30,11 @@ export function EndpointsUser(app: express.Express) {
     '/api/protected/user/phone/verify',
     requireAuth,
     verifyUserPhoneHandler
+  );
+
+  app.patch(
+    '/api/protected/user/password',
+    requireAuth,
+    resetPasswordHandler,
   );
 }
