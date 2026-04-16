@@ -48,12 +48,14 @@ li.group:hover > div:first-child::before {
   background-color: var(--primary-color);
 }
 
-aside nav a[aria-current='page'] {
+aside nav a[aria-current='page'],
+aside nav a[data-pending-current='true'] {
   color: var(--text-primary) !important;
   background-color: color-mix(in srgb, var(--seventh-color) 88%, transparent) !important;
   position: relative;
 }
-aside nav a[aria-current='page']::after {
+aside nav a[aria-current='page']::after,
+aside nav a[data-pending-current='true']::after {
   content: '●';
   position: absolute;
   right: 8px;
@@ -86,17 +88,21 @@ aside nav a[aria-current='page']::after {
   height: 100%;
 }
 
-li.group:has(a[aria-current='page']) > div:first-child {
+li.group:has(a[aria-current='page']) > div:first-child,
+li.group:has(a[data-pending-current='true']) > div:first-child {
   background-color: color-mix(in srgb, var(--seventh-color) 92%, transparent) !important;
   color: var(--text-primary) !important;
 }
-li.group:has(a[aria-current='page']) > div:first-child svg {
+li.group:has(a[aria-current='page']) > div:first-child svg,
+li.group:has(a[data-pending-current='true']) > div:first-child svg {
   color: var(--quaternary-color) !important;
 }
-li.group:has(a[aria-current='page']) > div:first-child {
+li.group:has(a[aria-current='page']) > div:first-child,
+li.group:has(a[data-pending-current='true']) > div:first-child {
   position: relative;
 }
-li.group:has(a[aria-current='page']) > div:first-child span::after {
+li.group:has(a[aria-current='page']) > div:first-child span::after,
+li.group:has(a[data-pending-current='true']) > div:first-child span::after {
   content: '●';
   position: absolute;
   right: 32px;

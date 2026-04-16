@@ -166,6 +166,7 @@ export default function User() {
           <Sidebar
             isOverlayMode={false}
             isOpen={isSidebarOpen}
+            pendingPathname={pendingPathname}
             enterpriseName={enterprise.full_name ?? undefined}
             onSignOut={handleSignOut}
             isSigningOut={isSigningOut}
@@ -194,6 +195,7 @@ export default function User() {
           onClose={() => {
             scheduleClose();
           }}
+          pendingPathname={pendingPathname}
           enterpriseName={enterprise.full_name ?? undefined}
           onSignOut={handleSignOut}
           isSigningOut={isSigningOut}

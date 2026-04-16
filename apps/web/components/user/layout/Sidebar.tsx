@@ -7,6 +7,7 @@ export default function Sidebar({
   isOpen,
   onOpen,
   onClose,
+  pendingPathname,
   enterpriseName,
   onSignOut,
   isSigningOut = false,
@@ -30,6 +31,7 @@ export default function Sidebar({
               usesCompanyDepartments={Boolean(
                 collecting?.uses_company_departments,
               )}
+              pendingPathname={pendingPathname}
             />
           </div>
           <div className="mt-2 border-t border-(--quaternary-color)/10">
@@ -57,6 +59,7 @@ export default function Sidebar({
             usesCompanyProducts={Boolean(collecting?.uses_company_products)}
             usesCompanyServices={Boolean(collecting?.uses_company_services)}
             usesCompanyDepartments={Boolean(collecting?.uses_company_departments)}
+            pendingPathname={pendingPathname}
           />
         </div>
         <div className="mt-2 border-t border-(--quaternary-color)/10">
