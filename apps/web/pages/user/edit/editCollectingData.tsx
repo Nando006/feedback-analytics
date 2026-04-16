@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Link, useActionData } from 'react-router-dom';
+import { Link, useActionData, useNavigation } from 'react-router-dom';
 import CardSimple from 'components/user/shared/cards/cardSimple';
 import Header from 'components/user/pages/profile/editCollectingData/header';
 import FormCollectingDataEnterprise from 'components/user/pages/profile/editCollectingData/formCollectingDataEnterprise';
@@ -8,7 +8,11 @@ import type { ActionData } from 'lib/interfaces/contracts/action-data.contract';
 
 export default function EditCollectingData() {
   const toast = useToast();
+  const navigation = useNavigation();
   const actionData = useActionData() as ActionData | undefined;
+  const isSavingCollecting =
+    navigation.state === 'submitting' &&
+    navigation.formAction?.includes('/user/edit/collecting-data-enterprise');
 
   useEffect(() => {
     if (!actionData) return;
@@ -25,7 +29,7 @@ export default function EditCollectingData() {
       <Header />
 
       <CardSimple disableGlass>
-        <div className="w-full">
+        <div className="relative w-full">
           <div className="mb-6 border-b border-(--quaternary-color)/10 pb-4">
             <h2 className="font-montserrat text-xl font-semibold text-(--text-primary)">
               Informações Gerais da Empresa
@@ -43,6 +47,10 @@ export default function EditCollectingData() {
           </div>
 
           <FormCollectingDataEnterprise />
+
+          {isSavingCollecting && (
+            <div className="pointer-events-none absolute inset-0 rounded-xl border border-(--quaternary-color)/12 bg-(--bg-primary)/35 backdrop-blur-[1px]" />
+          )}
         </div>
       </CardSimple>
     </div>

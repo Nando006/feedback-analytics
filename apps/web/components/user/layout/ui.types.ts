@@ -31,6 +31,7 @@ export interface SidebarProps {
   isOpen: boolean;
   onOpen?: () => void;
   onClose?: () => void;
+  pendingPathname?: string;
   enterpriseName?: string;
   onSignOut: () => void;
   isSigningOut?: boolean;
