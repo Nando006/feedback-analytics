@@ -175,9 +175,8 @@ export default function User() {
         )}
 
         <main
-          className={`min-w-0 flex-1 ${
-            !isOverlayMode && isSidebarOpen ? 'pl-72' : 'pl-0'
-          }`}>
+          className={`min-w-0 flex-1 ${!isOverlayMode && isSidebarOpen ? 'pl-72' : 'pl-0'
+            }`}>
           <div className="bg-(--bg-primary) p-4 md:p-5">
             {pendingContent}
           </div>
