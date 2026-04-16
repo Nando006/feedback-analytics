@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Link, useActionData } from 'react-router-dom';
+import { Link, useActionData, useNavigation } from 'react-router-dom';
 import CardSimple from 'components/user/shared/cards/cardSimple';
 import FormFeedbackSettings from 'components/user/pages/profile/editFeedbackSettings/formFeedbackSettings';
 import { useToast } from 'components/public/forms/messages/useToast';
@@ -7,7 +7,11 @@ import type { ActionData } from 'lib/interfaces/contracts/action-data.contract';
 
 export default function EditFeedbackSettings() {
   const toast = useToast();
+  const navigation = useNavigation();
   const actionData = useActionData() as ActionData | undefined;
+  const isSavingFeedbackSettings =
+    navigation.state === 'submitting' &&
+    navigation.formAction?.includes('/user/edit/feedback-settings');
 
   useEffect(() => {
     if (!actionData) {
@@ -60,7 +64,7 @@ export default function EditFeedbackSettings() {
       </CardSimple>
 
       <CardSimple disableGlass>
-        <div className="w-full space-y-5">
+        <div className="relative w-full space-y-5">
           <div className="border-b border-(--quaternary-color)/10 pb-4">
             <h2 className="font-montserrat text-xl font-semibold text-(--text-primary)">
               Perguntas e Itens por Tipo
@@ -71,6 +75,10 @@ export default function EditFeedbackSettings() {
           </div>
 
           <FormFeedbackSettings />
+
+          {isSavingFeedbackSettings && (
+            <div className="pointer-events-none absolute inset-0 rounded-xl border border-(--quaternary-color)/12 bg-(--bg-primary)/35 backdrop-blur-[1px]" />
+          )}
         </div>
       </CardSimple>
     </div>
