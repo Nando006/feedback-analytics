@@ -9,3 +9,5 @@ export const resetPasswordSchema = z
     message: 'As senhas não coincidem',
     path: ['confirmPassword'],
   });
+
+  export type ResetPasswordFormValues = z.input<typeof resetPasswordSchema>;
