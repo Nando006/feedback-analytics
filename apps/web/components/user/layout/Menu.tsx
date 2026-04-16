@@ -123,8 +123,10 @@ export default function Menu({
     allowDepartments: usesCompanyDepartments,
   });
 
+  const hasPendingNavigation = Boolean(pendingPathname);
+
   return (
-    <nav>
+    <nav data-has-pending={hasPendingNavigation ? 'true' : undefined}>
       <ul className="space-y-1 p-2.5">
         {items.map((item) => (
           <Item

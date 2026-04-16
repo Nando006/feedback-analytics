@@ -73,6 +73,16 @@ aside nav a[data-pending-current='true']::after {
   animation: pulse-glow 2s ease-in-out infinite;
 }
 
+/* Enquanto a navegação está pendente, apenas o destino clicado deve ficar ativo. */
+aside nav[data-has-pending='true'] a[aria-current='page']:not([data-pending-current='true']) {
+  color: var(--text-secondary) !important;
+  background-color: transparent !important;
+}
+
+aside nav[data-has-pending='true'] a[aria-current='page']:not([data-pending-current='true'])::after {
+  content: none;
+}
+
 .menu-item:hover > .submenu {
   pointer-events: auto;
   opacity: 1;
@@ -118,6 +128,19 @@ li.group:has(a[data-pending-current='true']) > div:first-child span::after {
   filter: drop-shadow(0 0 6px color-mix(in srgb, white 35%, transparent))
     drop-shadow(0 0 12px color-mix(in srgb, var(--quaternary-color) 55%, transparent));
   animation: pulse-glow 2s ease-in-out infinite;
+}
+
+aside nav[data-has-pending='true'] li.group:has(a[aria-current='page']):not(:has(a[data-pending-current='true'])) > div:first-child {
+  background-color: transparent !important;
+  color: var(--text-secondary) !important;
+}
+
+aside nav[data-has-pending='true'] li.group:has(a[aria-current='page']):not(:has(a[data-pending-current='true'])) > div:first-child svg {
+  color: var(--text-tertiary) !important;
+}
+
+aside nav[data-has-pending='true'] li.group:has(a[aria-current='page']):not(:has(a[data-pending-current='true'])) > div:first-child span::after {
+  content: none;
 }
 
 @keyframes pulse-glow {
