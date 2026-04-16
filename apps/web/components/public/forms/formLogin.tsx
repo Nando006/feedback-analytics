@@ -426,7 +426,7 @@ export default function FormLogin() {
           register={register('remember')}
         />
         <Link
-          to="/register"
+          to="/forgot-password"
           className="text-sm text-(--secondary-color) transition-opacity duration-200 hover:opacity-80 font-work-sans">
           Esqueceu a senha ?
         </Link>
