@@ -1,6 +1,6 @@
 import express from 'express';
 import 'dotenv/config';
-import { EndpointsHealth } from './endpoints/public/EndpointHealth.js';
+import healthRoutes from './routes/public/health.routes.js';
 import { EndpointsAuth } from './endpoints/public/EndpointsAuth.js';
 import { EndpointsCallback } from './endpoints/public/EndpointsCallback.js';
 import { EndpointsRegister } from './endpoints/public/EndpointsRegister.js';
@@ -250,7 +250,7 @@ app.use(express.urlencoded({ extended: true }));
 app.set('trust proxy', 1);
 
 // Endpoints Públicos
-EndpointsHealth(app);
+app.use('/api', healthRoutes);
 EndpointsAuth(app);
 EndpointsCallback(app);
 EndpointsRegister(app);
