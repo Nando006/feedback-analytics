@@ -1,16 +1,12 @@
-name: Deploy IA Analyze Service (Vercel) — Production
+name: Deploy IA Analyze Service (Vercel)
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - "services/ia-analyze/**"
-      - "shared/interfaces/contracts/ia-analyze/**"
-      - "services/ia-analyze/package.json"
-      - "services/ia-analyze/package-lock.json"
-      - "shared/package.json"
-      - "shared/package-lock.json"
-      - ".github/workflows/deploy-ia-analyze.yml"
+  workflow_dispatch:
+    inputs:
+      confirm_deploy:
+        description: "Digite ok para confirmar deploy."
+        required: true
+        type: string
 
 concurrency:
   group: deploy-ia-analyze-${{ github.ref_name }}
@@ -21,6 +17,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Validação manual de requests
+        run: |
+          if [ "${{ github.ref_name }}" != "homolog" ] && [ "${{ github.ref_name }}" != "main" ]; then
+            echo "Este workflow deve ser executado apenas nas branches main ou homolog"
+            exit 1
+          fi
+
+          if [ "${{ github.event.inputs.confirm_deploy }}" != "ok" ]; then
+            echo "Confirme o deploy informando ok"
+            exit 1
+          fi
+
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -38,7 +46,16 @@ jobs:
           npm ci --prefix shared
           npm ci --prefix services/ia-analyze
 
+      - name: Deploy preview (homolog)
+        if: github.ref_name == 'homolog'
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets['VERCEL_PROJECT_ID_IA_ANALYZE'] }}
+        run: npx vercel deploy --yes --token "$VERCEL_TOKEN" --local-config services/ia-analyze/vercel.json
+
       - name: Deploy production (main)
+        if: github.ref_name == 'main'
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
