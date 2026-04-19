@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { isValidSentiment, canProcessAnalyzedItem } from '../sentimentAnalysis.js';
+import { isValidSentiment, canProcessAnalyzedItem } from '../services/sentimentAnalysis.service.js';
 import type { IaAnalyzeFeedbackInput } from '../../../../shared/interfaces/contracts/ia-analyze/input.contract.js';
 
 const baseFeedback: IaAnalyzeFeedbackInput = {
@@ -36,7 +36,7 @@ describe('canProcessAnalyzedItem', () => {
 
     expect(
       canProcessAnalyzedItem({
-        item: { feedback_id: 'feedback-001', sentiment: 'positive' },
+        item: { feedback_id: 'feedback-001', sentiment: 'positive', categories: [], keywords: [] },
         feedbackById,
       }),
     ).toBe(true);
@@ -47,7 +47,7 @@ describe('canProcessAnalyzedItem', () => {
 
     expect(
       canProcessAnalyzedItem({
-        item: { feedback_id: 'feedback-inexistente', sentiment: 'positive' },
+        item: { feedback_id: 'feedback-inexistente', sentiment: 'positive', categories: [], keywords: [] },
         feedbackById,
       }),
     ).toBe(false);
@@ -58,7 +58,7 @@ describe('canProcessAnalyzedItem', () => {
 
     expect(
       canProcessAnalyzedItem({
-        item: { feedback_id: 'feedback-001', sentiment: 'pessimo' },
+        item: { feedback_id: 'feedback-001', sentiment: 'pessimo' as unknown as 'negative', categories: [], keywords: [] },
         feedbackById,
       }),
     ).toBe(false);
@@ -69,7 +69,7 @@ describe('canProcessAnalyzedItem', () => {
 
     expect(
       canProcessAnalyzedItem({
-        item: { feedback_id: 123 as unknown as string, sentiment: 'positive' },
+        item: { feedback_id: 123 as unknown as string, sentiment: 'positive', categories: [], keywords: [] },
         feedbackById,
       }),
     ).toBe(false);
@@ -80,7 +80,7 @@ describe('canProcessAnalyzedItem', () => {
 
     expect(
       canProcessAnalyzedItem({
-        item: { feedback_id: 'feedback-001', sentiment: 'neutral' },
+        item: { feedback_id: 'feedback-001', sentiment: 'neutral', categories: [], keywords: [] },
         feedbackById,
       }),
     ).toBe(false);

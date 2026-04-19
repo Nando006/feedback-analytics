@@ -1,14 +1,20 @@
 import { GoogleGenAI } from '@google/genai';
-import { buildIaPromptByScope } from './iaAnalyzePromptBuilders.js';
-import { extractJsonFromText } from '../lib/extractJsonFromText.js';
+import { buildIaPromptByScope } from '../iaAnalyzePromptBuilders.js';
+import { extractJsonFromText } from '../../lib/extractJsonFromText.js';
 import type {
   AiResponseShape,
   AnalyzeBatchWithIaParams,
   IaApiClient,
   IaApiClientErrorCode,
   ParsedIaResponse,
-} from '../types/iaApiClient.types.js';
+} from '../../types/iaApiClient.types.js';
 
+/**
+ * Classe de erro customizada para falhas do cliente de IA.
+ *
+ * Permite lançar erros com código específico para identificar o tipo de problema
+ * ocorrido ao chamar ou processar a resposta do modelo de IA.
+ */
 export class IaApiClientError extends Error {
   public code: IaApiClientErrorCode;
 
