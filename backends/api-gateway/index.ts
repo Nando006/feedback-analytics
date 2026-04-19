@@ -1,18 +1,18 @@
 import express from 'express';
 import 'dotenv/config';
 import healthRoutes from './routes/public/health.routes.js';
-import { EndpointsAuth } from './endpoints/public/EndpointsAuth.js';
-import { EndpointsCallback } from './endpoints/public/EndpointsCallback.js';
-import { EndpointsRegister } from './endpoints/public/EndpointsRegister.js';
-import { EndpointsEnterprise as EndpointsEnterprisePublic } from './endpoints/public/EndpointsEnterprise.js';
-import { EndpointsQRCode } from './endpoints/public/EndpointsQRCode.js';
-import { EndpointsEnterprise as EndpointsEnterpriseProtected } from './endpoints/protected/EndpointsEnterprise.js';
-import { EndpointsCollectionPointsQRCode } from './endpoints/protected/EndpointsCollectionPointsQRCode.js';
-import { EndpointsFeedbacks } from './endpoints/protected/EndpointsFeedbacks.js';
-import { EndpointsUser } from './endpoints/protected/EndpointsUser.js';
-import { EndpointsIAAnalyze } from './endpoints/protected/EndpointsIAAnalyze.js';
-import { EndpointResendConfirmation } from './endpoints/public/EndpointResendConfirmation.js';
-import { EndpointsForgotPassword } from './endpoints/public/EndpointsForgotPassword.js';
+import callbackRoutes from './routes/public/callback.routes.js';
+import authRoutes from './routes/public/auth.routes.js';
+import registerRoutes from './routes/public/register.routes.js';
+import enterprisePublicRoutes from './routes/public/enterprise.routes.js';
+import qrcodeRoutes from './routes/public/qrcode.routes.js';
+import enterpriseProtectedRoutes from './routes/protected/enterprise.routes.js';
+import collectionPointsQrRoutes from './routes/protected/collectionPointsQr.routes.js';
+import feedbacksRoutes from './routes/protected/feedbacks.routes.js';
+import userRoutes from './routes/protected/user.routes.js';
+import iaAnalyzeRoutes from './routes/protected/iaAnalyze.routes.js';
+import resendConfirmationRoutes from './routes/public/resendConfirmation.routes.js';
+import forgotPasswordRoutes from './routes/public/forgotPassword.routes.js';
 
 function normalizeOrigin(rawValue: string): string | null {
   const value = String(rawValue ?? '').trim();
@@ -251,20 +251,20 @@ app.set('trust proxy', 1);
 
 // Endpoints Públicos
 app.use('/api', healthRoutes);
-EndpointsAuth(app);
-EndpointsCallback(app);
-EndpointsRegister(app);
-EndpointsEnterprisePublic(app);
-EndpointsQRCode(app);
-EndpointResendConfirmation(app);
-EndpointsForgotPassword(app);
+app.use('/api', callbackRoutes);
+app.use('/api', authRoutes);
+app.use('/api', registerRoutes);
+app.use('/api', enterprisePublicRoutes);
+app.use('/api', qrcodeRoutes);
+app.use('/api', resendConfirmationRoutes);
+app.use('/api', forgotPasswordRoutes);
 
 // Endpoints Protegidos
-EndpointsCollectionPointsQRCode(app);
-EndpointsEnterpriseProtected(app);
-EndpointsFeedbacks(app);
-EndpointsUser(app);
-EndpointsIAAnalyze(app);
+app.use('/api', collectionPointsQrRoutes);
+app.use('/api', enterpriseProtectedRoutes);
+app.use('/api', feedbacksRoutes);
+app.use('/api', userRoutes);
+app.use('/api', iaAnalyzeRoutes);
 
 if (process.env.VERCEL !== '1') {
   const port = Number(process.env.PORT ?? 3000);
