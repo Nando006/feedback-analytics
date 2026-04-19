@@ -1,4 +1,4 @@
-name: Deploy Api Gateway (Vercel)
+name: Deploy Api Gateway (Vercel) — Production
 
 on:
   push:
@@ -14,12 +14,6 @@ on:
       - "backends/api-gateway/package.json"
       - "backends/api-gateway/package-lock.json"
       - ".github/workflows/deploy-api.yml"
-  workflow_dispatch:
-    inputs:
-      confirm_homolog_deploy:
-        description: "Digite DEPLOY para confirmar deploy de homolog"
-        required: true
-        type: string
 
 concurrency:
   group: deploy-api-${{ github.ref_name }}
@@ -32,19 +26,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Validate manual deploy request
-        if: github.event_name == 'workflow_dispatch'
-        run: |
-          if [ "${{ github.ref_name }}" != "homolog" ]; then
-            echo "workflow_dispatch permitido apenas para a branch homolog"
-            exit 1
-          fi
-
-          if [ "${{ github.event.inputs.confirm_homolog_deploy }}" != "DEPLOY" ]; then
-            echo "Confirme o deploy informando DEPLOY"
-            exit 1
-          fi
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -60,16 +41,7 @@ jobs:
           npm ci --prefix shared
           npm ci --prefix backends/api-gateway
 
-      - name: Deploy preview (homolog)
-        if: github.event_name == 'workflow_dispatch' && github.ref_name == 'homolog' && github.event.inputs.confirm_homolog_deploy == 'DEPLOY'
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_API_GATEWAY }}
-        run: npx vercel deploy --yes --token "$VERCEL_TOKEN" --local-config backends/api-gateway/vercel.json
-
       - name: Deploy production (main)
-        if: github.event_name == 'push' && github.ref_name == 'main'
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
