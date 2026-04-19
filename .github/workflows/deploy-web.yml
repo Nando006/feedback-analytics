@@ -1,12 +1,12 @@
-name: Deploy Web (Vercel) — Production
+name: Deploy Web (Vercel)
 
 on:
-  push:
-    branches: [main]
-    paths-ignore:
-      - "backends/api-gateway/**"
-      - "database/**"
-      - "services/ia-analyze/**"
+  workflow_dispatch:
+    inputs:
+      confirm_deploy:
+        description: "Digite ok para confirmar deploy."
+        required: true
+        type: string
 
 concurrency:
   group: deploy-web-${{ github.ref_name }}
@@ -17,6 +17,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Validação manual de requests
+        run: |
+          if [ "${{ github.ref_name }}" != "homolog" ] && [ "${{ github.ref_name }}" != "main" ]; then
+            echo "Este workflow deve ser executado apenas nas branches main ou homolog"
+            exit 1
+          fi
+
+          if [ "${{ github.event.inputs.confirm_deploy }}" != "ok" ]; then
+            echo "Confirme o deploy informando ok"
+            exit 1
+          fi
+
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -34,7 +46,16 @@ jobs:
           npm ci --prefix shared
           npm ci --prefix apps/web
 
+      - name: Deploy preview (homolog)
+        if: github.ref_name == 'homolog'
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_WEB }}
+        run: npx vercel deploy --yes --token "$VERCEL_TOKEN" --local-config apps/web/vercel.json
+
       - name: Deploy production (main)
+        if: github.ref_name == 'main'
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
