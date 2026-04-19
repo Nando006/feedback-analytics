@@ -1,9 +1,32 @@
+import { useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import type { RegisterEmailPendingNoticeProps } from './ui.types';
+import { useToast } from 'components/public/forms/messages/useToast';
+import { ServiceResendConfirmation } from 'src/services/serviceAuth';
 
 export default function RegisterEmailPendingNotice({
   email,
 }: RegisterEmailPendingNoticeProps) {
+  const toast = useToast();
+  const [isResending, setIsResending] = useState(false);
+
+  const handleResend = useCallback(async () => {
+    if (!email) {
+      toast.error('E-mail não encontrado', 'Não foi possível identificar o e-mail para reenvio.');
+      return;
+    }
+
+    setIsResending(true);
+    const result = await ServiceResendConfirmation(email);
+    setIsResending(false);
+
+    if (result.ok) {
+      toast.success('E-mail reenviado!', result.message || 'Verifique sua caixa de entrada.');
+    } else {
+      toast.error('Falha no reenvio', result.message || 'Tente novamente em instantes.');
+    }
+  }, [email, toast]);
+
   return (
     <section
       role="status"
@@ -55,14 +78,47 @@ export default function RegisterEmailPendingNotice({
           </span>
         </div>
 
-      <div className="flex flex-wrap items-center gap-3 w-full justify-center">
-        <Link
-          to="/login"
-          className="inline-flex h-10 items-center justify-center rounded-lg bg-gradient-to-r from-(--primary-color) to-(--tertiary-color) px-5 font-poppins text-sm font-semibold text-white transition-opacity hover:opacity-90"
+      {/* Bloco de ajuda para quem não encontrou o e-mail */}
+      <div className="w-full rounded-lg border border-(--quaternary-color)/20 bg-(--sixth-color)/60 p-4 flex flex-col gap-3">
+        <p className="font-work-sans text-sm font-semibold text-(--text-secondary) text-center">
+          Não recebeu o e-mail?
+        </p>
+
+        {/* Reenviar confirmação */}
+        <button
+          type="button"
+          onClick={handleResend}
+          disabled={isResending}
+          className="inline-flex h-10 w-full items-center justify-center rounded-lg border border-(--primary-color)/40 bg-(--primary-color)/8 px-5 font-poppins text-sm font-semibold text-(--primary-color) transition-opacity hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          Ir para login
-        </Link>
+          {isResending ? 'Reenviando...' : 'Reenviar e-mail de confirmação'}
+        </button>
+
+        {/* Linha divisória com texto */}
+        <div className="flex items-center gap-2">
+          <div className="h-px flex-1 bg-(--quaternary-color)/20" />
+          <span className="font-work-sans text-xs text-(--text-tertiary)">ou</span>
+          <div className="h-px flex-1 bg-(--quaternary-color)/20" />
+        </div>
+
+        {/* Links secundários */}
+        <div className="flex flex-wrap items-center justify-center gap-3">
+          <Link
+            to="/forgot-password"
+            className="font-work-sans text-sm text-(--secondary-color) transition-opacity hover:opacity-80"
+          >
+            Esqueceu a senha?
+          </Link>
+          <span className="text-(--text-tertiary) text-xs">·</span>
+          <Link
+            to="/login"
+            className="font-work-sans text-sm text-(--text-tertiary) transition-opacity hover:opacity-80"
+          >
+            Ir para login
+          </Link>
+        </div>
       </div>
+
     </section>
   );
 }

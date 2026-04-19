@@ -86,15 +86,52 @@ function getResendFallbackByStatus(status: number): ServiceErrorPayload {
   };
 }
 
+function getForgotPasswordFallbackByStatus(status: number): ServiceErrorPayload {
+  if (status === 429) {
+    return {
+      error: 'rate_limited',
+      message: 'Muitas tentativas. Aguarde e tente novamente.',
+    };
+  }
+
+  if (status >= 500) {
+    return {
+      error: 'service_unavailable',
+      message: 'Serviço temporariamente indisponível. Tente novamente.',
+    };
+  }
+
+  return {
+    error: 'reset_password_failed',
+    message: 'Não foi possível enviar o e-mail de recuperação.',
+  };
+}
+
+function getResetPasswordFallbackByStatus(status: number): ServiceErrorPayload {
+  if (status === 401) {
+    return {
+      error: 'reset_password_invalid_token',
+      message: 'O link de redefinição expirou ou é inválido. Solicite um novo.',
+    };
+  }
+
+  if (status >= 500) {
+    return {
+      error: 'service_unavailable',
+      message: 'Serviço temporariamente indisponível. Tente novamente.',
+    };
+  }
+
+  return {
+    error: 'reset_password_failed',
+    message: 'Não foi possível redefinir a senha.',
+  };
+}
+
 export async function ServiceLogin(
   payload: LoginPayload,
 ): Promise<{ ok: true } | { ok: false; status: number; payload: unknown }> {
   try {
-    const formBody = new URLSearchParams();
-    formBody.set('email', payload.email);
-    formBody.set('password', payload.password);
-    formBody.set('remember', payload.remember ? 'true' : 'false');
-
     const res = await requestApi('/api/public/auth/login', {
       method: 'POST',
       credentials: 'include',
@@ -176,6 +213,78 @@ export async function ServiceResendConfirmation(
       ok: false,
       error: 'network_error',
       message: 'Não foi possível conectar ao serviço de reenvio. Verifique sua conexão.',
+    };
+  }
+}
+
+export async function ServiceForgotPassword(
+  email: string,
+): Promise<
+  | { ok: true; message: string }
+  | { ok: false; error: string; message: string }
+> {
+  try {
+    const res = await requestApi('/api/public/auth/forgot-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+
+    const rawBody = await res.text();
+
+    if (res.ok) {
+      const parsed = parseErrorPayload(rawBody, {
+        error: 'ok',
+        message: 'Se este e-mail estiver cadastrado, você receberá as instruções em breve.',
+      });
+      return { ok: true, message: parsed.message };
+    }
+
+    const fallback = getForgotPasswordFallbackByStatus(res.status);
+    const parsed = parseErrorPayload(rawBody, fallback);
+
+    return { ok: false, error: parsed.error, message: parsed.message };
+  } catch {
+    return {
+      ok: false,
+      error: 'network_error',
+      message: 'Não foi possível conectar ao servidor. Verifique sua conexão.',
+    };
+  }
+}
+
+export async function ServiceResetPassword(payload: {
+  password: string;
+  confirmPassword: string;
+}): Promise<
+  | { ok: true }
+  | { ok: false; error: string; message: string; issues?: unknown }
+> {
+  try {
+    const res = await requestApi('/api/protected/user/password', {
+      method: 'PATCH',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    if (res.ok) return { ok: true };
+
+    const rawBody = await res.text();
+    const fallback = getResetPasswordFallbackByStatus(res.status);
+    const parsed = parseErrorPayload(rawBody, fallback);
+
+    return {
+      ok: false,
+      error: parsed.error,
+      message: parsed.message,
+      issues: parsed.issues,
+    };
+  } catch {
+    return {
+      ok: false,
+      error: 'network_error',
+      message: 'Não foi possível conectar ao servidor. Verifique sua conexão.',
     };
   }
 }

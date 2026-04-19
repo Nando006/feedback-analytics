@@ -39,6 +39,22 @@ BEGIN
 END
 $$;
 
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+    FROM pg_constraint
+    WHERE conname = 'collection_points_enterprise_id_fkey'
+  ) THEN
+    ALTER TABLE "public"."collection_points"
+      ADD CONSTRAINT "collection_points_enterprise_id_fkey"
+      FOREIGN KEY ("enterprise_id")
+      REFERENCES "public"."enterprise"("id")
+      ON DELETE CASCADE;
+  END IF;
+END
+$$;
+
 ALTER TABLE "public"."collection_points" ENABLE ROW LEVEL SECURITY;
 
 -- Policies

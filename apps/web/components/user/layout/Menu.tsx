@@ -3,6 +3,22 @@ import { FaAlignLeft, FaBuffer, FaChevronRight } from 'react-icons/fa6';
 import type { MenuItem } from './ui.types';
 import { menuData } from 'src/lib/mock/menu';
 
+function normalizePath(pathname: string): string {
+  if (!pathname) return '';
+  return pathname.length > 1 ? pathname.replace(/\/+$/, '') : pathname;
+}
+
+function isPendingMatch(targetPath: string | undefined, pendingPathname: string): boolean {
+  if (!targetPath || !pendingPathname) {
+    return false;
+  }
+
+  const target = normalizePath(targetPath);
+  const pending = normalizePath(pendingPathname);
+
+  return pending === target || pending.startsWith(`${target}/`);
+}
+
 function filterMenu(
   items: MenuItem[],
   options: {
@@ -46,14 +62,17 @@ function filterMenu(
     .filter((item): item is MenuItem => item !== null);
 }
 
-function Item({ item }: { item: MenuItem }) {
+function Item({ item, pendingPathname = '' }: { item: MenuItem; pendingPathname?: string }) {
   const hasChildren = Array.isArray(item.children) && item.children.length > 0;
 
   if (!hasChildren) {
+    const isPendingActive = isPendingMatch(item.to, pendingPathname);
+
     return (
       <li>
         <NavLink
           to={item.to || '#'}
+          data-pending-current={isPendingActive ? 'true' : undefined}
           className="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-(--text-secondary) transition-colors hover:bg-(--seventh-color) hover:text-(--text-primary)">
           <FaBuffer className="h-3.5 w-3.5 text-(--text-tertiary)" />
           <span>{item.label}</span>
@@ -78,6 +97,7 @@ function Item({ item }: { item: MenuItem }) {
             <Item
               key={child.label}
               item={child}
+              pendingPathname={pendingPathname}
             />
           ))}
         </ul>
@@ -90,10 +110,12 @@ export default function Menu({
   usesCompanyProducts,
   usesCompanyServices,
   usesCompanyDepartments,
+  pendingPathname,
 }: {
   usesCompanyProducts: boolean;
   usesCompanyServices: boolean;
   usesCompanyDepartments: boolean;
+  pendingPathname?: string;
 }) {
   const items = filterMenu(menuData, {
     allowProducts: usesCompanyProducts,
@@ -101,13 +123,16 @@ export default function Menu({
     allowDepartments: usesCompanyDepartments,
   });
 
+  const hasPendingNavigation = Boolean(pendingPathname);
+
   return (
-    <nav>
+    <nav data-has-pending={hasPendingNavigation ? 'true' : undefined}>
       <ul className="space-y-1 p-2.5">
         {items.map((item) => (
           <Item
             key={item.label}
             item={item}
+            pendingPathname={pendingPathname}
           />
         ))}
       </ul>

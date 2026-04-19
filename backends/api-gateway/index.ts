@@ -12,6 +12,7 @@ import { EndpointsFeedbacks } from './endpoints/protected/EndpointsFeedbacks.js'
 import { EndpointsUser } from './endpoints/protected/EndpointsUser.js';
 import { EndpointsIAAnalyze } from './endpoints/protected/EndpointsIAAnalyze.js';
 import { EndpointResendConfirmation } from './endpoints/public/EndpointResendConfirmation.js';
+import { EndpointsForgotPassword } from './endpoints/public/EndpointsForgotPassword.js';
 
 function normalizeOrigin(rawValue: string): string | null {
   const value = String(rawValue ?? '').trim();
@@ -256,6 +257,7 @@ EndpointsRegister(app);
 EndpointsEnterprisePublic(app);
 EndpointsQRCode(app);
 EndpointResendConfirmation(app);
+EndpointsForgotPassword(app);
 
 // Endpoints Protegidos
 EndpointsCollectionPointsQRCode(app);

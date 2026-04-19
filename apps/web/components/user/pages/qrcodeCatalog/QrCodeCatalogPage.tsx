@@ -610,6 +610,7 @@ export default function QrCodeCatalogPage({
   }, [fetcher.state, fetcher.data, toast]);
 
   const hasItems = items.length > 0;
+  const isCatalogMutating = fetcher.state !== 'idle';
 
   const handleToggle = useCallback((catalogItemId: string, isActive: boolean) => {
     setPendingToggleCatalogItemId(catalogItemId);
@@ -658,25 +659,31 @@ export default function QrCodeCatalogPage({
       )}
 
       {hasItems ? (
-        <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
-          {items.map((item) => {
-            const isPending =
-              pendingToggleCatalogItemId === item.catalog_item_id && fetcher.state !== 'idle';
-            const isSavingQuestions =
-              pendingQuestionsCatalogItemId === item.catalog_item_id && fetcher.state !== 'idle';
+        <div className="relative">
+          <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
+            {items.map((item) => {
+              const isPending =
+                pendingToggleCatalogItemId === item.catalog_item_id && fetcher.state !== 'idle';
+              const isSavingQuestions =
+                pendingQuestionsCatalogItemId === item.catalog_item_id && fetcher.state !== 'idle';
 
-            return (
-              <QrCatalogItemCard
-                key={item.catalog_item_id}
-                item={item}
-                enterpriseId={enterprise.id}
-                isPending={isPending}
-                isSavingQuestions={isSavingQuestions}
-                onToggle={handleToggle}
-                onSaveQuestions={handleSaveQuestions}
-              />
-            );
-          })}
+              return (
+                <QrCatalogItemCard
+                  key={item.catalog_item_id}
+                  item={item}
+                  enterpriseId={enterprise.id}
+                  isPending={isPending}
+                  isSavingQuestions={isSavingQuestions}
+                  onToggle={handleToggle}
+                  onSaveQuestions={handleSaveQuestions}
+                />
+              );
+            })}
+          </div>
+
+          {isCatalogMutating && (
+            <div className="pointer-events-none absolute inset-0 rounded-2xl border border-(--quaternary-color)/12 bg-(--bg-primary)/35 backdrop-blur-[1px]" />
+          )}
         </div>
       ) : (
         <div className="rounded-2xl border border-dashed border-(--quaternary-color)/14 bg-gradient-to-br from-(--bg-secondary) to-(--sixth-color) p-6 text-sm text-(--text-tertiary) glass-card">

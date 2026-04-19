@@ -287,6 +287,10 @@ export default function FeedbacksInsightsReport() {
               recommendations={report.recommendations}
             />
           )}
+
+          {refreshing && (
+            <div className="pointer-events-none absolute inset-0 rounded-2xl border border-(--quaternary-color)/12 bg-(--bg-primary)/38 backdrop-blur-[1px]" />
+          )}
         </div>
       </div>
 

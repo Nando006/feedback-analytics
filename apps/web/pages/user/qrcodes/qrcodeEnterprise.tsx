@@ -138,19 +138,25 @@ export default function QRCodeEnterprise() {
 
       <SectionQrInstructions />
 
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-        <SectionQrCodeDisplay
-          enterpriseName={enterprise.full_name}
-          qrActive={qrActive}
-          qrCodeUrl={qrCodeUrl}
-          feedbackUrl={feedbackUrl}
-          showCopied={showCopied}
-          onDownload={handleDownload}
-          onCopyLink={handleCopyLink}
-          onShare={handleShare}
-        />
+      <div className="relative">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+          <SectionQrCodeDisplay
+            enterpriseName={enterprise.full_name}
+            qrActive={qrActive}
+            qrCodeUrl={qrCodeUrl}
+            feedbackUrl={feedbackUrl}
+            showCopied={showCopied}
+            onDownload={handleDownload}
+            onCopyLink={handleCopyLink}
+            onShare={handleShare}
+          />
 
-        <SectionQrUsageTips />
+          <SectionQrUsageTips />
+        </div>
+
+        {qrLoading && (
+          <div className="pointer-events-none absolute inset-0 rounded-2xl border border-(--quaternary-color)/12 bg-(--bg-primary)/40 backdrop-blur-[1px]" />
+        )}
       </div>
     </div>
   );
