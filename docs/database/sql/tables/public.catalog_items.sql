@@ -51,6 +51,22 @@ BEGIN
 END
 $$;
 
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+    FROM pg_constraint
+    WHERE conname = 'catalog_items_enterprise_id_fkey'
+  ) THEN
+    ALTER TABLE "public"."catalog_items"
+      ADD CONSTRAINT "catalog_items_enterprise_id_fkey"
+      FOREIGN KEY ("enterprise_id")
+      REFERENCES "public"."enterprise"("id")
+      ON DELETE CASCADE;
+  END IF;
+END
+$$;
+
 ALTER TABLE "public"."catalog_items" ENABLE ROW LEVEL SECURITY;
 
 -- Policies

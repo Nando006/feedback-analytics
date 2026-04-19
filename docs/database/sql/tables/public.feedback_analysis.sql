@@ -15,6 +15,22 @@ CREATE TABLE IF NOT EXISTS "public"."feedback_analysis" (
   PRIMARY KEY ("id")
 );
 
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+    FROM pg_constraint
+    WHERE conname = 'feedback_analysis_feedback_id_fkey'
+  ) THEN
+    ALTER TABLE "public"."feedback_analysis"
+      ADD CONSTRAINT "feedback_analysis_feedback_id_fkey"
+      FOREIGN KEY ("feedback_id")
+      REFERENCES "public"."feedback"("id")
+      ON DELETE CASCADE;
+  END IF;
+END
+$$;
+
 ALTER TABLE "public"."feedback_analysis" ENABLE ROW LEVEL SECURITY;
 
 -- Policies

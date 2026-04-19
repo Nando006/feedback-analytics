@@ -22,6 +22,22 @@ CREATE TABLE IF NOT EXISTS "public"."tracked_devices" (
   PRIMARY KEY ("id")
 );
 
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+    FROM pg_constraint
+    WHERE conname = 'tracked_devices_enterprise_id_fkey'
+  ) THEN
+    ALTER TABLE "public"."tracked_devices"
+      ADD CONSTRAINT "tracked_devices_enterprise_id_fkey"
+      FOREIGN KEY ("enterprise_id")
+      REFERENCES "public"."enterprise"("id")
+      ON DELETE CASCADE;
+  END IF;
+END
+$$;
+
 ALTER TABLE "public"."tracked_devices" ENABLE ROW LEVEL SECURITY;
 
 -- Policies

@@ -70,7 +70,7 @@ BEGIN
       ADD CONSTRAINT "feedback_question_answers_question_id_fkey"
       FOREIGN KEY ("question_id")
       REFERENCES "public"."questions_of_feedbacks"("id")
-      ON DELETE RESTRICT;
+      ON DELETE CASCADE;
   END IF;
 END
 $$;
