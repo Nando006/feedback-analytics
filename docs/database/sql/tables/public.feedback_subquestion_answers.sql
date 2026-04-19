@@ -42,7 +42,7 @@ BEGIN
       ADD CONSTRAINT "feedback_subquestion_answers_subquestion_id_fkey"
       FOREIGN KEY ("subquestion_id")
       REFERENCES "public"."feedback_question_subquestions"("id")
-      ON DELETE RESTRICT;
+      ON DELETE CASCADE;
   END IF;
 END
 $$;
