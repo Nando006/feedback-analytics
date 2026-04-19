@@ -67,7 +67,14 @@ Regras IMPORTANTES:
 - Campos estruturados (rating, dynamic_answers, dynamic_subanswers, catalog_item) sao contexto auxiliar e NAO podem ser copiados literalmente.
 - NAO use termos como "pessimo", "ruim", "mediana", "boa" ou "otima" como keywords/categorias.
 - NAO copie texto das perguntas ou subperguntas dinamicas como keywords/categorias.
-- Se o texto for curto, prefira poucos termos relevantes e evidentes no proprio message.`;
+- Se o texto for curto, prefira poucos termos relevantes e evidentes no proprio message.
+
+Regras de SENTIMENTO (siga esta hierarquia):
+1. O campo "dynamic_answers" e "dynamic_subanswers" sao o SINAL PRIMARIO de sentimento: cada item contem "question" (contexto da pergunta), "score" (nota de 1 a 5) e "label" (rotulo textual). Analise cada resposta no contexto da sua pergunta para determinar a polaridade real do cliente em cada aspecto avaliado.
+2. Se a maioria das respostas dinamicas tiver score <= 2, classifique como 'negative'. Se a maioria tiver score >= 4, classifique como 'positive'. Scores intermediarios ou mistos indicam 'neutral'.
+3. O campo "rating" (nota geral de estrelas) e apenas um sinal de VALIDACAO SECUNDARIA. Use-o para desempatar quando os scores dinamicos forem muito heterogeneos, nunca como unico determinante.
+4. O campo "message" pode confirmar ou contradizer os scores dinamicos. Contradições explicitas no texto (ex: nota alta mas critica severa no message) devem ser consideradas.
+5. Se nao houver dynamic_answers, use o "message" como sinal primario e o "rating" como sinal secundario.`;
 
   const scopeInstructions = getScopeInstructions(scopeType);
 
@@ -99,9 +106,17 @@ Regras IMPORTANTES:
       scope_type: feedback.scope_type,
       message_primary: feedback.message,
       context_signals: {
-        rating: feedback.rating,
-        dynamic_answers: feedback.dynamic_answers,
-        dynamic_subanswers: feedback.dynamic_subanswers,
+        rating_star: feedback.rating,
+        dynamic_answers: feedback.dynamic_answers.map((a) => ({
+          question: a.question_text_snapshot,
+          score: a.answer_score,
+          label: a.answer_value,
+        })),
+        dynamic_subanswers: feedback.dynamic_subanswers.map((a) => ({
+          question: a.subquestion_text_snapshot,
+          score: a.answer_score,
+          label: a.answer_value,
+        })),
         collection_point: feedback.collection_point,
         catalog_item: feedback.catalog_item,
       },
