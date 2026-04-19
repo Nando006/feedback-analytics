@@ -1,0 +1,54 @@
+name: Deploy Web (Vercel) — Homolog
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_homolog_deploy:
+        description: "Digite DEPLOY para confirmar deploy de homolog"
+        required: true
+        type: string
+
+concurrency:
+  group: deploy-web-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  deploy-web-homolog:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Validate manual deploy request
+        run: |
+          if [ "${{ github.ref_name }}" != "homolog" ]; then
+            echo "Este workflow deve ser executado apenas na branch homolog"
+            exit 1
+          fi
+
+          if [ "${{ github.event.inputs.confirm_homolog_deploy }}" != "DEPLOY" ]; then
+            echo "Confirme o deploy informando DEPLOY"
+            exit 1
+          fi
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: |
+            apps/web/package-lock.json
+            shared/package-lock.json
+
+      - name: Install dependecies
+        run: |
+          npm ci --prefix shared
+          npm ci --prefix apps/web
+
+      - name: Deploy preview (homolog)
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_WEB }}
+        run: npx vercel deploy --yes --token "$VERCEL_TOKEN" --local-config apps/web/vercel.json
