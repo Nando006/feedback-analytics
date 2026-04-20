@@ -1,4 +1,4 @@
-import { normalizeBaseUrl } from "./normalizeBaseUrl";
+import { normalizeBaseUrl } from "../../lib/iaAnalyze/normalizeBaseUrl.js";
 
 /**
  * Retorna a base URL do endpoint remoto de análise IA.

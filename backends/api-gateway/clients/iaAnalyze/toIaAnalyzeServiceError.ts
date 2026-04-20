@@ -1,5 +1,5 @@
 import { IaAnalyzeServiceError } from '../../errors/iaAnalyze.errors.js';
-import { normalizeStatusCode } from './normalizeStatusCode.js';
+import { normalizeStatusCode } from '../../lib/iaAnalyze/normalizeStatusCode.js';
 
 /**
  * Converte resposta de erro do serviço IA em um erro padronizado da aplicação.

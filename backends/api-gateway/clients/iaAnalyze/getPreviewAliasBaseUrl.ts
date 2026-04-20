@@ -1,4 +1,4 @@
-import { normalizeBaseUrl } from "./normalizeBaseUrl";
+import { normalizeBaseUrl } from "../../lib/iaAnalyze/normalizeBaseUrl.js";
 
 // URL padrão do endpoint de análise IA para ambiente de preview/homologação.
 // Usada quando a variável de ambiente não está definida e o deploy é preview.
