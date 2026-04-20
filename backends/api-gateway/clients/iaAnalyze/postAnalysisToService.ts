@@ -4,11 +4,11 @@ import type {
   IaAnalyzeRemoteRunRequest,
   IaAnalyzeRemoteRunResponse,
 } from '../../../../shared/interfaces/contracts/ia-analyze/remote.contract.js';
-import { buildRemoteEndpoint } from './buildRemoteEndpoint.js';
+import { buildRemoteEndpoint } from '../../lib/iaAnalyze/buildRemoteEndpoint.js';
 import { getRemoteTimeoutMs } from './getRemoteTimeoutMs.js';
 import { getRemoteToken } from './getRemoteToken.js';
-import { parseJsonSafe } from './parseJsonSafe.js';
-import { toIaAnalyzeServiceError } from './toIaAnalyzeServiceError.js';
+import { parseJsonSafe } from '../../lib/iaAnalyze/parseJsonSafe.js';
+import { toIaAnalyzeServiceError } from '../../lib/iaAnalyze/toIaAnalyzeServiceError.js';
 
 /**
  * Envia uma requisição POST para o serviço remoto de análise IA.
