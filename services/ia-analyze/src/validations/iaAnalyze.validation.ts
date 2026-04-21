@@ -1,4 +1,4 @@
-import { isObject } from '../../lib/isObject.js';
+import { isObject } from '../utils/isObject.js';
 import type { IaAnalyzeRemoteRunRequest } from '../../../../shared/interfaces/contracts/ia-analyze/remote.contract.js';
 
 /**

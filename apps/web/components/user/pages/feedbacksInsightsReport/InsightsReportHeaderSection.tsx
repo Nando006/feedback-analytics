@@ -4,6 +4,7 @@ import type { InsightsReportHeaderSectionProps } from './ui.types';
 export default function InsightsReportHeaderSection({
   updatedLabel,
   refreshing,
+  analyzingRaw,
   canAnalyze,
   analysisBlockedMessage,
   availableScopes,
@@ -13,6 +14,7 @@ export default function InsightsReportHeaderSection({
   onScopeChange,
   onCatalogItemChange,
   onRefreshSelected,
+  onAnalyzeRaw,
 }: InsightsReportHeaderSectionProps) {
   const scopeLabels: Record<
     'COMPANY' | 'PRODUCT' | 'SERVICE' | 'DEPARTMENT',
@@ -34,10 +36,11 @@ export default function InsightsReportHeaderSection({
     itemSelectionEnabled &&
     (selectedCatalogItemId.trim().length === 0 || filteredCatalogItems.length === 0);
 
-  const analysisDisabled = refreshing || missingRequiredItem || !canAnalyze;
+  const isProcessing = refreshing || analyzingRaw;
+  const analysisDisabled = isProcessing || missingRequiredItem || !canAnalyze;
 
-  const buttonLabel =
-    selectedScope === 'COMPANY' ? 'Atualizar' : 'Analisar item selecionado';
+  const refreshButtonLabel =
+    selectedScope === 'COMPANY' ? 'Atualizar insights' : 'Atualizar item selecionado';
 
   return (
     <div className="font-work-sans mb-4 flex flex-col md:flex-row items-start justify-between gap-4">
@@ -101,14 +104,25 @@ export default function InsightsReportHeaderSection({
           </span>
         )}
 
-        <button
-          type="button"
-          onClick={onRefreshSelected}
-          disabled={analysisDisabled}
-          className="btn-primary font-poppins px-4 py-2 text-sm disabled:opacity-60"
-        >
-          {refreshing ? 'Atualizando...' : buttonLabel}
-        </button>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={onAnalyzeRaw}
+            disabled={analysisDisabled}
+            className="btn-secondary font-poppins px-4 py-2 text-sm disabled:opacity-60"
+          >
+            {analyzingRaw ? 'Analisando...' : 'Analisar feedbacks'}
+          </button>
+
+          <button
+            type="button"
+            onClick={onRefreshSelected}
+            disabled={analysisDisabled}
+            className="btn-primary font-poppins px-4 py-2 text-sm disabled:opacity-60"
+          >
+            {refreshing ? 'Atualizando...' : refreshButtonLabel}
+          </button>
+        </div>
 
         {!canAnalyze && analysisBlockedMessage && (
           <p className="max-w-[280px] text-right text-xs text-(--text-tertiary)">

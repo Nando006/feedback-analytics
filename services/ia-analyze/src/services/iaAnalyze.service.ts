@@ -1,4 +1,4 @@
-import { createIaApiClient, IaApiClientError } from '../clients/gemini.client.js';
+import { createIaApiClient, IaApiClientError } from '../providers/gemini.provider.js';
 import { canProcessAnalyzedItem } from './sentimentAnalysis.service.js';
 import { extractKeywords } from './keywordExtraction.service.js';
 import { extractCategories } from './categorization.service.js';

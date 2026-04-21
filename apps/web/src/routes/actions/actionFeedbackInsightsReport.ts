@@ -1,6 +1,12 @@
 import type { ActionFunctionArgs } from 'react-router-dom';
-import { ServiceRunFeedbackIAAnalysis } from 'src/services/serviceFeedbacks';
-import { INTENT_FEEDBACK_RUN_IA } from 'src/lib/constants/routes/intents';
+import {
+  ServiceRunFeedbackIAAnalysis,
+  ServiceRunRawFeedbackAnalysis,
+} from 'src/services/serviceFeedbacks';
+import {
+  INTENT_FEEDBACK_ANALYZE_RAW,
+  INTENT_FEEDBACK_RUN_IA,
+} from 'src/lib/constants/routes/intents';
 import { ACTION_ERROR_INVALID_INTENT } from 'src/lib/constants/routes/errors';
 import type { IaAnalyzeScopeType } from 'lib/interfaces/contracts/ia-analyze/scope.contract';
 
@@ -30,7 +36,7 @@ export async function ActionFeedbackInsightsReport({
   const form = await request.formData();
   const intent = String(form.get('intent') ?? '');
 
-  if (intent !== INTENT_FEEDBACK_RUN_IA) {
+  if (intent !== INTENT_FEEDBACK_RUN_IA && intent !== INTENT_FEEDBACK_ANALYZE_RAW) {
     return new Response(JSON.stringify({ error: ACTION_ERROR_INVALID_INTENT }), {
       status: 400,
       headers: { 'Content-Type': 'application/json' },
@@ -54,10 +60,11 @@ export async function ActionFeedbackInsightsReport({
   }
 
   try {
-    await ServiceRunFeedbackIAAnalysis({
-      scope_type,
-      catalog_item_id,
-    });
+    if (intent === INTENT_FEEDBACK_ANALYZE_RAW) {
+      await ServiceRunRawFeedbackAnalysis({ scope_type, catalog_item_id });
+    } else {
+      await ServiceRunFeedbackIAAnalysis({ scope_type, catalog_item_id });
+    }
 
     return new Response(JSON.stringify({ ok: true }), {
       status: 200,

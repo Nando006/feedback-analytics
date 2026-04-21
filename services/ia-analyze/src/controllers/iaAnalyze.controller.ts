@@ -1,6 +1,6 @@
 import type { Request, Response } from 'express';
 import { IaAnalyzeServiceError, runIaAnalyzeService } from '../services/iaAnalyze.service.js';
-import { isInternalRequestAuthorized } from '../../lib/isInternalRequestAuthorized.js';
+import { isInternalRequestAuthorized } from '../utils/isInternalRequestAuthorized.js';
 import { isValidRemotePayload } from '../validations/iaAnalyze.validation.js';
 import type { IaAnalyzeRemoteRunResponse } from '../../../../shared/interfaces/contracts/ia-analyze/remote.contract.js';
 

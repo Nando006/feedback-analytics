@@ -1,9 +1,9 @@
-import { normalizeForComparison } from '../../lib/normalizeForComparison.js';
+import { normalizeForComparison } from '../utils/normalizeForComparison.js';
 import {
   buildForbiddenTerms,
   sanitizeTermList,
   tokenizeRelevantWords,
-} from '../../lib/termProcessing.js';
+} from '../lib/termProcessing.js';
 import type { IaAnalyzeFeedbackInput } from '../../../../shared/interfaces/contracts/ia-analyze/input.contract.js';
 
 /**
