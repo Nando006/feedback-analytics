@@ -5,32 +5,33 @@ import type {
   IaAnalyzeRunRequest,
   IaAnalyzeRunResponse,
 } from '../../../../../shared/interfaces/contracts/ia-analyze/run.contract.js';
-import type { IaAnalyzeScopeType } from '../../../../../shared/interfaces/contracts/ia-analyze/scope.contract.js';
 import { analyzeFeedbacksForEnterprise } from '../../services/iaAnalyze.service.js';
 import { IaAnalyzeServiceError } from '../../libs/iaAnalyze/errors.js';
+import { parseScopeType } from '../../libs/iaAnalyze/parse.js';
 
-function parseScopeType(value: unknown): IaAnalyzeScopeType | undefined {
-  const normalized = String(value ?? '')
-    .trim()
-    .toUpperCase();
-
-  if (
-    normalized === 'COMPANY' ||
-    normalized === 'PRODUCT' ||
-    normalized === 'SERVICE' ||
-    normalized === 'DEPARTMENT'
-  ) {
-    return normalized;
-  }
-
-  return undefined;
-}
-
+/**
+ * Controller responsável por orquestrar a análise IA via requisição HTTP.
+ *
+ * Etapas principais:
+ * 1. Extrai e valida parâmetros do corpo da requisição.
+ * 2. Chama o serviço de análise IA com os parâmetros recebidos.
+ * 3. Retorna o resultado da análise ou erro tipado.
+ *
+ * Útil para expor a análise IA de feedbacks via API REST, garantindo tratamento de erros e validação de entrada.
+ */
 export async function sendMessageToIaAnalyzeController(req: Request, res: Response) {
   const supabase = req.supabase!;
   const user = req.user!;
   const body = (req.body ?? {}) as IaAnalyzeRunRequest;
 
+  /**
+   * Determina o limite de feedbacks a serem analisados.
+   *
+   * - Usa o valor enviado no body se for um número > 0.
+   * - Caso contrário, deixa como undefined para usar o padrão do serviço.
+   *
+   * Útil para evitar consultas muito grandes e garantir performance.
+   */
   const limit =
     typeof body.limit === 'number' && body.limit > 0
       ? body.limit

@@ -6,7 +6,7 @@ import type {
 } from '../../../../shared/interfaces/contracts/ia-analyze/remote.contract.js';
 import { buildRemoteEndpoint } from '../libs/iaAnalyze/build.js';
 import { readFallbackEnabled, readRemoteTimeoutMs, readRemoteToken } from '../libs/iaAnalyze/readEnvs.js';
-import { parseJsonSafe } from '../libs/iaAnalyze/parseJsonSafe.js';
+import { parseJsonSafe } from '../libs/iaAnalyze/parse.js';
 import { normalizeIaAnalyzeServiceError } from '../libs/iaAnalyze/normalize.js';
 import { resolvePrimaryBaseUrl } from '../libs/iaAnalyze/resolvePrimaryBaseUrl.js';
 
