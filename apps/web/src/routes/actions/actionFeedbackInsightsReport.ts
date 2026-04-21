@@ -37,26 +37,17 @@ export async function ActionFeedbackInsightsReport({
   const intent = String(form.get('intent') ?? '');
 
   if (intent !== INTENT_FEEDBACK_RUN_IA && intent !== INTENT_FEEDBACK_ANALYZE_RAW) {
-    return new Response(JSON.stringify({ error: ACTION_ERROR_INVALID_INTENT }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return { error: ACTION_ERROR_INVALID_INTENT };
   }
 
   const scope_type = parseScopeType(form.get('scope_type'));
   const catalog_item_id = String(form.get('catalog_item_id') ?? '').trim() || undefined;
 
   if (scope_type && scope_type !== 'COMPANY' && !catalog_item_id) {
-    return new Response(
-      JSON.stringify({
-        errorCode: 'item_selection_required',
-        error: 'Selecione um item para analisar este escopo.',
-      }),
-      {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' },
-      },
-    );
+    return {
+      errorCode: 'item_selection_required',
+      error: 'Selecione um item para analisar este escopo.',
+    };
   }
 
   try {
@@ -66,47 +57,26 @@ export async function ActionFeedbackInsightsReport({
       await ServiceRunFeedbackIAAnalysis({ scope_type, catalog_item_id });
     }
 
-    return new Response(JSON.stringify({ ok: true }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return { ok: true };
   } catch (error) {
     const typedError = error as HttpActionError;
 
     if (typedError.code === 'insufficient_feedbacks_for_analysis') {
-      return new Response(
-        JSON.stringify({
-          errorCode: 'insufficient_feedbacks_for_analysis',
-          error:
-            'Há poucos feedbacks neste contexto para uma análise relevante. É necessário no mínimo 10 feedbacks.',
-        }),
-        {
-          status: 422,
-          headers: { 'Content-Type': 'application/json' },
-        },
-      );
+      return {
+        errorCode: 'insufficient_feedbacks_for_analysis',
+        error:
+          'Há poucos feedbacks neste contexto para uma análise relevante. É necessário no mínimo 10 feedbacks.',
+      };
     }
 
     if (typedError.code === 'collecting_data_required_for_analysis') {
-      return new Response(
-        JSON.stringify({
-          errorCode: 'collecting_data_required_for_analysis',
-          error:
-            'Para analisar os feedbacks, preencha as informações da empresa em Editar > Configuração de Coleta de Dados.',
-        }),
-        {
-          status: 422,
-          headers: { 'Content-Type': 'application/json' },
-        },
-      );
+      return {
+        errorCode: 'collecting_data_required_for_analysis',
+        error:
+          'Para analisar os feedbacks, preencha as informações da empresa em Editar > Configuração de Coleta de Dados.',
+      };
     }
 
-    return new Response(
-      JSON.stringify({ error: 'Erro ao atualizar insights com IA' }),
-      {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' },
-      },
-    );
+    return { error: 'Erro ao atualizar insights com IA' };
   }
 }

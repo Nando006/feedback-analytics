@@ -8,10 +8,10 @@ export async function ActionLogout({ request }: ActionFunctionArgs) {
   const intent = String(form.get('intent') ?? '');
 
   if (intent !== INTENT_LOGOUT) {
-    return new Response(JSON.stringify({ error: ACTION_ERROR_INVALID_INTENT }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    // Retornar objeto plain em vez de response
+    return {
+      error: ACTION_ERROR_INVALID_INTENT
+    }
   }
 
   await ServiceLogout().catch(() => {});

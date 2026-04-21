@@ -14,18 +14,8 @@ export type InsightsCatalogItemOption = {
  */
 export interface InsightsReportHeaderSectionProps {
   updatedLabel: string | null;
-  refreshing: boolean;
-  analyzingRaw: boolean;
   canAnalyze: boolean;
   analysisBlockedMessage: string | null;
-  availableScopes: InsightScopeOption[];
-  selectedScope: InsightScopeOption;
-  selectedCatalogItemId: string;
-  catalogItemOptions: InsightsCatalogItemOption[];
-  onScopeChange: (scope: InsightScopeOption) => void;
-  onCatalogItemChange: (catalogItemId: string) => void;
-  onRefreshSelected: () => void;
-  onAnalyzeRaw: () => void;
 }
 
 /**

@@ -1,6 +1,10 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Outlet, useFetcher, useLoaderData, useNavigation } from 'react-router-dom';
 import Header from 'components/user/layout/Header';
+import {
+  InsightsControlsProvider,
+  useInsightsControlsState,
+} from 'src/lib/context/insightsControls';
 import Sidebar from 'components/user/layout/Sidebar';
 import DashboardSkeleton from 'components/user/pages/dashboard/DashboardSkeleton';
 import ProfileSkeleton from 'components/user/pages/profile/ProfileSkeleton';
@@ -22,15 +26,23 @@ import EditCollectingDataSkeleton from 'components/user/pages/edit/EditCollectin
 import EditFeedbackSettingsSkeleton from 'components/user/pages/edit/EditFeedbackSettingsSkeleton';
 import type { CollectingDataEnterprise, Enterprise } from 'lib/interfaces/entities/enterprise.entity';
 import { getCookie, setCookie } from 'src/lib/utils/cookies';
-import { INTENT_LOGOUT } from 'src/lib/constants/routes/intents';
+import { INTENT_LOGOUT, INTENT_FEEDBACK_ANALYZE_RAW, INTENT_FEEDBACK_RUN_IA } from 'src/lib/constants/routes/intents';
+import { useToast } from 'components/public/forms/messages/useToast';
 
 export default function User() {
   const logoutFetcher = useFetcher();
+  const analyzeRawFetcher = useFetcher();
+  const insightsFetcher = useFetcher();
   const navigation = useNavigation();
+  const toast = useToast();
   const { enterprise, collecting } = useLoaderData() as {
     enterprise: Enterprise;
     collecting: CollectingDataEnterprise | null;
   };
+
+  const insightsState = useInsightsControlsState();
+  const shouldRevalidateRawRef = useRef(false);
+  const shouldRevalidateInsightsRef = useRef(false);
 
   const [isOverlayMode, setIsOverlayMode] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -39,6 +51,68 @@ export default function User() {
   const isSigningOut = logoutFetcher.state !== 'idle';
   const isRouteLoading = navigation.state === 'loading';
   const pendingPathname = navigation.location?.pathname ?? '';
+
+  const analyzeRaw = useCallback(() => {
+    if (!insightsState.canAnalyze) {
+      toast.warning('Configuração necessária', 'Preencha as informações da empresa para liberar a análise.');
+      return;
+    }
+    if (insightsState.scope !== 'COMPANY' && !insightsState.catalogItemId) {
+      toast.warning('Item necessário', 'Selecione um item do catálogo para este escopo.');
+      return;
+    }
+    const form = new FormData();
+    form.set('intent', INTENT_FEEDBACK_ANALYZE_RAW);
+    form.set('scope_type', insightsState.scope);
+    if (insightsState.catalogItemId) {
+      form.set('catalog_item_id', insightsState.catalogItemId);
+    }
+    shouldRevalidateRawRef.current = true;
+    toast.success('Analisando feedbacks...', 'Isso pode levar alguns momentos');
+    analyzeRawFetcher.submit(form, { method: 'post', action: '/user/insights/reports' });
+  }, [insightsState.canAnalyze, insightsState.scope, insightsState.catalogItemId, analyzeRawFetcher, toast]);
+
+  const regenerateInsights = useCallback(() => {
+    if (!insightsState.canAnalyze) {
+      toast.warning('Configuração necessária', 'Preencha as informações da empresa para liberar a análise.');
+      return;
+    }
+    if (insightsState.scope !== 'COMPANY' && !insightsState.catalogItemId) {
+      toast.warning('Item necessário', 'Selecione um item do catálogo para este escopo.');
+      return;
+    }
+    const form = new FormData();
+    form.set('intent', INTENT_FEEDBACK_RUN_IA);
+    form.set('scope_type', insightsState.scope);
+    if (insightsState.catalogItemId) {
+      form.set('catalog_item_id', insightsState.catalogItemId);
+    }
+    shouldRevalidateInsightsRef.current = true;
+    toast.success('Gerando análise...', 'Isso pode levar alguns momentos');
+    insightsFetcher.submit(form, { method: 'post', action: '/user/insights/reports' });
+  }, [insightsState.canAnalyze, insightsState.scope, insightsState.catalogItemId, insightsFetcher, toast]);
+
+  useEffect(() => {
+    if (analyzeRawFetcher.state !== 'idle' || !shouldRevalidateRawRef.current) return;
+    shouldRevalidateRawRef.current = false;
+    const data = analyzeRawFetcher.data as { ok?: boolean; error?: string } | undefined;
+    if (data?.ok) {
+      toast.success('Feedbacks analisados!', 'Novos feedbacks processados e salvos com sucesso');
+    } else if (data?.error) {
+      toast.error('Erro na análise', data.error);
+    }
+  }, [analyzeRawFetcher.state, analyzeRawFetcher.data, toast]);
+
+  useEffect(() => {
+    if (insightsFetcher.state !== 'idle' || !shouldRevalidateInsightsRef.current) return;
+    shouldRevalidateInsightsRef.current = false;
+    const data = insightsFetcher.data as { ok?: boolean; error?: string } | undefined;
+    if (data?.ok) {
+      toast.success('Insights atualizados!', 'Relatório atualizado com os novos insights da IA');
+    } else if (data?.error) {
+      toast.error('Erro na análise', data.error);
+    }
+  }, [insightsFetcher.state, insightsFetcher.data, toast]);
 
   const pendingContent = (() => {
     if (!isRouteLoading) {
@@ -98,14 +172,12 @@ export default function User() {
     }, 120);
   };
 
-  // Restaura preferências salvas no cookie ao montar!
   useEffect(() => {
     const layoutSaved = getCookie('sidebarLayout');
     const modeSaved = getCookie('sidebarMode');
 
     if (layoutSaved === 'overlay') {
       setIsOverlayMode(true);
-      // No overlay, inicia sempre oculto
       setIsSidebarOpen(false);
       return;
     }
@@ -118,54 +190,90 @@ export default function User() {
       return;
     }
 
-    // Fallback padrão: push + aberto
     setIsOverlayMode(false);
     setIsSidebarOpen(true);
   }, []);
 
   return (
-    <div className="private-user-theme min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)]">
-      <header className="sticky top-0 z-50 h-16 border-b border-(--quaternary-color)/10 bg-linear-to-r from-(--bg-secondary) to-(--sixth-color)">
-        <Header
-          isOverlayMode={isOverlayMode}
-          isSidebarOpen={isSidebarOpen}
-          onToggleSidebar={() =>
-            setIsSidebarOpen((v) => {
-              const next = !v;
-              setCookie('sidebarMode', next ? 'expanded' : 'collapsed');
-              return next;
-            })
-          }
-          onSetOverlay={() => {
-            setIsOverlayMode(true);
-            setCookie('sidebarLayout', 'overlay');
-          }}
-          onSetPush={() => {
-            setIsOverlayMode(false);
-            setCookie('sidebarLayout', 'push');
-          }}
-        />
-      </header>
-
-      <div className={isOverlayMode ? 'relative bg-(--bg-primary)' : 'flex bg-(--bg-primary)'}>
-        {isOverlayMode && (
-          <div
-            className="fixed left-0 top-16 z-30 h-[calc(100vh-64px)] w-2"
-            onMouseEnter={() => {
-              cancelClose();
-              setIsSidebarOpen(true);
-              setIsHoverActivator(true);
+    <InsightsControlsProvider
+      value={{
+        ...insightsState,
+        analyzeRaw,
+        regenerateInsights,
+        isAnalyzingRaw: analyzeRawFetcher.state !== 'idle',
+        isRegeneratingInsights: insightsFetcher.state !== 'idle',
+      }}
+    >
+      <div className="private-user-theme min-h-screen bg-(--bg-primary) text-(--text-primary)">
+        <header className="sticky top-0 z-50 h-16 border-b border-(--quaternary-color)/10 bg-linear-to-r from-(--bg-secondary) to-(--sixth-color)">
+          <Header
+            isOverlayMode={isOverlayMode}
+            isSidebarOpen={isSidebarOpen}
+            onToggleSidebar={() =>
+              setIsSidebarOpen((v) => {
+                const next = !v;
+                setCookie('sidebarMode', next ? 'expanded' : 'collapsed');
+                return next;
+              })
+            }
+            onSetOverlay={() => {
+              setIsOverlayMode(true);
+              setCookie('sidebarLayout', 'overlay');
             }}
-            onMouseLeave={() => {
-              setIsHoverActivator(false);
-              scheduleClose();
+            onSetPush={() => {
+              setIsOverlayMode(false);
+              setCookie('sidebarLayout', 'push');
             }}
           />
-        )}
-        {!isOverlayMode && (
+        </header>
+
+        <div className={isOverlayMode ? 'relative bg-(--bg-primary)' : 'flex bg-(--bg-primary)'}>
+          {isOverlayMode && (
+            <div
+              className="fixed left-0 top-16 z-30 h-[calc(100vh-64px)] w-2"
+              onMouseEnter={() => {
+                cancelClose();
+                setIsSidebarOpen(true);
+                setIsHoverActivator(true);
+              }}
+              onMouseLeave={() => {
+                setIsHoverActivator(false);
+                scheduleClose();
+              }}
+            />
+          )}
+          {!isOverlayMode && (
+            <Sidebar
+              isOverlayMode={false}
+              isOpen={isSidebarOpen}
+              pendingPathname={pendingPathname}
+              enterpriseName={enterprise.full_name ?? undefined}
+              onSignOut={handleSignOut}
+              isSigningOut={isSigningOut}
+              collecting={collecting}
+            />
+          )}
+
+          <main
+            className={`min-w-0 flex-1 ${!isOverlayMode && isSidebarOpen ? 'pl-72' : 'pl-0'
+              }`}>
+            <div className="bg-(--bg-primary) p-4 md:p-5">
+              {pendingContent}
+            </div>
+          </main>
+        </div>
+
+        {isOverlayMode && (
           <Sidebar
-            isOverlayMode={false}
+            isOverlayMode
             isOpen={isSidebarOpen}
+            onOpen={() => {
+              cancelClose();
+              setIsSidebarOpen(true);
+            }}
+            onClose={() => {
+              scheduleClose();
+            }}
             pendingPathname={pendingPathname}
             enterpriseName={enterprise.full_name ?? undefined}
             onSignOut={handleSignOut}
@@ -173,34 +281,7 @@ export default function User() {
             collecting={collecting}
           />
         )}
-
-        <main
-          className={`min-w-0 flex-1 ${!isOverlayMode && isSidebarOpen ? 'pl-72' : 'pl-0'
-            }`}>
-          <div className="bg-(--bg-primary) p-4 md:p-5">
-            {pendingContent}
-          </div>
-        </main>
       </div>
-
-      {isOverlayMode && (
-        <Sidebar
-          isOverlayMode
-          isOpen={isSidebarOpen}
-          onOpen={() => {
-            cancelClose();
-            setIsSidebarOpen(true);
-          }}
-          onClose={() => {
-            scheduleClose();
-          }}
-          pendingPathname={pendingPathname}
-          enterpriseName={enterprise.full_name ?? undefined}
-          onSignOut={handleSignOut}
-          isSigningOut={isSigningOut}
-          collecting={collecting}
-        />
-      )}
-    </div>
+    </InsightsControlsProvider>
   );
 }
