@@ -1,6 +1,6 @@
 import { GoogleGenAI } from '@google/genai';
-import { buildIaPromptByScope } from '../iaAnalyzePromptBuilders.js';
-import { extractJsonFromText } from '../../lib/extractJsonFromText.js';
+import { buildIaPromptByScope } from '../lib/iaAnalyzePromptBuilders.js';
+import { extractJsonFromText } from '../utils/extractJsonFromText.js';
 import type {
   AiResponseShape,
   AnalyzeBatchWithIaParams,

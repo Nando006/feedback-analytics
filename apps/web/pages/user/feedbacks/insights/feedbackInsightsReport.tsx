@@ -10,7 +10,10 @@ import type {
   FeedbackAnalysisSummary,
 } from 'lib/interfaces/domain/feedback.domain';
 import type { LoaderFeedbacksInsightsReport } from 'src/routes/loaders/loaderFeedbacksInsightsReport';
-import { INTENT_FEEDBACK_RUN_IA } from 'src/lib/constants/routes/intents';
+import {
+  INTENT_FEEDBACK_ANALYZE_RAW,
+  INTENT_FEEDBACK_RUN_IA,
+} from 'src/lib/constants/routes/intents';
 import InsightsReportLoadingState from 'components/user/pages/feedbacksInsightsReport/InsightsReportLoadingState';
 import InsightsReportErrorState from 'components/user/pages/feedbacksInsightsReport/InsightsReportErrorState';
 import InsightsReportHeaderSection from 'components/user/pages/feedbacksInsightsReport/InsightsReportHeaderSection';
@@ -74,7 +77,9 @@ export default function FeedbacksInsightsReport() {
     useLoaderData<Awaited<ReturnType<typeof LoaderFeedbacksInsightsReport>>>();
   const revalidator = useRevalidator();
   const fetcher = useFetcher<FeedbackInsightsReportActionData>();
+  const rawFetcher = useFetcher<FeedbackInsightsReportActionData>();
   const shouldRevalidateRef = useRef(false);
+  const shouldRevalidateRawRef = useRef(false);
   const [dismissedErrorKey, setDismissedErrorKey] = useState<string | null>(null);
   const [localError, setLocalError] = useState<{
     error: string;
@@ -85,6 +90,7 @@ export default function FeedbacksInsightsReport() {
 
   const refreshing =
     fetcher.state !== 'idle' || revalidator.state === 'loading';
+  const analyzingRaw = rawFetcher.state !== 'idle';
   const error = localError?.error ?? fetcher.data?.error ?? loaderError;
   const errorCode = localError?.errorCode ?? fetcher.data?.errorCode;
   const errorVariant =
@@ -133,12 +139,29 @@ export default function FeedbacksInsightsReport() {
     shouldRevalidateRef.current = false;
 
     if (fetcher.data?.ok) {
-      toast.success('Análise concluída!', 'Relatório atualizado com insights da IA');
+      toast.success('Insights atualizados!', 'Relatório atualizado com os novos insights da IA');
       revalidator.revalidate();
     } else if (fetcher.data?.error) {
       toast.error('Erro na análise', fetcher.data.error);
     }
   }, [fetcher.state, fetcher.data?.ok, fetcher.data?.error, revalidator, toast]);
+
+  useEffect(() => {
+    const finishedRequest = rawFetcher.state === 'idle' && shouldRevalidateRawRef.current;
+
+    if (!finishedRequest) {
+      return;
+    }
+
+    shouldRevalidateRawRef.current = false;
+
+    if (rawFetcher.data?.ok) {
+      toast.success('Feedbacks analisados!', 'Novos feedbacks processados e salvos com sucesso');
+      revalidator.revalidate();
+    } else if (rawFetcher.data?.error) {
+      toast.error('Erro na análise', rawFetcher.data.error);
+    }
+  }, [rawFetcher.state, rawFetcher.data?.ok, rawFetcher.data?.error, revalidator, toast]);
 
   const handleRefreshSelected = () => {
     if (!analysisGuard.canAnalyze) {
@@ -177,6 +200,35 @@ export default function FeedbacksInsightsReport() {
     toast.success('Gerando análise...', 'Isso pode levar alguns momentos');
     
     fetcher.submit(form, { method: 'post' });
+  };
+
+  const handleAnalyzeRaw = () => {
+    if (!analysisGuard.canAnalyze) {
+      setLocalError({
+        error:
+          analysisGuard.message ??
+          'Preencha as informações da empresa para liberar a análise.',
+        errorCode: 'collecting_data_required_for_analysis',
+      });
+      setDismissedErrorKey(null);
+      return;
+    }
+
+    const form = new FormData();
+    form.set('intent', INTENT_FEEDBACK_ANALYZE_RAW);
+    form.set('scope_type', filters.scope_type);
+
+    if (filters.catalog_item_id) {
+      form.set('catalog_item_id', filters.catalog_item_id);
+    }
+
+    setLocalError(null);
+    setDismissedErrorKey(null);
+    shouldRevalidateRawRef.current = true;
+
+    toast.success('Analisando feedbacks...', 'Isso pode levar alguns momentos');
+
+    rawFetcher.submit(form, { method: 'post' });
   };
 
   const handleScopeChange = (scope: InsightScopeOption) => {
@@ -244,6 +296,7 @@ export default function FeedbacksInsightsReport() {
           <InsightsReportHeaderSection
             updatedLabel={updatedLabel}
             refreshing={refreshing}
+            analyzingRaw={analyzingRaw}
             canAnalyze={analysisGuard.canAnalyze}
             analysisBlockedMessage={analysisGuard.message}
             availableScopes={availableScopes}
@@ -253,6 +306,7 @@ export default function FeedbacksInsightsReport() {
             onScopeChange={handleScopeChange}
             onCatalogItemChange={handleCatalogItemChange}
             onRefreshSelected={handleRefreshSelected}
+            onAnalyzeRaw={handleAnalyzeRaw}
           />
 
           <InsightsReportMoodSection

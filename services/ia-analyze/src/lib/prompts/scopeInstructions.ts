@@ -1,5 +1,5 @@
-import type { IaAnalyzeScopeType } from '../../../../shared/interfaces/contracts/ia-analyze/scope.contract.js';
-import type { ScopeInstructionsByType } from '../../types/iaAnalyzePromptBuilders.types.js';
+import type { IaAnalyzeScopeType } from '../../../../../shared/interfaces/contracts/ia-analyze/scope.contract.js';
+import type { ScopeInstructionsByType } from '../../../types/iaAnalyzePromptBuilders.types.js';
 
 /**
  * Instruções específicas para cada tipo de escopo de análise.

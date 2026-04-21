@@ -27,3 +27,24 @@ export interface IaAnalyzeRunErrorResponse {
   message?: string;
   issues?: unknown;
 }
+
+export interface IaAnalyzeRawRunRequest {
+  limit?: number;
+  scope_type?: IaAnalyzeScopeType;
+  catalog_item_id?: string;
+}
+
+export interface IaAnalyzeRawRunResponse {
+  analyzedCount: number;
+  feedbacksAnalyzed: IaAnalyzeAnalyzedItem[];
+}
+
+export interface IaAnalyzeRegenerateInsightsRequest {
+  scope_type?: IaAnalyzeScopeType;
+  catalog_item_id?: string;
+}
+
+export interface IaAnalyzeRegenerateInsightsResponse {
+  globalInsights: IaAnalyzeInsights | null;
+  contexts: IaAnalyzeContext[];
+}

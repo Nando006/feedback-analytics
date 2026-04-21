@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { isValidSentiment, canProcessAnalyzedItem } from '../services/sentimentAnalysis.service.js';
-import type { IaAnalyzeFeedbackInput } from '../../../../shared/interfaces/contracts/ia-analyze/input.contract.js';
+import { isValidSentiment, canProcessAnalyzedItem } from '../src/services/sentimentAnalysis.service.js';
+import type { IaAnalyzeFeedbackInput } from '../../../shared/interfaces/contracts/ia-analyze/input.contract.js';
 
 const baseFeedback: IaAnalyzeFeedbackInput = {
   id: 'feedback-001',

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { buildIaPromptByScope } from '../iaAnalyzePromptBuilders.js';
-import type { IaAnalyzeFeedbackInput, IaAnalyzeEnterpriseContext } from '../../../../shared/interfaces/contracts/ia-analyze/input.contract.js';
+import { buildIaPromptByScope } from '../src/lib/iaAnalyzePromptBuilders.js';
+import type { IaAnalyzeFeedbackInput, IaAnalyzeEnterpriseContext } from '../../../shared/interfaces/contracts/ia-analyze/input.contract.js';
 
 const enterpriseContext: IaAnalyzeEnterpriseContext = {
   enterprise_name: 'Empresa Teste',

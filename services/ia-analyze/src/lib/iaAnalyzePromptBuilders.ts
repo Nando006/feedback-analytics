@@ -3,7 +3,7 @@ import { getScopeInstructions } from './prompts/scopeInstructions.js';
 import type {
   BuildIaPromptByScopeParams,
   PromptExpectedSchema,
-} from '../types/iaAnalyzePromptBuilders.types.js';
+} from '../../types/iaAnalyzePromptBuilders.types.js';
 
 /**
  * Monta o prompt (texto) que será enviado ao modelo de IA para análise.
