@@ -18,26 +18,13 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
 
-    "baseUrl": "../..",
-    "ignoreDeprecations": "6.0",
     "paths": {
-      "lib/*.js": ["shared/*.ts"],
-      "lib/*": ["shared/*"],
-      "server/*.js": ["backends/api-gateway/*.ts"],
-      "server/*": ["backends/api-gateway/*"]
+      "lib/*": ["../../shared/*"]
     }
   },
   "include": [
-    "index.ts",
-    "express.d.ts",
-    "controllers/**/*.ts",
-    "database/**/*.ts",
-    "endpoints/**/*.ts",
-    "middleware/**/*.ts",
-    "constants/**/*.ts",
-    "utils/**/*.ts",
-    "types/**/*.ts",
-    "types/**/*.d.ts",
+    "src/**/*.ts",
+    "src/**/*.d.ts",
     "../../shared/interfaces/**/*.ts",
     "../../shared/schemas/**/*.ts"
   ],
