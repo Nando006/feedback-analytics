@@ -41,7 +41,7 @@ export default function FormForgotPassword() {
     if ('message' in actionData && typeof actionData.message === 'string') {
       toast.error('Não foi possível enviar', actionData.message);
     }
-  }, [actionData]);
+  }, [actionData, toast]);
 
   function onSubmit(values: ForgotPasswordFormValues) {
     const formData = new FormData();
