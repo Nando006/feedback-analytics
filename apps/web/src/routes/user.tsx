@@ -17,7 +17,7 @@ import { LoaderFeedbacksAnalyticsPositive } from 'src/routes/loaders/loaderFeedb
 import { LoaderFeedbacksAnalyticsNegative } from 'src/routes/loaders/loaderFeedbacksAnalyticsNegative';
 import { LoaderFeedbacksInsightsStatistics } from 'src/routes/loaders/loaderFeedbacksInsightsStatistics';
 import { LoaderFeedbacksInsightsEmotional } from './loaders/loaderFeedbacksInsightsEmotional';
-import { LoaderFeedbacksInsightsReport } from './loaders/loaderFeedbacksInsightsReport';
+
 import { LoaderQrCodeEnterprise } from './loaders/loaderQrCodeEnterprise';
 import Profile from 'pages/user/profile';
 import FeedbacksInsightsEmotional from 'pages/user/feedbacks/insights/feedbacksInsightsEmotional';
@@ -144,7 +144,6 @@ export function RouteUser() {
       />
       <Route
         path="insights/reports"
-        loader={LoaderFeedbacksInsightsReport}
         action={ActionFeedbackInsightsReport}
         element={<FeedbacksInsightsReport />}
       />

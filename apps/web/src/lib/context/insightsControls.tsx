@@ -44,12 +44,22 @@ export function useInsightsControls() {
   return ctx;
 }
 
-export function useInsightsControlsState() {
+export interface InsightsControlsInitialData {
+  availableScopes: InsightScopeOption[];
+  catalogItemOptions: InsightsCatalogItemOption[];
+  canAnalyze: boolean;
+}
+
+export function useInsightsControlsState(initial?: InsightsControlsInitialData) {
   const [scope, setScope] = useState<InsightScopeOption>('COMPANY');
   const [catalogItemId, setCatalogItemId] = useState('');
-  const [catalogItemOptions, setCatalogItemOptions] = useState<InsightsCatalogItemOption[]>([]);
-  const [availableScopes, setAvailableScopes] = useState<InsightScopeOption[]>(['COMPANY', 'PRODUCT', 'SERVICE', 'DEPARTMENT']);
-  const [canAnalyze, setCanAnalyze] = useState(false);
+  const [catalogItemOptions, setCatalogItemOptions] = useState<InsightsCatalogItemOption[]>(
+    initial?.catalogItemOptions ?? [],
+  );
+  const [availableScopes, setAvailableScopes] = useState<InsightScopeOption[]>(
+    initial?.availableScopes ?? ['COMPANY'],
+  );
+  const [canAnalyze, setCanAnalyze] = useState(initial?.canAnalyze ?? false);
 
   return {
     scope, setScope,

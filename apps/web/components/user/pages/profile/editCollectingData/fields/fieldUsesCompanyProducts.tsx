@@ -56,6 +56,8 @@ const FieldUsesCompanyProducts = memo(function FieldUsesCompanyProducts({
         <h3 className="text-sm font-semibold text-(--text-primary)">Escopo da operação</h3>
         <p className="mt-1 text-xs leading-relaxed text-(--text-tertiary)">
           Marque os tipos utilizados na sua operação para habilitar os QR Codes específicos.
+          Para que cada tipo apareça na análise de insights, cadastre ao menos um item no catálogo em{' '}
+          <span className="font-medium text-(--text-secondary)">Configuração de Feedbacks</span>.
         </p>
       </div>
 
@@ -64,7 +66,7 @@ const FieldUsesCompanyProducts = memo(function FieldUsesCompanyProducts({
         checked={usesCompanyProducts}
         onChange={onChange}
         title="A empresa possui produtos"
-        description="Habilita o QR Code de produtos."
+        description="Habilita o QR Code de produtos. Cadastre ao menos um produto em Configuração de Feedbacks para análise de insights."
       />
 
       <CheckboxItem
@@ -72,7 +74,7 @@ const FieldUsesCompanyProducts = memo(function FieldUsesCompanyProducts({
         checked={usesCompanyServices}
         onChange={onChange}
         title="A empresa possui serviços"
-        description="Habilita o QR Code de serviços."
+        description="Habilita o QR Code de serviços. Cadastre ao menos um serviço em Configuração de Feedbacks para análise de insights."
       />
 
       <CheckboxItem
@@ -80,7 +82,7 @@ const FieldUsesCompanyProducts = memo(function FieldUsesCompanyProducts({
         checked={usesCompanyDepartments}
         onChange={onChange}
         title="A empresa possui áreas/departamentos"
-        description="Habilita o QR Code de áreas/departamentos."
+        description="Habilita o QR Code de áreas/departamentos. Cadastre ao menos um departamento em Configuração de Feedbacks para análise de insights."
       />
     </div>
   );

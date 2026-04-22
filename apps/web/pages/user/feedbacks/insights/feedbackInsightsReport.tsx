@@ -1,12 +1,13 @@
-import { useEffect, useRef, useState } from 'react';
-import {
-  useLoaderData,
-  useRevalidator,
-  useSearchParams,
-} from 'react-router-dom';
-import type { FeedbackAnalysisSummary } from 'lib/interfaces/domain/feedback.domain';
-import type { LoaderFeedbacksInsightsReport } from 'src/routes/loaders/loaderFeedbacksInsightsReport';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import type {
+  FeedbackAnalysisSummary,
+  FeedbackInsightsReport,
+} from 'lib/interfaces/domain/feedback.domain';
 import { useInsightsControls } from 'src/lib/context/insightsControls';
+import {
+  ServiceGetFeedbackInsightsReport,
+  ServiceGetFeedbackAnalysis,
+} from 'src/services/serviceFeedbacks';
 import InsightsReportLoadingState from 'components/user/pages/feedbacksInsightsReport/InsightsReportLoadingState';
 import InsightsReportErrorState from 'components/user/pages/feedbacksInsightsReport/InsightsReportErrorState';
 import InsightsReportHeaderSection from 'components/user/pages/feedbacksInsightsReport/InsightsReportHeaderSection';
@@ -54,128 +55,86 @@ function getMoodFromSummary(summary: FeedbackAnalysisSummary | null) {
 }
 
 export default function FeedbacksInsightsReport() {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const {
-    report,
-    summary,
-    error: loaderError,
-    filters,
-    analysisGuard,
-    availableScopes,
-    catalogItemOptions,
-  } = useLoaderData<Awaited<ReturnType<typeof LoaderFeedbacksInsightsReport>>>();
-
   const {
     scope,
-    setScope,
     catalogItemId,
-    setCatalogItemId,
-    setCatalogItemOptions,
-    setAvailableScopes,
-    setCanAnalyze,
+    canAnalyze,
     isAnalyzingRaw,
     isRegeneratingInsights,
   } = useInsightsControls();
 
-  const revalidator = useRevalidator();
-  const mountedRef = useRef(false);
   const wasAnalyzingRawRef = useRef(false);
   const wasRegeneratingRef = useRef(false);
   const [dismissedErrorKey, setDismissedErrorKey] = useState<string | null>(null);
 
-  const refreshing = isRegeneratingInsights || revalidator.state === 'loading';
-  const errorKey = loaderError ? `loader:${loaderError}` : null;
-  const showErrorPopup = Boolean(errorKey && dismissedErrorKey !== errorKey);
+  // Estado local para dados carregados sob demanda (por scope)
+  const [report, setReport] = useState<FeedbackInsightsReport | null>(null);
+  const [summary, setSummary] = useState<FeedbackAnalysisSummary | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
-  // Alimenta o contexto com dados do loader (catálogo, escopos, permissão)
-  useEffect(() => {
-    setCatalogItemOptions(catalogItemOptions);
-    setAvailableScopes(availableScopes);
-    setCanAnalyze(analysisGuard.canAnalyze);
-  }, [
-    catalogItemOptions,
-    availableScopes,
-    analysisGuard.canAnalyze,
-    setCatalogItemOptions,
-    setAvailableScopes,
-    setCanAnalyze,
-  ]);
+  // Busca os dados do report sempre que scope ou catalogItemId mudar
+  const fetchReportData = useCallback(async () => {
+    setLoading(true);
+    setFetchError(null);
 
-  // Mount: URL ganha — sincroniza contexto a partir dos params da URL
-  useEffect(() => {
-    setScope(filters.scope_type as 'COMPANY' | 'PRODUCT' | 'SERVICE' | 'DEPARTMENT');
-    setCatalogItemId(filters.catalog_item_id ?? '');
-    mountedRef.current = true;
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    const scopeParam = scope;
+    const catalogParam = scopeParam !== 'COMPANY' ? catalogItemId || undefined : undefined;
 
-  // Scope do contexto → URL (só após o mount para evitar override imediato)
-  useEffect(() => {
-    if (!mountedRef.current) return;
-    if (scope === filters.scope_type) return;
+    try {
+      const [reportData, analysisData] = await Promise.all([
+        ServiceGetFeedbackInsightsReport({
+          scope_type: scopeParam,
+          catalog_item_id: catalogParam,
+        }).catch(() => null),
+        ServiceGetFeedbackAnalysis({
+          scope_type: scopeParam,
+          catalog_item_id: catalogParam,
+        }).catch(() => null),
+      ]);
 
-    const nextParams = new URLSearchParams(searchParams);
-    nextParams.set('scope_type', scope);
+      setReport(reportData);
+      setSummary(analysisData?.summary ?? null);
 
-    if (scope === 'COMPANY') {
-      nextParams.delete('catalog_item_id');
-    } else {
-      const first = catalogItemOptions.find((item) => item.kind === scope);
-      if (first) nextParams.set('catalog_item_id', first.id);
-      else nextParams.delete('catalog_item_id');
+      if (reportData === null && analysisData === null) {
+        setFetchError('Erro ao carregar relatório de insights');
+      }
+    } catch {
+      setFetchError('Erro ao carregar relatório de insights');
+    } finally {
+      setLoading(false);
     }
+  }, [scope, catalogItemId]);
 
-    setSearchParams(nextParams);
-  }, [scope, filters.scope_type, catalogItemOptions, searchParams, setSearchParams]);
-
-  // CatalogItemId do contexto → URL
   useEffect(() => {
-    if (!mountedRef.current) return;
-    const current = filters.catalog_item_id ?? '';
-    if (catalogItemId === current) return;
+    fetchReportData();
+  }, [fetchReportData]);
 
-    const nextParams = new URLSearchParams(searchParams);
-    if (catalogItemId) {
-      nextParams.set('catalog_item_id', catalogItemId);
-    } else {
-      nextParams.delete('catalog_item_id');
-    }
-    setSearchParams(nextParams, { replace: true });
-  }, [catalogItemId, filters.catalog_item_id, searchParams, setSearchParams]);
-
-  // Auto-seleciona o primeiro item válido quando o selecionado não existe no escopo
-  useEffect(() => {
-    if (filters.scope_type === 'COMPANY') return;
-
-    const scopeItems = catalogItemOptions.filter((item) => item.kind === filters.scope_type);
-    const hasSelectedItem =
-      Boolean(filters.catalog_item_id) &&
-      scopeItems.some((item) => item.id === filters.catalog_item_id);
-
-    if (hasSelectedItem || scopeItems.length === 0) return;
-
-    const nextParams = new URLSearchParams(searchParams);
-    nextParams.set('catalog_item_id', scopeItems[0].id);
-    setSearchParams(nextParams, { replace: true });
-  }, [filters.scope_type, filters.catalog_item_id, catalogItemOptions, searchParams, setSearchParams]);
-
-  // Revalida quando análise bruta conclui
+  // Recarrega quando análise bruta conclui
   useEffect(() => {
     if (isAnalyzingRaw) { wasAnalyzingRawRef.current = true; return; }
     if (!wasAnalyzingRawRef.current) return;
     wasAnalyzingRawRef.current = false;
-    revalidator.revalidate();
-  }, [isAnalyzingRaw, revalidator]);
+    fetchReportData();
+  }, [isAnalyzingRaw, fetchReportData]);
 
-  // Revalida quando geração de insights conclui
+  // Recarrega quando geração de insights conclui
   useEffect(() => {
     if (isRegeneratingInsights) { wasRegeneratingRef.current = true; return; }
     if (!wasRegeneratingRef.current) return;
     wasRegeneratingRef.current = false;
-    revalidator.revalidate();
-  }, [isRegeneratingInsights, revalidator]);
+    fetchReportData();
+  }, [isRegeneratingInsights, fetchReportData]);
 
-  if (refreshing && !report && !summary && !loaderError) {
+  const refreshing = isRegeneratingInsights || loading;
+  const errorKey = fetchError ? `fetch:${fetchError}` : null;
+  const showErrorPopup = Boolean(errorKey && dismissedErrorKey !== errorKey);
+
+  const analysisBlockedMessage = canAnalyze
+    ? null
+    : 'Para analisar os feedbacks, preencha as informações da empresa em Editar > Configuração de Coleta de Dados.';
+
+  if (loading && !report && !summary && !fetchError) {
     return <InsightsReportLoadingState />;
   }
 
@@ -204,8 +163,8 @@ export default function FeedbacksInsightsReport() {
         <div className="relative overflow-hidden rounded-2xl border border-(--quaternary-color)/10 bg-gradient-to-br from-(--bg-secondary) to-(--sixth-color) p-6 glass-card space-y-6">
           <InsightsReportHeaderSection
             updatedLabel={updatedLabel}
-            canAnalyze={analysisGuard.canAnalyze}
-            analysisBlockedMessage={analysisGuard.message}
+            canAnalyze={canAnalyze}
+            analysisBlockedMessage={analysisBlockedMessage}
           />
 
           <InsightsReportMoodSection
@@ -243,9 +202,9 @@ export default function FeedbacksInsightsReport() {
         </div>
       </div>
 
-      {showErrorPopup && loaderError && (
+      {showErrorPopup && fetchError && (
         <InsightsReportErrorState
-          error={loaderError}
+          error={fetchError}
           variant="error"
           onClose={() => setDismissedErrorKey(errorKey)}
         />

@@ -1,10 +1,11 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Outlet, useFetcher, useLoaderData, useNavigation } from 'react-router-dom';
 import Header from 'components/user/layout/Header';
 import {
   InsightsControlsProvider,
   useInsightsControlsState,
 } from 'src/lib/context/insightsControls';
+import type { InsightsControlsInitialData } from 'src/lib/context/insightsControls';
 import Sidebar from 'components/user/layout/Sidebar';
 import DashboardSkeleton from 'components/user/pages/dashboard/DashboardSkeleton';
 import ProfileSkeleton from 'components/user/pages/profile/ProfileSkeleton';
@@ -25,9 +26,51 @@ import EditProfileSkeleton from 'components/user/pages/edit/EditProfileSkeleton'
 import EditCollectingDataSkeleton from 'components/user/pages/edit/EditCollectingDataSkeleton';
 import EditFeedbackSettingsSkeleton from 'components/user/pages/edit/EditFeedbackSettingsSkeleton';
 import type { CollectingDataEnterprise, Enterprise } from 'lib/interfaces/entities/enterprise.entity';
+import type { InsightScopeOption, InsightsCatalogItemOption } from 'components/user/pages/feedbacksInsightsReport/ui.types';
 import { getCookie, setCookie } from 'src/lib/utils/cookies';
 import { INTENT_LOGOUT, INTENT_FEEDBACK_ANALYZE_RAW, INTENT_FEEDBACK_RUN_IA } from 'src/lib/constants/routes/intents';
 import { useToast } from 'components/public/forms/messages/useToast';
+
+function buildInsightsInitialData(collecting: CollectingDataEnterprise | null): InsightsControlsInitialData {
+  const availableScopes: InsightScopeOption[] = ['COMPANY'];
+  const catalogItemOptions: InsightsCatalogItemOption[] = [];
+
+  if (!collecting) {
+    return { availableScopes, catalogItemOptions, canAnalyze: false };
+  }
+
+  const hasCompanyObjective = String(collecting.company_objective ?? '').trim().length > 0;
+  const hasAnalyticsGoal = String(collecting.analytics_goal ?? '').trim().length > 0;
+  const hasBusinessSummary = String(collecting.business_summary ?? '').trim().length > 0;
+  const canAnalyze = hasCompanyObjective && hasAnalyticsGoal && hasBusinessSummary;
+
+  const productItems = collecting.catalog_products ?? [];
+  const serviceItems = collecting.catalog_services ?? [];
+  const departmentItems = collecting.catalog_departments ?? [];
+
+  if (collecting.uses_company_products && productItems.length > 0) {
+    availableScopes.push('PRODUCT');
+    catalogItemOptions.push(
+      ...productItems.map((item) => ({ id: item.id, name: item.name, kind: 'PRODUCT' as const })),
+    );
+  }
+
+  if (collecting.uses_company_services && serviceItems.length > 0) {
+    availableScopes.push('SERVICE');
+    catalogItemOptions.push(
+      ...serviceItems.map((item) => ({ id: item.id, name: item.name, kind: 'SERVICE' as const })),
+    );
+  }
+
+  if (collecting.uses_company_departments && departmentItems.length > 0) {
+    availableScopes.push('DEPARTMENT');
+    catalogItemOptions.push(
+      ...departmentItems.map((item) => ({ id: item.id, name: item.name, kind: 'DEPARTMENT' as const })),
+    );
+  }
+
+  return { availableScopes, catalogItemOptions, canAnalyze };
+}
 
 export default function User() {
   const logoutFetcher = useFetcher();
@@ -40,7 +83,19 @@ export default function User() {
     collecting: CollectingDataEnterprise | null;
   };
 
-  const insightsState = useInsightsControlsState();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const insightsInitial = useMemo(() => buildInsightsInitialData(collecting), []);
+  const insightsState = useInsightsControlsState(insightsInitial);
+
+  // Sincroniza o contexto quando collecting muda (ex: após salvar catálogo)
+  useEffect(() => {
+    const updated = buildInsightsInitialData(collecting);
+    insightsState.setAvailableScopes(updated.availableScopes);
+    insightsState.setCatalogItemOptions(updated.catalogItemOptions);
+    insightsState.setCanAnalyze(updated.canAnalyze);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [collecting]);
+
   const shouldRevalidateRawRef = useRef(false);
   const shouldRevalidateInsightsRef = useRef(false);
 
