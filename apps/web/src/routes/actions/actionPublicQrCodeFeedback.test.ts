@@ -47,7 +47,7 @@ function createArgs(body: Record<string, string | undefined>): ActionFunctionArg
     request: createRequest(body),
     params: {},
     context: undefined,
-  };
+  } as unknown as ActionFunctionArgs;
 }
 
 describe('ActionPublicQrCodeFeedback', () => {
@@ -72,7 +72,7 @@ describe('ActionPublicQrCodeFeedback', () => {
       }),
     );
 
-    expect(response.status).toBe(200);
+    expect(response).toEqual({ ok: true });
     expect(mockServiceSubmitQrcodeFeedback).toHaveBeenCalledWith({
       enterprise_id: '11111111-1111-4111-8111-111111111111',
       collection_point_id: '22222222-2222-4222-8222-222222222222',
@@ -109,9 +109,7 @@ describe('ActionPublicQrCodeFeedback', () => {
       }),
     );
 
-    expect(response.status).toBe(409);
-    const payload = await response.json();
-    expect(payload).toEqual({ alreadySubmitted: true });
+    expect(response).toEqual({ alreadySubmitted: true });
   });
 
   it('bloqueia segundo envio no mesmo QR no mesmo dia (409)', async () => {
@@ -158,9 +156,8 @@ describe('ActionPublicQrCodeFeedback', () => {
       }),
     );
 
-    expect(firstResponse.status).toBe(200);
-    expect(secondResponse.status).toBe(409);
-    expect(await secondResponse.json()).toEqual({ alreadySubmitted: true });
+    expect(firstResponse).toEqual({ ok: true });
+    expect(secondResponse).toEqual({ alreadySubmitted: true });
   });
 
   it('permite envio em QR diferente no mesmo dia', async () => {
@@ -208,7 +205,7 @@ describe('ActionPublicQrCodeFeedback', () => {
       }),
     );
 
-    expect(firstQrResponse.status).toBe(200);
-    expect(secondQrResponse.status).toBe(200);
+    expect(firstQrResponse).toEqual({ ok: true });
+    expect(secondQrResponse).toEqual({ ok: true });
   });
 });

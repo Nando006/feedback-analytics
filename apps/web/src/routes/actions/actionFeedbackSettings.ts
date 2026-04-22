@@ -255,10 +255,7 @@ export async function ActionFeedbackSettings({ request }: ActionFunctionArgs) {
     intent !== INTENT_FEEDBACK_SETTINGS_SAVE_SERVICES_CATALOG &&
     intent !== INTENT_FEEDBACK_SETTINGS_SAVE_DEPARTMENTS_CATALOG
   ) {
-    return new Response(JSON.stringify({ error: 'Ação inválida.' }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return { error: 'Ação inválida.' };
   }
 
   try {
@@ -268,45 +265,27 @@ export async function ActionFeedbackSettings({ request }: ActionFunctionArgs) {
       );
 
       if (!questions) {
-        return new Response(
-          JSON.stringify({
-            error: 'Perguntas da empresa inválidas. Verifique o preenchimento.',
-          }),
-          {
-            status: 400,
-            headers: { 'Content-Type': 'application/json' },
-          },
-        );
+        return {
+          error: 'Perguntas da empresa inválidas. Verifique o preenchimento.',
+        };
       }
 
       const collecting = await ServiceUpdateCollectingDataEnterprise({
         company_feedback_questions: questions,
       });
 
-      return new Response(
-        JSON.stringify({
-          ok: true,
-          scope: 'COMPANY',
-          message: 'Perguntas da empresa atualizadas com sucesso.',
-          collecting,
-        }),
-        {
-          status: 200,
-          headers: { 'Content-Type': 'application/json' },
-        },
-      );
+      return {
+        ok: true,
+        scope: 'COMPANY',
+        message: 'Perguntas da empresa atualizadas com sucesso.',
+        collecting,
+      };
     }
 
     const catalogItems = parseCatalogItemsField(form.get('catalog_items'));
 
     if (!catalogItems) {
-      return new Response(
-        JSON.stringify({ error: 'Itens de catálogo inválidos.' }),
-        {
-          status: 400,
-          headers: { 'Content-Type': 'application/json' },
-        },
-      );
+      return { error: 'Itens de catálogo inválidos.' };
     }
 
     if (intent === INTENT_FEEDBACK_SETTINGS_SAVE_PRODUCTS_CATALOG) {
@@ -316,18 +295,12 @@ export async function ActionFeedbackSettings({ request }: ActionFunctionArgs) {
         main_products_or_services: catalogItems.map((item) => item.name),
       });
 
-      return new Response(
-        JSON.stringify({
-          ok: true,
-          scope: 'PRODUCT',
-          message: 'Catálogo de produtos atualizado com sucesso.',
-          collecting,
-        }),
-        {
-          status: 200,
-          headers: { 'Content-Type': 'application/json' },
-        },
-      );
+      return {
+        ok: true,
+        scope: 'PRODUCT',
+        message: 'Catálogo de produtos atualizado com sucesso.',
+        collecting,
+      };
     }
 
     if (intent === INTENT_FEEDBACK_SETTINGS_SAVE_SERVICES_CATALOG) {
@@ -336,18 +309,12 @@ export async function ActionFeedbackSettings({ request }: ActionFunctionArgs) {
         catalog_services: catalogItems,
       });
 
-      return new Response(
-        JSON.stringify({
-          ok: true,
-          scope: 'SERVICE',
-          message: 'Catálogo de serviços atualizado com sucesso.',
-          collecting,
-        }),
-        {
-          status: 200,
-          headers: { 'Content-Type': 'application/json' },
-        },
-      );
+      return {
+        ok: true,
+        scope: 'SERVICE',
+        message: 'Catálogo de serviços atualizado com sucesso.',
+        collecting,
+      };
     }
 
     const collecting = await ServiceUpdateCollectingDataEnterprise({
@@ -355,35 +322,18 @@ export async function ActionFeedbackSettings({ request }: ActionFunctionArgs) {
       catalog_departments: catalogItems,
     });
 
-    return new Response(
-      JSON.stringify({
-        ok: true,
-        scope: 'DEPARTMENT',
-        message: 'Catálogo de departamentos atualizado com sucesso.',
-        collecting,
-      }),
-      {
-        status: 200,
-        headers: { 'Content-Type': 'application/json' },
-      },
-    );
+    return {
+      ok: true,
+      scope: 'DEPARTMENT',
+      message: 'Catálogo de departamentos atualizado com sucesso.',
+      collecting,
+    };
   } catch (error) {
     const httpError = error as HttpError;
 
-    return new Response(
-      JSON.stringify({
-        error: httpError?.code || 'upsert_failed',
-        message: getErrorMessage(httpError),
-      }),
-      {
-        status:
-          typeof httpError?.status === 'number' &&
-          httpError.status >= 400 &&
-          httpError.status <= 599
-            ? httpError.status
-            : 400,
-        headers: { 'Content-Type': 'application/json' },
-      },
-    );
+    return {
+      error: httpError?.code || 'upsert_failed',
+      message: getErrorMessage(httpError),
+    };
   }
 }

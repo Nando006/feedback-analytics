@@ -40,7 +40,7 @@ function parseCatalogItemsField(
     if (!Array.isArray(parsed)) return [];
 
     return parsed
-      .map((item, index) => {
+      .map((item, index): CatalogItemInput | null => {
         if (typeof item === 'string') {
           const name = item.trim();
           if (!name) return null;
@@ -104,7 +104,7 @@ function parseCompanyFeedbackQuestionsField(
 
     return parsed
       .slice(0, 3)
-      .map((item, index) => {
+      .map((item, index): CompanyFeedbackQuestionInput | null => {
         if (!item || typeof item !== 'object') return null;
 
         const candidate = item as {
@@ -263,18 +263,9 @@ export async function ActionCollectingData({ request }: ActionFunctionArgs) {
         : {}),
     });
 
-    return new Response(JSON.stringify({ collecting }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return { ok: true, collecting };
   } catch (error) {
     const httpError = error as HttpError;
-    const status =
-      typeof httpError?.status === 'number' &&
-      httpError.status >= 400 &&
-      httpError.status <= 599
-        ? httpError.status
-        : 400;
 
     console.error('ActionCollectingData: falha ao salvar coleta', {
       status: httpError?.status,
@@ -282,14 +273,10 @@ export async function ActionCollectingData({ request }: ActionFunctionArgs) {
       message: httpError?.message,
     });
 
-    return new Response(
-      JSON.stringify({
-        error: httpError?.code || 'upsert_failed',
-        message: httpError?.message || 'Falha ao salvar dados de coleta.',
-      }),
-      {
-      status,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return {
+      ok: false,
+      error: httpError?.code || 'upsert_failed',
+      message: httpError?.message || 'Falha ao salvar dados de coleta.',
+    };
   }
 }

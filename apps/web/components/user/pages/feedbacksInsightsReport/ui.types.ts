@@ -14,18 +14,36 @@ export type InsightsCatalogItemOption = {
  */
 export interface InsightsReportHeaderSectionProps {
   updatedLabel: string | null;
+  canAnalyze: boolean;
+  analysisBlockedMessage: string | null;
+}
+
+/**
+ * Props dos controles de insights no header global.
+ * Usado em: components/user/pages/feedbacksInsightsReport/InsightsHeaderControls.tsx.
+ */
+export interface InsightsHeaderControlsProps {
   refreshing: boolean;
   analyzingRaw: boolean;
   canAnalyze: boolean;
-  analysisBlockedMessage: string | null;
   availableScopes: InsightScopeOption[];
   selectedScope: InsightScopeOption;
   selectedCatalogItemId: string;
   catalogItemOptions: InsightsCatalogItemOption[];
   onScopeChange: (scope: InsightScopeOption) => void;
-  onCatalogItemChange: (catalogItemId: string) => void;
+  onCatalogItemChange: (id: string) => void;
   onRefreshSelected: () => void;
   onAnalyzeRaw: () => void;
+}
+
+/**
+ * Props do seletor radial de escopos.
+ * Usado em: components/user/pages/feedbacksInsightsReport/ScopeSelectorRadial.tsx.
+ */
+export interface ScopeSelectorRadialProps {
+  options: InsightScopeOption[];
+  selected: InsightScopeOption;
+  onChange: (scope: InsightScopeOption) => void;
 }
 
 /**

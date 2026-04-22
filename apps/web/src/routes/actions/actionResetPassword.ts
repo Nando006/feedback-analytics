@@ -12,8 +12,5 @@ export async function ActionResetPassword({ request }: ActionFunctionArgs) {
   if (result.ok) return redirect('/login?reset=success');
 
   // Erro: devolve o payload para o componente via useActionData
-  return new Response(JSON.stringify(result), {
-    status: 400,
-    headers: { 'Content-Type': 'application/json' },
-  });
+  return result;
 }

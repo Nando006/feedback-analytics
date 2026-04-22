@@ -24,69 +24,42 @@ export async function ActionProfile({ request }: ActionFunctionArgs) {
   if (intent === INTENT_PROFILE_UPDATE_FULL_NAME) {
     const full_name = String(form.get('full_name') ?? '');
     if (!full_name) {
-      return new Response(JSON.stringify({ error: ACTION_ERROR_INVALID_PAYLOAD }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' },
-      });
+      return { error: ACTION_ERROR_INVALID_PAYLOAD };
     }
     await ServiceUpdateMetadados(full_name);
-    return new Response(JSON.stringify({ ok: true }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return { ok: true };
   }
 
   // Atualiza o e-mail do usuário.
   if (intent === INTENT_PROFILE_UPDATE_EMAIL) {
     const email = String(form.get('email') ?? '');
     if (!email) {
-      return new Response(JSON.stringify({ error: ACTION_ERROR_INVALID_PAYLOAD }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' },
-      });
+      return { error: ACTION_ERROR_INVALID_PAYLOAD };
     }
     await ServiceUpdateEmail(email);
-    return new Response(JSON.stringify({ ok: true }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return { ok: true };
   }
 
   // Inicia a verificação do telefone do usuário.
   if (intent === INTENT_PROFILE_START_PHONE) {
     const phone = String(form.get('phone') ?? '');
     if (!phone) {
-      return new Response(JSON.stringify({ error: ACTION_ERROR_INVALID_PAYLOAD }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' },
-      });
+      return { error: ACTION_ERROR_INVALID_PAYLOAD };
     }
     await ServiceStartPhoneVerification(phone);
-    return new Response(JSON.stringify({ ok: true }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return { ok: true };
   }
 
   // Confirma a verificação do telefone do usuário.
   if (intent === INTENT_PROFILE_VERIFY_PHONE) {
     const token = String(form.get('token') ?? '');
     if (!token) {
-      return new Response(JSON.stringify({ error: ACTION_ERROR_INVALID_PAYLOAD }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' },
-      });
+      return { error: ACTION_ERROR_INVALID_PAYLOAD };
     }
     await ServiceVerifyPhone(token);
-    return new Response(JSON.stringify({ ok: true }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return { ok: true };
   }
 
   // Retorna um erro caso o intent seja inválido.
-  return new Response(JSON.stringify({ error: ACTION_ERROR_INVALID_INTENT }), {
-    status: 400,
-    headers: { 'Content-Type': 'application/json' },
-  });
+  return { error: ACTION_ERROR_INVALID_INTENT };
 }
