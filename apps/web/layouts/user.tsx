@@ -5,7 +5,7 @@ import {
   InsightsControlsProvider,
   useInsightsControlsState,
 } from 'src/lib/context/insightsControls';
-import type { InsightsControlsInitialData } from 'src/lib/context/insightsControls';
+import type { InsightsControlsInitialData } from 'src/lib/context/insightsControls.types';
 import Sidebar from 'components/user/layout/Sidebar';
 import DashboardSkeleton from 'components/user/pages/dashboard/DashboardSkeleton';
 import ProfileSkeleton from 'components/user/pages/profile/ProfileSkeleton';

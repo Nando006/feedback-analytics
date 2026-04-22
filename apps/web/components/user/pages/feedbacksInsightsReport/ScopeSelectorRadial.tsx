@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { FaBuilding, FaBox, FaWrench, FaUserGroup } from 'react-icons/fa6';
 import type { IconType } from 'react-icons';
-import type { InsightScopeOption } from './ui.types';
+import type { InsightScopeOption, ScopeSelectorRadialProps } from './ui.types';
 
 const SCOPE_CONFIG: Record<
   InsightScopeOption,
@@ -36,12 +36,6 @@ const SUB_POSITIONS = [
   { x: 22, y: 62 },
   { x: 64, y: 50 },
 ];
-
-interface ScopeSelectorRadialProps {
-  options: InsightScopeOption[];
-  selected: InsightScopeOption;
-  onChange: (scope: InsightScopeOption) => void;
-}
 
 export function ScopeSelectorRadial({
   options,

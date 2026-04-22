@@ -4,23 +4,10 @@ import type {
   InsightScopeOption,
   InsightsCatalogItemOption,
 } from 'components/user/pages/feedbacksInsightsReport/ui.types';
-
-export interface InsightsControlsContextValue {
-  scope: InsightScopeOption;
-  setScope: (scope: InsightScopeOption) => void;
-  catalogItemId: string;
-  setCatalogItemId: (id: string) => void;
-  catalogItemOptions: InsightsCatalogItemOption[];
-  setCatalogItemOptions: (opts: InsightsCatalogItemOption[]) => void;
-  availableScopes: InsightScopeOption[];
-  setAvailableScopes: (scopes: InsightScopeOption[]) => void;
-  canAnalyze: boolean;
-  setCanAnalyze: (can: boolean) => void;
-  analyzeRaw: () => void;
-  regenerateInsights: () => void;
-  isAnalyzingRaw: boolean;
-  isRegeneratingInsights: boolean;
-}
+import type {
+  InsightsControlsContextValue,
+  InsightsControlsInitialData,
+} from './insightsControls.types';
 
 const InsightsControlsContext = createContext<InsightsControlsContextValue | null>(null);
 
@@ -38,18 +25,14 @@ export function InsightsControlsProvider({
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useInsightsControls() {
   const ctx = useContext(InsightsControlsContext);
   if (!ctx) throw new Error('useInsightsControls must be used inside InsightsControlsProvider');
   return ctx;
 }
 
-export interface InsightsControlsInitialData {
-  availableScopes: InsightScopeOption[];
-  catalogItemOptions: InsightsCatalogItemOption[];
-  canAnalyze: boolean;
-}
-
+// eslint-disable-next-line react-refresh/only-export-components
 export function useInsightsControlsState(initial?: InsightsControlsInitialData) {
   const [scope, setScope] = useState<InsightScopeOption>('COMPANY');
   const [catalogItemId, setCatalogItemId] = useState('');

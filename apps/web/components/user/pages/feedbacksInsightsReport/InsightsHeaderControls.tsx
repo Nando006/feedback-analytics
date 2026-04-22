@@ -1,21 +1,6 @@
 import { FaChevronDown } from 'react-icons/fa6';
 import { ScopeSelectorRadial } from './ScopeSelectorRadial';
-import type { InsightsReportHeaderSectionProps } from './ui.types';
-
-type InsightsHeaderControlsProps = Pick<
-  InsightsReportHeaderSectionProps,
-  | 'refreshing'
-  | 'analyzingRaw'
-  | 'canAnalyze'
-  | 'availableScopes'
-  | 'selectedScope'
-  | 'selectedCatalogItemId'
-  | 'catalogItemOptions'
-  | 'onScopeChange'
-  | 'onCatalogItemChange'
-  | 'onRefreshSelected'
-  | 'onAnalyzeRaw'
->;
+import type { InsightsHeaderControlsProps } from './ui.types';
 
 function HeaderSelect({
   value,
