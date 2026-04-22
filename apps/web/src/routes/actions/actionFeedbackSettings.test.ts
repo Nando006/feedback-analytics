@@ -46,7 +46,7 @@ function createArgs(body: Record<string, string | undefined>): ActionFunctionArg
     request: createRequest(body),
     params: {},
     context: undefined,
-  };
+  } as unknown as ActionFunctionArgs;
 }
 
 describe('ActionFeedbackSettings', () => {
@@ -61,8 +61,7 @@ describe('ActionFeedbackSettings', () => {
       }),
     );
 
-    expect(response.status).toBe(400);
-    expect(await response.json()).toEqual({ error: 'Ação inválida.' });
+    expect(response).toEqual({ error: 'Ação inválida.' });
     expect(mockUpdateCollectingDataEnterprise).not.toHaveBeenCalled();
   });
 
@@ -117,7 +116,12 @@ describe('ActionFeedbackSettings', () => {
       }),
     );
 
-    expect(response.status).toBe(200);
+    expect(response).toEqual({
+      ok: true,
+      scope: 'COMPANY',
+      message: 'Perguntas da empresa atualizadas com sucesso.',
+      collecting: expect.any(Object),
+    });
     expect(mockUpdateCollectingDataEnterprise).toHaveBeenCalledWith({
       company_feedback_questions: companyQuestions,
     });
@@ -150,7 +154,7 @@ describe('ActionFeedbackSettings', () => {
       }),
     );
 
-    expect(response.status).toBe(400);
+    expect(response).toEqual({ error: 'Perguntas da empresa inválidas. Verifique o preenchimento.' });
     expect(mockUpdateCollectingDataEnterprise).not.toHaveBeenCalled();
   });
 
@@ -179,7 +183,12 @@ describe('ActionFeedbackSettings', () => {
       }),
     );
 
-    expect(response.status).toBe(200);
+    expect(response).toEqual({
+      ok: true,
+      scope: 'PRODUCT',
+      message: 'Catálogo de produtos atualizado com sucesso.',
+      collecting: expect.any(Object),
+    });
     expect(mockUpdateCollectingDataEnterprise).toHaveBeenCalledWith({
       uses_company_products: true,
       catalog_products: [
@@ -208,8 +217,7 @@ describe('ActionFeedbackSettings', () => {
       }),
     );
 
-    expect(response.status).toBe(400);
-    expect(await response.json()).toEqual({
+    expect(response).toEqual({
       error: 'Itens de catálogo inválidos.',
     });
     expect(mockUpdateCollectingDataEnterprise).not.toHaveBeenCalled();
