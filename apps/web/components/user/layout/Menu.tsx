@@ -75,7 +75,7 @@ function Item({ item, pendingPathname = '' }: { item: MenuItem; pendingPathname?
           data-pending-current={isPendingActive ? 'true' : undefined}
           className="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-(--text-secondary) transition-colors hover:bg-(--seventh-color) hover:text-(--text-primary)">
           <FaBuffer className="h-3.5 w-3.5 text-(--text-tertiary)" />
-          <span>{item.label}</span>
+          <span className="pr-2">{item.label}</span>
         </NavLink>
       </li>
     );

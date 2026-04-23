@@ -1,61 +1,77 @@
 import type { MenuItem } from 'components/user/layout/ui.types';
 
 export const menuData: MenuItem[] = [
-  { label: 'Perfil', to: '/user/profile' },
-  { label: 'Dashboard', to: '/user/dashboard' },
   {
-    label: 'QR Codes',
+    label: "Perfil",
     children: [
-      { label: 'Empresa', to: '/user/qrcode/enterprise' },
-      { label: 'Produtos', to: '/user/qrcode/products' },
-      { label: 'Serviços', to: '/user/qrcode/services' },
-      { label: 'Áreas/Departamentos', to: '/user/qrcode/departments' },
+      { label: "Ver Perfil", to: "/user/profile" },
+      { label: "Editar Perfil", to: "/user/edit/profile" },
     ],
   },
   {
-    label: 'Feedbacks',
+    label: "Seu Negócio",
     children: [
-      { label: 'Recebidos', to: '/user/feedbacks/all' },
       {
-        label: 'Analisados',
+        label: "Editar Informações",
+        to: "/user/edit/collecting-data-enterprise",
+      },
+    ]
+  },
+  { label: "Dashboard", to: "/user/dashboard" },
+  {
+    label: "Canais de Coleta",
+    children: [
+      {
+        label: "QR Code",
+        children: [
+          { label: "Empresa", to: "/user/qrcode/enterprise" },
+          { label: "Produtos", to: "/user/qrcode/products" },
+          { label: "Serviços", to: "/user/qrcode/services" },
+          { label: "Departamentos", to: "/user/qrcode/departments" },
+        ],
+      },
+    ],
+  },
+  {
+    label: "Feedbacks",
+    children: [
+      { label: "Recebidos", to: "/user/feedbacks/all" },
+      {
+        label: "Analisados",
         children: [
           {
-            label: 'Todos',
-            to: '/user/feedbacks/analytics/all',
+            label: "Todos",
+            to: "/user/feedbacks/analytics/all",
           },
           {
-            label: 'Positivos',
-            to: '/user/feedbacks/analytics/positive',
+            label: "Positivos",
+            to: "/user/feedbacks/analytics/positive",
           },
           {
-            label: 'Negativos',
-            to: '/user/feedbacks/analytics/negative',
+            label: "Negativos",
+            to: "/user/feedbacks/analytics/negative",
           },
         ],
       },
     ],
   },
   {
-    label: 'Insigths',
+    label: "Insigths",
     children: [
-      { label: 'Relatórios', to: '/user/insights/reports' },
-      { label: 'Emocional', to: '/user/insights/emotional' },
-      { label: 'Estatísticas', to: '/user/insights/statistics' },
+      { label: "Relatórios", to: "/user/insights/reports" },
+      { label: "Emocional", to: "/user/insights/emotional" },
+      { label: "Estatísticas", to: "/user/insights/statistics" },
     ],
   },
   {
-    label: 'Editar',
+    label: "Editar",
     children: [
-      { label: 'Perfil', to: '/user/edit/profile' },
+      
       {
-        label: 'Informações',
-        to: '/user/edit/collecting-data-enterprise',
+        label: "Feedbacks",
+        to: "/user/edit/feedback-settings",
       },
-      {
-        label: 'Feedbacks',
-        to: '/user/edit/feedback-settings',
-      },
-      { label: 'Clientes', to: '/user/edit/customers' },
+      { label: "Clientes", to: "/user/edit/customers" },
     ],
   },
 ];

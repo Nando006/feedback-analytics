@@ -1,9 +1,10 @@
-import Header from 'components/user/pages/profile/editUser/header';
+
 import Information from 'components/user/pages/profile/editUser/information';
 import { useNavigation, useRouteLoaderData } from 'react-router-dom';
 import type { AuthUser } from 'lib/interfaces/entities/auth-user.entity';
 import type { Enterprise } from 'lib/interfaces/entities/enterprise.entity';
 import type { CollectingDataEnterprise } from 'lib/interfaces/entities/enterprise.entity';
+import Header from 'components/user/pages/profile/editUser/header';
 
 export default function EditProfile() {
   const navigation = useNavigation();
@@ -13,18 +14,6 @@ export default function EditProfile() {
     collecting: CollectingDataEnterprise | null;
   };
 
-  // Debug logs para verificar dados
-  console.log('=== DEBUG EditProfile ===');
-  console.log('User object:', JSON.stringify(user, null, 2));
-  console.log('Enterprise object:', JSON.stringify(enterprise, null, 2));
-  console.log('User metadata:', JSON.stringify(user.user_metadata, null, 2));
-  console.log('Full name sources:', {
-    userMetadata: user.user_metadata?.full_name,
-    userMetadataType: typeof user.user_metadata?.full_name,
-    enterprise: enterprise.full_name,
-    enterpriseType: typeof enterprise.full_name,
-  });
-
   const fullName = user.user_metadata?.full_name || enterprise.full_name || '';
   const email = user.email || '';
   const phone = user.phone || '';
@@ -32,18 +21,12 @@ export default function EditProfile() {
     navigation.state === 'submitting' &&
     navigation.formAction?.includes('/user/edit/profile');
 
-  console.log('Final values being passed:', {
-    fullName,
-    fullNameType: typeof fullName,
-    email,
-    emailType: typeof email,
-    phone,
-    phoneType: typeof phone,
-  });
-
   return (
     <div className="font-work-sans space-y-8 pb-12">
-      <Header />
+      <Header
+        enterprise={enterprise}
+        user={user}
+      />
 
       <div className="relative px-4 space-y-8">
         <Information

@@ -1,17 +1,20 @@
-import CardSimple from 'components/user/shared/cards/cardSimple';
-import { FaBuilding, FaShieldHalved, FaUser } from 'react-icons/fa6';
-import { Link } from 'react-router-dom';
-
-export default function Header() {
+import { Link } from "react-router-dom";
+import type { EnterpriseAndUser } from "lib/interfaces/entities/enterprise-and-user.entity";
+import Avatar from "components/user/shared/avatar";
+import CardSimple from "components/user/shared/cards/cardSimple";
+import { FaShieldHalved, FaUser } from "react-icons/fa6";
+export default function Header({ enterprise, user }: EnterpriseAndUser) {
   return (
     <CardSimple type="header">
       <div className="font-work-sans">
         <div className="text-center">
+          <Avatar />
           <h1 className="font-montserrat text-4xl font-bold tracking-tight text-(--text-primary) mb-3">
-            Configurações do Perfil
+            {enterprise.full_name ?? user.email ?? "-"}
           </h1>
           <p className="text-(--text-secondary) text-lg max-w-2xl mx-auto leading-relaxed">
-            Edite suas informações pessoais com facilidade. Clique em qualquer campo para modificá-lo.
+            Edite suas informações pessoais com facilidade. Clique em qualquer
+            campo para modificá-lo.
           </p>
         </div>
 
@@ -36,13 +39,6 @@ export default function Header() {
             >
               <FaUser aria-hidden="true" />
               Ver perfil
-            </Link>
-            <Link
-              to="/user/edit/collecting-data-enterprise"
-              className="btn-primary font-poppins flex items-center gap-2 px-4 py-2 text-sm hover:scale-105 transition-transform"
-            >
-              <FaBuilding aria-hidden="true" />
-              Dados da empresa
             </Link>
           </div>
         </div>
