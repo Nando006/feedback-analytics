@@ -1,14 +1,40 @@
 import type { CollectingDataEnterprise } from 'lib/interfaces/entities/enterprise.entity';
-import { useCallback } from 'react';
+import { useCallback, useState, type ChangeEvent } from 'react';
 import { Form, useRouteLoaderData } from 'react-router-dom';
-import FieldCompanyObjective from './fields/fieldCompanyObjective';
-import FieldAnalyticsGoal from './fields/fieldAnalyticsGoal';
-import FieldBusinessSummary from './fields/fieldBusinessSummary';
+import FieldUsesCompanyProducts from '../editCollectingData/fields/fieldUsesCompanyProducts';
 
-export default function FormCollectingDataEnterprise() {
+export default function FormTypesFeedback() {
   const { collecting } = useRouteLoaderData('user') as {
     collecting: CollectingDataEnterprise | null;
   };
+
+  const [usesCompanyProducts, setUsesCompanyProducts] = useState(
+    collecting?.uses_company_products ?? false,
+  );
+  const [usesCompanyServices, setUsesCompanyServices] = useState(
+    collecting?.uses_company_services ?? false,
+  );
+  const [usesCompanyDepartments, setUsesCompanyDepartments] = useState(
+    collecting?.uses_company_departments ?? false,
+  );
+
+  const handleToggle = useCallback((event: ChangeEvent<HTMLInputElement>) => {
+    const { name, checked } = event.target;
+
+    if (name === 'uses_company_products') {
+      setUsesCompanyProducts(checked);
+      return;
+    }
+
+    if (name === 'uses_company_services') {
+      setUsesCompanyServices(checked);
+      return;
+    }
+
+    if (name === 'uses_company_departments') {
+      setUsesCompanyDepartments(checked);
+    }
+  }, []);
 
   const handleSubmit = useCallback(() => {
     if (document.activeElement instanceof HTMLElement) {
@@ -21,20 +47,12 @@ export default function FormCollectingDataEnterprise() {
       method="post"
       onSubmit={handleSubmit}
       className="space-y-8">
-      <div className="space-y-6">
-        <FieldCompanyObjective
-          defaultValue={collecting?.company_objective ?? ''}
-        />
-
-        <FieldAnalyticsGoal
-          defaultValue={collecting?.analytics_goal ?? ''}
-        />
-
-        <FieldBusinessSummary
-          defaultValue={collecting?.business_summary ?? ''}
-        />
-
-      </div>
+      <FieldUsesCompanyProducts
+        usesCompanyProducts={usesCompanyProducts}
+        usesCompanyServices={usesCompanyServices}
+        usesCompanyDepartments={usesCompanyDepartments}
+        onChange={handleToggle}
+      />
 
       <div className="flex items-center justify-end gap-4 border-t border-(--quaternary-color)/10 pt-6">
         <button
@@ -56,7 +74,6 @@ export default function FormCollectingDataEnterprise() {
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round">
-            {/* <polyline points="9 18 15 12 9 6"></polyline> */}
           </svg>
         </button>
       </div>

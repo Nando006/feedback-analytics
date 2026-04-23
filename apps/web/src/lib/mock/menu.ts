@@ -3,10 +3,7 @@ import type { MenuItem } from 'components/user/layout/ui.types';
 export const menuData: MenuItem[] = [
   {
     label: "Perfil",
-    children: [
-      { label: "Ver Perfil", to: "/user/profile" },
-      { label: "Editar Perfil", to: "/user/edit/profile" },
-    ],
+    to: "/user/profile",
   },
   {
     label: "Seu Negócio",
@@ -71,7 +68,6 @@ export const menuData: MenuItem[] = [
         label: "Feedbacks",
         to: "/user/edit/feedback-settings",
       },
-      { label: "Clientes", to: "/user/edit/customers" },
     ],
   },
 ];
