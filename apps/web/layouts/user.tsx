@@ -10,9 +10,6 @@ import Sidebar from 'components/user/layout/Sidebar';
 import DashboardSkeleton from 'components/user/pages/dashboard/DashboardSkeleton';
 import ProfileSkeleton from 'components/user/pages/profile/ProfileSkeleton';
 import QrCodeEnterpriseSkeleton from 'components/user/pages/qrcodes/QrCodeEnterpriseSkeleton';
-import QrCodeProductsSkeleton from 'components/user/pages/qrcodes/QrCodeProductsSkeleton';
-import QrCodeServicesSkeleton from 'components/user/pages/qrcodes/QrCodeServicesSkeleton';
-import QrCodeDepartmentsSkeleton from 'components/user/pages/qrcodes/QrCodeDepartmentsSkeleton';
 import FeedbacksAllSkeleton from 'components/user/pages/feedbacks/FeedbacksAllSkeleton';
 import FeedbackDetailsSkeleton from 'components/user/pages/feedbacks/FeedbackDetailsSkeleton';
 import FeedbacksAnalyticsAllSkeleton from 'components/user/pages/feedbacks/analytics/FeedbacksAnalyticsAllSkeleton';
@@ -178,9 +175,6 @@ export default function User() {
     if (pendingPathname === '/user/profile') return <ProfileSkeleton />;
 
     if (pendingPathname === '/user/qrcode/enterprise') return <QrCodeEnterpriseSkeleton />;
-    if (pendingPathname === '/user/qrcode/products') return <QrCodeProductsSkeleton />;
-    if (pendingPathname === '/user/qrcode/services') return <QrCodeServicesSkeleton />;
-    if (pendingPathname === '/user/qrcode/departments') return <QrCodeDepartmentsSkeleton />;
 
     if (pendingPathname === '/user/feedbacks/all') return <FeedbacksAllSkeleton />;
     if (pendingPathname.startsWith('/user/feedbacks/') && !pendingPathname.startsWith('/user/feedbacks/analytics/')) {
@@ -305,7 +299,7 @@ export default function User() {
               enterpriseName={enterprise.full_name ?? undefined}
               onSignOut={handleSignOut}
               isSigningOut={isSigningOut}
-              collecting={collecting}
+
             />
           )}
 

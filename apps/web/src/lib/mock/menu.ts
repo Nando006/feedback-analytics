@@ -7,20 +7,6 @@ export const menuData: MenuItem[] = [
   },
   { label: "Dashboard", to: "/user/dashboard" },
   {
-    label: "Canais de Coleta",
-    children: [
-      {
-        label: "QR Code",
-        children: [
-          { label: "Empresa", to: "/user/qrcode/enterprise" },
-          { label: "Produtos", to: "/user/qrcode/products" },
-          { label: "Serviços", to: "/user/qrcode/services" },
-          { label: "Departamentos", to: "/user/qrcode/departments" },
-        ],
-      },
-    ],
-  },
-  {
     label: "Feedbacks",
     children: [
       { label: "Recebidos", to: "/user/feedbacks/all" },

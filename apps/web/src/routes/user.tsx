@@ -16,7 +16,6 @@ import { LoaderFeedbacksAnalyticsPositive } from "src/routes/loaders/loaderFeedb
 import { LoaderFeedbacksAnalyticsNegative } from "src/routes/loaders/loaderFeedbacksAnalyticsNegative";
 import { LoaderFeedbacksInsightsStatistics } from "src/routes/loaders/loaderFeedbacksInsightsStatistics";
 import { LoaderFeedbacksInsightsEmotional } from "./loaders/loaderFeedbacksInsightsEmotional";
-
 import { LoaderQrCodeEnterprise } from "./loaders/loaderQrCodeEnterprise";
 import Profile from "pages/user/profile";
 import FeedbacksInsightsEmotional from "pages/user/feedbacks/insights/feedbacksInsightsEmotional";
@@ -24,9 +23,6 @@ import FeedbacksInsightsStatistics from "pages/user/feedbacks/insights/feedbacks
 import FeedbacksAnalyticsPositive from "pages/user/feedbacks/analytics/feedbacksAnalyticsPositive";
 import FeedbacksAnalyticsNegative from "pages/user/feedbacks/analytics/feedbacksAnalyticsNegative";
 import FeedbacksAnalyticsAll from "pages/user/feedbacks/analytics/feedbacksAnalyticsAll";
-import QRCodeProducts from "pages/user/qrcodes/qrcodeProducts";
-import QRCodeServices from "pages/user/qrcodes/qrcodeServices";
-import QRCodeDepartments from "pages/user/qrcodes/qrcodeDepartments";
 import { ActionCollectingData } from "./actions/actionCollectingData";
 import { ActionTypesFeedback } from "./actions/actionTypesFeedback";
 import { ActionFeedbackInsightsReport } from "./actions/actionFeedbackInsightsReport";
@@ -40,26 +36,12 @@ import { ActionQrCodeEnterprise } from "./actions/actionQrCodeEnterprise";
 import { ActionQrCodeCatalog } from "./actions/actionQrCodeCatalog";
 import { ActionLogout } from "./actions/actionLogout";
 import { ActionFeedbackSettings } from "./actions/actionFeedbackSettings";
+import { ActionFeedbackCatalogPage } from "./actions/actionFeedbackCatalogPage";
 import { LoaderQrCodeProducts } from "./loaders/loaderQrCodeProducts";
 import { LoaderQrCodeServices } from "./loaders/loaderQrCodeServices";
 import { LoaderQrCodeDepartments } from "./loaders/loaderQrCodeDepartments";
 
 function shouldRevalidateUserRoute({
-  formMethod,
-  formAction,
-  defaultShouldRevalidate,
-}: ShouldRevalidateFunctionArgs) {
-  const isPost = String(formMethod ?? "").toUpperCase() === "POST";
-  const actionPath = String(formAction ?? "");
-
-  if (isPost && actionPath.includes("/user/qrcode/")) {
-    return false;
-  }
-
-  return defaultShouldRevalidate;
-}
-
-function shouldRevalidateQrRoute({
   formMethod,
   formAction,
   defaultShouldRevalidate,
@@ -90,38 +72,28 @@ export function RouteUser() {
         loader={LoaderUserDashboard}
         element={<Dashboard />}
       />
-      <Route 
-        path="profile" 
-        element={<Profile />} 
-        action={ActionProfile} 
+      <Route
+        path="profile"
+        element={<Profile />}
+        action={ActionProfile}
       />
       <Route
         path="qrcode/enterprise"
         loader={LoaderQrCodeEnterprise}
         action={ActionQrCodeEnterprise}
-        shouldRevalidate={shouldRevalidateQrRoute}
         element={<QRCodeEnterprise />}
       />
       <Route
         path="qrcode/products"
-        loader={LoaderQrCodeProducts}
         action={ActionQrCodeCatalog}
-        shouldRevalidate={shouldRevalidateQrRoute}
-        element={<QRCodeProducts />}
       />
       <Route
         path="qrcode/services"
-        loader={LoaderQrCodeServices}
         action={ActionQrCodeCatalog}
-        shouldRevalidate={shouldRevalidateQrRoute}
-        element={<QRCodeServices />}
       />
       <Route
         path="qrcode/departments"
-        loader={LoaderQrCodeDepartments}
         action={ActionQrCodeCatalog}
-        shouldRevalidate={shouldRevalidateQrRoute}
-        element={<QRCodeDepartments />}
       />
       <Route
         path="feedbacks/all"
@@ -176,18 +148,21 @@ export function RouteUser() {
       />
       <Route
         path="edit/feedback-products"
+        loader={LoaderQrCodeProducts}
         element={<EditFeedbackProducts />}
-        action={ActionFeedbackSettings}
+        action={ActionFeedbackCatalogPage}
       />
       <Route
         path="edit/feedback-services"
+        loader={LoaderQrCodeServices}
         element={<EditFeedbackServices />}
-        action={ActionFeedbackSettings}
+        action={ActionFeedbackCatalogPage}
       />
       <Route
         path="edit/feedback-departments"
+        loader={LoaderQrCodeDepartments}
         element={<EditFeedbackDepartments />}
-        action={ActionFeedbackSettings}
+        action={ActionFeedbackCatalogPage}
       />
     </Route>
   );

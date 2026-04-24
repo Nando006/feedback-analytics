@@ -19,47 +19,20 @@ function isPendingMatch(targetPath: string | undefined, pendingPathname: string)
   return pending === target || pending.startsWith(`${target}/`);
 }
 
-function filterMenu(
-  items: MenuItem[],
-  options: {
-    allowProducts: boolean;
-    allowServices: boolean;
-    allowDepartments: boolean;
-  },
-): MenuItem[] {
-  return items
-    .map((item) => {
-      if (!options.allowProducts && item.to === '/user/qrcode/products') {
-        return null;
+function filterMenu(items: MenuItem[]): MenuItem[] {
+  return items.map((item) => {
+    if (Array.isArray(item.children) && item.children.length > 0) {
+      const children = filterMenu(item.children);
+      const filteredItem: MenuItem = { ...item };
+      if (children.length > 0) {
+        filteredItem.children = children;
+      } else {
+        delete filteredItem.children;
       }
-
-      if (!options.allowServices && item.to === '/user/qrcode/services') {
-        return null;
-      }
-
-      if (
-        !options.allowDepartments &&
-        item.to === '/user/qrcode/departments'
-      ) {
-        return null;
-      }
-
-      if (Array.isArray(item.children) && item.children.length > 0) {
-        const children = filterMenu(item.children, options);
-        const filteredItem: MenuItem = { ...item };
-
-        if (children.length > 0) {
-          filteredItem.children = children;
-        } else {
-          delete filteredItem.children;
-        }
-
-        return filteredItem;
-      }
-
-      return { ...item };
-    })
-    .filter((item): item is MenuItem => item !== null);
+      return filteredItem;
+    }
+    return { ...item };
+  });
 }
 
 function Item({ item, pendingPathname = '' }: { item: MenuItem; pendingPathname?: string }) {
@@ -106,22 +79,8 @@ function Item({ item, pendingPathname = '' }: { item: MenuItem; pendingPathname?
   );
 }
 
-export default function Menu({
-  usesCompanyProducts,
-  usesCompanyServices,
-  usesCompanyDepartments,
-  pendingPathname,
-}: {
-  usesCompanyProducts: boolean;
-  usesCompanyServices: boolean;
-  usesCompanyDepartments: boolean;
-  pendingPathname?: string;
-}) {
-  const items = filterMenu(menuData, {
-    allowProducts: usesCompanyProducts,
-    allowServices: usesCompanyServices,
-    allowDepartments: usesCompanyDepartments,
-  });
+export default function Menu({ pendingPathname }: { pendingPathname?: string }) {
+  const items = filterMenu(menuData);
 
   const hasPendingNavigation = Boolean(pendingPathname);
 

@@ -11,7 +11,6 @@ export default function Sidebar({
   enterpriseName,
   onSignOut,
   isSigningOut = false,
-  collecting,
 }: SidebarProps) {
   if (isOverlayMode) {
     return (
@@ -26,14 +25,7 @@ export default function Sidebar({
       >
         <div className="flex h-full flex-col">
           <div className="flex-1">
-            <Menu
-              usesCompanyProducts={Boolean(collecting?.uses_company_products)}
-              usesCompanyServices={Boolean(collecting?.uses_company_services)}
-              usesCompanyDepartments={Boolean(
-                collecting?.uses_company_departments,
-              )}
-              pendingPathname={pendingPathname}
-            />
+            <Menu pendingPathname={pendingPathname} />
           </div>
           <div className="mt-2 border-t border-(--quaternary-color)/10">
             <div className="flex justify-end">
@@ -57,14 +49,7 @@ export default function Sidebar({
     >
       <div className="flex h-full flex-col">
         <div className="flex-1">
-          <Menu
-            usesCompanyProducts={Boolean(collecting?.uses_company_products)}
-            usesCompanyServices={Boolean(collecting?.uses_company_services)}
-            usesCompanyDepartments={Boolean(
-              collecting?.uses_company_departments,
-            )}
-            pendingPathname={pendingPathname}
-          />
+          <Menu pendingPathname={pendingPathname} />
         </div>
         <div className="mt-2 border-t border-(--quaternary-color)/10">
           <div className="flex justify-end">

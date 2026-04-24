@@ -17,7 +17,7 @@ export default function EditCustomer() {
         </div>
       </CardSimple>
 
-      <CardSimple disableGlass>
+      <CardSimple>
         <div className="rounded-xl border border-dashed border-(--quaternary-color)/14 bg-(--seventh-color) px-5 py-8 text-center">
           <p className="text-sm font-medium text-(--text-primary)">
             A tela de clientes ainda não foi implementada.
