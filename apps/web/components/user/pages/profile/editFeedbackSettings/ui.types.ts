@@ -1,1 +1,1 @@
-export type FeedbackTab = 'COMPANY' | 'PRODUCT' | 'SERVICE' | 'DEPARTMENT';
+export type FeedbackTab = 'PRODUCT' | 'SERVICE' | 'DEPARTMENT';

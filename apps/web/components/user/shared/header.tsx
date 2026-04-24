@@ -22,23 +22,21 @@ export default function Header({ enterprise, user, description, nextLink, nextLa
             {enterprise.full_name ?? user.email ?? "-"}
           </h1>
           <p className="text-(--text-secondary) text-lg max-w-2xl mx-auto leading-relaxed">
-            {description || ''}
+            {description || ""}
           </p>
         </div>
 
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-(--quaternary-color)/20">
           {/* Indicadores de status */}
-          {
-            prevLink && prevLabelLink ?
-            (
-              <Link
-                to={prevLink}
-                className="btn-ghost font-poppins flex items-center gap-2 px-4 py-2 text-sm hover:scale-105 transition-transform"
-              >
-                <FaUser aria-hidden="true" />
-                {prevLabelLink}
-              </Link>
-            ):(
+          {prevLink && prevLabelLink ? (
+            <Link
+              to={prevLink}
+              className="btn-ghost font-poppins flex items-center gap-2 px-4 py-2 text-sm hover:scale-105 transition-transform"
+            >
+              <FaUser aria-hidden="true" />
+              {prevLabelLink}
+            </Link>
+          ) : (
             <div className="flex flex-wrap gap-3">
               <div className="flex items-center gap-2 px-4 py-2 bg-(--positive)/10 text-(--positive) rounded-full text-sm font-medium">
                 <div className="w-2 h-2 bg-(--positive) rounded-full animate-pulse"></div>
@@ -49,16 +47,27 @@ export default function Header({ enterprise, user, description, nextLink, nextLa
                 Verificado
               </div>
             </div>
-            )
-          }
-          {nextLink && nextLabelLink && (
+          )}
+          {nextLink && nextLabelLink ? (
             <Link
               to={nextLink}
               className="btn-ghost font-poppins flex items-center gap-2 px-4 py-2 text-sm hover:scale-105 transition-transform"
             >
               <FaUser aria-hidden="true" />
               {nextLabelLink}
-          </Link>)}
+            </Link>
+          ) : (
+            <div className="flex flex-wrap gap-3">
+              <div className="flex items-center gap-2 px-4 py-2 bg-(--positive)/10 text-(--positive) rounded-full text-sm font-medium">
+                <div className="w-2 h-2 bg-(--positive) rounded-full animate-pulse"></div>
+                Conta ativa
+              </div>
+              <div className="flex items-center gap-2 px-4 py-2 bg-(--primary-color)/10 text-(--primary-color) rounded-full text-sm font-medium">
+                <FaShieldHalved aria-hidden="true" />
+                Verificado
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </CardSimple>

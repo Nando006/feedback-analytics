@@ -1,6 +1,8 @@
 import type { CollectingDataEnterprise } from 'lib/interfaces/entities/enterprise.entity';
-import { useCallback } from 'react';
-import { Form, useRouteLoaderData } from 'react-router-dom';
+import type { ActionData } from 'lib/interfaces/contracts/action-data.contract';
+import { useCallback, useEffect } from 'react';
+import { useFetcher, useRouteLoaderData } from 'react-router-dom';
+import { useToast } from 'components/public/forms/messages/useToast';
 import FieldCompanyObjective from './fields/fieldCompanyObjective';
 import FieldAnalyticsGoal from './fields/fieldAnalyticsGoal';
 import FieldBusinessSummary from './fields/fieldBusinessSummary';
@@ -10,6 +12,21 @@ export default function FormCollectingDataEnterprise() {
     collecting: CollectingDataEnterprise | null;
   };
 
+  const fetcher = useFetcher();
+  const toast = useToast();
+  const isSaving = fetcher.state === 'submitting';
+
+  useEffect(() => {
+    const data = fetcher.data as ActionData | undefined;
+    if (!data) return;
+
+    if (data.ok) {
+      toast.success('Configurações salvas!', 'Dados de coleta atualizados com sucesso');
+    } else {
+      toast.error('Erro ao salvar configurações', data.message || 'Tente novamente em instantes');
+    }
+  }, [fetcher.data, toast]);
+
   const handleSubmit = useCallback(() => {
     if (document.activeElement instanceof HTMLElement) {
       document.activeElement.blur();
@@ -17,49 +34,38 @@ export default function FormCollectingDataEnterprise() {
   }, []);
 
   return (
-    <Form
-      method="post"
-      onSubmit={handleSubmit}
-      className="space-y-8">
-      <div className="space-y-6">
-        <FieldCompanyObjective
-          defaultValue={collecting?.company_objective ?? ''}
-        />
+    <div className="relative w-full">
+      <fetcher.Form
+        method="post"
+        action="/user/edit/collecting-data-enterprise"
+        onSubmit={handleSubmit}
+        className="space-y-8"
+      >
+        <div className="space-y-6">
+          <FieldCompanyObjective
+            defaultValue={collecting?.company_objective ?? ""}
+          />
 
-        <FieldAnalyticsGoal
-          defaultValue={collecting?.analytics_goal ?? ''}
-        />
+          <FieldAnalyticsGoal defaultValue={collecting?.analytics_goal ?? ""} />
 
-        <FieldBusinessSummary
-          defaultValue={collecting?.business_summary ?? ''}
-        />
+          <FieldBusinessSummary
+            defaultValue={collecting?.business_summary ?? ""}
+          />
+        </div>
 
-      </div>
+        <div className="flex items-center justify-end gap-4">
+          <button
+            type="submit"
+            className="btn-ghost font-poppins group flex items-center gap-2 px-8 py-3"
+          >
+            <span>Salvar Alterações</span>
+          </button>
+        </div>
+      </fetcher.Form>
 
-      <div className="flex items-center justify-end gap-4 border-t border-(--quaternary-color)/10 pt-6">
-        <button
-          type="button"
-          onClick={() => window.history.back()}
-          className="btn-ghost font-poppins px-6 py-3 text-sm">
-          Cancelar
-        </button>
-        <button
-          type="submit"
-          className="btn-primary font-poppins group flex items-center gap-2 px-8 py-3">
-          <span>Salvar Alterações</span>
-          <svg
-            className="h-4 w-4 transition-transform group-hover:translate-x-1"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round">
-            {/* <polyline points="9 18 15 12 9 6"></polyline> */}
-          </svg>
-        </button>
-      </div>
-    </Form>
+      {isSaving && (
+        <div className="pointer-events-none absolute inset-0 rounded-xl border border-(--quaternary-color)/12 bg-(--bg-primary)/35 backdrop-blur-[1px]" />
+      )}
+    </div>
   );
 }

@@ -191,7 +191,6 @@ export async function submitQrCodeFeedbackController(req: Request, res: Response
   }
 
   if (trackedDevice?.is_blocked) {
-    console.log('Dispositivo bloqueado');
     return sendTypedError(res, 403, API_ERROR_DEVICE_BLOCKED);
   }
 
@@ -214,7 +213,6 @@ export async function submitQrCodeFeedbackController(req: Request, res: Response
     }
 
     if (duplicateFeedback) {
-      console.log('Dispositivo já enviou feedback hoje neste QR Code');
       return sendTypedError(res, 409, API_ERROR_DEVICE_ALREADY_SUBMITTED);
     }
   }

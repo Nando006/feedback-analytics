@@ -30,9 +30,11 @@ import QRCodeDepartments from "pages/user/qrcodes/qrcodeDepartments";
 import { ActionCollectingData } from "./actions/actionCollectingData";
 import { ActionTypesFeedback } from "./actions/actionTypesFeedback";
 import { ActionFeedbackInsightsReport } from "./actions/actionFeedbackInsightsReport";
-import EditCollectingData from "pages/user/edit/editCollectingData";
 import EditTypeFeedbacks from "pages/user/edit/editTypeFeedbacks";
 import EditFeedbackSettings from "pages/user/edit/editFeedbackSettings";
+import EditFeedbackProducts from "pages/user/edit/editFeedbackProducts";
+import EditFeedbackServices from "pages/user/edit/editFeedbackServices";
+import EditFeedbackDepartments from "pages/user/edit/editFeedbackDepartments";
 import { ActionProfile } from "./actions/actionProfile";
 import { ActionQrCodeEnterprise } from "./actions/actionQrCodeEnterprise";
 import { ActionQrCodeCatalog } from "./actions/actionQrCodeCatalog";
@@ -160,7 +162,6 @@ export function RouteUser() {
       <Route path="edit/customers" element={<EditCustomer />} />
       <Route
         path="edit/collecting-data-enterprise"
-        element={<EditCollectingData />}
         action={ActionCollectingData}
       />
       <Route
@@ -171,6 +172,21 @@ export function RouteUser() {
       <Route
         path="edit/feedback-settings"
         element={<EditFeedbackSettings />}
+        action={ActionFeedbackSettings}
+      />
+      <Route
+        path="edit/feedback-products"
+        element={<EditFeedbackProducts />}
+        action={ActionFeedbackSettings}
+      />
+      <Route
+        path="edit/feedback-services"
+        element={<EditFeedbackServices />}
+        action={ActionFeedbackSettings}
+      />
+      <Route
+        path="edit/feedback-departments"
+        element={<EditFeedbackDepartments />}
         action={ActionFeedbackSettings}
       />
     </Route>

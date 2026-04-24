@@ -1,54 +1,51 @@
 import { useEffect } from 'react';
 import { useActionData, useNavigation, useRouteLoaderData } from 'react-router-dom';
 import CardSimple from 'components/user/shared/cards/cardSimple';
-import FormCollectingDataEnterprise from 'components/user/pages/profile/editCollectingData/formCollectingDataEnterprise';
+import FormFeedbackCatalog from 'components/user/pages/profile/editFeedbackSettings/formFeedbackCatalog';
 import { useToast } from 'components/public/forms/messages/useToast';
 import type { ActionData } from 'lib/interfaces/contracts/action-data.contract';
 import Header from 'components/user/shared/header';
 import type { AuthUser } from 'lib/interfaces/entities/auth-user.entity';
-import type { CollectingDataEnterprise, Enterprise } from 'lib/interfaces/entities/enterprise.entity';
+import type { Enterprise } from 'lib/interfaces/entities/enterprise.entity';
 
-export default function EditCollectingData() {
+export default function EditFeedbackServices() {
   const toast = useToast();
   const navigation = useNavigation();
   const actionData = useActionData() as ActionData | undefined;
-  const isSavingCollecting =
+  const isSaving =
     navigation.state === 'submitting' &&
-    navigation.formAction?.includes('/user/edit/collecting-data-enterprise');
-  const { user, enterprise } = useRouteLoaderData("user") as {
-    user: AuthUser["user"];
+    navigation.formAction?.includes('/user/edit/feedback-services');
+  const { user, enterprise } = useRouteLoaderData('user') as {
+    user: AuthUser['user'];
     enterprise: Enterprise;
-    collecting: CollectingDataEnterprise | null;
   };
 
   useEffect(() => {
     if (!actionData) return;
-    
     if (actionData.ok) {
-      toast.success('Configurações salvas!', 'Dados de coleta atualizados com sucesso');
+      toast.success('Catálogo salvo!', actionData.message || 'Catálogo de serviços atualizado com sucesso.');
     } else {
-      toast.error('Erro ao salvar configurações', actionData.message || 'Tente novamente em instantes');
+      toast.error('Erro ao salvar', actionData.message || 'Tente novamente em instantes.');
     }
   }, [actionData, toast]);
 
   return (
     <div className="font-work-sans space-y-6 pb-8">
       <Header
-        description="Defina o contexto estratégico da empresa. Perguntas dinâmicas e catálogos por tipo ficam na configuração de feedbacks."
-        nextLink="/user/edit/feedback-settings"
-        nextLabelLink="Configurações de Feedbacks"
-        prevLabelLink='Ver perfil'
-        prevLink='/user/profile'
+        description="Gerencie o catálogo de serviços para coleta de feedback por item."
+        prevLink="/user/edit/types-feedback"
+        prevLabelLink="Tipos de Feedback"
+        nextLink="/user/qrcode/services"
+        nextLabelLink="QR Codes de Serviços"
         enterprise={enterprise}
         user={user}
       />
 
-      <CardSimple disableGlass>
+      <CardSimple>
         <div className="relative w-full">
+          <FormFeedbackCatalog catalogType="SERVICE" />
 
-          <FormCollectingDataEnterprise />
-
-          {isSavingCollecting && (
+          {isSaving && (
             <div className="pointer-events-none absolute inset-0 rounded-xl border border-(--quaternary-color)/12 bg-(--bg-primary)/35 backdrop-blur-[1px]" />
           )}
         </div>
