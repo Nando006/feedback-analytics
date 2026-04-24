@@ -5,6 +5,10 @@ export const menuData: MenuItem[] = [
     label: "Perfil",
     to: "/user/profile",
   },
+  {
+    label: "Catálogo Premium",
+    to: "/user/edit/feedback-settings",
+  },
   { label: "Dashboard", to: "/user/dashboard" },
   {
     label: "Feedbacks",
@@ -35,16 +39,6 @@ export const menuData: MenuItem[] = [
       { label: "Relatórios", to: "/user/insights/reports" },
       { label: "Emocional", to: "/user/insights/emotional" },
       { label: "Estatísticas", to: "/user/insights/statistics" },
-    ],
-  },
-  {
-    label: "Editar",
-    children: [
-      
-      {
-        label: "Feedbacks",
-        to: "/user/edit/feedback-settings",
-      },
     ],
   },
 ];

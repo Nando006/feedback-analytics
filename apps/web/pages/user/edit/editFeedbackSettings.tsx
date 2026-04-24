@@ -1,9 +1,13 @@
 import { Link, useRouteLoaderData } from 'react-router-dom';
 import CardSimple from 'components/user/shared/cards/cardSimple';
-import type { CollectingDataEnterprise } from 'lib/interfaces/entities/enterprise.entity';
+import type { CollectingDataEnterprise, Enterprise } from 'lib/interfaces/entities/enterprise.entity';
+import Header from 'components/user/shared/header';
+import type { AuthUser } from 'lib/interfaces/entities/auth-user.entity';
 
 export default function EditFeedbackSettings() {
-  const { collecting } = useRouteLoaderData('user') as {
+  const { enterprise, collecting, user } = useRouteLoaderData('user') as {
+    enterprise: Enterprise;
+    user: AuthUser['user'];
     collecting: CollectingDataEnterprise | null;
   };
 
@@ -37,21 +41,13 @@ export default function EditFeedbackSettings() {
 
   return (
     <div className="font-work-sans space-y-6 pb-8">
-      <CardSimple type="header">
-        <div className="flex w-full flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div>
-            <h1 className="font-montserrat text-2xl font-semibold tracking-tight text-(--text-primary) md:text-3xl">
-              Configuração de Feedbacks
-            </h1>
-            <p className="mt-1 text-sm text-(--text-tertiary)">
-              Selecione o tipo de catálogo que deseja configurar.
-            </p>
-          </div>
-          <Link to="/user/edit/types-feedback" className="btn-ghost font-poppins">
-            Tipos de Feedback
-          </Link>
-        </div>
-      </CardSimple>
+      <Header 
+        enterprise={enterprise}
+        user={user}
+        nextLabelLink='Ative os Catálogos Premiums'
+        nextLink='/user/edit/types-feedback'
+        description="Configure os catálogos de feedbacks para produtos, serviços e departamentos. Ative os tipos de feedback para liberar as opções."
+      />
 
       <div className="space-y-3">
         {links.map((link) => (
