@@ -138,7 +138,7 @@ export default function FormTypesFeedback() {
                   <div className="flex items-center gap-2">
                     <h3 className="text-sm font-semibold text-(--text-primary)">{type.title}</h3>
                     {savedEnabled && (
-                      <span className="rounded-full bg-(--positive)/15 px-2 py-0.5 text-[10px] font-semibold text-(--positive)">
+                      <span className="rounded-full bg-(--positive)/15 px-2 py-0.5 text-xs font-semibold text-(--positive)">
                         Ativo
                       </span>
                     )}
@@ -146,7 +146,7 @@ export default function FormTypesFeedback() {
                   <p className="mt-1 text-xs leading-relaxed text-(--text-tertiary)">
                     {type.description}
                   </p>
-                  <p className={`mt-1.5 text-[11px] font-medium transition-colors duration-200 ${
+                  <p className={`mt-1.5 text-xs font-medium transition-colors duration-200 ${
                     localEnabled ? 'text-(--primary-color)' : 'text-(--text-tertiary)'
                   }`}>
                     {type.benefit}
@@ -204,7 +204,7 @@ export default function FormTypesFeedback() {
                     <polyline points="9 18 15 12 9 6" />
                   </svg>
                 </Link>
-                <span className="text-[11px] text-(--text-tertiary)">
+                <span className="text-xs text-(--text-tertiary)">
                   Configure o catálogo e as perguntas por item
                 </span>
               </div>
@@ -212,7 +212,7 @@ export default function FormTypesFeedback() {
 
             {/* Hint quando ativado mas ainda não salvo */}
             {localEnabled && !savedEnabled && (
-              <p className="mt-3 text-[11px] text-amber-400/80">
+              <p className="mt-3 text-xs text-amber-400/80">
                 Salve para confirmar a ativação e liberar as configurações deste tipo.
               </p>
             )}

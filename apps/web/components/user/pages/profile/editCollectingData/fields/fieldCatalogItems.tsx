@@ -176,12 +176,12 @@ const QuestionAccordion = memo(function QuestionAccordion({
           </svg>
           <span className="text-xs font-semibold text-(--text-secondary)">Perguntas de avaliação</span>
           {activeCount > 0 && (
-            <span className="rounded-full bg-(--primary-color)/15 px-1.5 py-0.5 text-[10px] font-semibold text-(--primary-color)">
+            <span className="rounded-full bg-(--primary-color)/15 px-1.5 py-0.5 text-xs font-semibold text-(--primary-color)">
               {activeCount} ativa{activeCount !== 1 ? 's' : ''}
             </span>
           )}
         </div>
-        <span className="text-[11px] text-(--text-tertiary)">{isOpen ? 'Fechar' : 'Configurar'}</span>
+        <span className="text-xs text-(--text-tertiary)">{isOpen ? 'Fechar' : 'Configurar'}</span>
       </button>
 
       <div className={`grid transition-all duration-300 ${isOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}>
@@ -192,36 +192,36 @@ const QuestionAccordion = memo(function QuestionAccordion({
               return (
                 <div key={`q-${q.question_order}`} className="rounded-lg border border-(--quaternary-color)/8 bg-(--bg-tertiary) p-2.5">
                   <div className="mb-1.5 flex items-center justify-between gap-2">
-                    <span className="text-[11px] font-semibold text-(--text-primary)">Pergunta {q.question_order}</span>
-                    <label className="flex cursor-pointer items-center gap-1.5 text-[11px] text-(--text-tertiary)">
-                      <input type="checkbox" checked={q.is_active} onChange={(e) => setQuestionActive(qi, e.target.checked)} className="h-3 w-3 accent-(--primary-color)" />
+                    <span className="text-xs font-semibold text-(--text-primary)">Pergunta {q.question_order}</span>
+                    <label className="flex cursor-pointer items-center gap-1.5 text-xs text-(--text-tertiary)">
+                      <input type="checkbox" checked={q.is_active} onChange={(e) => setQuestionActive(qi, e.target.checked)} className="h-3.5 w-3.5 accent-(--primary-color)" />
                       Ativa
                     </label>
                   </div>
                   <input
                     type="text" value={q.question_text} onChange={(e) => setQuestionText(qi, e.target.value)}
                     maxLength={MAX_LEN} placeholder="Escreva a pergunta principal (20–150 caracteres)"
-                    className="w-full rounded-md border border-(--quaternary-color)/10 bg-(--bg-secondary) px-2.5 py-1.5 text-xs text-(--text-primary) outline-none transition-colors placeholder:text-(--text-tertiary) focus:border-(--primary-color)"
+                    className="w-full rounded-md border border-(--quaternary-color)/10 bg-(--bg-secondary) px-2.5 py-2 text-sm text-(--text-primary) outline-none transition-colors placeholder:text-(--text-tertiary) focus:border-(--primary-color)"
                   />
-                  <p className="mt-0.5 text-[10px] text-(--text-tertiary)">{qLen}/{MAX_LEN}</p>
+                  <p className="mt-0.5 text-xs text-(--text-tertiary)">{qLen}/{MAX_LEN}</p>
                   <div className="mt-2 space-y-1.5 pl-2">
                     {(q.subquestions ?? []).map((s, si) => {
                       const sLen = String(s.subquestion_text ?? '').trim().length;
                       return (
                         <div key={`s-${q.question_order}-${s.subquestion_order}`} className="rounded-md border border-(--quaternary-color)/8 bg-(--bg-secondary) p-2">
                           <div className="mb-1 flex items-center justify-between gap-2">
-                            <span className="text-[10px] text-(--text-tertiary)">Sub {q.question_order}.{s.subquestion_order}</span>
-                            <label className="flex cursor-pointer items-center gap-1 text-[10px] text-(--text-tertiary)">
-                              <input type="checkbox" checked={s.is_active} onChange={(e) => setSubActive(qi, si, e.target.checked)} className="h-3 w-3 accent-(--primary-color)" />
+                            <span className="text-xs text-(--text-tertiary)">Sub {q.question_order}.{s.subquestion_order}</span>
+                            <label className="flex cursor-pointer items-center gap-1 text-xs text-(--text-tertiary)">
+                              <input type="checkbox" checked={s.is_active} onChange={(e) => setSubActive(qi, si, e.target.checked)} className="h-3.5 w-3.5 accent-(--primary-color)" />
                               Ativa
                             </label>
                           </div>
                           <input
                             type="text" value={s.subquestion_text} onChange={(e) => setSubText(qi, si, e.target.value)}
                             maxLength={MAX_LEN} placeholder="Subpergunta (20–150 caracteres)"
-                            className="w-full rounded border border-(--quaternary-color)/8 bg-(--bg-tertiary) px-2 py-1 text-[11px] text-(--text-primary) outline-none transition-colors placeholder:text-(--text-tertiary) focus:border-(--primary-color)"
+                            className="w-full rounded border border-(--quaternary-color)/8 bg-(--bg-tertiary) px-2.5 py-1.5 text-sm text-(--text-primary) outline-none transition-colors placeholder:text-(--text-tertiary) focus:border-(--primary-color)"
                           />
-                          <p className="mt-0.5 text-[9px] text-(--text-tertiary)">{sLen}/{MAX_LEN}</p>
+                          <p className="mt-0.5 text-xs text-(--text-tertiary)">{sLen}/{MAX_LEN}</p>
                         </div>
                       );
                     })}
@@ -231,12 +231,12 @@ const QuestionAccordion = memo(function QuestionAccordion({
             })}
 
             {error && (
-              <p className="rounded-md border border-rose-500/20 bg-rose-500/8 px-2.5 py-1.5 text-[11px] text-rose-300">{error}</p>
+              <p className="rounded-md border border-rose-500/20 bg-rose-500/8 px-2.5 py-2 text-xs text-rose-300">{error}</p>
             )}
 
             <button
               type="button" onClick={handleSave} disabled={isSaving}
-              className="w-full rounded-lg border border-(--primary-color)/30 bg-(--primary-color)/10 px-3 py-2 text-xs font-semibold text-(--primary-color) transition-all hover:bg-(--primary-color)/20 disabled:cursor-not-allowed disabled:opacity-60"
+              className="w-full rounded-lg border border-(--primary-color)/30 bg-(--primary-color)/10 px-3 py-2.5 text-sm font-semibold text-(--primary-color) transition-all hover:bg-(--primary-color)/20 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {isSaving ? 'Salvando...' : 'Salvar perguntas deste item'}
             </button>
@@ -306,7 +306,7 @@ const QrSection = memo(function QrSection({ qrItem, isPending, onToggle }: QrSec
           </svg>
           <span className="text-xs font-semibold text-(--text-secondary)">QR Code</span>
         </div>
-        <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+        <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${
           qrItem.active
             ? 'bg-emerald-500/10 text-emerald-400'
             : 'bg-(--seventh-color) text-(--text-tertiary)'
@@ -321,7 +321,7 @@ const QrSection = memo(function QrSection({ qrItem, isPending, onToggle }: QrSec
           <>
             <QrPreviewImage src={qrCodeUrl} alt={`QR Code de ${qrItem.name}`} />
             {feedbackUrl && (
-              <p className="break-all rounded-md border border-(--quaternary-color)/8 bg-(--bg-tertiary) px-2.5 py-1.5 text-[10px] leading-relaxed text-(--text-tertiary)">
+              <p className="break-all rounded-md border border-(--quaternary-color)/8 bg-(--bg-tertiary) px-2.5 py-2 text-xs leading-relaxed text-(--text-tertiary)">
                 {feedbackUrl}
               </p>
             )}
@@ -336,7 +336,7 @@ const QrSection = memo(function QrSection({ qrItem, isPending, onToggle }: QrSec
           type="button"
           onClick={() => onToggle(qrItem.catalog_item_id, qrItem.active)}
           disabled={isPending}
-          className={`w-full rounded-lg border px-3 py-2 text-xs font-semibold font-poppins transition-all disabled:cursor-not-allowed disabled:opacity-60 ${
+          className={`w-full rounded-lg border px-3 py-2.5 text-sm font-semibold font-poppins transition-all disabled:cursor-not-allowed disabled:opacity-60 ${
             qrItem.active
               ? 'border-rose-500/25 bg-rose-500/8 text-rose-300 hover:bg-rose-500/15'
               : 'border-(--primary-color)/40 bg-(--primary-color)/10 text-(--primary-color) hover:bg-(--primary-color)/20'
@@ -433,7 +433,7 @@ const CatalogItemRow = memo(function CatalogItemRow({
       )}
 
       {item.id == null && (
-        <p className="mt-3 text-[11px] text-(--text-tertiary)">
+        <p className="mt-3 text-xs text-(--text-tertiary)">
           Salve o catálogo para configurar as perguntas e o QR Code deste item.
         </p>
       )}
