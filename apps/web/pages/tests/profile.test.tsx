@@ -1,27 +1,38 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { useRouteLoaderData } from 'react-router-dom';
+import { useNavigation, useRouteLoaderData } from 'react-router-dom';
 import Profile from '../user/profile';
 
+vi.mock('react-router-dom', async (importActual) => {
+  const actual = await importActual<typeof import('react-router-dom')>('react-router-dom');
+
+  return {
+    ...actual,
+    useNavigation: vi.fn(),
+    useRouteLoaderData: vi.fn(),
+  };
+});
+
 // Mock dos componentes filhos
-vi.mock('components/user/pages/profile/info', () => ({
+vi.mock('components/user/pages/profile/editUser/information', () => ({
   default: ({
-    enterprise,
-    collecting,
+    defaultFullName,
+    defaultEmail,
+    defaultPhone,
   }: {
-    enterprise?: { name?: string };
-    collecting?: { id?: string } | null;
+    defaultFullName?: string;
+    defaultEmail?: string;
+    defaultPhone?: string;
   }) => (
     <div data-testid="profile-info">
-      <div data-testid="enterprise-name">{enterprise?.name}</div>
-      <div data-testid="collecting-data">
-        {collecting ? 'Has collecting data' : 'No collecting data'}
-      </div>
+      <div data-testid="enterprise-name">{defaultFullName}</div>
+      <div data-testid="profile-email">{defaultEmail}</div>
+      <div data-testid="profile-phone">{defaultPhone}</div>
     </div>
   ),
 }));
 
-vi.mock('components/user/pages/profile/header', () => ({
+vi.mock('components/user/shared/header', () => ({
   default: ({
     enterprise,
     user,
@@ -36,8 +47,17 @@ vi.mock('components/user/pages/profile/header', () => ({
   ),
 }));
 
-// Mock do useRouteLoaderData
+vi.mock('components/user/pages/profile/editCollectingData/formCollectingDataEnterprise', () => ({
+  default: () => <div data-testid="form-collecting-data-enterprise">FormCollectingDataEnterprise</div>,
+}));
+
+vi.mock('components/user/pages/profile/questionsDinamic/questionDinamicEnterprise', () => ({
+  default: () => <div data-testid="question-dinamic-enterprise">QuestionDinamicEnterprise</div>,
+}));
+
+// Mock do useRouteLoaderData e useNavigation
 const mockUseRouteLoaderData = vi.mocked(useRouteLoaderData);
+const mockUseNavigation = vi.mocked(useNavigation);
 
 describe('Profile Page', () => {
   const mockData = {
@@ -50,6 +70,9 @@ describe('Profile Page', () => {
       id: '1',
       name: 'João Silva',
       email: 'joao@teste.com',
+      user_metadata: {
+        full_name: 'João Silva',
+      },
     },
     collecting: {
       id: '1',
@@ -59,6 +82,16 @@ describe('Profile Page', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    mockUseNavigation.mockReturnValue({
+      state: 'idle',
+      location: undefined,
+      formMethod: undefined,
+      formAction: undefined,
+      formEncType: undefined,
+      formData: undefined,
+      json: undefined,
+      text: undefined,
+    } as unknown as ReturnType<typeof useNavigation>);
   });
 
   it('deve renderizar os componentes principais com dados válidos', () => {
@@ -87,10 +120,10 @@ describe('Profile Page', () => {
     render(<Profile />);
 
     expect(screen.getByTestId('enterprise-name')).toHaveTextContent(
-      'Empresa Teste',
+      'João Silva',
     );
-    expect(screen.getByTestId('collecting-data')).toHaveTextContent(
-      'Has collecting data',
+    expect(screen.getByTestId('profile-email')).toHaveTextContent(
+      'joao@teste.com',
     );
   });
 
@@ -104,8 +137,8 @@ describe('Profile Page', () => {
 
     render(<Profile />);
 
-    expect(screen.getByTestId('collecting-data')).toHaveTextContent(
-      'No collecting data',
+    expect(screen.getByTestId('enterprise-name')).toHaveTextContent(
+      'João Silva',
     );
   });
 
@@ -128,7 +161,7 @@ describe('Profile Page', () => {
 
   it('deve lidar com dados incompletos', () => {
     const incompleteData = {
-      enterprise: { name: 'Empresa Parcial' },
+      enterprise: { name: 'Empresa Parcial', full_name: 'Empresa Parcial' },
       user: { name: 'Usuário Parcial' },
       collecting: null,
     };
