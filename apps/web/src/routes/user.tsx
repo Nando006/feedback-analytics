@@ -1,70 +1,55 @@
-import ErrorPage from 'components/user/shared/handling/errorPage';
-import type { ShouldRevalidateFunctionArgs } from 'react-router-dom';
-import Dashboard from 'pages/user/dashboard';
-import EditCustomer from 'pages/user/edit/editCustomers';
-import EditUser from 'pages/user/edit/editProfile';
-import FeedbacksAll from 'pages/user/feedbacks/feedbacksAll';
-import Feedbacks from 'pages/user/feedbacks/feedbacks';
-import QRCodeEnterprise from 'pages/user/qrcodes/qrcodeEnterprise';
-import FeedbacksInsightsReport from 'pages/user/feedbacks/insights/feedbackInsightsReport';
-import LayoutUser from 'layouts/user';
-import { Route } from 'react-router-dom';
-import { LoaderUserProtected } from 'src/routes/loaders/loaderUserProtected';
-import { LoaderUserDashboard } from 'src/routes/loaders/loaderUserDashboard';
-import { LoaderFeedbacksAll } from 'src/routes/loaders/loaderFeedbacksAll';
-import { LoaderFeedbacksAnalyticsAll } from 'src/routes/loaders/loaderFeedbacksAnalyticsAll';
-import { LoaderFeedbacksAnalyticsPositive } from 'src/routes/loaders/loaderFeedbacksAnalyticsPositive';
-import { LoaderFeedbacksAnalyticsNegative } from 'src/routes/loaders/loaderFeedbacksAnalyticsNegative';
-import { LoaderFeedbacksInsightsStatistics } from 'src/routes/loaders/loaderFeedbacksInsightsStatistics';
-import { LoaderFeedbacksInsightsEmotional } from './loaders/loaderFeedbacksInsightsEmotional';
-
-import { LoaderQrCodeEnterprise } from './loaders/loaderQrCodeEnterprise';
-import Profile from 'pages/user/profile';
-import FeedbacksInsightsEmotional from 'pages/user/feedbacks/insights/feedbacksInsightsEmotional';
-import FeedbacksInsightsStatistics from 'pages/user/feedbacks/insights/feedbacksInsightsStatistics';
-import FeedbacksAnalyticsPositive from 'pages/user/feedbacks/analytics/feedbacksAnalyticsPositive';
-import FeedbacksAnalyticsNegative from 'pages/user/feedbacks/analytics/feedbacksAnalyticsNegative';
-import FeedbacksAnalyticsAll from 'pages/user/feedbacks/analytics/feedbacksAnalyticsAll';
-import QRCodeProducts from 'pages/user/qrcodes/qrcodeProducts';
-import QRCodeServices from 'pages/user/qrcodes/qrcodeServices';
-import QRCodeDepartments from 'pages/user/qrcodes/qrcodeDepartments';
-import { ActionCollectingData } from './actions/actionCollectingData';
-import { ActionFeedbackInsightsReport } from './actions/actionFeedbackInsightsReport';
-import EditCollectingData from 'pages/user/edit/editCollectingData';
-import EditFeedbackSettings from 'pages/user/edit/editFeedbackSettings';
-import { ActionProfile } from './actions/actionProfile';
-import { ActionQrCodeEnterprise } from './actions/actionQrCodeEnterprise';
-import { ActionQrCodeCatalog } from './actions/actionQrCodeCatalog';
-import { ActionLogout } from './actions/actionLogout';
-import { ActionFeedbackSettings } from './actions/actionFeedbackSettings';
-import { LoaderQrCodeProducts } from './loaders/loaderQrCodeProducts';
-import { LoaderQrCodeServices } from './loaders/loaderQrCodeServices';
-import { LoaderQrCodeDepartments } from './loaders/loaderQrCodeDepartments';
+import ErrorPage from "components/user/shared/handling/errorPage";
+import type { ShouldRevalidateFunctionArgs } from "react-router-dom";
+import Dashboard from "pages/user/dashboard";
+import EditCustomer from "pages/user/edit/editCustomers";
+import FeedbacksAll from "pages/user/feedbacks/feedbacksAll";
+import Feedbacks from "pages/user/feedbacks/feedbacks";
+import QRCodeEnterprise from "pages/user/qrcodes/qrcodeEnterprise";
+import FeedbacksInsightsReport from "pages/user/feedbacks/insights/feedbackInsightsReport";
+import LayoutUser from "layouts/user";
+import { Route } from "react-router-dom";
+import { LoaderUserProtected } from "src/routes/loaders/loaderUserProtected";
+import { LoaderUserDashboard } from "src/routes/loaders/loaderUserDashboard";
+import { LoaderFeedbacksAll } from "src/routes/loaders/loaderFeedbacksAll";
+import { LoaderFeedbacksAnalyticsAll } from "src/routes/loaders/loaderFeedbacksAnalyticsAll";
+import { LoaderFeedbacksAnalyticsPositive } from "src/routes/loaders/loaderFeedbacksAnalyticsPositive";
+import { LoaderFeedbacksAnalyticsNegative } from "src/routes/loaders/loaderFeedbacksAnalyticsNegative";
+import { LoaderFeedbacksInsightsStatistics } from "src/routes/loaders/loaderFeedbacksInsightsStatistics";
+import { LoaderFeedbacksInsightsEmotional } from "./loaders/loaderFeedbacksInsightsEmotional";
+import { LoaderQrCodeEnterprise } from "./loaders/loaderQrCodeEnterprise";
+import Profile from "pages/user/profile";
+import FeedbacksInsightsEmotional from "pages/user/feedbacks/insights/feedbacksInsightsEmotional";
+import FeedbacksInsightsStatistics from "pages/user/feedbacks/insights/feedbacksInsightsStatistics";
+import FeedbacksAnalyticsPositive from "pages/user/feedbacks/analytics/feedbacksAnalyticsPositive";
+import FeedbacksAnalyticsNegative from "pages/user/feedbacks/analytics/feedbacksAnalyticsNegative";
+import FeedbacksAnalyticsAll from "pages/user/feedbacks/analytics/feedbacksAnalyticsAll";
+import { ActionCollectingData } from "./actions/actionCollectingData";
+import { ActionTypesFeedback } from "./actions/actionTypesFeedback";
+import { ActionFeedbackInsightsReport } from "./actions/actionFeedbackInsightsReport";
+import EditTypeFeedbacks from "pages/user/edit/editTypeFeedbacks";
+import EditFeedbackSettings from "pages/user/edit/editFeedbackSettings";
+import EditFeedbackProducts from "pages/user/edit/editFeedbackProducts";
+import EditFeedbackServices from "pages/user/edit/editFeedbackServices";
+import EditFeedbackDepartments from "pages/user/edit/editFeedbackDepartments";
+import { ActionProfile } from "./actions/actionProfile";
+import { ActionQrCodeEnterprise } from "./actions/actionQrCodeEnterprise";
+import { ActionQrCodeCatalog } from "./actions/actionQrCodeCatalog";
+import { ActionLogout } from "./actions/actionLogout";
+import { ActionFeedbackSettings } from "./actions/actionFeedbackSettings";
+import { ActionFeedbackCatalogPage } from "./actions/actionFeedbackCatalogPage";
+import { LoaderQrCodeProducts } from "./loaders/loaderQrCodeProducts";
+import { LoaderQrCodeServices } from "./loaders/loaderQrCodeServices";
+import { LoaderQrCodeDepartments } from "./loaders/loaderQrCodeDepartments";
 
 function shouldRevalidateUserRoute({
   formMethod,
   formAction,
   defaultShouldRevalidate,
 }: ShouldRevalidateFunctionArgs) {
-  const isPost = String(formMethod ?? '').toUpperCase() === 'POST';
-  const actionPath = String(formAction ?? '');
+  const isPost = String(formMethod ?? "").toUpperCase() === "POST";
+  const actionPath = String(formAction ?? "");
 
-  if (isPost && actionPath.includes('/user/qrcode/')) {
-    return false;
-  }
-
-  return defaultShouldRevalidate;
-}
-
-function shouldRevalidateQrRoute({
-  formMethod,
-  formAction,
-  defaultShouldRevalidate,
-}: ShouldRevalidateFunctionArgs) {
-  const isPost = String(formMethod ?? '').toUpperCase() === 'POST';
-  const actionPath = String(formAction ?? '');
-
-  if (isPost && actionPath.includes('/user/qrcode/')) {
+  if (isPost && actionPath.includes("/user/qrcode/")) {
     return false;
   }
 
@@ -80,7 +65,8 @@ export function RouteUser() {
       element={<LayoutUser />}
       loader={LoaderUserProtected}
       shouldRevalidate={shouldRevalidateUserRoute}
-      action={ActionLogout}>
+      action={ActionLogout}
+    >
       <Route
         path="dashboard"
         loader={LoaderUserDashboard}
@@ -89,44 +75,32 @@ export function RouteUser() {
       <Route
         path="profile"
         element={<Profile />}
+        action={ActionProfile}
       />
       <Route
         path="qrcode/enterprise"
         loader={LoaderQrCodeEnterprise}
         action={ActionQrCodeEnterprise}
-        shouldRevalidate={shouldRevalidateQrRoute}
         element={<QRCodeEnterprise />}
       />
       <Route
         path="qrcode/products"
-        loader={LoaderQrCodeProducts}
         action={ActionQrCodeCatalog}
-        shouldRevalidate={shouldRevalidateQrRoute}
-        element={<QRCodeProducts />}
       />
       <Route
         path="qrcode/services"
-        loader={LoaderQrCodeServices}
         action={ActionQrCodeCatalog}
-        shouldRevalidate={shouldRevalidateQrRoute}
-        element={<QRCodeServices />}
       />
       <Route
         path="qrcode/departments"
-        loader={LoaderQrCodeDepartments}
         action={ActionQrCodeCatalog}
-        shouldRevalidate={shouldRevalidateQrRoute}
-        element={<QRCodeDepartments />}
       />
       <Route
         path="feedbacks/all"
         loader={LoaderFeedbacksAll}
         element={<FeedbacksAll />}
       />
-      <Route
-        path="feedbacks/:id"
-        element={<Feedbacks />}
-      />
+      <Route path="feedbacks/:id" element={<Feedbacks />} />
       <Route
         path="feedbacks/analytics/all"
         loader={LoaderFeedbacksAnalyticsAll}
@@ -157,24 +131,38 @@ export function RouteUser() {
         loader={LoaderFeedbacksInsightsStatistics}
         element={<FeedbacksInsightsStatistics />}
       />
-      <Route
-        path="edit/customers"
-        element={<EditCustomer />}
-      />
-      <Route
-        path="edit/profile"
-        element={<EditUser />}
-        action={ActionProfile}
-      />
+      <Route path="edit/customers" element={<EditCustomer />} />
       <Route
         path="edit/collecting-data-enterprise"
-        element={<EditCollectingData />}
         action={ActionCollectingData}
+      />
+      <Route
+        path="edit/types-feedback"
+        element={<EditTypeFeedbacks />}
+        action={ActionTypesFeedback}
       />
       <Route
         path="edit/feedback-settings"
         element={<EditFeedbackSettings />}
         action={ActionFeedbackSettings}
+      />
+      <Route
+        path="edit/feedback-products"
+        loader={LoaderQrCodeProducts}
+        element={<EditFeedbackProducts />}
+        action={ActionFeedbackCatalogPage}
+      />
+      <Route
+        path="edit/feedback-services"
+        loader={LoaderQrCodeServices}
+        element={<EditFeedbackServices />}
+        action={ActionFeedbackCatalogPage}
+      />
+      <Route
+        path="edit/feedback-departments"
+        loader={LoaderQrCodeDepartments}
+        element={<EditFeedbackDepartments />}
+        action={ActionFeedbackCatalogPage}
       />
     </Route>
   );

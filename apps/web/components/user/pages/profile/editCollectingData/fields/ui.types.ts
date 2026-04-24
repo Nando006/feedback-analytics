@@ -3,6 +3,8 @@ import type {
   CatalogItemInput,
   CompanyFeedbackQuestionInput,
 } from 'lib/interfaces/entities/enterprise.entity';
+import type { QrCodeCatalogLoadItem } from 'src/routes/load/loadQrCodeCatalog';
+import type { QrCatalogQuestionInput } from 'src/services/serviceCollectionPoints';
 
 /**
  * Props do campo de principais produtos/serviços.
@@ -23,6 +25,11 @@ export interface FieldCatalogItemsProps {
   emptyLabel: string;
   items: CatalogItemInput[];
   onChange: Dispatch<SetStateAction<CatalogItemInput[]>>;
+  qrItems?: QrCodeCatalogLoadItem[];
+  savingQuestionsItemId?: string | null;
+  onSaveQuestions?: (catalogItemId: string, questions: QrCatalogQuestionInput[]) => void;
+  togglePendingItemId?: string | null;
+  onToggle?: (catalogItemId: string, isActive: boolean) => void;
 }
 
 /**
@@ -38,6 +45,11 @@ export interface CatalogItemRowProps {
     field: 'name' | 'description',
     value: string,
   ) => void;
+  qrItem?: QrCodeCatalogLoadItem;
+  isSavingQuestions?: boolean;
+  onSaveQuestions?: (catalogItemId: string, questions: QrCatalogQuestionInput[]) => void;
+  isPendingToggle?: boolean;
+  onToggle?: (catalogItemId: string, isActive: boolean) => void;
 }
 
 /**
@@ -58,6 +70,18 @@ export interface FieldUsesCompanyProductsProps {
 export interface FieldCompanyFeedbackQuestionsProps {
   questions: CompanyFeedbackQuestionInput[];
   onChange: Dispatch<SetStateAction<CompanyFeedbackQuestionInput[]>>;
+}
+
+export interface QuestionAccordionProps {
+  qrItem: QrCodeCatalogLoadItem;
+  isSaving: boolean;
+  onSave: (catalogItemId: string, questions: QrCatalogQuestionInput[]) => void;
+}
+
+export interface QrSectionProps {
+  qrItem: QrCodeCatalogLoadItem;
+  isPending: boolean;
+  onToggle: (catalogItemId: string, isActive: boolean) => void;
 }
 
 /**

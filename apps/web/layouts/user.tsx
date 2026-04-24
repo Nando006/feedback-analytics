@@ -305,7 +305,7 @@ export default function User() {
               enterpriseName={enterprise.full_name ?? undefined}
               onSignOut={handleSignOut}
               isSigningOut={isSigningOut}
-              collecting={collecting}
+
             />
           )}
 

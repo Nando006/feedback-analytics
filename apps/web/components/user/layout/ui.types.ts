@@ -1,5 +1,3 @@
-import type { CollectingDataEnterprise } from 'lib/interfaces/entities/enterprise.entity';
-
 /**
  * Props do cabeçalho de layout do usuário autenticado.
  * Usado em: components/user/layout/Header.tsx.
@@ -35,5 +33,4 @@ export interface SidebarProps {
   enterpriseName?: string;
   onSignOut: () => void;
   isSigningOut?: boolean;
-  collecting: CollectingDataEnterprise | null;
 }
