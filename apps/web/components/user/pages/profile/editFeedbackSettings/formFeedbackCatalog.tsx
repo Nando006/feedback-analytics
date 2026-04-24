@@ -11,16 +11,10 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Form, useFetcher, useRouteLoaderData } from 'react-router-dom';
 import FieldCatalogItems from '../editCollectingData/fields/fieldCatalogItems';
 import { useToast } from 'components/public/forms/messages/useToast';
-import type { QrCodeCatalogLoadData, QrCodeCatalogLoadItem } from 'src/routes/load/loadQrCodeCatalog';
+import type { QrCodeCatalogLoadItem } from 'src/routes/load/loadQrCodeCatalog';
 import type { QrCatalogActionResponse } from 'components/user/pages/qrcodeCatalog/ui.types';
 import type { QrCatalogQuestionInput } from 'src/services/serviceCollectionPoints';
-
-export type CatalogType = 'PRODUCT' | 'SERVICE' | 'DEPARTMENT';
-
-interface FormFeedbackCatalogProps {
-  catalogType: CatalogType;
-  qrData?: QrCodeCatalogLoadData;
-}
+import type { FormFeedbackCatalogProps } from './ui.types';
 
 const CATALOG_CONFIG = {
   PRODUCT: {

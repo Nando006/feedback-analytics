@@ -1,18 +1,10 @@
 import { Link } from "react-router-dom";
-import type { EnterpriseAndUser } from "lib/interfaces/entities/enterprise-and-user.entity";
+import type { HeaderProps } from './ui.types';
 import Avatar from "components/user/shared/avatar";
 import CardSimple from "components/user/shared/cards/cardSimple";
 import { FaShieldHalved, FaUser } from "react-icons/fa6";
 
-type HeaderProps = {
-  nextLink?: string;
-  nextLabelLink?: string;
-  prevLink?: string;
-  prevLabelLink?: string;
-  description?: string;
-}
-
-export default function Header({ enterprise, user, description, nextLink, nextLabelLink, prevLink, prevLabelLink }: EnterpriseAndUser &  HeaderProps) {
+export default function Header({ enterprise, user, description, nextLink, nextLabelLink, prevLink, prevLabelLink }: HeaderProps) {
   return (
     <CardSimple type="header">
       <div className="font-work-sans">

@@ -1,5 +1,4 @@
 import { Link, useRouteLoaderData } from 'react-router-dom';
-import CardSimple from 'components/user/shared/cards/cardSimple';
 import type { CollectingDataEnterprise, Enterprise } from 'lib/interfaces/entities/enterprise.entity';
 import Header from 'components/user/shared/header';
 import type { AuthUser } from 'lib/interfaces/entities/auth-user.entity';

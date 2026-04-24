@@ -72,6 +72,18 @@ export interface FieldCompanyFeedbackQuestionsProps {
   onChange: Dispatch<SetStateAction<CompanyFeedbackQuestionInput[]>>;
 }
 
+export interface QuestionAccordionProps {
+  qrItem: QrCodeCatalogLoadItem;
+  isSaving: boolean;
+  onSave: (catalogItemId: string, questions: QrCatalogQuestionInput[]) => void;
+}
+
+export interface QrSectionProps {
+  qrItem: QrCodeCatalogLoadItem;
+  isPending: boolean;
+  onToggle: (catalogItemId: string, isActive: boolean) => void;
+}
+
 /**
  * Props do campo de resumo do negócio.
  * Usado em: components/user/pages/profile/editCollectingData/fields/fieldBusinessSummary.tsx.

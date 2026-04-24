@@ -2,7 +2,7 @@ import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouteLoaderData } from 'react-router-dom';
 import type { CatalogItemInput } from 'lib/interfaces/entities/enterprise.entity';
 import type { Enterprise } from 'lib/interfaces/entities/enterprise.entity';
-import type { CatalogItemRowProps, FieldCatalogItemsProps } from './ui.types';
+import type { CatalogItemRowProps, FieldCatalogItemsProps, QuestionAccordionProps, QrSectionProps } from './ui.types';
 import type { QrCatalogQuestionInput } from 'src/services/serviceCollectionPoints';
 import type { QrCodeCatalogLoadItem } from 'src/routes/load/loadQrCodeCatalog';
 import { getQrCodeUrl } from 'src/lib/utils/qrcode';
@@ -88,12 +88,6 @@ function validateQuestions(questions: QrCatalogQuestionInput[]): string | null {
 }
 
 /* ─────────────────── QuestionAccordion ─────────────────── */
-
-interface QuestionAccordionProps {
-  qrItem: QrCodeCatalogLoadItem;
-  isSaving: boolean;
-  onSave: (catalogItemId: string, questions: QrCatalogQuestionInput[]) => void;
-}
 
 const QuestionAccordion = memo(function QuestionAccordion({
   qrItem,
@@ -275,12 +269,6 @@ const QrPreviewImage = memo(function QrPreviewImage({ src, alt }: { src: string;
 });
 
 /* ─────────────────── QrSection ─────────────────── */
-
-interface QrSectionProps {
-  qrItem: QrCodeCatalogLoadItem;
-  isPending: boolean;
-  onToggle: (catalogItemId: string, isActive: boolean) => void;
-}
 
 const QrSection = memo(function QrSection({ qrItem, isPending, onToggle }: QrSectionProps) {
   const { enterprise } = useRouteLoaderData('user') as { enterprise: Enterprise };

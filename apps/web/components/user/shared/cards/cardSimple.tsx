@@ -1,13 +1,5 @@
-import type { ReactNode } from 'react';
+import type { CardSimpleProps } from './ui.types';
 import { useState } from 'react';
-
-type CardSimpleProps = {
-  children: ReactNode;
-  type?: 'header' | 'default' | 'accordion';
-  title?: string;
-  description?: string;
-  defaultOpen?: boolean;
-};
 
 export default function CardSimple({
   children,
