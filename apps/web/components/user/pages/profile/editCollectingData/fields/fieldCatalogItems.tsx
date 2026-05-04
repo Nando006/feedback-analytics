@@ -87,6 +87,30 @@ function validateQuestions(questions: QrCatalogQuestionInput[]): string | null {
   return null;
 }
 
+/* ─────────────────── question visibility helpers ─────────────────── */
+
+function computeVisibleQCount(questions: QrCatalogQuestionInput[]): number {
+  let count = 1;
+  for (let qi = 1; qi < questions.length; qi++) {
+    const q = questions[qi];
+    if (String(q.question_text ?? '').trim().length > 0 || q.is_active) count = qi + 1;
+  }
+  return count;
+}
+
+function computeVisibleSubCounts(questions: QrCatalogQuestionInput[]): [number, number, number] {
+  const counts: [number, number, number] = [0, 0, 0];
+  questions.forEach((q, qi) => {
+    if (qi >= 3) return;
+    let subCount = 0;
+    (q.subquestions ?? []).forEach((s, si) => {
+      if (String(s.subquestion_text ?? '').trim().length > 0 || s.is_active) subCount = si + 1;
+    });
+    counts[qi] = subCount;
+  });
+  return counts;
+}
+
 /* ─────────────────── QuestionAccordion ─────────────────── */
 
 const QuestionAccordion = memo(function QuestionAccordion({
@@ -99,9 +123,20 @@ const QuestionAccordion = memo(function QuestionAccordion({
     normalizeQuestions(qrItem.questions),
   );
   const [error, setError] = useState<string | null>(null);
+  const [visibleQCount, setVisibleQCount] = useState(() =>
+    computeVisibleQCount(normalizeQuestions(qrItem.questions)),
+  );
+  const [visibleSubCounts, setVisibleSubCounts] = useState<[number, number, number]>(() =>
+    computeVisibleSubCounts(normalizeQuestions(qrItem.questions)),
+  );
 
   useEffect(() => {
-    if (!isOpen) setDraft(normalizeQuestions(qrItem.questions));
+    if (!isOpen) {
+      const normalized = normalizeQuestions(qrItem.questions);
+      setDraft(normalized);
+      setVisibleQCount(computeVisibleQCount(normalized));
+      setVisibleSubCounts(computeVisibleSubCounts(normalized));
+    }
   }, [qrItem.questions, isOpen]);
 
   const setQuestionText = useCallback((qi: number, value: string) => {
@@ -128,6 +163,49 @@ const QuestionAccordion = memo(function QuestionAccordion({
       const subs = [...(next[qi].subquestions ?? [])];
       subs[si] = { ...subs[si], is_active: value };
       next[qi] = { ...next[qi], subquestions: subs };
+      return next;
+    });
+  }, []);
+
+  const addQuestion = useCallback(() => {
+    setVisibleQCount((v) => Math.min(v + 1, 3));
+  }, []);
+
+  const removeLastQuestion = useCallback((currentCount: number) => {
+    const qi = currentCount - 1;
+    setDraft((prev) => {
+      const next = [...prev];
+      next[qi] = createEmptyQuestion((qi + 1) as 1 | 2 | 3);
+      return next;
+    });
+    setVisibleSubCounts((prev) => {
+      const next = [...prev] as [number, number, number];
+      next[qi] = 0;
+      return next;
+    });
+    setVisibleQCount(qi);
+  }, []);
+
+  const addSub = useCallback((qi: number) => {
+    setVisibleSubCounts((prev) => {
+      const next = [...prev] as [number, number, number];
+      next[qi] = Math.min((next[qi] ?? 0) + 1, 3);
+      return next;
+    });
+  }, []);
+
+  const removeLastSub = useCallback((qi: number, currentSubs: number) => {
+    const si = currentSubs - 1;
+    setDraft((prev) => {
+      const next = [...prev];
+      const subs = [...(next[qi].subquestions ?? [])];
+      subs[si] = { ...subs[si], subquestion_text: '', is_active: false };
+      next[qi] = { ...next[qi], subquestions: subs };
+      return next;
+    });
+    setVisibleSubCounts((prev) => {
+      const next = [...prev] as [number, number, number];
+      next[qi] = si;
       return next;
     });
   }, []);
@@ -180,46 +258,144 @@ const QuestionAccordion = memo(function QuestionAccordion({
 
       <div className={`grid transition-all duration-300 ${isOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}>
         <div className="overflow-hidden">
-          <div className="space-y-2.5 border-t border-(--quaternary-color)/10 px-3 pb-3 pt-2.5">
-            {draft.map((q, qi) => {
+          <div className="space-y-2 border-t border-(--quaternary-color)/10 px-3 pb-3 pt-2.5">
+
+            {draft.slice(0, visibleQCount).map((q, qi) => {
               const qLen = String(q.question_text ?? '').trim().length;
+              const visibleSubs = visibleSubCounts[qi] ?? 0;
+              const isLastQ = qi === visibleQCount - 1;
+
               return (
-                <div key={`q-${q.question_order}`} className="rounded-lg border border-(--quaternary-color)/8 bg-(--bg-tertiary) p-2.5">
-                  <div className="mb-1.5 flex items-center justify-between gap-2">
-                    <span className="text-xs font-semibold text-(--text-primary)">Pergunta {q.question_order}</span>
-                    <label className="flex cursor-pointer items-center gap-1.5 text-xs text-(--text-tertiary)">
-                      <input type="checkbox" checked={q.is_active} onChange={(e) => setQuestionActive(qi, e.target.checked)} className="h-3.5 w-3.5 accent-(--primary-color)" />
-                      Ativa
-                    </label>
-                  </div>
-                  <input
-                    type="text" value={q.question_text} onChange={(e) => setQuestionText(qi, e.target.value)}
-                    maxLength={MAX_LEN} placeholder="Escreva a pergunta principal (20–150 caracteres)"
-                    className="w-full rounded-md border border-(--quaternary-color)/10 bg-(--bg-secondary) px-2.5 py-2 text-sm text-(--text-primary) outline-none transition-colors placeholder:text-(--text-tertiary) focus:border-(--primary-color)"
-                  />
-                  <p className="mt-0.5 text-xs text-(--text-tertiary)">{qLen}/{MAX_LEN}</p>
-                  <div className="mt-2 space-y-1.5 pl-2">
-                    {(q.subquestions ?? []).map((s, si) => {
-                      const sLen = String(s.subquestion_text ?? '').trim().length;
-                      return (
-                        <div key={`s-${q.question_order}-${s.subquestion_order}`} className="rounded-md border border-(--quaternary-color)/8 bg-(--bg-secondary) p-2">
-                          <div className="mb-1 flex items-center justify-between gap-2">
-                            <span className="text-xs text-(--text-tertiary)">Sub {q.question_order}.{s.subquestion_order}</span>
-                            <label className="flex cursor-pointer items-center gap-1 text-xs text-(--text-tertiary)">
-                              <input type="checkbox" checked={s.is_active} onChange={(e) => setSubActive(qi, si, e.target.checked)} className="h-3.5 w-3.5 accent-(--primary-color)" />
-                              Ativa
-                            </label>
-                          </div>
-                          <input
-                            type="text" value={s.subquestion_text} onChange={(e) => setSubText(qi, si, e.target.value)}
-                            maxLength={MAX_LEN} placeholder="Subpergunta (20–150 caracteres)"
-                            className="w-full rounded border border-(--quaternary-color)/8 bg-(--bg-tertiary) px-2.5 py-1.5 text-sm text-(--text-primary) outline-none transition-colors placeholder:text-(--text-tertiary) focus:border-(--primary-color)"
-                          />
-                          <p className="mt-0.5 text-xs text-(--text-tertiary)">{sLen}/{MAX_LEN}</p>
+                <div key={`q-${q.question_order}`} className="space-y-1.5">
+                  <div className="overflow-hidden rounded-xl border border-(--quaternary-color)/10">
+
+                    {/* Question header */}
+                    <div className="flex items-center gap-2 bg-(--bg-tertiary)/80 px-3 py-2">
+                      <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-(--primary-color)/20 text-[10px] font-bold text-(--primary-color)">
+                        {q.question_order}
+                      </div>
+                      <span className="flex-1 text-xs font-semibold text-(--text-secondary)">
+                        Pergunta {q.question_order}
+                      </span>
+                      {qi > 0 && isLastQ && (
+                        <button
+                          type="button"
+                          onClick={() => removeLastQuestion(visibleQCount)}
+                          className="mr-2 text-[10px] text-(--text-tertiary) transition-colors hover:text-rose-400"
+                        >
+                          remover
+                        </button>
+                      )}
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[10px] text-(--text-tertiary)">Ativa</span>
+                        <button
+                          type="button"
+                          role="switch"
+                          aria-checked={q.is_active}
+                          onClick={() => setQuestionActive(qi, !q.is_active)}
+                          className={`relative h-4 w-7 rounded-full transition-colors duration-200 focus:outline-none ${q.is_active ? 'bg-(--primary-color)' : 'bg-(--seventh-color)'}`}
+                        >
+                          <span className={`absolute top-0.5 h-3 w-3 rounded-full bg-white shadow-sm transition-transform duration-200 ${q.is_active ? 'translate-x-3.5' : 'translate-x-0.5'}`} />
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Question body */}
+                    <div className="bg-(--bg-secondary) px-3 pb-3 pt-2.5">
+                      <input
+                        type="text"
+                        value={q.question_text}
+                        onChange={(e) => setQuestionText(qi, e.target.value)}
+                        maxLength={MAX_LEN}
+                        placeholder="Escreva a pergunta principal (20–150 caracteres)"
+                        className="w-full rounded-lg border border-(--quaternary-color)/10 bg-(--bg-tertiary) px-2.5 py-2 text-sm text-(--text-primary) outline-none transition-colors placeholder:text-(--text-tertiary) focus:border-(--primary-color)"
+                      />
+                      <p className="mb-2.5 mt-0.5 text-right text-[10px] text-(--text-tertiary)">{qLen}/{MAX_LEN}</p>
+
+                      {/* Subquestions list */}
+                      {visibleSubs > 0 && (
+                        <div className="mb-2.5 space-y-2">
+                          <p className="text-[10px] font-semibold uppercase tracking-wider text-(--text-tertiary)">Subperguntas</p>
+                          {(q.subquestions ?? []).slice(0, visibleSubs).map((s, si) => {
+                            const sLen = String(s.subquestion_text ?? '').trim().length;
+                            const isLastSub = si === visibleSubs - 1;
+                            return (
+                              <div key={`s-${q.question_order}-${s.subquestion_order}`} className="flex items-start gap-2">
+                                <div className="mt-2.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-(--quaternary-color)/20 bg-(--bg-tertiary) text-[9px] text-(--text-tertiary)">
+                                  {si + 1}
+                                </div>
+                                <div className="flex-1 rounded-lg border border-(--quaternary-color)/8 bg-(--bg-tertiary) px-2.5 py-2">
+                                  <div className="mb-1.5 flex items-center gap-2">
+                                    <span className="text-[10px] text-(--text-tertiary)">{q.question_order}.{s.subquestion_order}</span>
+                                    {isLastSub && (
+                                      <button
+                                        type="button"
+                                        onClick={() => removeLastSub(qi, visibleSubs)}
+                                        className="text-[9px] text-(--text-tertiary) transition-colors hover:text-rose-400"
+                                      >
+                                        remover
+                                      </button>
+                                    )}
+                                    <div className="ml-auto flex items-center gap-1.5">
+                                      <span className="text-[10px] text-(--text-tertiary)">Ativa</span>
+                                      <button
+                                        type="button"
+                                        role="switch"
+                                        aria-checked={s.is_active}
+                                        onClick={() => setSubActive(qi, si, !s.is_active)}
+                                        className={`relative h-3.5 w-6 rounded-full transition-colors duration-200 focus:outline-none ${s.is_active ? 'bg-(--primary-color)' : 'bg-(--seventh-color)'}`}
+                                      >
+                                        <span className={`absolute top-0.5 h-2.5 w-2.5 rounded-full bg-white shadow-sm transition-transform duration-200 ${s.is_active ? 'translate-x-3' : 'translate-x-0.5'}`} />
+                                      </button>
+                                    </div>
+                                  </div>
+                                  <input
+                                    type="text"
+                                    value={s.subquestion_text}
+                                    onChange={(e) => setSubText(qi, si, e.target.value)}
+                                    maxLength={MAX_LEN}
+                                    placeholder={`Subpergunta ${q.question_order}.${s.subquestion_order} (20–150 caracteres)`}
+                                    className="w-full rounded-md border border-(--quaternary-color)/8 bg-(--bg-secondary) px-2 py-1.5 text-xs text-(--text-primary) outline-none transition-colors placeholder:text-(--text-tertiary) focus:border-(--primary-color)"
+                                  />
+                                  <p className="mt-0.5 text-right text-[10px] text-(--text-tertiary)">{sLen}/{MAX_LEN}</p>
+                                </div>
+                              </div>
+                            );
+                          })}
                         </div>
-                      );
-                    })}
+                      )}
+
+                      {/* Add subquestion */}
+                      {visibleSubs < 3 ? (
+                        <button
+                          type="button"
+                          onClick={() => addSub(qi)}
+                          className="flex items-center gap-1.5 text-[10px] text-(--primary-color) transition-opacity hover:opacity-75"
+                        >
+                          <span className="flex h-3.5 w-3.5 items-center justify-center rounded-full border border-(--primary-color)/50 text-xs leading-none">+</span>
+                          Adicionar subpergunta
+                          {visibleSubs > 0 && <span className="text-(--text-tertiary)">({visibleSubs}/3)</span>}
+                        </button>
+                      ) : (
+                        <p className="text-[10px] text-(--text-tertiary)">Limite de 3 subperguntas atingido</p>
+                      )}
+                    </div>
                   </div>
+
+                  {/* Add next question */}
+                  {isLastQ && visibleQCount < 3 && (
+                    <button
+                      type="button"
+                      onClick={addQuestion}
+                      className="flex w-full items-center justify-center gap-1.5 rounded-xl border border-dashed border-(--quaternary-color)/20 py-2 text-[10px] text-(--text-tertiary) transition-all hover:border-(--primary-color)/30 hover:text-(--primary-color)"
+                    >
+                      <span className="flex h-4 w-4 items-center justify-center rounded-full border border-current text-sm leading-none">+</span>
+                      Adicionar pergunta {visibleQCount + 1}
+                    </button>
+                  )}
+                  {isLastQ && visibleQCount === 3 && (
+                    <p className="text-center text-[10px] text-(--text-tertiary)">Limite de 3 perguntas atingido</p>
+                  )}
                 </div>
               );
             })}
@@ -229,7 +405,9 @@ const QuestionAccordion = memo(function QuestionAccordion({
             )}
 
             <button
-              type="button" onClick={handleSave} disabled={isSaving}
+              type="button"
+              onClick={handleSave}
+              disabled={isSaving}
               className="w-full rounded-lg border border-(--primary-color)/30 bg-(--primary-color)/10 px-3 py-2.5 text-sm font-semibold text-(--primary-color) transition-all hover:bg-(--primary-color)/20 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {isSaving ? 'Salvando...' : 'Salvar perguntas deste item'}
