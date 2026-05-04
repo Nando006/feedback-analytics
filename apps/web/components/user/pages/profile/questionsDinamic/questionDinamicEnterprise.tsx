@@ -154,6 +154,22 @@ function validateCompanyQuestions(questions: CompanyFeedbackQuestionInput[]) {
   return null;
 }
 
+function computeSubCounts(
+  questions: CompanyFeedbackQuestionInput[],
+): [number, number, number] {
+  const counts: [number, number, number] = [0, 0, 0];
+  questions.forEach((q, qi) => {
+    if (qi >= 3) return;
+    let subCount = 0;
+    (q.subquestions ?? []).forEach((s, si) => {
+      if (String(s.subquestion_text ?? "").trim().length > 0 || s.is_active)
+        subCount = si + 1;
+    });
+    counts[qi] = subCount;
+  });
+  return counts;
+}
+
 export default function QuestionDinamicEnterprise() {
   const { collecting } = useRouteLoaderData("user") as {
     collecting: CollectingDataEnterprise | null;
@@ -168,6 +184,13 @@ export default function QuestionDinamicEnterprise() {
     normalizeCompanyFeedbackQuestions(collecting?.company_feedback_questions),
   );
   const [companyError, setCompanyError] = useState<string | null>(null);
+  const [visibleSubCounts, setVisibleSubCounts] = useState<
+    [number, number, number]
+  >(() =>
+    computeSubCounts(
+      normalizeCompanyFeedbackQuestions(collecting?.company_feedback_questions),
+    ),
+  );
   const companyQuestionsInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
@@ -186,6 +209,66 @@ export default function QuestionDinamicEnterprise() {
       );
     }
   }, [fetcher.data, toast]);
+
+  const setQuestionActive = useCallback((qi: number, value: boolean) => {
+    setCompanyQuestions((prev) => {
+      const next = [...prev];
+      next[qi] = { ...next[qi], is_active: value };
+      return next;
+    });
+  }, []);
+
+  const setQuestionText = useCallback((qi: number, value: string) => {
+    setCompanyQuestions((prev) => {
+      const next = [...prev];
+      next[qi] = { ...next[qi], question_text: value };
+      return next;
+    });
+  }, []);
+
+  const setSubActive = useCallback((qi: number, si: number, value: boolean) => {
+    setCompanyQuestions((prev) => {
+      const next = [...prev];
+      const subs = [...(next[qi].subquestions ?? [])];
+      subs[si] = { ...subs[si], is_active: value };
+      next[qi] = { ...next[qi], subquestions: subs };
+      return next;
+    });
+  }, []);
+
+  const setSubText = useCallback((qi: number, si: number, value: string) => {
+    setCompanyQuestions((prev) => {
+      const next = [...prev];
+      const subs = [...(next[qi].subquestions ?? [])];
+      subs[si] = { ...subs[si], subquestion_text: value };
+      next[qi] = { ...next[qi], subquestions: subs };
+      return next;
+    });
+  }, []);
+
+  const addSub = useCallback((qi: number) => {
+    setVisibleSubCounts((prev) => {
+      const next = [...prev] as [number, number, number];
+      next[qi] = Math.min((next[qi] ?? 0) + 1, 3);
+      return next;
+    });
+  }, []);
+
+  const removeLastSub = useCallback((qi: number, currentSubs: number) => {
+    const si = currentSubs - 1;
+    setCompanyQuestions((prev) => {
+      const next = [...prev];
+      const subs = [...(next[qi].subquestions ?? [])];
+      subs[si] = { ...subs[si], subquestion_text: "", is_active: false };
+      next[qi] = { ...next[qi], subquestions: subs };
+      return next;
+    });
+    setVisibleSubCounts((prev) => {
+      const next = [...prev] as [number, number, number];
+      next[qi] = si;
+      return next;
+    });
+  }, []);
 
   const handleSubmit = useCallback(
     (event: { preventDefault(): void }) => {
@@ -231,7 +314,7 @@ export default function QuestionDinamicEnterprise() {
         method="post"
         action="/user/edit/feedback-settings"
         onSubmit={handleSubmit}
-        className="space-y-4"
+        className="space-y-3"
       >
         <input
           type="hidden"
@@ -248,162 +331,159 @@ export default function QuestionDinamicEnterprise() {
         {companyQuestions.map((question, questionIndex) => {
           const questionTextLength = String(question.question_text ?? "").trim()
             .length;
+          const visibleSubs = visibleSubCounts[questionIndex] ?? 0;
 
           return (
             <div
               key={`company-question-${question.question_order}`}
-              className="rounded-xl border border-(--quaternary-color)/10 bg-(--bg-secondary) p-4"
+              className="overflow-hidden rounded-xl border border-(--quaternary-color)/10"
             >
-              <div className="mb-2 flex items-center justify-between gap-2">
-                <p className="text-sm font-semibold text-(--text-primary)">
+              {/* Question header */}
+              <div className="flex items-center gap-2 bg-(--bg-tertiary)/80 px-4 py-2.5">
+                <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-(--primary-color)/20 text-xs font-bold text-(--primary-color)">
+                  {question.question_order}
+                </div>
+                <span className="flex-1 text-sm font-semibold text-(--text-secondary)">
                   Pergunta {question.question_order}
-                </p>
-                <label className="flex items-center gap-2 text-xs text-(--text-secondary)">
-                  <input
-                    type="checkbox"
-                    checked={question.is_active ?? true}
-                    onChange={(event) => {
-                      const checked = event.target.checked;
-
-                      setCompanyQuestions((previousQuestions) => {
-                        const next = [...previousQuestions];
-                        const current = next[questionIndex] ?? question;
-
-                        next[questionIndex] = {
-                          ...current,
-                          is_active: checked,
-                        };
-
-                        return next;
-                      });
-                    }}
-                  />
-                  Ativa
-                </label>
+                </span>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-xs text-(--text-tertiary)">Ativa</span>
+                  <button
+                    type="button"
+                    role="switch"
+                    aria-checked={question.is_active ?? true}
+                    onClick={() =>
+                      setQuestionActive(questionIndex, !(question.is_active ?? true))
+                    }
+                    className={`relative h-4 w-7 rounded-full transition-colors duration-200 focus:outline-none ${(question.is_active ?? true) ? "bg-(--primary-color)" : "bg-(--seventh-color)"}`}
+                  >
+                    <span
+                      className={`absolute top-0.5 h-3 w-3 rounded-full bg-white shadow-sm transition-transform duration-200 ${(question.is_active ?? true) ? "translate-x-3.5" : "translate-x-0.5"}`}
+                    />
+                  </button>
+                </div>
               </div>
 
-              <input
-                type="text"
-                value={question.question_text}
-                onChange={(event) => {
-                  const value = event.target.value;
+              {/* Question body */}
+              <div className="bg-(--bg-secondary) px-4 pb-4 pt-3">
+                <input
+                  type="text"
+                  value={question.question_text}
+                  onChange={(e) => setQuestionText(questionIndex, e.target.value)}
+                  maxLength={MAX_QUESTION_LENGTH}
+                  placeholder="Escreva a pergunta principal (20–150 caracteres)"
+                  className="w-full rounded-lg border border-(--quaternary-color)/14 bg-(--bg-tertiary) px-3 py-2 text-sm text-(--text-primary) outline-none transition-all placeholder:text-(--text-tertiary) focus:border-(--primary-color)"
+                />
+                <p className="mb-3 mt-0.5 text-right text-[11px] text-(--text-tertiary)">
+                  {questionTextLength}/{MAX_QUESTION_LENGTH}
+                </p>
 
-                  setCompanyQuestions((previousQuestions) => {
-                    const next = [...previousQuestions];
-                    const current = next[questionIndex] ?? question;
+                {/* Subquestions */}
+                {visibleSubs > 0 && (
+                  <div className="mb-3 space-y-2">
+                    <p className="text-[10px] font-semibold uppercase tracking-wider text-(--text-tertiary)">
+                      Subperguntas
+                    </p>
+                    {(question.subquestions ?? [])
+                      .slice(0, visibleSubs)
+                      .map((subquestion, subquestionIndex) => {
+                        const subquestionTextLength = String(
+                          subquestion.subquestion_text ?? "",
+                        ).trim().length;
+                        const isLastSub = subquestionIndex === visibleSubs - 1;
 
-                    next[questionIndex] = {
-                      ...current,
-                      question_text: value,
-                    };
+                        return (
+                          <div
+                            key={`company-subquestion-${question.question_order}-${subquestion.subquestion_order}`}
+                            className="flex items-start gap-2"
+                          >
+                            <div className="mt-2.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-(--quaternary-color)/20 bg-(--bg-tertiary) text-[9px] text-(--text-tertiary)">
+                              {subquestionIndex + 1}
+                            </div>
+                            <div className="flex-1 rounded-lg border border-(--quaternary-color)/8 bg-(--bg-tertiary) px-3 py-2">
+                              <div className="mb-1.5 flex items-center gap-2">
+                                <span className="text-[10px] text-(--text-tertiary)">
+                                  {question.question_order}.{subquestion.subquestion_order}
+                                </span>
+                                {isLastSub && (
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      removeLastSub(questionIndex, visibleSubs)
+                                    }
+                                    className="text-[9px] text-(--text-tertiary) transition-colors hover:text-rose-400"
+                                  >
+                                    remover
+                                  </button>
+                                )}
+                                <div className="ml-auto flex items-center gap-1.5">
+                                  <span className="text-[10px] text-(--text-tertiary)">
+                                    Ativa
+                                  </span>
+                                  <button
+                                    type="button"
+                                    role="switch"
+                                    aria-checked={subquestion.is_active === true}
+                                    onClick={() =>
+                                      setSubActive(
+                                        questionIndex,
+                                        subquestionIndex,
+                                        !(subquestion.is_active === true),
+                                      )
+                                    }
+                                    className={`relative h-3.5 w-6 rounded-full transition-colors duration-200 focus:outline-none ${subquestion.is_active === true ? "bg-(--primary-color)" : "bg-(--seventh-color)"}`}
+                                  >
+                                    <span
+                                      className={`absolute top-0.5 h-2.5 w-2.5 rounded-full bg-white shadow-sm transition-transform duration-200 ${subquestion.is_active === true ? "translate-x-3" : "translate-x-0.5"}`}
+                                    />
+                                  </button>
+                                </div>
+                              </div>
+                              <input
+                                type="text"
+                                value={subquestion.subquestion_text}
+                                onChange={(e) =>
+                                  setSubText(
+                                    questionIndex,
+                                    subquestionIndex,
+                                    e.target.value,
+                                  )
+                                }
+                                maxLength={MAX_QUESTION_LENGTH}
+                                placeholder={`Subpergunta ${question.question_order}.${subquestion.subquestion_order} (20–150 caracteres)`}
+                                className="w-full rounded-md border border-(--quaternary-color)/8 bg-(--bg-secondary) px-2.5 py-1.5 text-xs text-(--text-primary) outline-none transition-all placeholder:text-(--text-tertiary) focus:border-(--primary-color)"
+                              />
+                              <p className="mt-0.5 text-right text-[10px] text-(--text-tertiary)">
+                                {subquestionTextLength}/{MAX_QUESTION_LENGTH}
+                              </p>
+                            </div>
+                          </div>
+                        );
+                      })}
+                  </div>
+                )}
 
-                    return next;
-                  });
-                }}
-                maxLength={MAX_QUESTION_LENGTH}
-                placeholder="Escreva a pergunta principal (20 a 150 caracteres)"
-                className="w-full rounded-lg border border-(--quaternary-color)/14 bg-(--bg-tertiary) px-3 py-2 text-sm text-(--text-primary) outline-none transition-all placeholder:text-(--text-tertiary) focus:border-(--primary-color)"
-              />
-
-              <p className="mt-1 text-[11px] text-(--text-tertiary)">
-                {questionTextLength}/{MAX_QUESTION_LENGTH} caracteres
-              </p>
-
-              <div className="mt-3 space-y-2">
-                {(question.subquestions ?? []).map(
-                  (subquestion, subquestionIndex) => {
-                    const subquestionTextLength = String(
-                      subquestion.subquestion_text ?? "",
-                    ).trim().length;
-
-                    return (
-                      <div
-                        key={`company-subquestion-${question.question_order}-${subquestion.subquestion_order}`}
-                        className="rounded-lg border border-(--quaternary-color)/10 bg-(--bg-tertiary) p-3"
-                      >
-                        <div className="mb-1 flex items-center justify-between gap-2">
-                          <p className="text-xs font-semibold text-(--text-primary)">
-                            Subpergunta {question.question_order}.
-                            {subquestion.subquestion_order}
-                          </p>
-                          <label className="flex items-center gap-2 text-[11px] text-(--text-secondary)">
-                            <input
-                              type="checkbox"
-                              checked={subquestion.is_active === true}
-                              onChange={(event) => {
-                                const checked = event.target.checked;
-
-                                setCompanyQuestions((previousQuestions) => {
-                                  const next = [...previousQuestions];
-                                  const currentQuestion =
-                                    next[questionIndex] ?? question;
-                                  const currentSubquestions = [
-                                    ...(currentQuestion.subquestions ?? []),
-                                  ];
-                                  const currentSubquestion =
-                                    currentSubquestions[subquestionIndex] ??
-                                    subquestion;
-
-                                  currentSubquestions[subquestionIndex] = {
-                                    ...currentSubquestion,
-                                    is_active: checked,
-                                  };
-
-                                  next[questionIndex] = {
-                                    ...currentQuestion,
-                                    subquestions: currentSubquestions,
-                                  };
-
-                                  return next;
-                                });
-                              }}
-                            />
-                            Ativa
-                          </label>
-                        </div>
-
-                        <input
-                          type="text"
-                          value={subquestion.subquestion_text}
-                          onChange={(event) => {
-                            const value = event.target.value;
-
-                            setCompanyQuestions((previousQuestions) => {
-                              const next = [...previousQuestions];
-                              const currentQuestion =
-                                next[questionIndex] ?? question;
-                              const currentSubquestions = [
-                                ...(currentQuestion.subquestions ?? []),
-                              ];
-                              const currentSubquestion =
-                                currentSubquestions[subquestionIndex] ??
-                                subquestion;
-
-                              currentSubquestions[subquestionIndex] = {
-                                ...currentSubquestion,
-                                subquestion_text: value,
-                              };
-
-                              next[questionIndex] = {
-                                ...currentQuestion,
-                                subquestions: currentSubquestions,
-                              };
-
-                              return next;
-                            });
-                          }}
-                          maxLength={MAX_QUESTION_LENGTH}
-                          placeholder="Escreva a subpergunta (20 a 150 caracteres)"
-                          className="w-full rounded-lg border border-(--quaternary-color)/14 bg-(--bg-secondary) px-3 py-2 text-xs text-(--text-primary) outline-none transition-all placeholder:text-(--text-tertiary) focus:border-(--primary-color)"
-                        />
-
-                        <p className="mt-1 text-[10px] text-(--text-tertiary)">
-                          {subquestionTextLength}/{MAX_QUESTION_LENGTH}{" "}
-                          caracteres
-                        </p>
-                      </div>
-                    );
-                  },
+                {/* Add subquestion */}
+                {visibleSubs < 3 ? (
+                  <button
+                    type="button"
+                    onClick={() => addSub(questionIndex)}
+                    className="flex items-center gap-1.5 text-[11px] text-(--primary-color) transition-opacity hover:opacity-75"
+                  >
+                    <span className="flex h-3.5 w-3.5 items-center justify-center rounded-full border border-(--primary-color)/50 text-xs leading-none">
+                      +
+                    </span>
+                    Adicionar subpergunta
+                    {visibleSubs > 0 && (
+                      <span className="text-(--text-tertiary)">
+                        ({visibleSubs}/3)
+                      </span>
+                    )}
+                  </button>
+                ) : (
+                  <p className="text-[11px] text-(--text-tertiary)">
+                    Limite de 3 subperguntas atingido
+                  </p>
                 )}
               </div>
             </div>
