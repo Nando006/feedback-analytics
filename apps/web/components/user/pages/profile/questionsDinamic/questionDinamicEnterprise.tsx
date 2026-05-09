@@ -374,14 +374,14 @@ export default function QuestionDinamicEnterprise() {
                   placeholder="Escreva a pergunta principal (20–150 caracteres)"
                   className="w-full rounded-lg border border-(--quaternary-color)/14 bg-(--bg-tertiary) px-3 py-2 text-sm text-(--text-primary) outline-none transition-all placeholder:text-(--text-tertiary) focus:border-(--primary-color)"
                 />
-                <p className="mb-3 mt-0.5 text-right text-[11px] text-(--text-tertiary)">
+                <p className="mb-3 mt-0.5 text-right text-xs text-(--text-tertiary)">
                   {questionTextLength}/{MAX_QUESTION_LENGTH}
                 </p>
 
                 {/* Subquestions */}
                 {visibleSubs > 0 && (
                   <div className="mb-3 space-y-2">
-                    <p className="text-[10px] font-semibold uppercase tracking-wider text-(--text-tertiary)">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-(--text-tertiary)">
                       Subperguntas
                     </p>
                     {(question.subquestions ?? [])
@@ -397,27 +397,28 @@ export default function QuestionDinamicEnterprise() {
                             key={`company-subquestion-${question.question_order}-${subquestion.subquestion_order}`}
                             className="flex items-start gap-2"
                           >
-                            <div className="mt-2.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-(--quaternary-color)/20 bg-(--bg-tertiary) text-[9px] text-(--text-tertiary)">
+                            <div className="mt-2.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-(--quaternary-color)/20 bg-(--bg-tertiary) text-xs text-(--text-tertiary)">
                               {subquestionIndex + 1}
                             </div>
                             <div className="flex-1 rounded-lg border border-(--quaternary-color)/8 bg-(--bg-tertiary) px-3 py-2">
                               <div className="mb-1.5 flex items-center gap-2">
-                                <span className="text-[10px] text-(--text-tertiary)">
+                                {/* Vou avaliar depois se é necessário manter essa numeração ou se só a ordem já é suficiente */}
+                                {/* <span className="text-xs text-(--text-tertiary)">
                                   {question.question_order}.{subquestion.subquestion_order}
-                                </span>
+                                </span> */}
                                 {isLastSub && (
                                   <button
                                     type="button"
                                     onClick={() =>
                                       removeLastSub(questionIndex, visibleSubs)
                                     }
-                                    className="text-[9px] text-(--text-tertiary) transition-colors hover:text-rose-400"
+                                    className="text-xs text-(--primary-color) transition-colors hover:text-rose-400"
                                   >
                                     remover
                                   </button>
                                 )}
                                 <div className="ml-auto flex items-center gap-1.5">
-                                  <span className="text-[10px] text-(--text-tertiary)">
+                                  <span className="text-xs text-(--text-tertiary)">
                                     Ativa
                                   </span>
                                   <button
@@ -453,7 +454,7 @@ export default function QuestionDinamicEnterprise() {
                                 placeholder={`Subpergunta ${question.question_order}.${subquestion.subquestion_order} (20–150 caracteres)`}
                                 className="w-full rounded-md border border-(--quaternary-color)/8 bg-(--bg-secondary) px-2.5 py-1.5 text-xs text-(--text-primary) outline-none transition-all placeholder:text-(--text-tertiary) focus:border-(--primary-color)"
                               />
-                              <p className="mt-0.5 text-right text-[10px] text-(--text-tertiary)">
+                              <p className="mt-0.5 text-right text-xs text-(--text-tertiary)">
                                 {subquestionTextLength}/{MAX_QUESTION_LENGTH}
                               </p>
                             </div>
@@ -468,12 +469,12 @@ export default function QuestionDinamicEnterprise() {
                   <button
                     type="button"
                     onClick={() => addSub(questionIndex)}
-                    className="flex items-center gap-1.5 text-[11px] text-(--primary-color) transition-opacity hover:opacity-75"
+                    className="flex items-center gap-1.5 text-xs text-(--primary-color) transition-opacity hover:opacity-75"
                   >
                     <span className="flex h-3.5 w-3.5 items-center justify-center rounded-full border border-(--primary-color)/50 text-xs leading-none">
                       +
                     </span>
-                    Adicionar subpergunta
+                    <span className="text-xs">Adicionar subpergunta</span>
                     {visibleSubs > 0 && (
                       <span className="text-(--text-tertiary)">
                         ({visibleSubs}/3)
@@ -481,7 +482,7 @@ export default function QuestionDinamicEnterprise() {
                     )}
                   </button>
                 ) : (
-                  <p className="text-[11px] text-(--text-tertiary)">
+                  <p className="text-xs text-(--text-tertiary)">
                     Limite de 3 subperguntas atingido
                   </p>
                 )}
