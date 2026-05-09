@@ -1,4 +1,4 @@
-import { useNavigation, useRouteLoaderData } from "react-router-dom";
+import { Link, useNavigation, useRouteLoaderData } from "react-router-dom";
 import type {
   Enterprise,
 } from "lib/interfaces/entities/enterprise.entity";
@@ -42,6 +42,39 @@ export default function Profile() {
         {isSavingProfile && (
           <div className="pointer-events-none absolute inset-0 rounded-2xl border border-(--quaternary-color)/12 bg-(--bg-primary)/35 backdrop-blur-[1px]" />
         )}
+      </div>
+
+      <div className="relative">
+        <CardSimple
+          type="default"
+          title="QR Code da Empresa"
+          description="Acesse, baixe e compartilhe o QR Code geral da sua empresa para receber feedbacks dos seus clientes de forma rápida e fácil."
+        >
+          <div className="mt-4 flex">
+            <Link
+              to="/user/qrcode/enterprise"
+              className="inline-flex items-center justify-center gap-2 rounded-lg bg-(--primary-color) px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-(--primary-color)/90"
+            >
+              Acessar QR Code da Empresa
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+                focusable="false"
+              >
+                <path d="M5 12h14"></path>
+                <path d="m12 5 7 7-7 7"></path>
+              </svg>
+            </Link>
+          </div>
+        </CardSimple>
       </div>
 
       <div className="relative">
