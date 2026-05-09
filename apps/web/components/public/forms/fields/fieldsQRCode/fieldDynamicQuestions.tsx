@@ -85,7 +85,7 @@ export default function FieldDynamicQuestions({
             >
               {selectedAnswer
                 ? ANSWER_HELPER[selectedAnswer as FeedbackAnswerValue]
-                : 'Toque em uma opção para responder'}
+                : ''}
             </p>
 
             {sortedSubquestions.length > 0 && (
@@ -142,7 +142,7 @@ export default function FieldDynamicQuestions({
                       >
                         {selectedSubanswer
                           ? ANSWER_HELPER[selectedSubanswer as FeedbackAnswerValue]
-                          : 'Toque em uma opção para responder'}
+                          : ''}
                       </p>
                     </div>
                   );
