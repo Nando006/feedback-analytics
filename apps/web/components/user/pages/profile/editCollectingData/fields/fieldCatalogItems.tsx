@@ -271,7 +271,7 @@ const QuestionAccordion = memo(function QuestionAccordion({
 
                     {/* Question header */}
                     <div className="flex items-center gap-2 bg-(--bg-tertiary)/80 px-3 py-2">
-                      <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-(--primary-color)/20 text-[10px] font-bold text-(--primary-color)">
+                      <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-(--primary-color)/20 text-xs font-bold text-(--primary-color)">
                         {q.question_order}
                       </div>
                       <span className="flex-1 text-xs font-semibold text-(--text-secondary)">
@@ -281,13 +281,13 @@ const QuestionAccordion = memo(function QuestionAccordion({
                         <button
                           type="button"
                           onClick={() => removeLastQuestion(visibleQCount)}
-                          className="mr-2 text-[10px] text-(--text-tertiary) transition-colors hover:text-rose-400"
+                          className="mr-2 text-xs text-(--text-tertiary) transition-colors hover:text-rose-400"
                         >
                           remover
                         </button>
                       )}
                       <div className="flex items-center gap-1.5">
-                        <span className="text-[10px] text-(--text-tertiary)">Ativa</span>
+                        <span className="text-xs text-(--text-tertiary)">Ativa</span>
                         <button
                           type="button"
                           role="switch"
@@ -310,34 +310,37 @@ const QuestionAccordion = memo(function QuestionAccordion({
                         placeholder="Escreva a pergunta principal (20–150 caracteres)"
                         className="w-full rounded-lg border border-(--quaternary-color)/10 bg-(--bg-tertiary) px-2.5 py-2 text-sm text-(--text-primary) outline-none transition-colors placeholder:text-(--text-tertiary) focus:border-(--primary-color)"
                       />
-                      <p className="mb-2.5 mt-0.5 text-right text-[10px] text-(--text-tertiary)">{qLen}/{MAX_LEN}</p>
+                          <p className="mb-2.5 mt-0.5 text-right text-xs text-(--text-tertiary)">{qLen}/{MAX_LEN}</p>
 
-                      {/* Subquestions list */}
-                      {visibleSubs > 0 && (
-                        <div className="mb-2.5 space-y-2">
-                          <p className="text-[10px] font-semibold uppercase tracking-wider text-(--text-tertiary)">Subperguntas</p>
+                          {/* Subquestions list */}
+                          {visibleSubs > 0 && (
+                            <div className="mb-2.5 space-y-2">
+                              <p className="text-xs font-semibold uppercase tracking-wider text-(--text-tertiary)">Subperguntas</p>
                           {(q.subquestions ?? []).slice(0, visibleSubs).map((s, si) => {
                             const sLen = String(s.subquestion_text ?? '').trim().length;
                             const isLastSub = si === visibleSubs - 1;
                             return (
                               <div key={`s-${q.question_order}-${s.subquestion_order}`} className="flex items-start gap-2">
-                                <div className="mt-2.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-(--quaternary-color)/20 bg-(--bg-tertiary) text-[9px] text-(--text-tertiary)">
+                                <div className="mt-2.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-(--quaternary-color)/20 bg-(--bg-tertiary) text-xs text-(--text-tertiary)">
                                   {si + 1}
                                 </div>
                                 <div className="flex-1 rounded-lg border border-(--quaternary-color)/8 bg-(--bg-tertiary) px-2.5 py-2">
                                   <div className="mb-1.5 flex items-center gap-2">
-                                    <span className="text-[10px] text-(--text-tertiary)">{q.question_order}.{s.subquestion_order}</span>
+                                    {/* Vou avaliar depois se é necessário manter essa numeração ou se só a ordem já é suficiente */}
+                                    {/* <span className="text-xs text-(--text-tertiary)">
+                                      {q.question_order}.{s.subquestion_order}
+                                    </span> */}
                                     {isLastSub && (
                                       <button
                                         type="button"
                                         onClick={() => removeLastSub(qi, visibleSubs)}
-                                        className="text-[9px] text-(--text-tertiary) transition-colors hover:text-rose-400"
+                                        className="text-xs text-(--primary-color) transition-colors hover:text-rose-400"
                                       >
                                         remover
                                       </button>
                                     )}
                                     <div className="ml-auto flex items-center gap-1.5">
-                                      <span className="text-[10px] text-(--text-tertiary)">Ativa</span>
+                                    <span className="text-xs text-(--text-tertiary)">Ativa</span>
                                       <button
                                         type="button"
                                         role="switch"
@@ -357,7 +360,7 @@ const QuestionAccordion = memo(function QuestionAccordion({
                                     placeholder={`Subpergunta ${q.question_order}.${s.subquestion_order} (20–150 caracteres)`}
                                     className="w-full rounded-md border border-(--quaternary-color)/8 bg-(--bg-secondary) px-2 py-1.5 text-xs text-(--text-primary) outline-none transition-colors placeholder:text-(--text-tertiary) focus:border-(--primary-color)"
                                   />
-                                  <p className="mt-0.5 text-right text-[10px] text-(--text-tertiary)">{sLen}/{MAX_LEN}</p>
+                                  <p className="mt-0.5 text-right text-xs text-(--text-tertiary)">{sLen}/{MAX_LEN}</p>
                                 </div>
                               </div>
                             );
@@ -370,14 +373,14 @@ const QuestionAccordion = memo(function QuestionAccordion({
                         <button
                           type="button"
                           onClick={() => addSub(qi)}
-                          className="flex items-center gap-1.5 text-[10px] text-(--primary-color) transition-opacity hover:opacity-75"
+                          className="flex items-center gap-1.5 text-xs text-(--primary-color) transition-opacity hover:opacity-75"
                         >
                           <span className="flex h-3.5 w-3.5 items-center justify-center rounded-full border border-(--primary-color)/50 text-xs leading-none">+</span>
                           Adicionar subpergunta
                           {visibleSubs > 0 && <span className="text-(--text-tertiary)">({visibleSubs}/3)</span>}
                         </button>
                       ) : (
-                        <p className="text-[10px] text-(--text-tertiary)">Limite de 3 subperguntas atingido</p>
+                        <p className="text-xs text-(--text-tertiary)">Limite de 3 subperguntas atingido</p>
                       )}
                     </div>
                   </div>
@@ -387,14 +390,14 @@ const QuestionAccordion = memo(function QuestionAccordion({
                     <button
                       type="button"
                       onClick={addQuestion}
-                      className="flex w-full items-center justify-center gap-1.5 rounded-xl border border-dashed border-(--quaternary-color)/20 py-2 text-[10px] text-(--text-tertiary) transition-all hover:border-(--primary-color)/30 hover:text-(--primary-color)"
+                      className="flex w-full items-center justify-center gap-1.5 rounded-xl border border-dashed border-(--quaternary-color)/20 py-2 text-xs text-(--text-tertiary) transition-all hover:border-(--primary-color)/30 hover:text-(--primary-color)"
                     >
                       <span className="flex h-4 w-4 items-center justify-center rounded-full border border-current text-sm leading-none">+</span>
                       Adicionar pergunta {visibleQCount + 1}
                     </button>
                   )}
                   {isLastQ && visibleQCount === 3 && (
-                    <p className="text-center text-[10px] text-(--text-tertiary)">Limite de 3 perguntas atingido</p>
+                    <p className="text-center text-xs text-(--text-tertiary)">Limite de 3 perguntas atingido</p>
                   )}
                 </div>
               );
