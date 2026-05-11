@@ -153,16 +153,13 @@ export default function FormFeedbackCatalog({
 
   const inputRef = useRef<HTMLInputElement | null>(null);
 
-  const handleSubmit = useCallback(() => {
-    if (document.activeElement instanceof HTMLElement) {
-      document.activeElement.blur();
-    }
+  useEffect(() => {
     if (inputRef.current) {
       inputRef.current.value = JSON.stringify(items);
     }
   }, [items]);
 
-  const content = (
+  return (
     <>
       <input type="hidden" name="intent" value={config.intent} />
       <input ref={inputRef} type="hidden" name="catalog_items" defaultValue="[]" />
@@ -180,15 +177,5 @@ export default function FormFeedbackCatalog({
         onToggle={qrData ? handleToggle : undefined}
       />
     </>
-  );
-
-  if (hideSubmit) {
-    return content;
-  }
-
-  return (
-    <Form method="post" onSubmit={handleSubmit} className="space-y-6">
-      {content}
-    </Form>
   );
 }
