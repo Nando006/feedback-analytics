@@ -83,13 +83,7 @@ export default function FormHub() {
               Defina perguntas objetivas (escala de 1 a 5) que serão exibidas aos clientes.
             </p>
           </div>
-          <CardSimple
-            type="header"
-            title="Personalize a experiência"
-            description="Crie até 3 perguntas principais e subperguntas para coletar dados específicos."
-          >
-            <QuestionDinamicEnterprise hideSubmit />
-          </CardSimple>
+          <QuestionDinamicEnterprise hideSubmit />
         </section>
       </Form>
     </div>
