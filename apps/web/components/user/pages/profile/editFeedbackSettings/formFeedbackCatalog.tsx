@@ -141,7 +141,7 @@ export default function FormFeedbackCatalog({
       setTogglePendingItemId(catalogItemId);
       qrFetcher.submit(
         {
-          intent: isActive ? INTENT_QR_DISABLE : INTENT_QR_ENABLE,
+          intent: isActive ? INTENT_QR_ENABLE : INTENT_QR_DISABLE,
           catalog_item_id: catalogItemId,
         },
         { method: 'post' },
