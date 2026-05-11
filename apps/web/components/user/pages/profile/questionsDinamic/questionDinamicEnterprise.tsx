@@ -154,7 +154,7 @@ function validateCompanyQuestions(questions: CompanyFeedbackQuestionInput[]) {
   return null;
 }
 
-export default function QuestionDinamicEnterprise() {
+export default function QuestionDinamicEnterprise({ hideSubmit = false }: { hideSubmit?: boolean }) {
   const { collecting } = useRouteLoaderData("user") as {
     collecting: CollectingDataEnterprise | null;
   };
@@ -169,6 +169,28 @@ export default function QuestionDinamicEnterprise() {
   );
   const [companyError, setCompanyError] = useState<string | null>(null);
   const companyQuestionsInputRef = useRef<HTMLInputElement | null>(null);
+
+  // Sync hidden input with state for parent form submission
+  useEffect(() => {
+    if (companyQuestionsInputRef.current) {
+      companyQuestionsInputRef.current.value = JSON.stringify(
+        companyQuestions.map((question, index) => ({
+          question_order: (index + 1) as 1 | 2 | 3,
+          question_text: String(question.question_text ?? "").trim(),
+          is_active: question.is_active ?? true,
+          subquestions: (question.subquestions ?? []).map(
+            (subquestion, subIndex) => ({
+              subquestion_order: (subIndex + 1) as 1 | 2 | 3,
+              subquestion_text: String(
+                subquestion.subquestion_text ?? "",
+              ).trim(),
+              is_active: subquestion.is_active === true,
+            }),
+          ),
+        })),
+      );
+    }
+  }, [companyQuestions]);
 
   useEffect(() => {
     const data = fetcher.data as ActionData | undefined;
@@ -225,203 +247,208 @@ export default function QuestionDinamicEnterprise() {
     [companyQuestions],
   );
 
+  const content = (
+    <div className="space-y-4">
+      <input
+        type="hidden"
+        name="intent"
+        value={INTENT_FEEDBACK_SETTINGS_SAVE_COMPANY_QUESTIONS}
+      />
+      <input
+        ref={companyQuestionsInputRef}
+        type="hidden"
+        name="company_feedback_questions"
+        defaultValue="[]"
+      />
+
+      {companyQuestions.map((question, questionIndex) => {
+        const questionTextLength = String(question.question_text ?? "").trim()
+          .length;
+
+        return (
+          <div
+            key={`company-question-${question.question_order}`}
+            className="rounded-xl border border-(--quaternary-color)/10 bg-(--bg-secondary) p-3.5"
+          >
+            <div className="mb-2.5 flex items-center justify-between gap-2">
+              <p className="text-sm font-semibold text-(--text-primary)">
+                Pergunta {question.question_order}
+              </p>
+              <label className="flex items-center gap-2 text-[11px] text-(--text-secondary) cursor-pointer">
+                <input
+                  type="checkbox"
+                  className="h-3.5 w-3.5 rounded border-(--quaternary-color)/30 bg-(--seventh-color) text-(--primary-color) focus:ring-(--primary-color)/20"
+                  checked={question.is_active ?? true}
+                  onChange={(event) => {
+                    const checked = event.target.checked;
+
+                    setCompanyQuestions((previousQuestions) => {
+                      const next = [...previousQuestions];
+                      const current = next[questionIndex] ?? question;
+
+                      next[questionIndex] = {
+                        ...current,
+                        is_active: checked,
+                      };
+
+                      return next;
+                    });
+                  }}
+                />
+                Ativa
+              </label>
+            </div>
+
+            <input
+              type="text"
+              value={question.question_text}
+              onChange={(event) => {
+                const value = event.target.value;
+
+                setCompanyQuestions((previousQuestions) => {
+                  const next = [...previousQuestions];
+                  const current = next[questionIndex] ?? question;
+
+                  next[questionIndex] = {
+                    ...current,
+                    question_text: value,
+                  };
+
+                  return next;
+                });
+              }}
+              maxLength={MAX_QUESTION_LENGTH}
+              placeholder="Escreva a pergunta principal..."
+              className="w-full rounded-lg border border-(--quaternary-color)/14 bg-(--bg-tertiary) px-3 py-2 text-sm text-(--text-primary) outline-none transition-all placeholder:text-(--text-tertiary) focus:border-(--primary-color)"
+            />
+
+            <p className="mt-1 text-[10px] text-(--text-tertiary)">
+              {questionTextLength}/{MAX_QUESTION_LENGTH} caracteres
+            </p>
+
+            <div className="mt-3 grid gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
+              {(question.subquestions ?? []).map(
+                (subquestion, subquestionIndex) => {
+                  const subquestionTextLength = String(
+                    subquestion.subquestion_text ?? "",
+                  ).trim().length;
+
+                  return (
+                    <div
+                      key={`company-subquestion-${question.question_order}-${subquestion.subquestion_order}`}
+                      className="rounded-lg border border-(--quaternary-color)/10 bg-(--bg-tertiary) p-2"
+                    >
+                      <div className="mb-1 flex items-center justify-between gap-2">
+                        <p className="text-[10px] font-semibold text-(--text-primary)">
+                          Sub {question.question_order}.
+                          {subquestion.subquestion_order}
+                        </p>
+                        <label className="flex items-center gap-1.5 text-[9px] text-(--text-secondary) cursor-pointer">
+                          <input
+                            type="checkbox"
+                            className="h-3 w-3 rounded border-(--quaternary-color)/30 bg-(--seventh-color) text-(--primary-color) focus:ring-(--primary-color)/20"
+                            checked={subquestion.is_active === true}
+                            onChange={(event) => {
+                              const checked = event.target.checked;
+
+                              setCompanyQuestions((previousQuestions) => {
+                                const next = [...previousQuestions];
+                                const currentQuestion =
+                                  next[questionIndex] ?? question;
+                                const currentSubquestions = [
+                                  ...(currentQuestion.subquestions ?? []),
+                                ];
+                                const currentSubquestion =
+                                  currentSubquestions[subquestionIndex] ??
+                                  subquestion;
+
+                                currentSubquestions[subquestionIndex] = {
+                                  ...currentSubquestion,
+                                  is_active: checked,
+                                };
+
+                                next[questionIndex] = {
+                                  ...currentQuestion,
+                                  subquestions: currentSubquestions,
+                                };
+
+                                return next;
+                              });
+                            }}
+                          />
+                          Ativa
+                        </label>
+                      </div>
+
+                      <input
+                        type="text"
+                        value={subquestion.subquestion_text}
+                        onChange={(event) => {
+                          const value = event.target.value;
+
+                          setCompanyQuestions((previousQuestions) => {
+                            const next = [...previousQuestions];
+                            const currentQuestion =
+                              next[questionIndex] ?? question;
+                            const currentSubquestions = [
+                              ...(currentQuestion.subquestions ?? []),
+                            ];
+                            const currentSubquestion =
+                              currentSubquestions[subquestionIndex] ??
+                              subquestion;
+
+                            currentSubquestions[subquestionIndex] = {
+                              ...currentSubquestion,
+                              subquestion_text: value,
+                            };
+
+                            next[questionIndex] = {
+                              ...currentQuestion,
+                              subquestions: currentSubquestions,
+                            };
+
+                            return next;
+                          });
+                        }}
+                        maxLength={MAX_QUESTION_LENGTH}
+                        placeholder="Subpergunta..."
+                        className="w-full rounded-md border border-(--quaternary-color)/14 bg-(--bg-secondary) px-2.5 py-1.5 text-[11px] text-(--text-primary) outline-none transition-all placeholder:text-(--text-tertiary) focus:border-(--primary-color)"
+                      />
+
+                      <div className="mt-1 flex justify-end">
+                        <p className="text-[9px] text-(--text-tertiary)">
+                          {subquestionTextLength}/{MAX_QUESTION_LENGTH}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                },
+              )}
+            </div>
+          </div>
+        );
+      })}
+
+      {companyError && (
+        <p className="rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-xs text-rose-200">
+          {companyError}
+        </p>
+      )}
+    </div>
+  );
+
+  if (hideSubmit) {
+    return content;
+  }
+
   return (
     <div className="relative">
       <fetcher.Form
         method="post"
-        action="/user/edit/feedback-settings"
         onSubmit={handleSubmit}
         className="space-y-4"
       >
-        <input
-          type="hidden"
-          name="intent"
-          value={INTENT_FEEDBACK_SETTINGS_SAVE_COMPANY_QUESTIONS}
-        />
-        <input
-          ref={companyQuestionsInputRef}
-          type="hidden"
-          name="company_feedback_questions"
-          defaultValue="[]"
-        />
-
-        {companyQuestions.map((question, questionIndex) => {
-          const questionTextLength = String(question.question_text ?? "").trim()
-            .length;
-
-          return (
-            <div
-              key={`company-question-${question.question_order}`}
-              className="rounded-xl border border-(--quaternary-color)/10 bg-(--bg-secondary) p-4"
-            >
-              <div className="mb-2 flex items-center justify-between gap-2">
-                <p className="text-sm font-semibold text-(--text-primary)">
-                  Pergunta {question.question_order}
-                </p>
-                <label className="flex items-center gap-2 text-xs text-(--text-secondary)">
-                  <input
-                    type="checkbox"
-                    checked={question.is_active ?? true}
-                    onChange={(event) => {
-                      const checked = event.target.checked;
-
-                      setCompanyQuestions((previousQuestions) => {
-                        const next = [...previousQuestions];
-                        const current = next[questionIndex] ?? question;
-
-                        next[questionIndex] = {
-                          ...current,
-                          is_active: checked,
-                        };
-
-                        return next;
-                      });
-                    }}
-                  />
-                  Ativa
-                </label>
-              </div>
-
-              <input
-                type="text"
-                value={question.question_text}
-                onChange={(event) => {
-                  const value = event.target.value;
-
-                  setCompanyQuestions((previousQuestions) => {
-                    const next = [...previousQuestions];
-                    const current = next[questionIndex] ?? question;
-
-                    next[questionIndex] = {
-                      ...current,
-                      question_text: value,
-                    };
-
-                    return next;
-                  });
-                }}
-                maxLength={MAX_QUESTION_LENGTH}
-                placeholder="Escreva a pergunta principal (20 a 150 caracteres)"
-                className="w-full rounded-lg border border-(--quaternary-color)/14 bg-(--bg-tertiary) px-3 py-2 text-sm text-(--text-primary) outline-none transition-all placeholder:text-(--text-tertiary) focus:border-(--primary-color)"
-              />
-
-              <p className="mt-1 text-[11px] text-(--text-tertiary)">
-                {questionTextLength}/{MAX_QUESTION_LENGTH} caracteres
-              </p>
-
-              <div className="mt-3 space-y-2">
-                {(question.subquestions ?? []).map(
-                  (subquestion, subquestionIndex) => {
-                    const subquestionTextLength = String(
-                      subquestion.subquestion_text ?? "",
-                    ).trim().length;
-
-                    return (
-                      <div
-                        key={`company-subquestion-${question.question_order}-${subquestion.subquestion_order}`}
-                        className="rounded-lg border border-(--quaternary-color)/10 bg-(--bg-tertiary) p-3"
-                      >
-                        <div className="mb-1 flex items-center justify-between gap-2">
-                          <p className="text-xs font-semibold text-(--text-primary)">
-                            Subpergunta {question.question_order}.
-                            {subquestion.subquestion_order}
-                          </p>
-                          <label className="flex items-center gap-2 text-[11px] text-(--text-secondary)">
-                            <input
-                              type="checkbox"
-                              checked={subquestion.is_active === true}
-                              onChange={(event) => {
-                                const checked = event.target.checked;
-
-                                setCompanyQuestions((previousQuestions) => {
-                                  const next = [...previousQuestions];
-                                  const currentQuestion =
-                                    next[questionIndex] ?? question;
-                                  const currentSubquestions = [
-                                    ...(currentQuestion.subquestions ?? []),
-                                  ];
-                                  const currentSubquestion =
-                                    currentSubquestions[subquestionIndex] ??
-                                    subquestion;
-
-                                  currentSubquestions[subquestionIndex] = {
-                                    ...currentSubquestion,
-                                    is_active: checked,
-                                  };
-
-                                  next[questionIndex] = {
-                                    ...currentQuestion,
-                                    subquestions: currentSubquestions,
-                                  };
-
-                                  return next;
-                                });
-                              }}
-                            />
-                            Ativa
-                          </label>
-                        </div>
-
-                        <input
-                          type="text"
-                          value={subquestion.subquestion_text}
-                          onChange={(event) => {
-                            const value = event.target.value;
-
-                            setCompanyQuestions((previousQuestions) => {
-                              const next = [...previousQuestions];
-                              const currentQuestion =
-                                next[questionIndex] ?? question;
-                              const currentSubquestions = [
-                                ...(currentQuestion.subquestions ?? []),
-                              ];
-                              const currentSubquestion =
-                                currentSubquestions[subquestionIndex] ??
-                                subquestion;
-
-                              currentSubquestions[subquestionIndex] = {
-                                ...currentSubquestion,
-                                subquestion_text: value,
-                              };
-
-                              next[questionIndex] = {
-                                ...currentQuestion,
-                                subquestions: currentSubquestions,
-                              };
-
-                              return next;
-                            });
-                          }}
-                          maxLength={MAX_QUESTION_LENGTH}
-                          placeholder="Escreva a subpergunta (20 a 150 caracteres)"
-                          className="w-full rounded-lg border border-(--quaternary-color)/14 bg-(--bg-secondary) px-3 py-2 text-xs text-(--text-primary) outline-none transition-all placeholder:text-(--text-tertiary) focus:border-(--primary-color)"
-                        />
-
-                        <p className="mt-1 text-[10px] text-(--text-tertiary)">
-                          {subquestionTextLength}/{MAX_QUESTION_LENGTH}{" "}
-                          caracteres
-                        </p>
-                      </div>
-                    );
-                  },
-                )}
-              </div>
-            </div>
-          );
-        })}
-
-        {companyError && (
-          <p className="rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-xs text-rose-200">
-            {companyError}
-          </p>
-        )}
-
-        <button
-          type="submit"
-          className="btn-primary font-poppins px-6 py-3 text-sm"
-        >
-          Salvar Perguntas da Empresa
-        </button>
+        {content}
       </fetcher.Form>
 
       {fetcher.state === "submitting" && (

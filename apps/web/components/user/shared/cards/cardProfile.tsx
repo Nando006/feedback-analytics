@@ -20,7 +20,7 @@ export default function CardProfile({
 
   return (
     <Link
-      to="/user/profile"
+      to="/user/settings/profile"
       title="Ver perfil"
       aria-label="Ver perfil"
       className="h-[240px] w-full border-t border-(--quaternary-color)/8 bg-linear-to-b from-(--bg-secondary) to-(--sixth-color) p-2.5 dark:shadow-inner dark:shadow-black/20 transition-colors duration-200 hover:bg-(--bg-secondary)">

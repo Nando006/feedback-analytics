@@ -53,7 +53,11 @@ function normalizeCatalogInput(items: CatalogItemInput[] | undefined): CatalogIt
   }));
 }
 
-export default function FormFeedbackCatalog({ catalogType, qrData }: FormFeedbackCatalogProps) {
+export default function FormFeedbackCatalog({
+  catalogType,
+  qrData,
+  hideSubmit = false,
+}: FormFeedbackCatalogProps & { hideSubmit?: boolean }) {
   const toast = useToast();
   const { collecting } = useRouteLoaderData('user') as {
     collecting: CollectingDataEnterprise | null;
@@ -158,8 +162,8 @@ export default function FormFeedbackCatalog({ catalogType, qrData }: FormFeedbac
     }
   }, [items]);
 
-  return (
-    <Form method="post" onSubmit={handleSubmit} className="space-y-6">
+  const content = (
+    <>
       <input type="hidden" name="intent" value={config.intent} />
       <input ref={inputRef} type="hidden" name="catalog_items" defaultValue="[]" />
 
@@ -175,12 +179,16 @@ export default function FormFeedbackCatalog({ catalogType, qrData }: FormFeedbac
         togglePendingItemId={togglePendingItemId}
         onToggle={qrData ? handleToggle : undefined}
       />
+    </>
+  );
 
-      <div className="flex items-center border-t border-(--quaternary-color)/10 pt-5">
-        <button type="submit" className="btn-primary font-poppins px-6 py-3 text-sm">
-          Salvar Catálogo
-        </button>
-      </div>
+  if (hideSubmit) {
+    return content;
+  }
+
+  return (
+    <Form method="post" onSubmit={handleSubmit} className="space-y-6">
+      {content}
     </Form>
   );
 }

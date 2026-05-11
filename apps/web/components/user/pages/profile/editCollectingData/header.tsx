@@ -4,8 +4,7 @@ import { Link } from "react-router-dom";
 export default function Header() {
   return (
     <CardSimple
-      type="header"
-      disableGlass>
+      type="header">
       <div className="font-work-sans flex w-full flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="font-montserrat text-2xl font-semibold tracking-tight text-(--text-primary) md:text-3xl">
@@ -17,12 +16,12 @@ export default function Header() {
         </div>
         <div className="flex flex-wrap gap-3">
           <Link
-            to="/user/edit/feedback-settings"
+            to="/user/settings/form"
             className="btn-ghost font-poppins">
             Configuração de Feedbacks
           </Link>
           <Link
-            to="/user/profile"
+            to="/user/settings/profile"
             className="btn-ghost font-poppins">
             Perfil
           </Link>

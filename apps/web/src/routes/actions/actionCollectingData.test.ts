@@ -17,7 +17,7 @@ function createRequest(body: Record<string, string | undefined>) {
     }
   });
 
-  return new Request('http://localhost/user/edit/collecting-data-enterprise', {
+  return new Request('http://localhost/user/settings/form', {
     method: 'POST',
     body: formData,
     headers: {
@@ -33,7 +33,7 @@ function createArgs(body: Record<string, string | undefined>): ActionFunctionArg
     request,
     params: {},
     context: undefined
-  }
+  } as any;
 }
 
 describe('ActionCollectingData', () => {

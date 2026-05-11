@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react';
 
 // Mock de react-router-dom para evitar erros de export no ambiente de testes do CI
 vi.mock('react-router-dom', async (importOriginal) => {
-  const actual = await importOriginal();
+  const actual = await importOriginal() as any;
   return {
     ...actual,
     MemoryRouter:

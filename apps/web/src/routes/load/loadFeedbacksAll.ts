@@ -4,6 +4,7 @@ import type {
   FeedbackFilters,
   FeedbackPagination,
   FeedbackStats,
+  FeedbackSentiment,
 } from 'lib/interfaces/domain/feedback.domain';
 import { ServiceGetFeedbacks } from 'src/services/serviceFeedbacks';
 import { loadFeedbackStatsData } from 'src/routes/load/loadFeedbackStats';
@@ -18,6 +19,7 @@ export type FeedbacksAllFilters = {
   search: string;
   category?: FeedbackCategory;
   item: string;
+  sentiment?: FeedbackSentiment | 'all';
 };
 
 const FEEDBACK_CATEGORIES: readonly FeedbackCategory[] = [
@@ -26,6 +28,8 @@ const FEEDBACK_CATEGORIES: readonly FeedbackCategory[] = [
   'SERVICE',
   'DEPARTMENT',
 ];
+
+const SENTIMENTS: readonly (FeedbackSentiment | 'all')[] = ['positive', 'neutral', 'negative', 'all'];
 
 export type FeedbacksAllData = {
   feedbacks: Feedback[];
@@ -51,6 +55,9 @@ export function parseFeedbacksAllFilters(url: URL): FeedbacksAllFilters {
     ? (categoryRaw as FeedbackCategory)
     : undefined;
 
+  const sentimentRaw = url.searchParams.get('sentiment') as FeedbackSentiment | 'all';
+  const sentiment = SENTIMENTS.includes(sentimentRaw) ? sentimentRaw : undefined;
+
   return {
     page,
     limit,
@@ -58,6 +65,7 @@ export function parseFeedbacksAllFilters(url: URL): FeedbacksAllFilters {
     search: url.searchParams.get('search') ?? '',
     category,
     item: url.searchParams.get('item') ?? '',
+    sentiment,
   };
 }
 
@@ -80,6 +88,7 @@ export async function loadFeedbacksAllData(
       search: filters.search ?? '',
       category: filters.category,
       item: filters.item ?? '',
+      sentiment: filters.sentiment,
     },
     error: feedbacksResponse ? null : 'Erro ao carregar feedbacks',
   };

@@ -228,12 +228,9 @@ const QuestionAccordion = memo(function QuestionAccordion({
               <p className="rounded-md border border-rose-500/20 bg-rose-500/8 px-2.5 py-2 text-xs text-rose-300">{error}</p>
             )}
 
-            <button
-              type="button" onClick={handleSave} disabled={isSaving}
-              className="w-full rounded-lg border border-(--primary-color)/30 bg-(--primary-color)/10 px-3 py-2.5 text-sm font-semibold text-(--primary-color) transition-all hover:bg-(--primary-color)/20 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {isSaving ? 'Salvando...' : 'Salvar perguntas deste item'}
-            </button>
+            <div className="pt-2">
+               {/* Botão de salvar perguntas removido para reduzir redundância */}
+            </div>
           </div>
         </div>
       </div>
@@ -320,18 +317,9 @@ const QrSection = memo(function QrSection({ qrItem, isPending, onToggle }: QrSec
           </div>
         )}
 
-        <button
-          type="button"
-          onClick={() => onToggle(qrItem.catalog_item_id, qrItem.active)}
-          disabled={isPending}
-          className={`w-full rounded-lg border px-3 py-2.5 text-sm font-semibold font-poppins transition-all disabled:cursor-not-allowed disabled:opacity-60 ${
-            qrItem.active
-              ? 'border-rose-500/25 bg-rose-500/8 text-rose-300 hover:bg-rose-500/15'
-              : 'border-(--primary-color)/40 bg-(--primary-color)/10 text-(--primary-color) hover:bg-(--primary-color)/20'
-          }`}
-        >
-          {isPending ? 'Atualizando...' : qrItem.active ? 'Desativar QR deste item' : 'Ativar QR deste item'}
-        </button>
+        <div className="pt-2">
+           {/* Botão de alternar QR removido para reduzir redundância */}
+        </div>
       </div>
     </div>
   );

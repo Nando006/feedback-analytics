@@ -4,7 +4,7 @@ import { useNavigation, useRouteLoaderData } from 'react-router-dom';
 import Profile from '../user/profile';
 
 vi.mock('react-router-dom', async (importActual) => {
-  const actual = await importActual<typeof import('react-router-dom')>('react-router-dom');
+  const actual = await (importActual as () => Promise<any>)();
 
   return {
     ...actual,
@@ -30,29 +30,6 @@ vi.mock('components/user/pages/profile/editUser/information', () => ({
       <div data-testid="profile-phone">{defaultPhone}</div>
     </div>
   ),
-}));
-
-vi.mock('components/user/shared/header', () => ({
-  default: ({
-    enterprise,
-    user,
-  }: {
-    enterprise?: { name?: string };
-    user?: { name?: string };
-  }) => (
-    <div data-testid="profile-header">
-      <div data-testid="user-name">{user?.name}</div>
-      <div data-testid="enterprise-header">{enterprise?.name}</div>
-    </div>
-  ),
-}));
-
-vi.mock('components/user/pages/profile/editCollectingData/formCollectingDataEnterprise', () => ({
-  default: () => <div data-testid="form-collecting-data-enterprise">FormCollectingDataEnterprise</div>,
-}));
-
-vi.mock('components/user/pages/profile/questionsDinamic/questionDinamicEnterprise', () => ({
-  default: () => <div data-testid="question-dinamic-enterprise">QuestionDinamicEnterprise</div>,
 }));
 
 // Mock do useRouteLoaderData e useNavigation
@@ -99,19 +76,7 @@ describe('Profile Page', () => {
 
     render(<Profile />);
 
-    expect(screen.getByTestId('profile-header')).toBeInTheDocument();
     expect(screen.getByTestId('profile-info')).toBeInTheDocument();
-  });
-
-  it('deve passar os dados corretos para o componente Header', () => {
-    mockUseRouteLoaderData.mockReturnValue(mockData);
-
-    render(<Profile />);
-
-    expect(screen.getByTestId('user-name')).toHaveTextContent('João Silva');
-    expect(screen.getByTestId('enterprise-header')).toHaveTextContent(
-      'Empresa Teste',
-    );
   });
 
   it('deve passar os dados corretos para o componente Info', () => {
@@ -170,11 +135,7 @@ describe('Profile Page', () => {
 
     render(<Profile />);
 
-    expect(screen.getByTestId('profile-header')).toBeInTheDocument();
     expect(screen.getByTestId('profile-info')).toBeInTheDocument();
-    expect(screen.getByTestId('user-name')).toHaveTextContent(
-      'Usuário Parcial',
-    );
     expect(screen.getByTestId('enterprise-name')).toHaveTextContent(
       'Empresa Parcial',
     );

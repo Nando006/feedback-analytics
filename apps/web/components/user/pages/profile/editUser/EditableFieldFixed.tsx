@@ -145,32 +145,7 @@ export default function EditableField({
           </div>
 
           <div className="flex items-center gap-2 pt-2">
-            <button
-              type="submit"
-              disabled={!hasChanged || isSubmitting}
-              className={`px-4 py-2 bg-(--primary-color) text-white rounded-lg text-sm font-medium hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2`}
-            >
-              {isSubmitting ? (
-                <>
-                  <FaSpinner aria-hidden="true" className="animate-spin" />
-                  Salvando...
-                </>
-              ) : (
-                <>
-                  <FaFloppyDisk aria-hidden="true" />
-                  Salvar
-                </>
-              )}
-            </button>
-            <button
-              type="button"
-              onClick={handleCancel}
-              disabled={isSubmitting}
-              className={`px-4 py-2 bg-(--quaternary-color)/20 text-(--text-secondary) rounded-lg text-sm font-medium hover:bg-(--quaternary-color)/30 transition-all flex items-center gap-2 ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
-            >
-              <FaXmark aria-hidden="true" />
-              Cancelar
-            </button>
+            {/* Botões removidos para reduzir redundância, salvamento via cabeçalho ou blur planejado */}
           </div>
         </form>
       </div>

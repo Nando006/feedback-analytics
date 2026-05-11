@@ -5,6 +5,7 @@ import type {
   Feedback,
   FeedbackPagination as FeedbackPaginationType,
   FeedbackStats,
+  FeedbackSentiment,
 } from 'lib/interfaces/domain/feedback.domain';
 import type { LoaderFeedbacksAll } from 'src/routes/loaders/loaderFeedbacksAll';
 import FeedbackHeader from 'components/user/pages/feedbacks/feedbackHeader';
@@ -33,13 +34,14 @@ export default function FeedbacksAll() {
     search: '',
     category: undefined,
     item: '',
+    sentiment: undefined,
   };
   const error = loaderData?.error ?? null;
   const [searchInput, setSearchInput] = useState(filters.search ?? '');
   const [itemInput, setItemInput] = useState(filters.item ?? '');
   const loading =
     navigation.state === 'loading' &&
-    navigation.location?.pathname === '/user/feedbacks/all';
+    navigation.location?.pathname === '/user/feedbacks';
 
   useEffect(() => {
     if (navigation.state === 'idle') {
@@ -58,6 +60,7 @@ export default function FeedbacksAll() {
     search?: string;
     category?: FeedbackCategory;
     item?: string;
+    sentiment?: FeedbackSentiment | 'all';
   }) => {
     const params = new URLSearchParams(searchParams);
     const hasKey = <K extends keyof typeof next>(key: K) =>
@@ -69,6 +72,7 @@ export default function FeedbacksAll() {
     const search = hasKey('search') ? (next.search ?? '') : searchInput;
     const category = hasKey('category') ? next.category : filters.category;
     const item = hasKey('item') ? (next.item ?? '') : itemInput;
+    const sentiment = hasKey('sentiment') ? next.sentiment : filters.sentiment;
 
     params.set('page', String(page));
     params.set('limit', String(limit));
@@ -97,6 +101,12 @@ export default function FeedbacksAll() {
       params.delete('item');
     }
 
+    if (sentiment) {
+      params.set('sentiment', sentiment);
+    } else {
+      params.delete('sentiment');
+    }
+
     setSearchParams(params);
   }, [
     searchParams,
@@ -105,6 +115,7 @@ export default function FeedbacksAll() {
     filters.limit,
     filters.rating,
     filters.category,
+    filters.sentiment,
     searchInput,
     itemInput,
   ]);
@@ -145,6 +156,11 @@ export default function FeedbacksAll() {
     updateSearchParams({ category, page: 1 });
   };
 
+  const handleSentimentFilter = (sentiment: FeedbackSentiment | 'all' | undefined) => {
+    setSuppressOverlay(true);
+    updateSearchParams({ sentiment, page: 1 });
+  };
+
   const handlePageChange = (page: number) => {
     setSuppressOverlay(true);
     updateSearchParams({ page });
@@ -174,6 +190,7 @@ export default function FeedbacksAll() {
         onItemChange={handleItemChange}
         onRatingFilter={handleRatingFilter}
         onCategoryFilter={handleCategoryFilter}
+        onSentimentFilter={handleSentimentFilter}
         onLimitChange={handleLimitChange}
       />
 
