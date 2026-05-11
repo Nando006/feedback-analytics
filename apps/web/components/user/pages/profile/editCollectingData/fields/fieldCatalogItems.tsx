@@ -61,6 +61,8 @@ function normalizeQuestions(
 
 const QuestionAccordion = memo(function QuestionAccordion({
   qrItem,
+  isSaving,
+  onSave,
 }: QuestionAccordionProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [draft, setDraft] = useState<QrCatalogQuestionInput[]>(() =>
@@ -100,6 +102,23 @@ const QuestionAccordion = memo(function QuestionAccordion({
     });
   }, []);
 
+  const handleSaveInternal = useCallback(() => {
+    if (!onSave) return;
+    onSave(
+      qrItem.catalog_item_id,
+      draft.map((q) => ({
+        question_order: q.question_order,
+        question_text: String(q.question_text ?? '').trim(),
+        is_active: q.is_active,
+        subquestions: (q.subquestions ?? []).map((s) => ({
+          subquestion_order: s.subquestion_order,
+          subquestion_text: String(s.subquestion_text ?? '').trim(),
+          is_active: s.is_active,
+        })),
+      })),
+    );
+  }, [draft, qrItem.catalog_item_id, onSave]);
+
   const activeCount = draft.filter((q) => q.is_active).length;
 
   return (
@@ -107,7 +126,7 @@ const QuestionAccordion = memo(function QuestionAccordion({
       <button
         type="button"
         onClick={() => { setError(null); setIsOpen((v) => !v); }}
-        className="flex w-full items-center justify-between px-3 py-2.5 text-left"
+        className="flex w-full items-center justify-between px-3 py-2.5 text-left transition-colors hover:bg-(--quaternary-color)/5"
       >
         <div className="flex items-center gap-2">
           <svg
@@ -177,8 +196,15 @@ const QuestionAccordion = memo(function QuestionAccordion({
               <p className="rounded-md border border-rose-500/20 bg-rose-500/8 px-2.5 py-2 text-xs text-rose-300">{error}</p>
             )}
 
-            <div className="pt-2">
-               {/* Botão de salvar perguntas removido para reduzir redundância */}
+            <div className="flex justify-end pt-2">
+              <button
+                type="button"
+                disabled={isSaving}
+                onClick={handleSaveInternal}
+                className="flex items-center gap-2 rounded-lg bg-(--primary-color) px-3 py-1.5 text-xs font-bold text-white shadow-sm transition-all hover:brightness-110 active:scale-95 disabled:opacity-50"
+              >
+                {isSaving ? 'Salvando...' : 'Salvar Perguntas'}
+              </button>
             </div>
           </div>
         </div>
@@ -216,7 +242,7 @@ const QrPreviewImage = memo(function QrPreviewImage({ src, alt }: { src: string;
 
 /* ─────────────────── QrSection ─────────────────── */
 
-const QrSection = memo(function QrSection({ qrItem }: QrSectionProps) {
+const QrSection = memo(function QrSection({ qrItem, isPending, onToggle }: QrSectionProps) {
   const { enterprise } = useRouteLoaderData('user') as { enterprise: Enterprise };
 
   const feedbackUrl = useMemo(() => {
@@ -266,8 +292,19 @@ const QrSection = memo(function QrSection({ qrItem }: QrSectionProps) {
           </div>
         )}
 
-        <div className="pt-2">
-           {/* Botão de alternar QR removido para reduzir redundância */}
+        <div className="flex justify-end pt-2">
+          <button
+            type="button"
+            disabled={isPending}
+            onClick={() => onToggle?.(qrItem.catalog_item_id, !qrItem.active)}
+            className={`flex items-center gap-2 rounded-lg px-4 py-1.5 text-xs font-bold transition-all active:scale-95 disabled:opacity-50 ${
+              qrItem.active
+                ? 'bg-(--bg-tertiary) border border-(--quaternary-color)/10 text-(--text-secondary) hover:bg-(--quaternary-color)/5'
+                : 'bg-(--primary-color) text-white shadow-sm hover:brightness-110'
+            }`}
+          >
+            {isPending ? 'Processando...' : qrItem.active ? 'Desativar QR' : 'Ativar QR Code'}
+          </button>
         </div>
       </div>
     </div>
@@ -282,7 +319,9 @@ const CatalogItemRow = memo(function CatalogItemRow({
   onRemove,
   onChangeField,
   qrItem,
+  isSavingQuestions,
   onSaveQuestions,
+  isPendingToggle,
   onToggle,
 }: CatalogItemRowProps) {
   const [draftName, setDraftName] = useState(item.name);
@@ -341,12 +380,15 @@ const CatalogItemRow = memo(function CatalogItemRow({
           {onSaveQuestions && (
             <QuestionAccordion
               qrItem={qrItem}
+              isSaving={isSavingQuestions}
               onSave={onSaveQuestions}
             />
           )}
           {onToggle && (
             <QrSection
               qrItem={qrItem}
+              isPending={isPendingToggle}
+              onToggle={onToggle}
             />
           )}
         </>

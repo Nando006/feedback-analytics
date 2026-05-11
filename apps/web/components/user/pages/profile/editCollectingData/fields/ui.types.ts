@@ -70,10 +70,14 @@ export interface FieldCompanyFeedbackQuestionsProps {
 
 export interface QuestionAccordionProps {
   qrItem: QrCodeCatalogLoadItem;
+  isSaving?: boolean;
+  onSave?: (catalogItemId: string, questions: QrCatalogQuestionInput[]) => void;
 }
 
 export interface QrSectionProps {
   qrItem: QrCodeCatalogLoadItem;
+  isPending?: boolean;
+  onToggle?: (catalogItemId: string, isActive: boolean) => void;
 }
 
 /**

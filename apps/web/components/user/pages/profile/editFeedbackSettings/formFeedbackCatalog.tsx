@@ -69,6 +69,8 @@ export default function FormFeedbackCatalog({
   );
 
   const [qrItems, setQrItems] = useState<QrCodeCatalogLoadItem[]>(qrData?.items ?? []);
+  const [savingQuestionsItemId, setSavingQuestionsItemId] = useState<string | null>(null);
+  const [togglePendingItemId, setTogglePendingItemId] = useState<string | null>(null);
 
   const qrFetcher = useFetcher<QrCatalogActionResponse>();
 
@@ -114,10 +116,14 @@ export default function FormFeedbackCatalog({
     } else if (data.error) {
       toast.error('Erro na operação', data.error);
     }
+
+    setSavingQuestionsItemId(null);
+    setTogglePendingItemId(null);
   }, [qrFetcher.state, qrFetcher.data, toast]);
 
   const handleSaveQuestions = useCallback(
     (catalogItemId: string, questions: QrCatalogQuestionInput[]) => {
+      setSavingQuestionsItemId(catalogItemId);
       qrFetcher.submit(
         {
           intent: INTENT_QR_SAVE_FEEDBACK_QUESTIONS,
@@ -132,6 +138,7 @@ export default function FormFeedbackCatalog({
 
   const handleToggle = useCallback(
     (catalogItemId: string, isActive: boolean) => {
+      setTogglePendingItemId(catalogItemId);
       qrFetcher.submit(
         {
           intent: isActive ? INTENT_QR_DISABLE : INTENT_QR_ENABLE,
@@ -163,7 +170,9 @@ export default function FormFeedbackCatalog({
         items={items}
         onChange={setItems}
         qrItems={qrData ? qrItems : undefined}
+        savingQuestionsItemId={savingQuestionsItemId}
         onSaveQuestions={qrData ? handleSaveQuestions : undefined}
+        togglePendingItemId={togglePendingItemId}
         onToggle={qrData ? handleToggle : undefined}
       />
     </>
