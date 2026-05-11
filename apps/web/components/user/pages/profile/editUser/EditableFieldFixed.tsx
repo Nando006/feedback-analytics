@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useSubmit, useActionData } from 'react-router-dom';
 import { useToast } from 'components/public/forms/messages/useToast';
-import { FaCircleExclamation, FaPenToSquare } from 'react-icons/fa6';
+import { FaCircleExclamation, FaFloppyDisk, FaPenToSquare, FaXmark } from 'react-icons/fa6';
 import type { ActionData } from 'lib/interfaces/contracts/action-data.contract';
 import type { EditableFieldProps } from './ui.types';
 
@@ -89,6 +89,13 @@ export default function EditableField({
     onEditStart?.();
   };
 
+  const handleCancel = () => {
+    reset({ [getFieldName()]: value || '' });
+    setIsEditing(false);
+    setIsSubmitting(false);
+    onEditEnd?.();
+  };
+
   const onSubmit = (data: unknown) => {
     const formData = data as Record<string, string>;
 
@@ -135,7 +142,32 @@ export default function EditableField({
           </div>
 
           <div className="flex items-center gap-2 pt-2">
-            {/* Botões removidos para reduzir redundância, salvamento via cabeçalho ou blur planejado */}
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="flex items-center gap-2 rounded-lg bg-(--primary-color) px-4 py-2 text-xs font-bold text-white transition-all hover:brightness-110 active:scale-95 disabled:opacity-50"
+            >
+              {isSubmitting ? (
+                <>
+                  <div className="h-3 w-3 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                  Salvando...
+                </>
+              ) : (
+                <>
+                  <FaFloppyDisk className="h-3 w-3" />
+                  Salvar
+                </>
+              )}
+            </button>
+            <button
+              type="button"
+              onClick={handleCancel}
+              disabled={isSubmitting}
+              className="flex items-center gap-2 rounded-lg border border-(--quaternary-color)/20 bg-(--bg-tertiary) px-4 py-2 text-xs font-semibold text-(--text-secondary) transition-all hover:bg-(--quaternary-color)/5 active:scale-95 disabled:opacity-50"
+            >
+              <FaXmark className="h-3 w-3" />
+              Cancelar
+            </button>
           </div>
         </form>
       </div>

@@ -22,11 +22,6 @@ export default function Header() {
           </Link>
           <Link
             to="/user/settings/profile"
-            className="btn-ghost font-poppins">
-            Perfil
-          </Link>
-          <Link
-            to="/user/edit/profile"
             className="btn-primary font-poppins"
           >
             Editar Perfil
