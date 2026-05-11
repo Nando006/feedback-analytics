@@ -154,7 +154,7 @@ function validateCompanyQuestions(questions: CompanyFeedbackQuestionInput[]) {
   return null;
 }
 
-export default function QuestionDinamicEnterprise({ hideSubmit = false }: { hideSubmit?: boolean }) {
+export function QuestionDynamicEnterprise({ hideSubmit = false }: { hideSubmit?: boolean }) {
   const { collecting } = useRouteLoaderData("user") as {
     collecting: CollectingDataEnterprise | null;
   };

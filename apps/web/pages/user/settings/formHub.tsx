@@ -3,7 +3,7 @@ import { Form, useActionData, useNavigation } from 'react-router-dom';
 import CardSimple from 'components/user/shared/cards/cardSimple';
 import FormTypesFeedback from 'components/user/pages/profile/editTypesFeedback/formTypesFeedback';
 import FormCollectingDataEnterprise from 'components/user/pages/profile/editCollectingData/formCollectingDataEnterprise';
-import QuestionDinamicEnterprise from 'components/user/pages/profile/questionsDinamic/questionDinamicEnterprise';
+import { QuestionDynamicEnterprise } from 'components/user/pages/profile/questionsDynamic/questionDynamicEnterprise';
 import { useToast } from 'components/public/forms/messages/useToast';
 import type { ActionData } from 'lib/interfaces/contracts/action-data.contract';
 import SettingsPageHeader from 'components/user/shared/settingsPageHeader';
@@ -83,7 +83,7 @@ export default function FormHub() {
               Defina perguntas objetivas (escala de 1 a 5) que serão exibidas aos clientes.
             </p>
           </div>
-          <QuestionDinamicEnterprise hideSubmit />
+          <QuestionDynamicEnterprise hideSubmit />
         </section>
       </Form>
     </div>
