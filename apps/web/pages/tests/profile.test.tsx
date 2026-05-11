@@ -4,6 +4,7 @@ import { useNavigation, useRouteLoaderData } from 'react-router-dom';
 import Profile from '../user/profile';
 
 vi.mock('react-router-dom', async (importActual) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const actual = await (importActual as () => Promise<any>)();
 
   return {

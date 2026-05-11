@@ -33,6 +33,7 @@ function createArgs(body: Record<string, string | undefined>): ActionFunctionArg
     request,
     params: {},
     context: undefined
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } as any;
 }
 

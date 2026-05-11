@@ -15,7 +15,6 @@ const EMPTY_ITEM: CatalogItemInput = {
 
 const INITIAL_VISIBLE_ITEMS = 30;
 const VISIBLE_ITEMS_STEP = 30;
-const MIN_LEN = 20;
 const MAX_LEN = 150;
 
 /* ─────────────────── question helpers ─────────────────── */
@@ -58,41 +57,10 @@ function normalizeQuestions(
   });
 }
 
-function validateQuestions(questions: QrCatalogQuestionInput[]): string | null {
-  const hasAnyText = questions.some(
-    (q) =>
-      String(q.question_text ?? '').trim().length > 0 ||
-      (q.subquestions ?? []).some((s) => String(s.subquestion_text ?? '').trim().length > 0),
-  );
-  if (!hasAnyText) return null;
-
-  for (const q of questions) {
-    const qText = String(q.question_text ?? '').trim();
-    if (qText.length > 0 && (qText.length < MIN_LEN || qText.length > MAX_LEN)) {
-      return 'Cada pergunta principal deve ter entre 20 e 150 caracteres.';
-    }
-    if (q.is_active && qText.length === 0) return 'Perguntas ativas precisam ter texto.';
-
-    for (const s of q.subquestions ?? []) {
-      const sText = String(s.subquestion_text ?? '').trim();
-      if (sText.length === 0) {
-        if (s.is_active) return 'Subperguntas ativas precisam ter texto.';
-        continue;
-      }
-      if (sText.length < MIN_LEN || sText.length > MAX_LEN) {
-        return 'Cada subpergunta deve ter entre 20 e 150 caracteres.';
-      }
-    }
-  }
-  return null;
-}
-
 /* ─────────────────── QuestionAccordion ─────────────────── */
 
 const QuestionAccordion = memo(function QuestionAccordion({
   qrItem,
-  isSaving,
-  onSave,
 }: QuestionAccordionProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [draft, setDraft] = useState<QrCatalogQuestionInput[]>(() =>
@@ -131,25 +99,6 @@ const QuestionAccordion = memo(function QuestionAccordion({
       return next;
     });
   }, []);
-
-  const handleSave = useCallback(() => {
-    const err = validateQuestions(draft);
-    if (err) { setError(err); return; }
-    setError(null);
-    onSave(
-      qrItem.catalog_item_id,
-      draft.map((q) => ({
-        question_order: q.question_order,
-        question_text: String(q.question_text ?? '').trim(),
-        is_active: q.is_active,
-        subquestions: (q.subquestions ?? []).map((s) => ({
-          subquestion_order: s.subquestion_order,
-          subquestion_text: String(s.subquestion_text ?? '').trim(),
-          is_active: s.is_active,
-        })),
-      })),
-    );
-  }, [draft, qrItem.catalog_item_id, onSave]);
 
   const activeCount = draft.filter((q) => q.is_active).length;
 
@@ -267,7 +216,7 @@ const QrPreviewImage = memo(function QrPreviewImage({ src, alt }: { src: string;
 
 /* ─────────────────── QrSection ─────────────────── */
 
-const QrSection = memo(function QrSection({ qrItem, isPending, onToggle }: QrSectionProps) {
+const QrSection = memo(function QrSection({ qrItem }: QrSectionProps) {
   const { enterprise } = useRouteLoaderData('user') as { enterprise: Enterprise };
 
   const feedbackUrl = useMemo(() => {
@@ -333,9 +282,7 @@ const CatalogItemRow = memo(function CatalogItemRow({
   onRemove,
   onChangeField,
   qrItem,
-  isSavingQuestions,
   onSaveQuestions,
-  isPendingToggle,
   onToggle,
 }: CatalogItemRowProps) {
   const [draftName, setDraftName] = useState(item.name);
@@ -394,15 +341,12 @@ const CatalogItemRow = memo(function CatalogItemRow({
           {onSaveQuestions && (
             <QuestionAccordion
               qrItem={qrItem}
-              isSaving={isSavingQuestions ?? false}
               onSave={onSaveQuestions}
             />
           )}
           {onToggle && (
             <QrSection
               qrItem={qrItem}
-              isPending={isPendingToggle ?? false}
-              onToggle={onToggle}
             />
           )}
         </>
@@ -426,9 +370,7 @@ const FieldCatalogItems = memo(function FieldCatalogItems({
   items,
   onChange,
   qrItems,
-  savingQuestionsItemId,
   onSaveQuestions,
-  togglePendingItemId,
   onToggle,
 }: FieldCatalogItemsProps) {
   const localKeySequenceRef = useRef(0);
@@ -532,9 +474,7 @@ const FieldCatalogItems = memo(function FieldCatalogItems({
                 onRemove={handleRemoveItem}
                 onChangeField={handleChangeField}
                 qrItem={qrItem}
-                isSavingQuestions={qrItem != null && savingQuestionsItemId === qrItem.catalog_item_id}
                 onSaveQuestions={onSaveQuestions}
-                isPendingToggle={qrItem != null && togglePendingItemId === qrItem.catalog_item_id}
                 onToggle={onToggle}
               />
             );

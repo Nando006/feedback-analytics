@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react';
 
 // Mock de react-router-dom para evitar erros de export no ambiente de testes do CI
 vi.mock('react-router-dom', async (importOriginal) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const actual = await importOriginal() as any;
   return {
     ...actual,

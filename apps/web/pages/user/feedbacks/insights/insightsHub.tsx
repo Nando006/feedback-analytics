@@ -1,9 +1,8 @@
 import { useState } from 'react';
+import type { TabType } from './ui.types';
 import FeedbacksInsightsReport from './feedbackInsightsReport';
 import FeedbacksInsightsEmotional from './feedbacksInsightsEmotional';
 import FeedbacksInsightsStatistics from './feedbacksInsightsStatistics';
-
-type TabType = 'reports' | 'emotional' | 'statistics';
 
 export default function InsightsHub() {
   const [activeTab, setActiveTab] = useState<TabType>('reports');

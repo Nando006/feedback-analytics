@@ -10,7 +10,7 @@ import type { QrCodeCatalogLoadData } from 'src/routes/load/loadQrCodeCatalog';
 import SettingsPageHeader from 'components/user/shared/settingsPageHeader';
 import { FaFloppyDisk } from 'react-icons/fa6';
 
-type CatalogType = 'PRODUCT' | 'SERVICE' | 'DEPARTMENT';
+import type { CatalogType } from './ui.types';
 
 export default function CatalogHub() {
   const toast = useToast();
@@ -108,7 +108,7 @@ export default function CatalogHub() {
           <CardSimple>
             <div className="relative w-full">
               <Form id="form-catalog" method="post">
-                <FormFeedbackCatalog catalogType={activeTab} qrData={qrData!} hideSubmit />
+                <FormFeedbackCatalog catalogType={activeTab} qrData={qrData!} />
               </Form>
               {isSaving && (
                 <div className="pointer-events-none absolute inset-0 rounded-xl border border-(--quaternary-color)/12 bg-(--bg-primary)/35 backdrop-blur-[1px]" />

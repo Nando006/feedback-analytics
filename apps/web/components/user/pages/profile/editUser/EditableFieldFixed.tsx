@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useSubmit, useActionData } from 'react-router-dom';
 import { useToast } from 'components/public/forms/messages/useToast';
-import { FaCircleExclamation, FaFloppyDisk, FaPenToSquare, FaSpinner, FaXmark } from 'react-icons/fa6';
+import { FaCircleExclamation, FaPenToSquare } from 'react-icons/fa6';
 import type { ActionData } from 'lib/interfaces/contracts/action-data.contract';
 import type { EditableFieldProps } from './ui.types';
 
@@ -42,15 +42,12 @@ export default function EditableField({
     handleSubmit,
     formState: { errors },
     reset,
-    watch,
   } = useForm({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resolver: zodResolver(schema as any),
     defaultValues: { [getFieldName()]: value || '' },
   });
 
-  const currentValue = watch(getFieldName());
-  const hasChanged = currentValue !== (value || '');
   const fieldName = getFieldName();
   const fieldRegistration = register(fieldName, {
     required: 'Campo obrigatório',
@@ -90,13 +87,6 @@ export default function EditableField({
   const handleEdit = () => {
     setIsEditing(true);
     onEditStart?.();
-  };
-
-  const handleCancel = () => {
-    reset({ [getFieldName()]: value || '' });
-    setIsEditing(false);
-    setIsSubmitting(false);
-    onEditEnd?.();
   };
 
   const onSubmit = (data: unknown) => {

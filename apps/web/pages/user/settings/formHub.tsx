@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import { Form, useActionData, useNavigation } from 'react-router-dom';
-import CardSimple from 'components/user/shared/cards/cardSimple';
 import FormTypesFeedback from 'components/user/pages/profile/editTypesFeedback/formTypesFeedback';
 import FormCollectingDataEnterprise from 'components/user/pages/profile/editCollectingData/formCollectingDataEnterprise';
 import { QuestionDynamicEnterprise } from 'components/user/pages/profile/questionsDynamic/questionDynamicEnterprise';
