@@ -216,26 +216,9 @@ const QuestionAccordion = memo(function QuestionAccordion({
 /* ─────────────────── QrPreviewImage ─────────────────── */
 
 const QrPreviewImage = memo(function QrPreviewImage({ src, alt }: { src: string; alt: string }) {
-  const ref = useRef<HTMLDivElement | null>(null);
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el || visible) return;
-    const observer = new IntersectionObserver(
-      (entries) => { if (entries[0]?.isIntersecting) { setVisible(true); observer.disconnect(); } },
-      { root: null, rootMargin: '200px', threshold: 0.01 },
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [visible]);
-
   return (
-    <div ref={ref} className="flex min-h-44 items-center justify-center rounded-lg border border-(--quaternary-color)/10 bg-(--bg-tertiary) p-3">
-      {visible
-        ? <img src={src} alt={alt} className="h-36 w-36" loading="lazy" decoding="async" />
-        : <div className="h-36 w-36 animate-pulse rounded-lg bg-(--seventh-color)" />
-      }
+    <div className="flex min-h-44 items-center justify-center rounded-lg border border-(--quaternary-color)/10 bg-(--bg-tertiary) p-3">
+      <img src={src} alt={alt} className="h-36 w-36" loading="lazy" decoding="async" />
     </div>
   );
 });
@@ -246,9 +229,9 @@ const QrSection = memo(function QrSection({ qrItem, isPending, onToggle }: QrSec
   const { enterprise } = useRouteLoaderData('user') as { enterprise: Enterprise };
 
   const feedbackUrl = useMemo(() => {
-    if (!qrItem.collection_point_id) return null;
+    if (!qrItem.collection_point_id || !enterprise?.id) return null;
     return `${window.location.origin}/feedback/qrcode?enterprise=${enterprise.id}&collection_point=${qrItem.collection_point_id}&item=${qrItem.catalog_item_id}`;
-  }, [enterprise.id, qrItem.collection_point_id, qrItem.catalog_item_id]);
+  }, [enterprise?.id, qrItem.collection_point_id, qrItem.catalog_item_id]);
 
   const qrCodeUrl = useMemo(
     () => (feedbackUrl ? getQrCodeUrl(feedbackUrl, { size: 220, format: 'png' }) : null),
