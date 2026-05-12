@@ -10,10 +10,10 @@ export const menuData: MenuItem[] = [
     label: "Insights",
     to: "/user/insights",
   },
+  { label: "Perfil", to: "/user/profile" },
   {
     label: "Configurações",
     children: [
-      { label: "Perfil", to: "/user/settings/profile" },
       { label: "Formulário", to: "/user/settings/form" },
       { label: "Catálogo", to: "/user/settings/catalog" },
       { label: "Compartilhamento", to: "/user/settings/sharing" },

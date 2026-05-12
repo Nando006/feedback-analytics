@@ -84,7 +84,7 @@ describe('LayoutUser', () => {
   });
 
   it.each([
-    ['/user/settings/profile', 'Profile skeleton'],
+    ['/user/profile', 'Profile skeleton'],
     ['/user/settings/sharing', 'QrCode Enterprise skeleton'],
     ['/user/qrcode/products', 'QrCode Products skeleton'],
     ['/user/qrcode/services', 'QrCode Services skeleton'],

@@ -113,8 +113,11 @@ describe('Profile Page', () => {
 
     const { container } = render(<Profile />);
 
-    const mainDiv = container.firstChild as HTMLElement;
-    expect(mainDiv).toHaveClass('font-work-sans', 'space-y-6');
+    const glassDiv = container.firstChild as HTMLElement;
+    expect(glassDiv).toHaveClass('rounded-2xl', 'glass-card');
+
+    const contentDiv = glassDiv.firstChild as HTMLElement;
+    expect(contentDiv).toHaveClass('font-work-sans', 'space-y-6');
   });
 
   it('deve chamar useRouteLoaderData com a chave correta', () => {

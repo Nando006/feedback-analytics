@@ -166,8 +166,10 @@ export default function User() {
 
     if (pendingPathname === '/user/dashboard') return <DashboardSkeleton />;
 
+    // Profile
+    if (pendingPathname === '/user/profile') return <EditProfileSkeleton />;
+
     // Settings
-    if (pendingPathname === '/user/settings/profile') return <EditProfileSkeleton />;
     if (pendingPathname === '/user/settings/sharing') return <QrCodeEnterpriseSkeleton />;
     if (pendingPathname === '/user/settings/form') return <EditFeedbackSettingsSkeleton />;
     if (pendingPathname === '/user/settings/catalog') return <QrCodeProductsSkeleton />;

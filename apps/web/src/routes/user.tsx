@@ -67,12 +67,13 @@ export function RouteUser() {
         element={<InsightsHub />}
       />
 
+      <Route
+        path="profile"
+        element={<Profile />}
+        action={ActionProfile}
+      />
+
       <Route path="settings" element={<SettingsLayout />}>
-        <Route
-          path="profile"
-          element={<Profile />}
-          action={ActionProfile}
-        />
         <Route
           path="sharing"
           loader={LoaderQrCodeEnterprise}

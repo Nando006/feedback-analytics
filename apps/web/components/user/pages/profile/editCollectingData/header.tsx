@@ -21,7 +21,7 @@ export default function Header() {
             Configuração de Feedbacks
           </Link>
           <Link
-            to="/user/settings/profile"
+            to="/user/profile"
             className="btn-primary font-poppins"
           >
             Editar Perfil
