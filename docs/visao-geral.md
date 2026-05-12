@@ -1,8 +1,23 @@
 # Visão Geral — Feedback Analytics
+o Projeto Feedback Analytics surgiu da identificação de um problema recorrente enfrentado por muitas empresas:
+
+"A ausência de um canal eficiente e estruturado para a gestão de feedbacks dos clientes."
+
+Essa lacuna compromete a capacidade de evoluir a empresa de forma contínua e estratégica.
+
+## O Objetivo
+
+Oferecer às empresas uma ferramenta acessível, automatizada e inteligente para transformar opiniões de clientes em decisões estratégicas, promovendo a melhoria contínua, a inovação e a fidelização de clientes.
 
 ## O Problema
 
-Pequenas e médias empresas perdem decisões estratégicas por falta de dados. Feedbacks de clientes chegam de forma **fragmentada** — papel, e-mail, comentário verbal — e nunca são analisados em escala.
+Atualmente diversas organizações, especialmente de pequeno e médio porte não contam com mecanismos eficazes para:
+
+- Coletar feedbacks de forma acessível e multicanal.
+- Analisar essas informações de forma estruturada.
+- Extrair insights relevantes que possam direcionar ações de melhoria, inovação e fidelização de clientes.
+
+Essas deficiências leva à perda de oportunidades estratégicas e prejudica a competitividade das empresas no mercado.
 
 O resultado: gestores decidem com base em intuição, não em evidência.
 
@@ -10,7 +25,8 @@ O resultado: gestores decidem com base em intuição, não em evidência.
 
 O **Feedback Analytics** transforma coleta e análise de feedbacks em um processo estruturado e inteligente em três etapas:
 
-1. **Colete** — a empresa gera QR Codes exclusivos por produto, serviço ou departamento; o cliente escaneia e avalia sem precisar criar conta
+1. **Colete** — O sistema oferece canais estruturados para coletar feedbacks:
+  - **Canal QRCode**: a empresa gera QR Codes exclusivos por produto, serviço ou departamento; o cliente escaneia e avalia sem precisar criar conta.
 2. **Analise** — um pipeline de IA (Google Gemini) processa os feedbacks automaticamente, classificando sentimento, extraindo palavras-chave e gerando insights
 3. **Decida** — o dashboard exibe relatórios acionáveis por escopo, permitindo comparar produtos, departamentos ou serviços
 
