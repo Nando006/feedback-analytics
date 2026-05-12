@@ -1,5 +1,5 @@
 # Visão Geral — Feedback Analytics
-o Projeto Feedback Analytics surgiu da identificação de um problema recorrente enfrentado por muitas empresas:
+O projeto Feedback Analytics surgiu da identificação de um problema recorrente enfrentado por muitas empresas:
 
 "A ausência de um canal eficiente e estruturado para a gestão de feedbacks dos clientes."
 
@@ -25,10 +25,10 @@ O resultado: gestores decidem com base em intuição, não em evidência.
 
 O **Feedback Analytics** transforma coleta e análise de feedbacks em um processo estruturado e inteligente em três etapas:
 
-1. **Colete** — O sistema oferece canais estruturados para coletar feedbacks:
-  - **Canal QRCode**: a empresa gera QR Codes exclusivos por produto, serviço ou departamento; o cliente escaneia e avalia sem precisar criar conta.
-2. **Analise** — um pipeline de IA (Google Gemini) processa os feedbacks automaticamente, classificando sentimento, extraindo palavras-chave e gerando insights
-3. **Decida** — o dashboard exibe relatórios acionáveis por escopo, permitindo comparar produtos, departamentos ou serviços
+1. **Colete** — O sistema oferece canal estruturado para coletar feedbacks:
+    - **Canal QRCode**: A empresa gera QR Codes exclusivos por produto, serviço ou departamento, o cliente escaneia e avalia sem precisar criar conta.
+2. **Analise** — Um pipeline de IA com Google Gemini interpreta cada feedback automaticamente, classifica sentimento, extrai temas e palavras-chave e gera insights acionáveis para melhorar produtos, serviços e experiência do cliente.
+3. **Decida** — O dashboard apresenta um painel de insights por escopo, mostrando sentimento dos clientes, temas recorrentes, recomendações e comparação entre empresa, produtos, serviços ou departamentos. Assim, o gestor transforma feedbacks em ações concretas.
 
 ## Para Quem É
 
@@ -40,18 +40,19 @@ O **Feedback Analytics** transforma coleta e análise de feedbacks em um process
 
 ## Estrutura do Sistema
 
-O projeto é um **monorepo** com três serviços principais:
+O projeto é um **monorepo multi domínios**. Cada domínio é independente, com seu próprio workflow no GitHub e servidor, mas todos compartilham o mesmo banco de dados.
 
-```
-feedback-analytics/
-├── apps/web/              → Frontend React (público + dashboard)
-├── backends/api-gateway/  → API REST — ponto único de entrada do backend
-└── services/ia-analyze/   → Microserviço de análise IA (Google Gemini)
-```
+Atualmente temos os seguintes domínios:
+
+- `apps/web/` → Frontend React (público + dashboard)
+- `backends/api-gateway/` → API REST — ponto único de entrada do backend
+- `services/ia-analyze/` → serviço isolado de análise IA (Google Gemini)
 
 - O **Frontend** serve o formulário público de coleta e o dashboard protegido da empresa.
-- O **API Gateway** centraliza autenticação, lógica de negócio e orquestra Supabase e IA.
-- O **IA Analyze** é um microserviço interno: só o Gateway o acessa, nunca o frontend.
+- O **API Gateway** centraliza autenticação, lógica de negócio, orquestra Supabase e orquestra as chamadas de IA.
+- O **IA Analyze** é um serviço isolado de análise de feedbacks: só o Gateway o acessa e ele não expõe rotas ao frontend.
+
+No domínio `services/` o projeto foi pensado para abrigar diferentes serviços pequenos. Serviços com grande impacto no produto, como `ia-analyze`, são separados como domínios isolados para manter autonomia e facilitar deploys específicos.
 
 ## Próximos Passos
 

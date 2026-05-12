@@ -1,5 +1,38 @@
 # Arquitetura do Sistema
 
+## Visão Geral
+
+O projeto é um **monorepo multidomínios** gerenciado com npm Workspaces. Cada domínio tem escopo, responsabilidade e ciclo de execução próprios, mas compartilham versionamento único e dependências cruzadas via pacote `shared`.
+
+| Domínio | Tipo | Descrição |
+|---|---|---|
+| `frontend` | React SPA | Interface do usuário — área pública (QR Code) e painel da empresa |
+| `gateway` | API Gateway / BFF | Hub central — autenticação, regras de negócio, orquestração |
+| `shared` | Cross-Package | Tipos, interfaces e contratos compartilhados entre domínios |
+| `services/ia-analyze` | Serviço Externo | Processamento de IA com escopo e volume próprios |
+| `services/*` | Serviços Externos | Integrações menores agrupadas em um único domínio de serviços |
+
+---
+
+## Responsabilidades por Camada
+
+**Monorepo Multidomínio**
+Organiza aplicações, serviços e libs no mesmo repositório com versionamento único e execução independente por domínio. Evita duplicação de dependências e garante consistência de contratos.
+
+**Frontend React SPA**
+Responsável pela experiência do usuário, navegação via React Router (loaders/actions), e consumo das APIs do Gateway. Nunca acessa o banco ou serviços de IA diretamente.
+
+**API Gateway (padrão BFF)**
+Ponto único de entrada para o frontend. Concentra autenticação (JWT via Supabase Auth), orquestração das regras de negócio, integração com o banco de dados (Supabase com RLS) e coordenação das chamadas aos serviços externos.
+
+**Shared Cross-Package**
+Pacote interno importado por múltiplos domínios. Evita duplicação de tipos TypeScript — contratos de API, interfaces de entidades e tipos de integração vivem aqui e são a fonte de verdade para todos os serviços.
+
+**Serviços Externos**
+Divididos em dois perfis: integrações de menor impacto são agrupadas em um único domínio `services/`; serviços de grande volume ou complexidade (como o IA Analyze) ganham domínio próprio para escalar e evoluir de forma independente.
+
+---
+
 ## Como os Serviços se Conectam
 
 O sistema tem uma topologia **hub-and-spoke**: o API Gateway é o hub central. O frontend nunca fala diretamente com o banco ou com o serviço de IA — tudo passa pelo Gateway.
