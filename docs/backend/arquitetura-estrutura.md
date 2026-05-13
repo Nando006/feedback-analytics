@@ -1,144 +1,42 @@
-# Backend — Arquitetura e Estrutura (API Gateway)
+# Backend (API Gateway) — Arquitetura e Estrutura 
 
-## Camadas da Aplicação
+O backend utiliza uma combinação de padrões arquiteturais para garantir segurança, organização e escalabilidade.
+Podemos a arquitetura em duas visões:
 
-O API Gateway segue uma arquitetura em camadas com responsabilidades bem definidas. Cada requisição percorre o seguinte caminho:
+- **Visão Macro:** Como o backend se encaixa no sistema inteiro
+- **Visão Micro:** Como o código está organizado por dentro
 
-```
-Route → Middleware (auth) → Controller → Service → Repository → Supabase
-```
+## Visão Macro: API Gateway e BFF (Backend-For-Frontend)
 
-Nenhuma camada pula outra. O controller não acessa o banco diretamente; o repository não tem lógica de negócio.
+O backend principal (o `api-gateway`) atua como um **Backend-for-Frontend (BFF)**. Isso significa que ele é o **único ponto de entrada** para o Frontend. O Frontend nunca acessa o banco de dados diretamente nem fala com serviços externos, tudo passa pelo *Gateway*.
 
-```mermaid
-graph TB
-    subgraph HTTP["Camada HTTP"]
-        PR[routes/protected/]
-        PU[routes/public/]
-        MW[middlewares/auth.ts\nrequireAuth]
-    end
+Ele segue uma topologia **Hub-and-Spoke**, onde o API Gateway é o centro (hub) que orquestra a comunicação com:
 
-    subgraph Logic["Camada de Lógica"]
-        CTRL[controllers/protected/]
-        SVC[services/]
-        LIB[libs/iaAnalyze/\nbuild · filter · parse · rules · errors]
-    end
+- O banco de dados (Supabase / PostgreSQL).
+- O serviço de autenticação (Supabase Auth).
+- Outros microserviços internos.
 
-    subgraph Data["Camada de Dados"]
-        REPO[repositories/]
-        PROV[providers/\niaAnalyze.provider.ts]
-    end
+**Vantagens disso:** Centraliza a validação de segurança (tokens JWT) e isola lógicas complexas, deixando o Frontend mais leve.
 
-    subgraph External["Externos"]
-        SUPA[(Supabase)]
-        IA[IA Analyze Service]
-    end
+## Visão Micro: Arquitetura em Camadas (Layered Architecture)
 
-    PR --> MW --> CTRL
-    PU --> CTRL
-    CTRL --> SVC
-    SVC --> LIB
-    SVC --> REPO
-    SVC --> PROV
-    REPO --> SUPA
-    PROV --> IA
-```
+Internamente, o API Gateway adota uma **Arquitetura em Camadas** com responsabilidades estritamente definidas. O fluxo de dados segue um caminho rigoroso de *ida e volta*, onde nenhuma camada pula a outra:
 
----
+1. **Rotas (`routes/`):** A porta de entrada. Recebem a requisição HTTP e direcionam para o controller correto.
+2. **Middlewares (`middlewares/`):** A segurança. Validam a autenticação (ex: o token JWT) antes de deixar a requisição prosseguir.
+3. **Controllers (`controllers/`):** Os "gerentes". Eles recebem a requisição validada, extraem os parâmetros ou o corpo (body), formatam e repassam a tarefa para o *Service*. Eles não tocam no banco de dados.
+4. **Services (`services/`):** O "cérebro". Aqui vivem as regras de negócio. O Service toma as decisões, valida requisitos (ex: verificar se há feedbacks suficientes para analisar) e orquestra o fluxo de dados.
+5. **Repositories (`repositories/`):** Os "arquivistas". É a única camada autorizada a fazer queries no banco de dados (Supabase) para ler, inserir ou atualizar dados.
 
-## Fluxo de uma Requisição Protegida
+Há também pastas de apoio estrutural, como a `libs/`, que contém funções puras de domínio (sem efeitos colaterais) para ajudar em lógicas específicas (como montar lotes de análise para a IA), e os `providers/`, que fazem a comunicação HTTP com outros serviços
 
-```mermaid
-sequenceDiagram
-    participant FE as Frontend
-    participant MW as requireAuth
-    participant CTRL as Controller
-    participant SVC as Service
-    participant REPO as Repository
-    participant DB as Supabase
+### Suporte a Microserviços Independentes
 
-    FE->>MW: POST + Authorization: Bearer JWT
-    MW->>DB: Valida token Supabase
-    DB-->>MW: user object
-    MW->>CTRL: req.user + req.supabase injetados
-    CTRL->>CTRL: Extrai e valida body/params
-    CTRL->>SVC: { supabase, userId, options }
-    SVC->>REPO: Query no banco
-    REPO-->>SVC: Dados brutos
-    SVC-->>CTRL: Resultado processado
-    CTRL-->>FE: JSON response com status HTTP
-```
+Ao invés de processar tudo no mesmo lugar e sobrecarregar o API Gateway, nossa arquitetura oferece suporte à extração de processamentos pesados ou integrações específicas para **microserviços independentes**.
 
----
+**Por que separar?**
+- **Escalabilidade independente:** Serviços com alta demanda de processamento podem escalar sem exigir mais recursos do Gateway.
+- **Isolamento de falhas:** Se um serviço ou integração externa falhar, o sistema principal continua operando normalmente.
+- **Responsividade:** Permite que o Gateway continue rápido e responsivo para as requisições do Frontend, mesmo lidando com tarefas demoradas.
 
-## Módulo `libs/iaAnalyze/` — Funções Puras do Domínio IA
-
-```mermaid
-graph LR
-    A[libs/iaAnalyze/] --> B[build.ts\nMonta enterprise_context e batches]
-    A --> C[filter.ts\nFiltra feedbacks por escopo e item]
-    A --> D[parse.ts\nParseia e valida scope_type]
-    A --> E[rules.ts\nValida requisitos mínimos de execução]
-    A --> F[errors.ts\nClasse IaAnalyzeServiceError]
-```
-
-Essas funções são **puras e sem efeitos colaterais** — não fazem chamadas a banco ou rede. Isso facilita testes unitários e reutilização.
-
----
-
-## Estrutura de Diretórios
-
-```
-backends/api-gateway/src/
-├── config/
-│   └── errors.ts
-├── controllers/protected/
-│   ├── enterprise.controller.ts
-│   ├── feedbacks.controller.ts
-│   ├── iaAnalyze.controller.ts      → analyze-raw + regenerate-insights
-│   ├── collectionPointsQr.controller.ts
-│   └── user.controller.ts
-├── services/
-│   └── iaAnalyze.service.ts         → analyzeRawFeedbacks + regenerateFeedbackInsights
-├── repositories/
-│   └── iaAnalyze.repository.ts
-├── routes/
-│   ├── protected/
-│   │   ├── enterprise.routes.ts
-│   │   ├── feedbacks.routes.ts
-│   │   ├── iaAnalyze.routes.ts      → /protected/ia-analyze/*
-│   │   ├── collectionPointsQr.routes.ts
-│   │   └── user.routes.ts
-│   └── public/
-│       ├── auth.routes.ts
-│       ├── qrcode.routes.ts
-│       └── health.routes.ts
-├── libs/iaAnalyze/
-│   ├── build.ts
-│   ├── errors.ts
-│   ├── filter.ts
-│   ├── parse.ts
-│   └── rules.ts
-├── middlewares/
-│   └── auth.ts
-├── providers/
-│   └── iaAnalyze.provider.ts
-└── utils/
-    └── sendTypedError.ts
-```
-
----
-
-## Breaking Changes (homolog → main)
-
-:::warning
-Os seguintes arquivos foram **removidos** nesta branch e substituídos pela nova estrutura de camadas:
-
-- `repositories/protected/collectionPointsQr/` — handlers, types e validation
-- `repositories/protected/enterprise/handlers.ts` (1066 linhas)
-- `repositories/protected/feedbacks/handlers.ts` (832 linhas)
-- `repositories/protected/iaAnalyze/handlers.ts`
-- `services/iaAnalyze/iaAnalyzeErrors.ts`
-
-Se o seu código importa qualquer um desses módulos, atualize para os caminhos da nova estrutura.
-:::
+Um exemplo prático dessa aplicação no nosso sistema é o microserviço `ia-analyze`, que lida com a inteligência artificial. Ele isola as chamadas à API do Google Gemini, garantindo que o Gateway não sofra gargalos durante análises massivas de texto.

@@ -55,7 +55,7 @@ O frontend (`apps/web`) é uma aplicação **React 19** com duas áreas distinta
 
 ## Padrão de Data Fetching
 
-O frontend usa exclusivamente o padrão **loader/action do React Router v7**. Não há `useEffect` para busca de dados.
+O frontend usa exclusivamente o padrão **loader/action do React Router v7**.
 
 - **Loaders:** executados antes da renderização da rota. Dados disponíveis via `useRouteLoaderData`.
 - **Actions:** processam mutations (submissões de formulário). Resultado via `useActionData`.
