@@ -6,7 +6,7 @@ O `api-gateway` é o **Backend-for-Frontend (BFF)** do sistema. Ele é o único 
 
 ## Por Que Existe
 
-Centralizar o backend em um único serviço permite:
+Centralizar o backend permite:
 - **Autenticação uniforme** — um único middleware valida o JWT Supabase para todos os endpoints
 - **Isolamento do banco** — as queries ficam no backend; o frontend não precisa de acesso direto ao Supabase
 - **Orquestração da IA** — o Gateway prepara os dados, chama o `ia-analyze` e persiste os resultados sem expor a complexidade ao cliente
@@ -16,7 +16,7 @@ Centralizar o backend em um único serviço permite:
 1. **Validar autenticação** via Supabase JWT (middleware `requireAuth`)
 2. **Expor endpoints REST** para o frontend React
 3. **Ler e escrever** no banco de dados Supabase
-4. **Orquestrar a análise IA** — busca feedbacks, monta batches, chama `ia-analyze`, persiste resultados
+4. **Orquestrar serviços** — busca feedbacks, monta batches, chama `ia-analyze`, persiste resultados
 
 ## Localização no Monorepo
 
