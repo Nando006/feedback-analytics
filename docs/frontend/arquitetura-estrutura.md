@@ -1,195 +1,74 @@
-# Frontend — Arquitetura e Estrutura de Componentes
+# Frontend - Arquitetura e Estrutura
 
-## Como as Camadas se Organizam
+Este documento explica como o frontend funciona, como as pastas estão organizadas e como os dados viajam entre a tela do usuário e o servidor.
 
-O frontend separa responsabilidades em quatro camadas. Cada camada tem uma função clara — nenhuma "pula" outra:
+## O Caminho dos Dados (O Fluxo Completo)
 
-- **Pages** (`pages/`) — montam a tela combinando componentes. Não têm lógica de negócio.
-- **Components** (`components/`) — blocos visuais reutilizáveis. Recebem props, emitem eventos.
-- **Routes** (`src/routes/`) — loaders buscam dados; actions processam mutations.
-- **Lib** (`src/lib/`) — serviços HTTP, contextos React, constantes e mocks.
+O sistema usa o React Router v7 para gerenciar o tráfego de dados. Nenhuma tela (componente visual) conversa diretamente com a API. Tudo obedece a uma hierarquia estrita de 3 passos no frontend antes de chegar ao servidor.
 
-```mermaid
-graph TB
-    subgraph Pages["pages/ — Composição de Tela"]
-        PU[public/]
-        PR[user/]
-    end
-
-    subgraph Components["components/ — Blocos Visuais"]
-        PubComp[public/forms/]
-        UserShared[user/shared/\ncards · header · avatar]
-        UserLayout[user/layout/\nHeader · Menu · Sidebar]
-        UserPages[user/pages/\nfeedbacksInsightsReport · profile]
-    end
-
-    subgraph Routes["src/routes/ — Data Layer"]
-        Actions[actions/]
-        Loaders[loaders/]
-        UserRoute[user.tsx — Árvore de rotas]
-    end
-
-    subgraph Lib["src/lib/ — Infraestrutura"]
-        Services[services/\nserviceFeedbacks.ts]
-        Context[context/\ninsightsControls.tsx]
-        Constants[constants/routes/intents.ts]
-    end
-
-    Pages --> Components
-    Pages --> Routes
-    Routes --> Lib
-    Services -->|HTTP fetch| API[API Gateway]
-```
-
----
-
-## Fluxo de Dados em uma Página Protegida
+1. **Tela (UI):** Captura a ação do usuário (acessar uma página ou enviar um form).
+2. **Rota (Loader/Action):** Intercepta a ação, mas delega o trabalho pesado.
+3. **Serviço (Service):** Monta a requisição HTTP (headers, tokens, body) e fala com a API.
 
 ```mermaid
-sequenceDiagram
-    participant RR as React Router
-    participant LDR as Loader
-    participant GW as API Gateway
-    participant Page as Page Component
-    participant ACT as Action
+graph TD
+    subgraph Frontend ["Nossa Aplicação React"]
+        UI["1. Tela (Pages & Components)<br/>Exibe dados e captura cliques/forms"]
+        Route["2. Rotas (Loaders & Actions)<br/>Orquestra a navegação e chama o serviço"]
+        Service["3. Services (src/lib/services)<br/>Monta a requisição HTTP (fetch)"]
+    end
 
-    RR->>LDR: Navega para rota
-    LDR->>GW: GET endpoint protegido
-    GW-->>LDR: Dados
-    LDR-->>Page: useRouteLoaderData()
-    Page-->>Page: Renderiza com dados
+    subgraph Backend ["Servidor"]
+        Gateway["4. API Gateway<br/>Hub central e Banco de Dados"]
+    end
 
-    Note over Page,ACT: Usuário submete formulário
-    Page->>ACT: Form POST
-    ACT->>GW: POST / PATCH
-    GW-->>ACT: Resultado
-    ACT-->>Page: useActionData() → { ok, error, message }
+    %% Fluxo de ida e volta
+    UI -- "Pede/Envia dados" --> Route
+    Route -- "Delega operação" --> Service
+    Service -- "Requisição HTTP" --> Gateway
+    
+    Gateway -- "Resposta HTTP" --> Service
+    Service -- "Dados formatados" --> Route
+    Route -- "Atualiza UI" --> UI
+
+    classDef ui fill:#475569,stroke:#334155,color:#fff
+    classDef route fill:#3b82f6,stroke:#2563eb,color:#fff
+    classDef service fill:#8b5cf6,stroke:#7c3aed,color:#fff
+    classDef server fill:#10b981,stroke:#059669,color:#fff
+    
+    class UI ui;
+    class Route route;
+    class Service service;
+    class Gateway server;
 ```
 
----
+### O que isso significa na prática ?
 
-## Componentes Novos Nesta Release
+- **Para ler (Loaders):** Quando o usuário acessa `insights`, o `loader` pede os dados, chamando o `serviceFeedbacks.getInsights()`. O **Service** anexa o JWT, faz o GET no Gateway, trata possíveis erros HTTP e devolve o JSON limpo para o `loader`. O `loader` entrega para a tela via `useRouteLoaderData()`.
 
-### `InsightsHeaderControls`
+- **Para escrever (Actions):** O usuário preenche um `<Form>` e submete. A `action` extrai os dados do formulário e repassa para o `serviceEnterprise.updateSettings(dados)`. O **Service** faz o POST/PATCH. A `action` apenas recebe a confirmação e avisa a tela.
 
-Barra de controles do painel de insights (`/user/insights/reports`). Combina três elementos:
+## As 4 Camadas do Sistema
+Para manter o código fácil de dar manutenção, separamos as responsabilidades:
 
-1. **`ScopeSelectorRadial`** — seletor de escopo animado em leque
-2. **`HeaderSelect`** — dropdown para item de catálogo (quando escopo ≠ `COMPANY`)
-3. **Botões de ação** — "Analisar feedbacks" e "Gerar insights"
+1. **Páginas (`pages/`)** — Arquivos que apenas juntam componentes para formar uma tela completa. Pegam os dados das rotas e repassam para os filhos. Sem lógica de negócio.
 
-```typescript
-interface InsightsHeaderControlsProps {
-  refreshing: boolean;
-  analyzingRaw: boolean;
-  canAnalyze: boolean;
-  availableScopes: InsightScopeOption[];
-  selectedScope: InsightScopeOption;
-  selectedCatalogItemId: string;
-  catalogItemOptions: InsightsCatalogItemOption[];
-  onScopeChange: (scope: InsightScopeOption) => void;
-  onCatalogItemChange: (id: string) => void;
-  onRefreshSelected: () => void;
-  onAnalyzeRaw: () => void;
-}
-```
+2. **Componentes (`components/`)** — Blocos visuais reaproveitáveis (botões, cards, gráficos). Recebem propriedades (props) e emitem eventos.
 
----
+3. **Rotas (`src/routes/`)** — **Os Controladores:** Onde vivem Loaders e Actions. Eles conectam a tela ao motor de dados.
 
-### `ScopeSelectorRadial`
+4. **Infraestrutura (`src/lib/`)** — **O coração da comunicação**. A pasta `services/` contém as funções que isolam todo o uso de `fetch`, URLs da API e injeção de tokens de autenticação.
 
-Seletor circular com animação de leque. Um botão central exibe o escopo selecionado; ao clicar, abre sub-botões posicionados em arco abaixo com delay escalonado.
-
-| Posição | Escopo | Cor |
-|---|---|---|
-| 0 | `COMPANY` | Indigo `#6366f1` |
-| 1 | `PRODUCT` | Verde `#10b981` |
-| 2 | `SERVICE` | Âmbar `#f59e0b` |
-| 3 | `DEPARTMENT` | Rosa `#ec4899` |
-
-O backdrop invisível (`position: fixed; inset: 0; z-index: 97`) fecha o seletor ao clicar fora.
-
----
-
-### `InsightsControlsContext`
-
-Contexto React que evita prop drilling no painel de insights. Expõe dois hooks:
-
-```typescript
-// Dentro do Provider — para leitura
-const { scope, catalogItemId, canAnalyze } = useInsightsControls();
-
-// No componente pai — para inicializar o estado
-const state = useInsightsControlsState({ catalogItemOptions, availableScopes, canAnalyze });
-```
-
----
-
-### `Header` (Componente Compartilhado)
-
-Cabeçalho genérico reutilizável nas páginas de edição. Aceita navegação configurável:
-
-```typescript
-interface HeaderProps {
-  enterprise: Enterprise;
-  user: AuthUser['user'];
-  description?: string;
-  nextLink?: string;        // "Próxima etapa"
-  nextLabelLink?: string;
-  prevLink?: string;        // "Etapa anterior"
-  prevLabelLink?: string;
-}
-```
-
----
-
-## Estrutura de Diretórios
-
+## Onde Encontrar Cada Arquivo
 ```
 apps/web/
-├── components/
-│   ├── public/forms/           → Formulários públicos
-│   └── user/
-│       ├── layout/             → Header, Menu, Sidebar
-│       ├── shared/             → Cards, Avatar, Header genérico
-│       └── pages/
-│           ├── feedbacksInsightsReport/
-│           │   ├── InsightsHeaderControls.tsx
-│           │   ├── ScopeSelectorRadial.tsx
-│           │   └── InsightsReportHeaderSection.tsx
-│           └── profile/
-│               ├── editFeedbackSettings/formFeedbackCatalog.tsx
-│               └── editTypesFeedback/formTypesFeedback.tsx
-├── pages/user/edit/
-│   ├── editTypeFeedbacks.tsx       → /user/edit/types-feedback
-│   ├── editFeedbackSettings.tsx    → /user/edit/feedback-settings (hub)
-│   ├── editFeedbackProducts.tsx    → /user/edit/feedback-products
-│   ├── editFeedbackServices.tsx    → /user/edit/feedback-services
-│   └── editFeedbackDepartments.tsx → /user/edit/feedback-departments
-├── src/
-│   ├── routes/
-│   │   ├── user.tsx
-│   │   ├── actions/
-│   │   └── loaders/
-│   └── lib/
-│       ├── context/insightsControls.tsx
-│       └── constants/routes/intents.ts
-└── layouts/
-    └── user.tsx                    → Shell: Sidebar + Header
+├── src/routes/             → Orquestradores (Loaders, Actions e a árvore de Rotas)
+├── src/lib/services/       → Serviços HTTP (Onde as requisições são montadas)
+├── pages/                  → Montagem das telas (Área logada e pública)
+└── components/
+    ├── public/             → Formulários públicos (QR Code)
+    └── user/
+        ├── layout/         → Estrutura base (Menu, Sidebar)
+        ├── shared/         → Peças comuns (Cards, Avatares, Header)
+        └── pages/          → Peças específicas de cada tela
 ```
-
----
-
-## Breaking Changes (homolog → main)
-
-:::warning
-Os seguintes arquivos foram **removidos** nesta branch:
-
-- `formFeedbackSettings.tsx` (732 linhas) → substituído por `formFeedbackCatalog.tsx` + `formTypesFeedback.tsx`
-- `pages/user/edit/editCollectingData.tsx`
-- `pages/user/edit/editProfile.tsx`
-- `pages/user/qrcodes/qrcodeDepartments.tsx`, `qrcodeProducts.tsx`, `qrcodeServices.tsx`
-- Componentes `EditableField`, `EditableFieldFixed`, `SimpleEditableField`
-
-Atualize qualquer importação ou referência a esses arquivos.
-:::
