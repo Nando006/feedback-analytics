@@ -4,11 +4,9 @@
 
 **Como funciona:** todo endpoint em `/protected/*` passa pelo middleware `requireAuth`, que valida o JWT via Supabase e injeta `req.user` e `req.supabase` na request.
 
-**Regra de isolamento:** o `userId` extraído do JWT é usado em todas as queries. Nenhum endpoint retorna dados de outra empresa — o isolamento é garantido em nível de repositório.
+**Regra de isolamento:** o `userId` extraído do JWT é usado em todas as queries. Nenhum endpoint retorna dados de outra empresa — o isolamento é garantido em duas camadas: no nível de **repositório** (filtros no código) e diretamente no banco de dados via **RLS (Row Level Security)** do Supabase.
 
-:::warning
-Nunca passe `userId` como parâmetro de query string ou body em endpoints protegidos. O Gateway extrai o ID do JWT, não do payload da requisição.
-:::
+> ⚠️ **Aviso:** Nunca passe `userId` como parâmetro de query string ou body em endpoints protegidos. O Gateway extrai o ID do JWT, não do payload da requisição.
 
 ---
 

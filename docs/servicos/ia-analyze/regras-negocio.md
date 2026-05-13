@@ -35,9 +35,7 @@ Um item analisado pelo Gemini é **descartado silenciosamente** se:
 - `sentiment` não estiver nos três valores válidos
 - `feedback_id` não existir no mapa de feedbacks do batch atual
 
-:::note
-O descarte é silencioso por design — um sentimento inválido não deve interromper a análise dos demais feedbacks do batch.
-:::
+> 📝 **Nota:** O descarte é silencioso por design — um sentimento inválido não deve interromper a análise dos demais feedbacks do batch.
 
 ---
 
@@ -114,9 +112,7 @@ A comparação usa `includes()` nos textos normalizados, tolerando variações d
 }
 ```
 
-:::note
-`analyzedCount` reflete o total de feedbacks **enviados** no batch — não o número de análises válidas retornadas. Um feedback com sentimento inválido é contado aqui, mas descartado no `analyses[]`.
-:::
+> 📝 **Nota:** `analyzedCount` reflete o total de feedbacks **enviados** no batch — não o número de análises válidas retornadas. Um feedback com sentimento inválido é contado aqui, mas descartado no `analyses[]`.
 
 ---
 

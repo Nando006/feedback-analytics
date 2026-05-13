@@ -43,9 +43,7 @@ X-Internal-Token: <INTERNAL_SERVICE_TOKEN>
 
 O valor deve ser idêntico ao configurado no API Gateway. Requisições sem o token correto recebem `401 unauthorized_internal_request` imediatamente.
 
-:::warning
-Nunca exponha a URL do IA Analyze publicamente. Ela deve ser acessível apenas pelo API Gateway na rede interna.
-:::
+> ⚠️ **Aviso:** Nunca exponha a URL do IA Analyze publicamente. Ela deve ser acessível apenas pelo API Gateway na rede interna.
 
 ## Tecnologias
 
