@@ -1,0 +1,95 @@
+# QR Codes por Escopo com Perguntas Dinâmicas
+
+## O Que É
+
+Cada empresa não tem apenas um QR Code — ela tem **um QR por ponto de coleta**. Cada produto, serviço ou departamento cadastrado recebe seu próprio QR Code com suas próprias perguntas configuradas.
+
+O cliente que escaneia o QR do "Hambúrguer Artesanal" responde perguntas específicas sobre aquele item. Quem escaneia o QR do "Pós-Venda" responde perguntas sobre aquela experiência. Contextos diferentes, perguntas diferentes, análises diferentes.
+
+---
+
+## Por Que Existe
+
+Um único QR Code para a empresa inteira diz que "os clientes estão insatisfeitos". Mas **não diz onde**.
+
+Sem escopo, é impossível saber se o problema está no produto, no atendimento ou na entrega. O gestor termina com uma nota média que não orienta nenhuma decisão.
+
+Com escopos, o feedback se torna **atribuível**:
+- O Produto X está com nota 4.2, o Produto Y com 2.8 → o problema é específico
+- O Departamento de Suporte está bem avaliado, mas o de Entrega está mal → a ação corretiva é cirúrgica
+
+> Dados genéricos geram relatórios. Dados contextualizados geram decisões.
+
+---
+
+## Como Funciona
+
+```
+Empresa configura o catálogo (Produtos, Serviços ou Departamentos)
+        ↓
+Cada item cadastrado recebe um QR Code único automaticamente
+        ↓
+A empresa configura perguntas customizadas por item (opcional)
+        ↓
+Se não houver perguntas no item, o sistema usa as 3 perguntas base da empresa
+        ↓
+Cliente escaneia → formulário carrega com as perguntas daquele escopo
+        ↓
+Feedback é armazenado vinculado ao item específico
+        ↓
+Análise de IA é segmentada por escopo → relatório separado por item
+```
+
+---
+
+## Escopos Disponíveis
+
+| Escopo | Quando usar | Exemplo de Uso |
+|---|---|---|
+| **Empresa** | Avaliação geral da experiência | "Como foi sua visita?" |
+| **Produto** | Avaliação de item específico | "Como foi o Hambúrguer Artesanal?" |
+| **Serviço** | Avaliação de serviço prestado | "Como foi o serviço de Entrega?" |
+| **Departamento** | Avaliação de área interna | "Como foi o atendimento da Recepção?" |
+
+---
+
+## Perguntas Dinâmicas
+
+Cada item pode ter **perguntas customizadas com subperguntas hierárquicas**:
+
+- A empresa define a pergunta principal (ex: "Como foi a qualidade do produto?")
+- Cada pergunta pode ter subperguntas que detalham o aspecto avaliado
+- As subperguntas usam uma escala estruturada: `PESSIMO → RUIM → REGULAR → BOM → OTIMA`
+- A visibilidade das subperguntas pode depender da resposta selecionada na pergunta pai
+
+O sistema exige **exatamente 3 perguntas ativas** por ponto de coleta. Se o item não tiver perguntas configuradas, usa as 3 perguntas base da empresa.
+
+---
+
+## Importância e Impacto
+
+| Aspecto | Impacto |
+|---|---|
+| **Granularidade** | Feedback atribuível a item específico, não só à empresa |
+| **Análise de IA segmentada** | Cada escopo gera seu próprio relatório de insights |
+| **Ação corretiva precisa** | O gestor sabe exatamente onde agir, sem precisar adivinhar |
+| **Flexibilidade** | Cada item tem perguntas relevantes ao seu contexto |
+| **Hierarquia de ativação** | Desativar um item bloqueia automaticamente o formulário daquele QR |
+
+---
+
+## Detalhes Técnicos
+
+- A ativação de escopos (Produtos, Serviços, Departamentos) é feita via flags no banco: `uses_company_products`, `uses_company_services`, `uses_company_departments`
+- Um QR Code só aceita submissões se **tanto o QR quanto o item do catálogo** estiverem `ACTIVE` (RNE-009)
+- O sistema valida exatamente 3 perguntas por ponto de coleta; se insuficientes no item, faz fallback para as perguntas da empresa
+- Cada feedback armazenado carrega o `collection_point_id`, permitindo filtrar e agrupar por escopo
+
+---
+
+## Referência Técnica
+
+- [Catálogo de Feedback → catalogo-feedback.md](./catalogo-feedback.md)
+- [QR Code da Empresa → qrcode-empresa.md](./qrcode-empresa.md)
+- [Análise IA por Escopo → insights-ia.md](./insights-ia.md)
+- [Endpoints de QR Code](../backend/endpoints.md)
