@@ -1,6 +1,6 @@
 # IA Analyze — Endpoints
 
-> **Base URL (desenvolvimento):** `http://localhost:3002`
+> **Base URL (desenvolvimento):** `http://localhost:4100`
 
 :::warning Serviço Interno
 Esta API é exclusivamente para comunicação interna. Nunca exponha esses endpoints diretamente ao frontend. Todo acesso deve vir do API Gateway, que injeta o token de autenticação interna.
@@ -10,12 +10,12 @@ Esta API é exclusivamente para comunicação interna. Nunca exponha esses endpo
 
 ## Health Check
 
-### `GET /health` · `GET /ia-analyze/health`
+### `GET /internal/health` · `GET /internal/ia-analyze/health`
 
 Verifica se o serviço está operacional. Ambas as rotas retornam o mesmo resultado.
 
 ```bash
-curl http://localhost:3002/health
+curl http://localhost:4100/internal/health
 ```
 
 **Response 200**
@@ -27,15 +27,17 @@ curl http://localhost:3002/health
 
 ## Análise de Feedbacks
 
-### `POST /ia-analyze/analyze`
+### `POST /internal/ia-analyze/analyze`
 
 Recebe lotes de feedbacks e retorna análises individuais por feedback e contextos de insights por lote.
 
-**Header Obrigatório**
+**Headers**
 ```
-X-Internal-Token: <INTERNAL_SERVICE_TOKEN>
+x-ia-analyze-token: <IA_ANALYZE_INTERNAL_TOKEN>
 Content-Type: application/json
 ```
+
+> **Nota:** o token é **opcional**. Se `IA_ANALYZE_INTERNAL_TOKEN` não estiver definido no ambiente do serviço, todas as requisições são aceitas — comportamento intencional para desenvolvimento local.
 
 **Schema do Body**
 
@@ -165,10 +167,10 @@ Content-Type: application/json
 | Status | Código | Causa |
 |---|---|---|
 | `400` | `invalid_payload` | `enterprise_context` ou `batches` ausentes no body |
-| `401` | `unauthorized_internal_request` | Header `X-Internal-Token` ausente ou incorreto |
+| `401` | `unauthorized_internal_request` | Header `x-ia-analyze-token` ausente ou incorreto |
 | `500` | `missing_gemini_api_key` | `GEMINI_API_KEY` não configurado no ambiente |
-| `502` | `failed_ia_request` | Falha HTTP ao chamar a API do Gemini |
-| `502` | `invalid_ai_response` | Gemini retornou resposta não parseável como JSON |
+| `502` | `failed_ia_request` | Falha HTTP ao chamar o provedor LLM |
+| `502` | `invalid_ai_response` | Provedor LLM retornou resposta não parseável como JSON |
 
 **Formato de todos os erros:**
 ```json
@@ -184,8 +186,8 @@ Content-Type: application/json
 
 | Sintoma | Causa | Solução |
 |---|---|---|
-| `401` em toda requisição | Token interno errado | Iguale `INTERNAL_SERVICE_TOKEN` no Gateway e no IA Analyze |
+| `401` em toda requisição | Token interno errado | Iguale `IA_ANALYZE_INTERNAL_TOKEN` no Gateway e no IA Analyze |
 | `500 missing_gemini_api_key` | Variável não configurada | Adicione `GEMINI_API_KEY` ao `.env` do serviço |
-| `502 failed_ia_request` | Gemini inacessível | Verifique a chave de API e a conectividade com a internet |
+| `502 failed_ia_request` | Provedor LLM inacessível | Verifique a chave de API e a conectividade com a internet |
 | `502 invalid_ai_response` | Modelo retornou JSON malformado | Tente novamente; pode ser instabilidade do modelo |
 | Analyses vazias (`analyses: []`) | Todos os feedbacks com sentimento inválido | Verifique se os feedbacks têm `message` não-vazia |

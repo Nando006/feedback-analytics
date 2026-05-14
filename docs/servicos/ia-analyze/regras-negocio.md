@@ -2,7 +2,7 @@
 
 ## Autenticação Interna
 
-**O quê:** toda requisição deve incluir `X-Internal-Token` com o valor exato de `INTERNAL_SERVICE_TOKEN`.
+**O quê:** toda requisição deve incluir `x-ia-analyze-token` com o valor exato de `IA_ANALYZE_INTERNAL_TOKEN`.
 
 **Por quê:** o serviço não tem autenticação de usuário. O token garante que apenas o API Gateway — e não agentes externos — pode acionar análises.
 
@@ -54,7 +54,7 @@ Cada keyword sugerida pelo modelo passa por `sanitizeTermList`:
 
 ### Fallback
 
-Se nenhuma keyword passar na sanitização, `tokenizeRelevantWords` extrai palavras diretamente da mensagem (sem stop words, mínimo 3 caracteres). Retorna até **4 tokens**.
+Se nenhuma keyword passar na sanitização, `tokenizeRelevantWords` extrai palavras diretamente da mensagem (sem stop words, mínimo **4 caracteres**). Retorna até **4 tokens**.
 
 ---
 
@@ -76,12 +76,13 @@ Se nenhuma categoria for válida, retorna as **2 primeiras keywords** como fallb
 
 `buildForbiddenTerms` constrói um `Set<string>` com termos que nunca devem aparecer no resultado:
 
-- Tokens do **nome da empresa** (`enterprise_context.enterprise_name`)
-- Tokens do **nome do item de catálogo** (`catalog_item.name`)
-- Tokens do **tipo do item** (ex: `produto`, `serviço`, `departamento`)
-- Marcadores de sentimento em português (`positivo`, `negativo`, `neutro`, `bom`, `ruim`, etc.)
+- **`STRUCTURED_ANSWER_LABELS`** — rótulos genéricos de respostas estruturadas fixos no código: `pessimo`, `ruim`, `mediana`, `boa`, `otima`
+- **Respostas das perguntas dinâmicas** (`dynamic_answers[].answer_value`) — os valores que o cliente selecionou nas perguntas do formulário
+- **Enunciados das perguntas dinâmicas** (`dynamic_answers[].question_text_snapshot`) — o texto das próprias perguntas (filtro anti-poluição)
+- **Respostas das subperguntas** (`dynamic_subanswers[].answer_value`)
+- **Enunciados das subperguntas** (`dynamic_subanswers[].subquestion_text_snapshot`)
 
-**Por quê:** evita que o modelo retorne o nome do próprio produto ou sentimentos explícitos como keyword — informações que já estão estruturadas em outros campos.
+**Por quê:** evita que as respostas estruturadas do formulário (ex: "boa", "ótima") e os enunciados das próprias perguntas (ex: "Como foi o atendimento?") apareçam como keywords ou categorias — garantindo que o resultado reflita apenas a voz espontânea do cliente na mensagem livre.
 
 ---
 
@@ -94,7 +95,11 @@ Antes de qualquer comparação, textos passam por `normalizeForComparison`:
 3. Remove pontuação e caracteres especiais
 4. Colapsa espaços múltiplos
 
-A comparação usa `includes()` nos textos normalizados, tolerando variações de acento e capitalização entre a sugestão do modelo e o texto original.
+A comparação usa `isGroundedInMessage`, que opera em dois níveis:
+1. Verifica se o termo normalizado está contido diretamente na mensagem normalizada (`includes()`)
+2. Se não estiver, tokeniza tanto o termo quanto a mensagem e verifica se **pelo menos um token** do termo aparece na mensagem — tolerando categorias multipalavra parcialmente presentes no texto
+
+Isso garante que termos como "tempo de espera" sejam aceitos mesmo que a mensagem diga "demorou muito", desde que "espera" ou outro token relevante esteja presente.
 
 ---
 
@@ -116,7 +121,7 @@ A comparação usa `includes()` nos textos normalizados, tolerando variações d
 
 ---
 
-## Tratamento de Erros do Gemini
+## Tratamento de Erros do Provedor LLM
 
 | Cenário | Tipo de Erro | Código Retornado |
 |---|---|---|
@@ -133,5 +138,5 @@ O controller captura e retorna o status e código ao API Gateway, que repassa ao
 |---|---|---|
 | `analyses` retorna vazio para todos os feedbacks | Todos com sentimento inválido | Verifique se o prompt está retornando `positive`, `neutral` ou `negative` exatamente |
 | Keywords e categorias sempre vazias | Termos não encontrados na mensagem | Verifique se `message` está sendo enviada corretamente no payload |
-| `globalInsights` é sempre `null` | Gemini não retornou insights | Pode ser batch muito pequeno; experimente com mais feedbacks |
-| `502 invalid_ai_response` frequente | Resposta do Gemini não parseável | Verifique `extractJsonFromText.ts`; pode ser mudança no formato de saída do modelo |
+| `globalInsights` é sempre `null` | Provedor LLM não retornou insights | Pode ser batch muito pequeno; experimente com mais feedbacks |
+| `502 invalid_ai_response` frequente | Resposta do provedor LLM não parseável | Verifique `extractJsonFromText.ts`; pode ser mudança no formato de saída do modelo |

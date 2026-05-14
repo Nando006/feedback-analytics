@@ -1,86 +1,49 @@
 # IA Analyze — Arquitetura e Estrutura
 
-## Organização em Camadas
+Este documento detalha a arquitetura do microserviço de IA (`ia-analyze`). Diferente do API Gateway, este serviço não possui conexão com o banco de dados. Sua única responsabilidade é processar textos de forma isolada, recebendo dados brutos e retornando análises estruturadas.
 
-O serviço segue uma arquitetura em camadas simples, sem acesso a banco de dados:
+## O Fluxo de Dados (Ida e Volta)
 
-```
-Route → Controller → Service (orquestrador) → Serviços de Domínio → Provider (Gemini)
-```
+O processamento ocorre de forma sequencial através das camadas do sistema, garantindo que os dados sejam validados, enviados para a IA e rigorosamente sanitizados antes de retornarem.
 
-```mermaid
-graph TB
-    subgraph HTTP["Camada HTTP"]
-        R[POST /ia-analyze/analyze]
-        H[GET /health]
-    end
+### Fluxo de Ida (Recebendo a requisição)
+1. **Rotas (`routes/`):** Recebem o lote de feedbacks enviado pelo API Gateway e direcionam para o controlador.
+2. **Controllers (`controllers/`):** Validam a autorização interna (garantindo que a requisição veio do Gateway) e a estrutura do payload recebido.
+3. **Service Principal (`services/iaAnalyze.service.ts`):** Orquestra o processo. Combina os feedbacks com as regras e o contexto de negócio da empresa.
+4. **Providers (`providers/gemini.provider.ts`):** Prepara o prompt final e realiza a chamada HTTP para a API do Google Gemini.
 
-    subgraph Controller["Controller"]
-        CTRL[analyzeController\nValida token + payload + delega]
-    end
-
-    subgraph Services["Serviços de Domínio"]
-        MAIN[iaAnalyze.service.ts\nOrquestrador]
-        SENT[sentimentAnalysis.service.ts\nValida sentimentos]
-        KW[keywordExtraction.service.ts\nExtrai e sanitiza keywords]
-        CAT[categorization.service.ts\nExtrai e sanitiza categorias]
-        GI[globalInsights.service.ts\nMonta contexto por batch]
-    end
-
-    subgraph Lib["Biblioteca de Processamento"]
-        TP[termProcessing.ts\nsanitizeTermList · buildForbiddenTerms · tokenize]
-        NORM[normalizeForComparison.ts]
-    end
-
-    subgraph Provider["Provider"]
-        PROV[gemini.provider.ts\nCliente HTTP Gemini]
-        GM[Google Gemini API]
-    end
-
-    R --> CTRL --> MAIN
-    MAIN --> SENT
-    MAIN --> KW
-    MAIN --> CAT
-    MAIN --> GI
-    MAIN --> PROV --> GM
-    KW --> TP --> NORM
-    CAT --> TP
-```
+### Fluxo de Volta (Processando a resposta)
+5. O **Provider** recebe a resposta bruta da Inteligência Artificial (que está sujeita a "alucinações" ou fuga do formato).
+6. O **Service Principal** recebe esses dados e os distribui para seus **Serviços de Domínio** especializados:
+   - **Análise de Sentimento:** Valida se a classificação está estritamente entre Positivo, Neutro ou Negativo.
+   - **Palavras-chave e Categorias:** Sanitiza os termos extraídos, garantindo que eles realmente existam no texto original do cliente.
+   - **Contexto Global:** Consolida os insights daquele lote de forma coesa.
+7. O **Service Principal** agrupa todas essas validações num pacote limpo e seguro, repassando ao **Controller**.
+8. O **Controller** entrega a resposta final (em formato JSON padronizado) de volta ao API Gateway.
 
 ---
 
-## Fluxo de Processamento por Batch
+## O Fluxo Visual
 
 ```mermaid
 sequenceDiagram
     participant GW as API Gateway
     participant CTRL as Controller
-    participant SVC as iaAnalyze.service
-    participant GM as Gemini API
-    participant KW as keywordExtraction
-    participant CAT as categorization
+    participant MAIN as Service Principal
+    participant GM as API do Provedor LLM
+    participant SPEC as Serviços de Domínio
 
-    GW->>CTRL: POST {enterprise_context, batches[]}
-    CTRL->>CTRL: isInternalRequestAuthorized()
-    CTRL->>CTRL: isValidRemotePayload()
-    CTRL->>SVC: runIaAnalyzeService(request)
-
-    loop Para cada batch
-        SVC->>GM: analyzeBatch({scopeType, context, feedbacks})
-        GM-->>SVC: {feedbacks[], global_insights}
-
-        loop Para cada feedback analisado
-            SVC->>SVC: canProcessAnalyzedItem() — valida sentimento
-            SVC->>KW: extractKeywords(feedback, rawKeywords)
-            KW-->>SVC: string[] sanitizado
-            SVC->>CAT: extractCategories(feedback, rawCategories, keywords)
-            CAT-->>SVC: string[] sanitizado
-            SVC->>SVC: Acumula em Map feedback_id → análise
-        end
-    end
-
-    SVC-->>CTRL: {analyses[], contexts[]}
-    CTRL-->>GW: 200 JSON
+    Note over GW,GM: 🚀 FLUXO DE IDA (Requisição)
+    GW->>CTRL: 1. Envia lote de feedbacks e contexto
+    CTRL->>MAIN: 2. Valida payload/token e repassa dados
+    MAIN->>GM: 3. Dispara o prompt para o provedor LLM
+    
+    Note over GW,GM: ↩️ FLUXO DE VOLTA (Resposta e Limpeza)
+    GM-->>MAIN: 4. Retorna resultados brutos
+    MAIN->>SPEC: 5. Distribui dados para higienização
+    SPEC-->>MAIN: 6. Retorna sentimentos, categorias e keywords validados
+    MAIN-->>CTRL: 7. Consolida os dados limpos
+    CTRL-->>GW: 8. Retorna resposta JSON com sucesso
 ```
 
 ---
@@ -122,44 +85,55 @@ Quebra uma string em palavras relevantes removendo stop words e palavras com men
 ## Estrutura de Diretórios
 
 ```
-services/ia-analyze/src/
-├── controllers/
-│   └── iaAnalyze.controller.ts         → Token + payload + resposta HTTP
-├── services/
-│   ├── iaAnalyze.service.ts            → Orquestrador principal
-│   ├── sentimentAnalysis.service.ts    → Validação de sentimentos
-│   ├── keywordExtraction.service.ts    → Extração com fallback
-│   ├── categorization.service.ts       → Categorização com fallback
-│   └── globalInsights.service.ts       → Contexto por batch
-├── providers/
-│   └── gemini.provider.ts              → Cliente HTTP Gemini + analyzeBatch
-├── routes/
-│   └── iaAnalyze.routes.ts             → /health + /ia-analyze/analyze
-├── lib/
-│   ├── termProcessing.ts               → sanitize, forbidden terms, tokenize
-│   └── prompts/scopeInstructions.ts    → Instruções por escopo injetadas no prompt
-├── validations/
-│   └── iaAnalyze.validation.ts         → isValidRemotePayload
-├── utils/
-│   ├── extractJsonFromText.ts
-│   ├── isInternalRequestAuthorized.ts
-│   ├── isObject.ts
-│   └── normalizeForComparison.ts
-└── types/
-    ├── sentimentAnalysis.types.ts
-    └── termProcessing.types.ts
+services/ia-analyze/
+├── src/
+│   ├── index.ts                            → Entry point do servidor Express
+│   ├── controllers/
+│   │   └── iaAnalyze.controller.ts         → Token + payload + resposta HTTP
+│   ├── services/
+│   │   ├── iaAnalyze.service.ts            → Orquestrador principal
+│   │   ├── sentimentAnalysis.service.ts    → Validação de sentimentos
+│   │   ├── keywordExtraction.service.ts    → Extração com fallback
+│   │   ├── categorization.service.ts       → Categorização com fallback
+│   │   └── globalInsights.service.ts       → Contexto por batch
+│   ├── providers/
+│   │   └── gemini.provider.ts              → Cliente HTTP do provedor LLM + analyzeBatch
+│   ├── routes/
+│   │   └── iaAnalyze.routes.ts             → /health + /ia-analyze/analyze
+│   ├── lib/
+│   │   ├── iaAnalyzePromptBuilders.ts      → Construtores de prompt por escopo
+│   │   ├── termProcessing.ts               → sanitize, forbidden terms, tokenize
+│   │   └── prompts/
+│   │       ├── promptHeader.ts             → Cabeçalho base do prompt
+│   │       └── scopeInstructions.ts        → Instruções por escopo injetadas no prompt
+│   ├── validations/
+│   │   └── iaAnalyze.validation.ts         → isValidRemotePayload
+│   └── utils/
+│       ├── extractJsonFromText.ts
+│       ├── isInternalRequestAuthorized.ts
+│       ├── isObject.ts
+│       └── normalizeForComparison.ts
+├── types/                                  → Tipos compartilhados (fora de src/)
+│   ├── iaAnalyzeEngine.types.ts
+│   ├── iaAnalyzePromptBuilders.types.ts
+│   ├── iaApiClient.types.ts
+│   ├── sentimentAnalysis.types.ts
+│   └── termProcessing.types.ts
+└── __tests__/
+    ├── iaAnalyzePromptBuilders.test.ts
+    └── sentimentAnalysis.test.ts
 ```
 
 ---
 
 ## Breaking Change — Reestruturação Completa
 
-:::warning Breaking Change (homolog → main)
-O serviço foi completamente reescrito nesta branch:
-
-**Antes (main):** arquivo único `sentimentAnalysis.ts` de 40 linhas, sem estrutura de serviços.
-
-**Depois (homolog):** 5 serviços separados, provider isolado, biblioteca de processamento de termos, rotas próprias com health check, validação separada e tipos em arquivos dedicados.
-
-Qualquer integração que importe módulos internos do `ia-analyze` diretamente precisará ser atualizada para os novos caminhos.
-:::
+> ⚠️ **Aviso: Breaking Change (homolog → main)**
+> 
+> O serviço foi completamente reescrito nesta branch:
+> 
+> **Antes (main):** arquivo único `sentimentAnalysis.ts` de 40 linhas, sem estrutura de serviços.
+> 
+> **Depois (homolog):** 5 serviços separados, provider isolado, biblioteca de processamento de termos, rotas próprias com health check, validação separada e tipos em arquivos dedicados.
+> 
+> Qualquer integração que importe módulos internos do `ia-analyze` diretamente precisará ser atualizada para os novos caminhos.

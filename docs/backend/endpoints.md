@@ -1,22 +1,24 @@
 # Backend — Referência de Endpoints
 
-> **Base URL (desenvolvimento):** `http://localhost:3001`
+> **Base URL (desenvolvimento):** `http://localhost:3000`
 
 Todos os endpoints protegidos exigem o header:
 ```
 Authorization: Bearer <supabase_jwt>
 ```
 
+> **Nota:** todas as rotas são prefixadas com `/api` (ex.: `GET /api/health`).
+
 ---
 
 ## Health
 
-### `GET /health`
+### `GET /api/health`
 
 Verifica se o serviço está operacional. Use para confirmar que o Gateway está rodando antes de fazer outras chamadas.
 
 ```bash
-curl http://localhost:3001/health
+curl http://localhost:3000/api/health
 ```
 
 **Response 200**
@@ -28,7 +30,7 @@ curl http://localhost:3001/health
 
 ## Enterprise
 
-### `GET /protected/user/enterprise`
+### `GET /api/protected/user/enterprise`
 
 Retorna os dados da empresa associada ao usuário autenticado.
 
@@ -46,7 +48,7 @@ Retorna os dados da empresa associada ao usuário autenticado.
 
 ---
 
-### `PATCH /protected/user/enterprise`
+### `PATCH /api/protected/user/enterprise`
 
 Atualiza dados parciais da empresa.
 
@@ -63,7 +65,7 @@ Atualiza dados parciais da empresa.
 
 ---
 
-### `GET /protected/user/collecting_data`
+### `GET /api/protected/user/collecting_data`
 
 Retorna as configurações de coleta da empresa — tipos ativos, catálogo e perguntas.
 
@@ -80,11 +82,11 @@ Retorna as configurações de coleta da empresa — tipos ativos, catálogo e pe
 
 ---
 
-### `PATCH /protected/user/collecting_data`
+### `PATCH /api/protected/user/collecting_data`
 
 Atualiza parcialmente as configurações de coleta.
 
-### `PUT /protected/user/collecting_data`
+### `PUT /api/protected/user/collecting_data`
 
 Upsert completo (cria se não existir, substitui se existir).
 
@@ -92,55 +94,80 @@ Upsert completo (cria se não existir, substitui se existir).
 
 ## Feedbacks
 
-### `GET /protected/user/feedbacks`
+### `GET /api/protected/user/feedbacks`
 
-Lista todos os feedbacks da empresa. Suporta paginação e filtros por escopo.
+Lista todos os feedbacks da empresa com paginação e filtros.
 
 **Query Params**
 
 | Parâmetro | Tipo | Descrição |
 |---|---|---|
-| `limit` | `number` | Máximo de resultados |
-| `offset` | `number` | Paginação |
-| `scope_type` | `COMPANY \| PRODUCT \| SERVICE \| DEPARTMENT` | Filtra por escopo |
-| `catalog_item_id` | `string (UUID)` | Filtra por item |
+| `page` | `number` | Página atual (padrão: `1`) |
+| `limit` | `number` | Itens por página (padrão: `10`) |
+| `rating` | `number` | Filtra por nota (1–5) |
+| `search` | `string` | Busca textual na mensagem |
+| `item` | `string` | Filtra por nome do item de catálogo (busca parcial) |
+| `category` | `COMPANY \| PRODUCT \| SERVICE \| DEPARTMENT` | Filtra por tipo de escopo |
 
 **Response 200**
 ```json
 {
-  "data": [
+  "feedbacks": [
     {
       "id": "uuid",
       "message": "Ótimo atendimento!",
       "rating": 5,
       "created_at": "2026-05-12T12:00:00Z",
-      "catalog_item": { "id": "uuid", "name": "Hambúrguer", "kind": "PRODUCT" }
+      "collection_points": {
+        "id": "uuid",
+        "name": "Caixa Principal",
+        "type": "enterprise",
+        "catalog_item_name": null,
+        "catalog_item_kind": null
+      },
+      "feedback_question_answers": []
     }
   ],
-  "count": 42
+  "pagination": {
+    "currentPage": 1,
+    "totalPages": 5,
+    "totalItems": 42,
+    "itemsPerPage": 10,
+    "hasNextPage": true,
+    "hasPreviousPage": false
+  }
 }
 ```
 
 ---
 
-### `GET /protected/user/feedbacks/stats`
+### `GET /api/protected/user/feedbacks/stats`
 
 Retorna estatísticas agregadas dos feedbacks da empresa.
 
 **Response 200**
 ```json
 {
-  "total": 120,
-  "positive": 80,
-  "neutral": 25,
-  "negative": 15,
-  "averageRating": 4.2
+  "totalFeedbacks": 120,
+  "averageRating": 4.2,
+  "ratingDistribution": {
+    "1": 3,
+    "2": 12,
+    "3": 25,
+    "4": 40,
+    "5": 40
+  },
+  "sentimentBreakdown": {
+    "positive": 80,
+    "neutral": 25,
+    "negative": 15
+  }
 }
 ```
 
 ---
 
-### `GET /protected/user/feedbacks/insights/report`
+### `GET /api/protected/user/feedbacks/insights/report`
 
 Retorna o relatório de insights armazenado no banco (leitura — não dispara nova análise).
 
@@ -148,17 +175,56 @@ Retorna o relatório de insights armazenado no banco (leitura — não dispara n
 
 | Parâmetro | Tipo | Descrição |
 |---|---|---|
-| `scope_type` | `string` | Filtra por escopo |
-| `catalog_item_id` | `string` | Filtra por item |
+| `scope_type` | `COMPANY \| PRODUCT \| SERVICE \| DEPARTMENT` | Filtra por escopo (padrão: `COMPANY`) |
+| `catalog_item_id` | `string` | Filtra por item específico |
 
 **Response 200**
 ```json
 {
-  "globalInsights": {
-    "summary": "...",
-    "recommendations": ["..."]
-  },
-  "contexts": [...]
+  "summary": "A maioria dos feedbacks é positiva, com destaque para atendimento.",
+  "recommendations": ["Manter padrão de atendimento", "Reduzir tempo de espera"],
+  "updatedAt": "2026-05-12T12:00:00Z",
+  "scopeType": "COMPANY",
+  "catalogItemId": null
+}
+```
+
+> Quando não há relatório gerado ainda, retorna `summary: null` e `recommendations: []`.
+
+---
+
+### `GET /api/protected/user/feedbacks/analysis`
+
+Retorna os feedbacks já analisados pela IA com sentimento, categorias e keywords por item. Usado pelo painel de analytics.
+
+**Query Params**
+
+| Parâmetro | Tipo | Descrição |
+|---|---|---|
+| `sentiment` | `positive \| neutral \| negative` | Filtra por sentimento |
+| `scope_type` | `COMPANY \| PRODUCT \| SERVICE \| DEPARTMENT` | Filtra por escopo |
+| `catalog_item_id` | `string` | Filtra por item específico |
+
+**Response 200**
+```json
+{
+  "items": [
+    {
+      "id": "uuid",
+      "message": "Ótimo atendimento!",
+      "rating": 5,
+      "created_at": "2026-05-12T12:00:00Z",
+      "sentiment": "positive",
+      "categories": ["atendimento", "rapidez"],
+      "keywords": ["excelente", "equipe"]
+    }
+  ],
+  "summary": {
+    "totalAnalyzed": 87,
+    "sentiments": { "positive": 60, "neutral": 20, "negative": 7 },
+    "topCategories": [{ "name": "atendimento", "count": 34 }],
+    "topKeywords": [{ "name": "excelente", "count": 28 }]
+  }
 }
 ```
 
@@ -166,7 +232,7 @@ Retorna o relatório de insights armazenado no banco (leitura — não dispara n
 
 ## IA Analyze
 
-### `POST /protected/ia-analyze/analyze-raw`
+### `POST /api/protected/ia-analyze/analyze-raw`
 
 Analisa feedbacks **ainda não analisados** e persiste os resultados.
 
@@ -208,12 +274,12 @@ Analisa feedbacks **ainda não analisados** e persiste os resultados.
 | `401` | `unauthorized` | JWT ausente ou inválido |
 | `422` | `collecting_data_required_for_analysis` | Dados de contexto da empresa não preenchidos |
 | `422` | `insufficient_feedbacks_for_analysis` | Menos de 5 feedbacks disponíveis |
-| `502` | `failed_ia_request` | Falha na comunicação com o Gemini |
-| `502` | `invalid_ai_response` | Gemini retornou resposta inválida |
+| `502` | `failed_ia_request` | Falha na comunicação com o provedor LLM |
+| `502` | `invalid_ai_response` | Provedor LLM retornou resposta inválida |
 
 ---
 
-### `POST /protected/ia-analyze/regenerate-insights`
+### `POST /api/protected/ia-analyze/regenerate-insights`
 
 Regenera os insights globais com base nos feedbacks **já analisados**.
 
@@ -250,26 +316,22 @@ Regenera os insights globais com base nos feedbacks **já analisados**.
 
 ## QR Code (Público)
 
-### `GET /public/qrcode/:identifier`
+### `GET /api/public/enterprise/:id`
 
-Resolve um QR Code pelo identificador único e retorna o formulário configurado.
+Retorna os dados públicos de uma empresa para validação antes de exibir o formulário de feedback.
 
 **Response 200**
 ```json
 {
-  "collection_point": {
-    "id": "uuid",
-    "name": "Caixa Principal",
-    "type": "enterprise",
-    "identifier": "abc123"
-  },
-  "questions": [...]
+  "id": "uuid",
+  "full_name": "Empresa Exemplo",
+  "status": "ACTIVE"
 }
 ```
 
 ---
 
-### `POST /public/feedback`
+### `POST /api/public/qrcode/feedback`
 
 Submete um feedback via formulário público. Não requer autenticação.
 
@@ -285,12 +347,14 @@ Submete um feedback via formulário público. Não requer autenticação.
 }
 ```
 
-**Response 200**
+**Response 201**
 ```json
 { "ok": true }
 ```
 
-**Response 429** — dispositivo enviou feedback recentemente (cooldown ativo).
+**Response 409** — dispositivo já enviou feedback para este ponto de coleta hoje (anti-spam diário).
+
+**Response 403** — dispositivo permanentemente bloqueado (`is_blocked = true`).
 
 ---
 
@@ -301,5 +365,6 @@ Submete um feedback via formulário público. Não requer autenticação.
 | `401` em qualquer endpoint protegido | JWT expirado ou ausente | Faça login novamente; verifique o header `Authorization` |
 | `422 collecting_data_required` | Empresa sem dados de contexto | Preencha Objetivo e Resumo em Configurações da empresa |
 | `422 insufficient_feedbacks` | Base de feedbacks pequena | Colete pelo menos 5 feedbacks antes de analisar |
-| `502` nos endpoints de IA | IA Analyze offline ou Gemini com erro | Verifique se o serviço `ia-analyze` está rodando e se `GEMINI_API_KEY` está configurado |
-| `429` no POST público | Fingerprint em cooldown | Aguarde o período de cooldown antes de tentar novamente |
+| `502` nos endpoints de IA | Serviço `ia-analyze` offline ou provedor LLM com erro | Verifique se o serviço `ia-analyze` está rodando e se `GEMINI_API_KEY` está configurado |
+| `409` no POST público | Fingerprint já registrado hoje neste ponto de coleta | Aguarde até o próximo dia ou use outro ponto de coleta |
+| `403` no POST público | Dispositivo permanentemente bloqueado | Dispositivo marcado como `is_blocked` — requer intervenção manual |
