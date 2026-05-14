@@ -28,7 +28,7 @@ Ponto único de entrada para o frontend. Concentra autenticação (JWT via Supab
 **Shared Cross-Package**
 Pacote interno importado por múltiplos domínios. Evita duplicação de tipos TypeScript — contratos de API, interfaces de entidades e tipos de integração vivem aqui e são a fonte de verdade para todos os serviços.
 
-**Serviços Externos**
+**Serviços Externos (Microserviços)**
 Divididos em dois perfis: integrações de menor impacto são agrupadas em um único domínio `services/`; serviços de grande volume ou complexidade (como o IA Analyze) ganham domínio próprio para escalar e evoluir de forma independente.
 
 ---
