@@ -89,7 +89,7 @@ O sistema exige **exatamente 3 perguntas ativas** por ponto de coleta. Se o item
 
 ## Referência Técnica
 
-- [Catálogo de Feedback → catalogo-feedback.md](./catalogo-feedback.md)
-- [QR Code da Empresa → qrcode-empresa.md](./qrcode-empresa.md)
-- [Análise IA por Escopo → insights-ia.md](./insights-ia.md)
+- [Onboarding do Catálogo → onboarding-catalogo.md](./onboarding-catalogo.md)
+- [Coleta via QR Code → coleta-qrcode.md](./coleta-qrcode.md)
+- [Painel de Insights por Escopo → painel-insights-ia.md](./painel-insights-ia.md)
 - [Endpoints de QR Code](../backend/endpoints.md)

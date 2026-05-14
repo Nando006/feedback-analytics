@@ -91,7 +91,6 @@ Isso garante que uma instabilidade do provedor externo não corrompa o painel co
 
 ## Referência Técnica
 
-- [Análise IA de Feedbacks → insights-ia.md](./insights-ia.md)
 - [Painel de Insights → painel-insights-ia.md](./painel-insights-ia.md)
 - [Serviço IA Analyze](../servicos/ia-analyze/visao-geral.md)
 - [Endpoints de Análise IA](../backend/endpoints.md)

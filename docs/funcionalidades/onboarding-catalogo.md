@@ -81,7 +81,6 @@ Tudo isso acontece **de forma invisível**, sem nenhuma intervenção manual do 
 
 ## Referência Técnica
 
-- [Catálogo de Feedback → catalogo-feedback.md](./catalogo-feedback.md)
 - [QR Codes por Escopo → qrcode-escopo-dinamico.md](./qrcode-escopo-dinamico.md)
 - [Coleta via QR Code → coleta-qrcode.md](./coleta-qrcode.md)
 - [Regras de Negócio — RNE-010 → visao-geral.md#regras-de-negócio-rne](./visao-geral.md)

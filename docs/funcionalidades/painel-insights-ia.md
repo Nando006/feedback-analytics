@@ -126,5 +126,5 @@ Cada escopo tem seu próprio relatório independente.
 ## Referência Técnica
 
 - [Motor de IA com Filtro Semântico → filtro-semantico-ia.md](./filtro-semantico-ia.md)
-- [Análise IA de Feedbacks → insights-ia.md](./insights-ia.md)
+- [Serviço IA Analyze](../servicos/ia-analyze/visao-geral.md)
 - [Endpoints de Análise IA](../backend/endpoints.md)
