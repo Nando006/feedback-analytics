@@ -30,24 +30,24 @@ backends/api-gateway/
 
 | Método | Caminho | Descrição |
 |---|---|---|
-| `GET` | `/protected/user/enterprise` | Dados da empresa |
-| `PATCH` | `/protected/user/enterprise` | Atualiza empresa |
-| `GET` | `/protected/user/collecting_data` | Configurações de coleta |
-| `PATCH` / `PUT` | `/protected/user/collecting_data` | Atualiza / upsert coleta |
-| `GET` | `/protected/user/feedbacks` | Lista feedbacks |
-| `GET` | `/protected/user/feedbacks/stats` | Estatísticas |
-| `GET` | `/protected/user/feedbacks/insights/report` | Relatório de insights |
-| `GET` | `/protected/user/feedbacks/analysis` | Análises da IA |
-| `POST` | `/protected/ia-analyze/analyze-raw` | Analisa feedbacks brutos |
-| `POST` | `/protected/ia-analyze/regenerate-insights` | Regenera insights |
+| `GET` | `/api/protected/user/enterprise` | Dados da empresa |
+| `PATCH` | `/api/protected/user/enterprise` | Atualiza empresa |
+| `GET` | `/api/protected/user/collecting_data` | Configurações de coleta |
+| `PATCH` / `PUT` | `/api/protected/user/collecting_data` | Atualiza / upsert coleta |
+| `GET` | `/api/protected/user/feedbacks` | Lista feedbacks |
+| `GET` | `/api/protected/user/feedbacks/stats` | Estatísticas |
+| `GET` | `/api/protected/user/feedbacks/insights/report` | Relatório de insights |
+| `GET` | `/api/protected/user/feedbacks/analysis` | Análises da IA |
+| `POST` | `/api/protected/ia-analyze/analyze-raw` | Analisa feedbacks brutos |
+| `POST` | `/api/protected/ia-analyze/regenerate-insights` | Regenera insights |
 
 ### Públicos (sem autenticação)
 
 | Método | Caminho | Descrição |
 |---|---|---|
-| `GET` | `/health` | Health check |
-| `GET` | `/public/qrcode/:identifier` | Resolve QR Code |
-| `POST` | `/public/feedback` | Submissão de feedback |
+| `GET` | `/api/health` | Health check |
+| `GET` | `/api/public/enterprise/:id` | Dados públicos da empresa para validação do formulário |
+| `POST` | `/api/public/qrcode/feedback` | Submissão de feedback via QR Code |
 
 ## Tecnologias
 

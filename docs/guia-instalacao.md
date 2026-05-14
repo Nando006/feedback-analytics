@@ -46,7 +46,7 @@ Crie um arquivo `.env` em cada serviço com as variáveis abaixo.
 ```env
 VITE_SUPABASE_URL=https://seu-projeto.supabase.co
 VITE_SUPABASE_ANON_KEY=sua_anon_key_aqui
-VITE_API_GATEWAY_URL=http://localhost:3001
+VITE_API_GATEWAY_URL=http://localhost:3000
 ```
 
 ### `backends/api-gateway/.env`
@@ -54,21 +54,21 @@ VITE_API_GATEWAY_URL=http://localhost:3001
 ```env
 SUPABASE_URL=https://seu-projeto.supabase.co
 SUPABASE_SERVICE_ROLE_KEY=sua_service_role_key_aqui
-INTERNAL_SERVICE_TOKEN=um_token_secreto_compartilhado
-IA_ANALYZE_URL=http://localhost:3002
-PORT=3001
+IA_ANALYZE_INTERNAL_TOKEN=um_token_secreto_compartilhado
+IA_ANALYZE_URL=http://localhost:4100
+PORT=3000
 ```
 
 ### `services/ia-analyze/.env`
 
 ```env
 GEMINI_API_KEY=sua_chave_gemini_aqui
-INTERNAL_SERVICE_TOKEN=um_token_secreto_compartilhado
-PORT=3002
+IA_ANALYZE_INTERNAL_TOKEN=um_token_secreto_compartilhado
+PORT=4100
 ```
 
 :::warning Token Compartilhado
-O `INTERNAL_SERVICE_TOKEN` deve ser **idêntico** no API Gateway e no IA Analyze. Ele autentica a comunicação interna entre os serviços. Use uma string longa e aleatória (mínimo 32 caracteres).
+O `IA_ANALYZE_INTERNAL_TOKEN` deve ser **idêntico** no API Gateway e no IA Analyze. Ele autentica a comunicação interna entre os serviços. Use uma string longa e aleatória (mínimo 32 caracteres).
 :::
 
 ---
@@ -106,8 +106,8 @@ npm run dev:web-apiGateway-iaAnalyze
 
 Isso inicia:
 - **Frontend** em `http://localhost:5173`
-- **API Gateway** em `http://localhost:3001`
-- **IA Analyze** em `http://localhost:3002`
+- **API Gateway** em `http://localhost:3000`
+- **IA Analyze** em `http://localhost:4100`
 
 ### Serviços individualmente
 
@@ -122,10 +122,10 @@ npm run dev:ia    # Apenas IA Analyze
 ## Passo 6 — Verifique a Instalação
 
 ```bash
-curl http://localhost:3001/health
+curl http://localhost:3000/api/health
 # → { "ok": true }
 
-curl http://localhost:3002/health
+curl http://localhost:4100/internal/health
 # → { "ok": true, "service": "ia-analyze" }
 ```
 
@@ -138,10 +138,10 @@ Se ambos retornarem `ok: true`, o ambiente está funcionando.
 | Erro | Causa | Solução |
 |---|---|---|
 | `Missing Gemini API key` | `GEMINI_API_KEY` vazio | Verifique o `.env` do `ia-analyze` |
-| `401 unauthorized_internal_request` | Tokens internos diferentes | Iguale `INTERNAL_SERVICE_TOKEN` nos dois serviços |
+| `401 unauthorized_internal_request` | Tokens internos diferentes | Iguale `IA_ANALYZE_INTERNAL_TOKEN` nos dois serviços |
 | `422 collecting_data_required` | Empresa sem dados de contexto | Preencha **Objetivo** e **Resumo** em Configurações |
 | `422 insufficient_feedbacks` | Menos de 5 feedbacks disponíveis | Colete mais feedbacks antes de analisar |
-| `ECONNREFUSED :3002` | IA Analyze não está rodando | Execute `npm run dev:ia` |
+| `ECONNREFUSED :4100` | IA Analyze não está rodando | Execute `npm run dev:ia` |
 
 ---
 

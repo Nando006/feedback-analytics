@@ -10,7 +10,7 @@ O processamento ocorre de forma sequencial através das camadas do sistema, gara
 1. **Rotas (`routes/`):** Recebem o lote de feedbacks enviado pelo API Gateway e direcionam para o controlador.
 2. **Controllers (`controllers/`):** Validam a autorização interna (garantindo que a requisição veio do Gateway) e a estrutura do payload recebido.
 3. **Service Principal (`services/iaAnalyze.service.ts`):** Orquestra o processo. Combina os feedbacks com as regras e o contexto de negócio da empresa.
-4. **Providers (`providers/gemini.provider.ts`):** Prepara o prompt final e realiza a chamada HTTP para a API do Google Gemini.
+4. **Providers (`providers/gemini.provider.ts`):** Prepara o prompt final e realiza a chamada HTTP para a API do provedor LLM externo.
 
 ### Fluxo de Volta (Processando a resposta)
 5. O **Provider** recebe a resposta bruta da Inteligência Artificial (que está sujeita a "alucinações" ou fuga do formato).

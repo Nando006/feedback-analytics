@@ -53,7 +53,7 @@ Os feedbacks são agrupados pela função `buildAnalysisBatches`:
 - Um batch para escopo `COMPANY` (sem `catalog_item_id`)
 - Um batch por par `(scope_type, catalog_item_id)` para itens de catálogo
 
-Cada batch é enviado **separadamente** ao Gemini para manter o contexto coerente por escopo.
+Cada batch é enviado **separadamente** ao provedor LLM externo para manter o contexto coerente por escopo.
 
 ---
 
@@ -98,7 +98,7 @@ Desativar uma flag **não exclui** os itens cadastrados — apenas oculta o tipo
 
 A função de banco `generate_device_fingerprint` gera um hash único por dispositivo. A tabela `tracked_devices` registra envios por `(device_fingerprint, collection_point_id)`.
 
-Um dispositivo que enviou feedback recentemente para o mesmo ponto de coleta recebe **`429 Too Many Requests`**.
+Um dispositivo que enviou feedback para o mesmo ponto de coleta no mesmo dia recebe **`409 Conflict`**.
 
 ### Perguntas Dinâmicas — Snapshot
 
@@ -137,4 +137,4 @@ O upsert usa chave composta `(enterprise_id, scope_type, catalog_item_id)`.
 | `422 collecting_data_required_for_analysis` | Empresa sem contexto de negócio | Preencha ao menos um dos campos: objetivo, meta analítica ou resumo |
 | `422 insufficient_feedbacks_for_analysis` | Menos de 5 feedbacks após filtragem | Colete mais feedbacks ou remova filtros de escopo/item |
 | `422` no catálogo | Pergunta com texto inválido | Ajuste o texto para entre 20 e 150 caracteres |
-| `429` na coleta pública | Fingerprint em cooldown | Aguarde o período de cooldown configurado |
+| `409` na coleta pública | Dispositivo já enviou feedback para este ponto hoje | Aguarde até o próximo dia ou use outro ponto de coleta |

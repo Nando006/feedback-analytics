@@ -27,7 +27,7 @@ O **Feedback Analytics** transforma coleta e análise de feedbacks em um process
 
 1. **Colete** — O sistema oferece canal estruturado para coletar feedbacks:
     - **Canal QRCode**: A empresa gera QR Codes exclusivos por produto, serviço ou departamento, o cliente escaneia e avalia sem precisar criar conta.
-2. **Analise** — Um pipeline de IA com Google Gemini interpreta cada feedback automaticamente, classifica sentimento, extrai temas e palavras-chave e gera insights acionáveis para melhorar produtos, serviços e experiência do cliente.
+2. **Analise** — Um pipeline de IA com provedor LLM externo configurável interpreta cada feedback automaticamente, classifica sentimento, extrai temas e palavras-chave e gera insights acionáveis para melhorar produtos, serviços e experiência do cliente.
 3. **Decida** — O dashboard apresenta um painel de insights por escopo, mostrando sentimento dos clientes, temas recorrentes, recomendações e comparação entre empresa, produtos, serviços ou departamentos. Assim, o gestor transforma feedbacks em ações concretas.
 
 ## Para Quem É
@@ -46,7 +46,7 @@ Atualmente temos os seguintes domínios:
 
 - `apps/web/` → Frontend React (público + dashboard)
 - `backends/api-gateway/` → API REST — ponto único de entrada do backend
-- `services/ia-analyze/` → serviço isolado de análise IA (Google Gemini)
+- `services/ia-analyze/` → serviço isolado de análise IA (provedor LLM externo configurável)
 
 - O **Frontend** serve o formulário público de coleta e o dashboard protegido da empresa.
 - O **API Gateway** centraliza autenticação, lógica de negócio, orquestra Supabase e orquestra as chamadas de IA.

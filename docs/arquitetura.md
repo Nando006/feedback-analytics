@@ -55,7 +55,7 @@ O sistema tem uma topologia **hub-and-spoke**: o API Gateway é o hub central. O
 1. A empresa clica em "Analisar feedbacks" no painel de insights
 2. O Gateway busca feedbacks não analisados (máx. 100), remove IDs já presentes em `feedback_analysis` e agrupa em **batches por escopo** (`COMPANY`, `PRODUCT`, `SERVICE`, `DEPARTMENT`)
 3. Envia o payload `{ enterprise_context, batches[] }` ao IA Analyze via HTTP com token interno
-4. O IA Analyze chama o **Google Gemini** por batch, processa e sanitiza sentimentos, keywords e categorias
+4. O IA Analyze chama o **provedor LLM externo** por batch, processa e sanitiza sentimentos, keywords e categorias
 5. O Gateway persiste as análises em `feedback_analysis` e os insights em `feedback_insights_report`
 
 ---
@@ -87,7 +87,7 @@ Os tipos TypeScript que transitam entre Gateway e IA Analyze **não são duplica
 | Backend Framework | Express | — |
 | Autenticação | Supabase JS | 2.x |
 | Banco de Dados | Supabase (PostgreSQL) | — |
-| IA | Google Gemini (via API REST) | — |
+| IA | Provedor LLM Externo Configurável (via API REST) | — |
 | Testes | Vitest + Testing Library | — |
 | Monorepo | npm Workspaces + concurrently | — |
 

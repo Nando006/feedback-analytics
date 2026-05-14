@@ -138,7 +138,7 @@ return { ok: false, error: 'update_failed', message: 'Mensagem para o usuário' 
 | `VITE_API_GATEWAY_URL` | Frontend | Sim |
 | `SUPABASE_URL` | API Gateway | Sim |
 | `SUPABASE_SERVICE_ROLE_KEY` | API Gateway | Sim |
-| `INTERNAL_SERVICE_TOKEN` | Gateway + IA Analyze | Sim |
+| `IA_ANALYZE_INTERNAL_TOKEN` | Gateway + IA Analyze | Não |
 | `IA_ANALYZE_URL` | API Gateway | Sim |
 | `GEMINI_API_KEY` | IA Analyze | Sim |
-| `PORT` | Gateway (3001) / IA (3002) | Não |
+| `PORT` | Gateway (3000) / IA (4100) | Não |
