@@ -32,7 +32,7 @@ export default function FormResetPassword() {
     if ('message' in actionData && typeof actionData.message === 'string') {
       toast.error('Erro ao redefinir senha', actionData.message);
     }
-  }, [actionData]);
+  }, [actionData, toast]);
 
   function onSubmit(values: ResetPasswordFormValues) {
     const formData = new FormData();

@@ -12,7 +12,6 @@ const FieldCompanyObjective = memo(function FieldCompanyObjective({
         htmlFor="company_objective"
         className="mb-2 block text-sm font-medium text-(--text-secondary) transition-colors group-focus-within:text-(--primary-color)">
         Objetivo da Empresa
-        <span className="ml-1 text-xs text-(--text-tertiary)">(obrigatório)</span>
       </label>
       <div className="relative">
         <textarea
@@ -24,10 +23,7 @@ const FieldCompanyObjective = memo(function FieldCompanyObjective({
           onInput={(event) => setCharacterCount(event.currentTarget.value.length)}
           placeholder="Instrua a IA sobre seu foco atual para ela filtrar os feedbacks. Ex: Oferecer o melhor custo-benefício e a entrega mais segura em hardware de alto desempenho."
         />
-        <div className="mt-1.5 flex items-center justify-between">
-          <p className="text-xs text-(--text-tertiary)">
-            Quanto mais específico, melhor a análise da IA.
-          </p>
+        <div className="mt-1.5 flex items-center justify-end">
           <span className="text-xs text-(--text-tertiary)">{characterCount} caracteres</span>
         </div>
       </div>

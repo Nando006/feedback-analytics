@@ -34,20 +34,11 @@ export async function ActionQrCodeCatalog({ request }: ActionFunctionArgs) {
     intent !== INTENT_QR_DISABLE &&
     intent !== INTENT_QR_SAVE_FEEDBACK_QUESTIONS
   ) {
-    return new Response(JSON.stringify({ error: 'Ação inválida para QR Code.' }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return { error: 'Ação inválida para QR Code.' };
   }
 
   if (!catalogItemId) {
-    return new Response(
-      JSON.stringify({ error: 'Item do catálogo não informado.' }),
-      {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' },
-      },
-    );
+    return { error: 'Item do catálogo não informado.' };
   }
 
   try {
@@ -55,13 +46,7 @@ export async function ActionQrCodeCatalog({ request }: ActionFunctionArgs) {
       const questionsRaw = String(form.get('questions') ?? '').trim();
 
       if (!questionsRaw) {
-        return new Response(
-          JSON.stringify({ error: 'Perguntas do item não informadas.' }),
-          {
-            status: 400,
-            headers: { 'Content-Type': 'application/json' },
-          },
-        );
+        return { error: 'Perguntas do item não informadas.' };
       }
 
       let questions: QrCatalogQuestionInput[];
@@ -74,13 +59,7 @@ export async function ActionQrCodeCatalog({ request }: ActionFunctionArgs) {
 
         questions = parsed as QrCatalogQuestionInput[];
       } catch {
-        return new Response(
-          JSON.stringify({ error: 'Formato de perguntas inválido.' }),
-          {
-            status: 400,
-            headers: { 'Content-Type': 'application/json' },
-          },
-        );
+        return { error: 'Formato de perguntas inválido.' };
       }
 
       const response = await ServiceSaveQrCatalogFeedbackQuestions(
@@ -88,37 +67,22 @@ export async function ActionQrCodeCatalog({ request }: ActionFunctionArgs) {
         questions,
       );
 
-      return new Response(
-        JSON.stringify({
-          ok: true,
-          questionsSaved: true,
-          catalog_item_id: response.catalog_item_id,
-          questions: response.questions,
-        }),
-        {
-          status: 200,
-          headers: { 'Content-Type': 'application/json' },
-        },
-      );
+      return {
+        ok: true,
+        questionsSaved: true,
+        catalog_item_id: response.catalog_item_id,
+        questions: response.questions,
+      };
     }
 
     if (intent === INTENT_QR_DISABLE) {
       const response = await ServiceDisableQrByCatalogItem(catalogItemId);
-      return new Response(JSON.stringify({ ok: true, ...response }), {
-        status: 200,
-        headers: { 'Content-Type': 'application/json' },
-      });
+      return { ok: true, ...response };
     }
 
     const response = await ServiceEnableQrByCatalogItem(catalogItemId);
-    return new Response(JSON.stringify({ ok: true, ...response }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return { ok: true, ...response };
   } catch (err) {
-    return new Response(JSON.stringify({ error: getErrorMessage(err) }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return { error: getErrorMessage(err) };
   }
 }

@@ -31,14 +31,6 @@ export default function EditableField({
   const toast = useToast();
   const actionData = useActionData() as ActionData | undefined;
 
-  // Log de debug para verificar valores
-  console.log('=== DEBUG EditableField Component ===');
-  console.log('Value prop:', JSON.stringify(value));
-  console.log('Type of value:', typeof value);
-  console.log('Value is undefined:', value === undefined);
-  console.log('Value is null:', value === null);
-  console.log('Value || "":', JSON.stringify(value || ''));
-
   const getFieldName = useCallback(() => {
     if (type === 'email') return 'email';
     if (type === 'tel') return 'phone';
@@ -69,8 +61,6 @@ export default function EditableField({
   useEffect(() => {
     if (!actionData) return;
     if (!isSubmitting) return;
-
-    console.log('Action response received:', actionData);
 
     if (actionData.ok) {
       toast.success(successMessage, 'Alterações salvas com sucesso');
@@ -111,23 +101,11 @@ export default function EditableField({
 
   const onSubmit = (data: unknown) => {
     const formData = data as Record<string, string>;
-    console.log('=== DEBUG EditableField ===');
-    console.log('Field name:', fieldName);
-    console.log('Original value:', value);
-    console.log('Form data:', formData);
-    console.log('Form data[fieldName]:', formData[fieldName]);
-    console.log('Intent:', intent);
 
     const fd = new FormData();
     fd.set('intent', intent);
     fd.set(`initial_${fieldName}`, value || '');
     fd.set(fieldName, formData[fieldName] || '');
-
-    // Log FormData contents
-    console.log('FormData contents:');
-    for (const [key, value] of fd.entries()) {
-      console.log(`  ${key}: "${value}"`);
-    }
 
     setIsSubmitting(true);
     submit(fd, {

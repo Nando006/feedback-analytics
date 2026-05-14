@@ -37,33 +37,15 @@ export async function ActionPublicQrCodeFeedback({
   });
 
   if (baseValidationError) {
-    return new Response(
-      JSON.stringify({ error: baseValidationError }),
-      {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' },
-      },
-    );
+    return { error: baseValidationError };
   }
 
   if (!answers) {
-    return new Response(
-      JSON.stringify({ error: PUBLIC_QR_FEEDBACK_ERRORS.missingAnswers }),
-      {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' },
-      },
-    );
+    return { error: PUBLIC_QR_FEEDBACK_ERRORS.missingAnswers };
   }
 
   if (!subanswers) {
-    return new Response(
-      JSON.stringify({ error: PUBLIC_QR_FEEDBACK_ERRORS.missingSubanswers }),
-      {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' },
-      },
-    );
+    return { error: PUBLIC_QR_FEEDBACK_ERRORS.missingSubanswers };
   }
 
   try {
@@ -87,23 +69,14 @@ export async function ActionPublicQrCodeFeedback({
         : undefined,
     });
 
-    return new Response(JSON.stringify({ ok: true }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return { ok: true };
   } catch (err: unknown) {
     const httpError = err as HttpError;
     const status = httpError?.status;
     const code = httpError?.code;
 
-    if (
-      status === 409 ||
-      code === 'DEVICE_ALREADY_SUBMITTED'
-    ) {
-      return new Response(JSON.stringify({ alreadySubmitted: true }), {
-        status: 409,
-        headers: { 'Content-Type': 'application/json' },
-      });
+    if (status === 409 || code === 'DEVICE_ALREADY_SUBMITTED') {
+      return { alreadySubmitted: true };
     }
 
     const errorMessage = getPublicQrFeedbackErrorMessage({
@@ -115,14 +88,6 @@ export async function ActionPublicQrCodeFeedback({
           : undefined,
     });
 
-    const responseStatus =
-      typeof status === 'number' && status >= 400 && status <= 599
-        ? status
-        : 400;
-
-    return new Response(JSON.stringify({ error: errorMessage }), {
-      status: responseStatus,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return { error: errorMessage };
   }
 }

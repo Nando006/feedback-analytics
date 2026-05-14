@@ -134,6 +134,6 @@ export type UpdateCollectingDataPayload = Partial<
  * Usado em: components/user/pages/profile/info.tsx e pages/user/profile.tsx.
  */
 export interface EnterpriseAndCollectingData {
-  enterprise: Enterprise;
-  collecting: CollectingDataEnterprise | null;
+  enterprise?: Enterprise;
+  collecting?: CollectingDataEnterprise | null;
 }

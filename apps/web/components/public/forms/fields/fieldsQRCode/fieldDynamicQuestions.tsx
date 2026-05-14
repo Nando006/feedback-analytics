@@ -55,7 +55,7 @@ export default function FieldDynamicQuestions({
               className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-5"
               role="radiogroup"
               aria-label={`Pergunta ${question.question_order}`}
-              aria-describedby={questionHelperId}
+              aria-describedby={selectedAnswer ? questionHelperId : undefined}
             >
               {ANSWER_OPTIONS.map((option) => {
                 const isSelected = selectedAnswer === option.value;
@@ -79,14 +79,14 @@ export default function FieldDynamicQuestions({
               })}
             </div>
 
-            <p
-              id={questionHelperId}
-              className="mt-2 text-xs text-(--text-secondary) font-work-sans"
-            >
-              {selectedAnswer
-                ? ANSWER_HELPER[selectedAnswer as FeedbackAnswerValue]
-                : 'Toque em uma opção para responder'}
-            </p>
+            {selectedAnswer ? (
+              <p
+                id={questionHelperId}
+                className="mt-2 text-xs text-(--text-secondary) font-work-sans"
+              >
+                {ANSWER_HELPER[selectedAnswer as FeedbackAnswerValue]}
+              </p>
+            ) : null}
 
             {sortedSubquestions.length > 0 && (
               <div className="mt-3 space-y-2 border-t border-(--quaternary-color)/15 pt-3">
@@ -110,7 +110,7 @@ export default function FieldDynamicQuestions({
                         className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-5"
                         role="radiogroup"
                         aria-label={`Subpergunta ${question.question_order}.${subquestion.subquestion_order}`}
-                        aria-describedby={subquestionHelperId}
+                        aria-describedby={selectedSubanswer ? subquestionHelperId : undefined}
                       >
                         {ANSWER_OPTIONS.map((option) => {
                           const isSelected = selectedSubanswer === option.value;
@@ -136,14 +136,14 @@ export default function FieldDynamicQuestions({
                         })}
                       </div>
 
-                      <p
-                        id={subquestionHelperId}
-                        className="mt-2 text-xs text-(--text-secondary) font-work-sans"
-                      >
-                        {selectedSubanswer
-                          ? ANSWER_HELPER[selectedSubanswer as FeedbackAnswerValue]
-                          : 'Toque em uma opção para responder'}
-                      </p>
+                      {selectedSubanswer ? (
+                        <p
+                          id={subquestionHelperId}
+                          className="mt-2 text-xs text-(--text-secondary) font-work-sans"
+                        >
+                          {ANSWER_HELPER[selectedSubanswer as FeedbackAnswerValue]}
+                        </p>
+                      ) : null}
                     </div>
                   );
                 })}

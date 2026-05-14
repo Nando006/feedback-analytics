@@ -10,7 +10,6 @@ const FieldAnalyticsGoal = memo(function FieldAnalyticsGoal({ defaultValue }: Fi
         htmlFor="analytics_goal"
         className="mb-2 block text-sm font-medium text-(--text-secondary) transition-colors group-focus-within:text-(--tertiary-color)">
         Objetivo Analítico
-        <span className="ml-1 text-xs text-(--text-tertiary)">(obrigatório)</span>
       </label>
       <div className="relative">
         <textarea
@@ -22,10 +21,7 @@ const FieldAnalyticsGoal = memo(function FieldAnalyticsGoal({ defaultValue }: Fi
           onInput={(event) => setCharacterCount(event.currentTarget.value.length)}
           placeholder="Instrua a IA sobre o que investigar nos feedbacks. Ex: Identificar os principais motivos de insatisfação com o atendimento."
         />
-        <div className="mt-1.5 flex items-center justify-between">
-          <p className="text-xs text-(--text-tertiary)">
-            Este campo ajuda a IA a priorizar e filtrar o que você quer ver nos relatórios.
-          </p>
+        <div className="mt-1.5 flex items-center justify-end">
           <span className="text-xs text-(--text-tertiary)">
             {characterCount} caracteres
           </span>

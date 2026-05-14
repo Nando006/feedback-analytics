@@ -1,20 +1,5 @@
-import type {
-  FeedbackAnalysisSummary,
-  FeedbackInsightsReport,
-} from 'lib/interfaces/domain/feedback.domain';
 import type { CollectingDataEnterprise } from 'lib/interfaces/entities/enterprise.entity';
-import type { IaAnalyzeRunRequest } from 'lib/interfaces/contracts/ia-analyze/run.contract';
-import type {
-  IaAnalyzeScopeType,
-} from 'lib/interfaces/contracts/ia-analyze/scope.contract';
-import { ServiceGetFeedbackInsightsReport } from 'src/services/serviceFeedbacks';
-import { loadFeedbackAnalysisData } from 'src/routes/load/loadFeedbackAnalysis';
 import { ServiceGetCollectingDataEnterprise } from 'src/services/serviceEnterprise';
-
-type FeedbackInsightsReportFilterOptions = Pick<
-  IaAnalyzeRunRequest,
-  'scope_type' | 'catalog_item_id'
->;
 
 type InsightsCatalogItemOption = {
   id: string;
@@ -23,19 +8,12 @@ type InsightsCatalogItemOption = {
 };
 
 export type FeedbackInsightsReportLoadData = {
-  report: FeedbackInsightsReport | null;
-  summary: FeedbackAnalysisSummary | null;
-  availableScopes: IaAnalyzeScopeType[];
+  availableScopes: ('COMPANY' | 'PRODUCT' | 'SERVICE' | 'DEPARTMENT')[];
   catalogItemOptions: InsightsCatalogItemOption[];
   analysisGuard: {
     canAnalyze: boolean;
     message: string | null;
   };
-  filters: {
-    scope_type: IaAnalyzeScopeType;
-    catalog_item_id: string | null;
-  };
-  error: string | null;
 };
 
 function hasRequiredEnterpriseInfo(collecting: CollectingDataEnterprise | null) {
@@ -50,13 +28,11 @@ function hasRequiredEnterpriseInfo(collecting: CollectingDataEnterprise | null) 
   return hasCompanyObjective && hasAnalyticsGoal && hasBusinessSummary;
 }
 
-export async function loadFeedbackInsightsReportData(
-  options?: FeedbackInsightsReportFilterOptions,
-): Promise<FeedbackInsightsReportLoadData> {
+export async function loadFeedbackInsightsReportData(): Promise<FeedbackInsightsReportLoadData> {
   const collectingData = await ServiceGetCollectingDataEnterprise().catch(() => null);
   const canAnalyze = hasRequiredEnterpriseInfo(collectingData);
 
-  const availableScopes: IaAnalyzeScopeType[] = ['COMPANY'];
+  const availableScopes: ('COMPANY' | 'PRODUCT' | 'SERVICE' | 'DEPARTMENT')[] = ['COMPANY'];
   const catalogItemOptions: InsightsCatalogItemOption[] = [];
 
   const productItems = collectingData?.catalog_products ?? [];
@@ -96,39 +72,7 @@ export async function loadFeedbackInsightsReportData(
     );
   }
 
-  const requestedScope = options?.scope_type ?? 'COMPANY';
-  const scope_type = availableScopes.includes(requestedScope)
-    ? requestedScope
-    : 'COMPANY';
-
-  let catalog_item_id: string | undefined;
-
-  if (scope_type !== 'COMPANY') {
-    const scopeItems = catalogItemOptions.filter((item) => item.kind === scope_type);
-    const requestedItem = options?.catalog_item_id;
-
-    catalog_item_id =
-      requestedItem && scopeItems.some((item) => item.id === requestedItem)
-        ? requestedItem
-        : scopeItems[0]?.id;
-  }
-
-  const [reportData, analysisData] = await Promise.all([
-    ServiceGetFeedbackInsightsReport({
-      scope_type,
-      catalog_item_id,
-    }).catch(() => null),
-    loadFeedbackAnalysisData({
-      scope_type,
-      catalog_item_id,
-    }),
-  ]);
-
-  const hasError = reportData === null || analysisData.error !== null;
-
   return {
-    report: reportData,
-    summary: analysisData.summary,
     availableScopes,
     catalogItemOptions,
     analysisGuard: {
@@ -137,10 +81,5 @@ export async function loadFeedbackInsightsReportData(
         ? null
         : 'Para analisar os feedbacks, preencha as informações da empresa em Editar > Configuração de Coleta de Dados.',
     },
-    filters: {
-      scope_type,
-      catalog_item_id: catalog_item_id ?? null,
-    },
-    error: hasError ? 'Erro ao carregar relatório de insights' : null,
   };
 }

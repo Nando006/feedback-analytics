@@ -8,8 +8,10 @@ import type {
   FeedbackInsightsReportOptions,
 } from 'lib/interfaces/domain/feedback.domain';
 import type {
-  IaAnalyzeRunRequest,
-  IaAnalyzeRunResponse,
+  IaAnalyzeRawRunRequest,
+  IaAnalyzeRawRunResponse,
+  IaAnalyzeRegenerateInsightsRequest,
+  IaAnalyzeRegenerateInsightsResponse,
 } from 'lib/interfaces/contracts/ia-analyze/run.contract';
 import { getJson, postJson } from 'src/lib/utils/http';
 
@@ -81,12 +83,22 @@ export function ServiceGetFeedbackInsightsReport(
   );
 }
 
-export type FeedbackIaRunResult = Pick<IaAnalyzeRunResponse, 'analyzedCount' | 'globalInsights'>;
-export type FeedbackIaRunOptions = IaAnalyzeRunRequest;
+export type FeedbackIaRawRunResult = IaAnalyzeRawRunResponse;
+export type FeedbackIaRawRunOptions = IaAnalyzeRawRunRequest;
 
-export function ServiceRunFeedbackIAAnalysis(options?: FeedbackIaRunOptions) {
-  return postJson<FeedbackIaRunResult>(
-    '/api/protected/ia-analyze/send-message',
+export type FeedbackIaRegenerateInsightsResult = IaAnalyzeRegenerateInsightsResponse;
+export type FeedbackIaRegenerateInsightsOptions = IaAnalyzeRegenerateInsightsRequest;
+
+export function ServiceRunRawFeedbackAnalysis(options?: FeedbackIaRawRunOptions) {
+  return postJson<FeedbackIaRawRunResult>(
+    '/api/protected/ia-analyze/analyze-raw',
+    options ?? {},
+  );
+}
+
+export function ServiceRunFeedbackIAAnalysis(options?: FeedbackIaRegenerateInsightsOptions) {
+  return postJson<FeedbackIaRegenerateInsightsResult>(
+    '/api/protected/ia-analyze/regenerate-insights',
     options ?? {},
   );
 }

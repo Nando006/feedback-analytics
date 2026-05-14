@@ -18,3 +18,4 @@ export const INTENT_FEEDBACK_SETTINGS_SAVE_DEPARTMENTS_CATALOG =
 	'save_departments_catalog' as const;
 
 export const INTENT_FEEDBACK_RUN_IA = 'run_feedback_ia' as const;
+export const INTENT_FEEDBACK_ANALYZE_RAW = 'analyze_raw_feedbacks' as const;

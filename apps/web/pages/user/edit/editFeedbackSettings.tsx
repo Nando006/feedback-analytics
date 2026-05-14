@@ -1,86 +1,97 @@
-import { useEffect } from 'react';
-import { Link, useActionData, useNavigation } from 'react-router-dom';
-import CardSimple from 'components/user/shared/cards/cardSimple';
-import FormFeedbackSettings from 'components/user/pages/profile/editFeedbackSettings/formFeedbackSettings';
-import { useToast } from 'components/public/forms/messages/useToast';
-import type { ActionData } from 'lib/interfaces/contracts/action-data.contract';
+import { Link, useRouteLoaderData } from 'react-router-dom';
+import type { CollectingDataEnterprise, Enterprise } from 'lib/interfaces/entities/enterprise.entity';
+import Header from 'components/user/shared/header';
+import type { AuthUser } from 'lib/interfaces/entities/auth-user.entity';
 
 export default function EditFeedbackSettings() {
-  const toast = useToast();
-  const navigation = useNavigation();
-  const actionData = useActionData() as ActionData | undefined;
-  const isSavingFeedbackSettings =
-    navigation.state === 'submitting' &&
-    navigation.formAction?.includes('/user/edit/feedback-settings');
+  const { enterprise, collecting, user } = useRouteLoaderData('user') as {
+    enterprise: Enterprise;
+    user: AuthUser['user'];
+    collecting: CollectingDataEnterprise | null;
+  };
 
-  useEffect(() => {
-    if (!actionData) {
-      return;
-    }
+  const productsEnabled = collecting?.uses_company_products === true;
+  const servicesEnabled = collecting?.uses_company_services === true;
+  const departmentsEnabled = collecting?.uses_company_departments === true;
 
-    if (actionData.ok) {
-      toast.success('Configurações salvas!', actionData.message || 'Atualização realizada com sucesso.');
-      return;
-    }
-
-    if (actionData.error || actionData.message) {
-      toast.error(
-        'Erro ao salvar configurações',
-        actionData.message || 'Revise os dados e tente novamente.',
-      );
-    }
-  }, [actionData, toast]);
+  const links = [
+    {
+      id: 'products',
+      enabled: productsEnabled,
+      label: 'Catálogo de Produtos',
+      description: 'Gerencie os produtos e configure perguntas por item.',
+      to: '/user/edit/feedback-products',
+    },
+    {
+      id: 'services',
+      enabled: servicesEnabled,
+      label: 'Catálogo de Serviços',
+      description: 'Gerencie os serviços e configure perguntas por item.',
+      to: '/user/edit/feedback-services',
+    },
+    {
+      id: 'departments',
+      enabled: departmentsEnabled,
+      label: 'Catálogo de Departamentos',
+      description: 'Gerencie os departamentos e configure perguntas por área.',
+      to: '/user/edit/feedback-departments',
+    },
+  ];
 
   return (
     <div className="font-work-sans space-y-6 pb-8">
-      <CardSimple
-        type="header"
-        disableGlass
-      >
-        <div className="flex w-full flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div>
-            <h1 className="font-montserrat text-2xl font-semibold tracking-tight text-(--text-primary) md:text-3xl">
-              Configuração de Feedbacks
-            </h1>
-            <p className="mt-1 text-sm text-[var(--text-tertiary)]">
-              Gerencie perguntas dinâmicas e catálogos por tipo de feedback.
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-3">
+      <Header 
+        enterprise={enterprise}
+        user={user}
+        nextLabelLink='Ative os Catálogos Premiums'
+        nextLink='/user/edit/types-feedback'
+        description="Configure os catálogos de feedbacks para produtos, serviços e departamentos. Ative os tipos de feedback para liberar as opções."
+      />
+
+      <div className="space-y-3">
+        {links.map((link) => (
+          link.enabled ? (
             <Link
-              to="/user/edit/collecting-data-enterprise"
-              className="btn-ghost font-poppins"
+              key={link.id}
+              to={link.to}
+              className="flex items-center justify-between rounded-2xl border border-(--quaternary-color)/10 bg-linear-to-br from-(--bg-secondary) to-(--sixth-color) p-5 transition-all hover:border-(--primary-color)/30 hover:bg-(--primary-color)/5"
             >
-              Informações Gerais
+              <div>
+                <p className="text-sm font-semibold text-(--text-primary)">{link.label}</p>
+                <p className="mt-0.5 text-xs text-(--text-tertiary)">{link.description}</p>
+              </div>
+              <svg
+                className="h-4 w-4 shrink-0 text-(--text-secondary)"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
             </Link>
-            <Link
-              to="/user/profile"
-              className="btn-primary font-poppins"
+          ) : (
+            <div
+              key={link.id}
+              className="flex items-center justify-between rounded-2xl border border-(--quaternary-color)/10 bg-(--bg-secondary) p-5 opacity-50"
             >
-              Ver Perfil
-            </Link>
-          </div>
-        </div>
-      </CardSimple>
-
-      <CardSimple disableGlass>
-        <div className="relative w-full space-y-5">
-          <div className="border-b border-(--quaternary-color)/10 pb-4">
-            <h2 className="font-montserrat text-xl font-semibold text-(--text-primary)">
-              Perguntas e Itens por Tipo
-            </h2>
-            <p className="mt-2 text-sm text-(--text-tertiary)">
-              Empresa, produtos, serviços e departamentos possuem configurações independentes.
-            </p>
-          </div>
-
-          <FormFeedbackSettings />
-
-          {isSavingFeedbackSettings && (
-            <div className="pointer-events-none absolute inset-0 rounded-xl border border-(--quaternary-color)/12 bg-(--bg-primary)/35 backdrop-blur-[1px]" />
-          )}
-        </div>
-      </CardSimple>
+              <div>
+                <p className="text-sm font-semibold text-(--text-primary)">{link.label}</p>
+                <p className="mt-0.5 text-xs text-(--text-tertiary)">
+                  Ative este tipo em{' '}
+                  <Link to="/user/edit/types-feedback" className="underline hover:text-(--primary-color)">
+                    Tipos de Feedback
+                  </Link>{' '}
+                  para configurar.
+                </p>
+              </div>
+            </div>
+          )
+        ))}
+      </div>
     </div>
   );
 }

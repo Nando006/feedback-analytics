@@ -12,8 +12,5 @@ export async function ActionLogin({ request }: ActionFunctionArgs) {
 
   if (result.ok) return redirect('/user/dashboard?login=success');
 
-  return new Response(JSON.stringify(result.payload), {
-    status: result.status,
-    headers: { 'Content-Type': 'application/json' },
-  });
+  return result.payload;
 }

@@ -43,8 +43,6 @@ export default function SimpleEditableField({
   useEffect(() => {
     if (!actionData) return;
 
-    console.log('Action response received:', actionData);
-
     if (actionData.ok) {
       toast.success(successMessage);
       setIsEditing(false);
@@ -60,10 +58,6 @@ export default function SimpleEditableField({
   }, [actionData, toast, successMessage, errorMessage, value]);
 
   const handleEdit = () => {
-    console.log('=== DEBUG SimpleEditableField - Starting Edit ===');
-    console.log('Original value prop:', value);
-    console.log('Value type:', typeof value);
-    console.log('Input value state:', inputValue);
     setInputValue(value || '');
     setIsEditing(true);
     setError('');
@@ -83,12 +77,6 @@ export default function SimpleEditableField({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
-    console.log('=== DEBUG SimpleEditableField - Submit ===');
-    console.log('Field name:', getFieldName());
-    console.log('Original value:', value);
-    console.log('Input value:', inputValue);
-    console.log('Intent:', intent);
 
     // Validação básica
     if (!inputValue || inputValue.trim() === '') {
@@ -112,12 +100,6 @@ export default function SimpleEditableField({
     fd.set(`initial_${fieldName}`, value || '');
     fd.set(fieldName, inputValue.trim());
 
-    // Log FormData contents
-    console.log('FormData contents:');
-    for (const [key, value] of fd.entries()) {
-      console.log(`  ${key}: "${value}"`);
-    }
-
     setIsSubmitting(true);
     submit(fd, {
       method: 'post',
@@ -128,7 +110,6 @@ export default function SimpleEditableField({
   // Handle action response
   useState(() => {
     if (actionData) {
-      console.log('Action response:', actionData);
       if (actionData.ok) {
         toast.success(successMessage);
         setIsEditing(false);

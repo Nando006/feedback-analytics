@@ -1,6 +1,9 @@
 import type { ActionFunctionArgs } from 'react-router-dom';
 import { requestApi } from 'src/lib/utils/http';
 
+/**
+ * Fallbacks para mensagens de erro baseadas no status HTTP.
+ */
 function getRegisterFallbackByStatus(status: number) {
   if (status === 429) {
     return {
@@ -26,6 +29,10 @@ function isObject(value: unknown): value is Record<string, unknown> {
   return !!value && typeof value === 'object' && !Array.isArray(value);
 }
 
+/**
+ * ActionRegister: envia dados de cadastro ao backend e retorna
+ * um objeto com o formato esperado pelos componentes (`ok?`, `error?`, `message?`, `issues?`).
+ */
 export async function ActionRegister({ request }: ActionFunctionArgs) {
   const form = await request.formData();
 
@@ -61,13 +68,7 @@ export async function ActionRegister({ request }: ActionFunctionArgs) {
     });
 
     if (res.ok) {
-      // Verificando se o registro foi bem-sucedido.
-      // Opcional: redirecionar para /login após sucesso
-      // return redirect('/login')
-      return new Response(JSON.stringify({ ok: true }), {
-        status: 200,
-        headers: { 'Content-Type': 'application/json' },
-      });
+      return { ok: true };
     }
 
     const rawBody = await res.text();
@@ -93,21 +94,13 @@ export async function ActionRegister({ request }: ActionFunctionArgs) {
         }
       : fallback;
 
-    return new Response(JSON.stringify(data), {
-      status: res.status,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    // Retornar objeto plain (Em vez de Response)
+    return data;
   } catch {
-    return new Response(
-      JSON.stringify({
-        error: 'network_error',
-        message:
-          'Não foi possível conectar ao servidor de cadastro. Verifique sua conexão e tente novamente.',
-      }),
-      {
-        status: 503,
-        headers: { 'Content-Type': 'application/json' },
-      },
-    );
+    // Em falha de rede, retornar objeto plain com erro
+    return {
+      error: 'network_error',
+      message: 'Não foi possível conectar ao servidor de cadastro, Verifique sua conexão e tente novamente.'
+    }
   }
 }

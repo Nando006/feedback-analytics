@@ -11,7 +11,6 @@ const FieldBusinessSummary = memo(function FieldBusinessSummary({ defaultValue }
         htmlFor="business_summary"
         className="mb-2 block text-sm font-medium text-(--text-secondary) transition-colors group-focus-within:text-(--quinary-color)">
         Resumo do Negócio
-        <span className="ml-1 text-xs text-(--text-tertiary)">(opcional)</span>
       </label>
       <div className="relative">
         <textarea
@@ -23,10 +22,7 @@ const FieldBusinessSummary = memo(function FieldBusinessSummary({ defaultValue }
           onInput={(event) => setCharacterCount(event.currentTarget.value.length)}
           placeholder="Descreva seu negócio. (O que faz? Para quem?) Ex: Rede de clínicas odontológicas focada em tratamentos estéticos de alta tecnologia."
         />
-        <div className="mt-1.5 flex items-center justify-between">
-          <p className="text-xs text-(--text-tertiary)">
-            Este campo ajuda a IA a entender o seu nicho de mercado e o perfil do seu público.
-          </p>
+        <div className="mt-1.5 flex items-center justify-end">
           <span className="text-xs text-(--text-tertiary)">
             {characterCount} caracteres
           </span>

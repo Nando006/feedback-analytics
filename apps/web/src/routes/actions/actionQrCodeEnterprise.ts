@@ -23,30 +23,18 @@ export async function ActionQrCodeEnterprise({ request }: ActionFunctionArgs) {
   const intent = String(form.get('intent') ?? '') as QrToggleIntent;
 
   if (intent !== INTENT_QR_ENABLE && intent !== INTENT_QR_DISABLE) {
-    return new Response(JSON.stringify({ error: 'Ação inválida para QR Code.' }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return { error: 'Ação inválida para QR Code.' };
   }
 
   try {
     if (intent === INTENT_QR_DISABLE) {
       await ServiceDisableQr();
-      return new Response(JSON.stringify({ ok: true, active: false }), {
-        status: 200,
-        headers: { 'Content-Type': 'application/json' },
-      });
+      return { ok: true, active: false };
     }
 
     await ServiceEnableQr();
-    return new Response(JSON.stringify({ ok: true, active: true }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return { ok: true, active: true };
   } catch (err) {
-    return new Response(JSON.stringify({ error: getErrorMessage(err) }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return { error: getErrorMessage(err) };
   }
 }

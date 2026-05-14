@@ -5,25 +5,10 @@ import { formatPhone } from 'src/lib/utils/formatPhone';
 
 export default function Info({
   enterprise,
-  collecting,
 }: EnterpriseAndCollectingData) {
   return (
     <div className="font-work-sans">
       <div className="space-y-6 lg:col-span-2">
-        <CardSimple>
-          <div>
-            <div className="mb-4 flex items-center justify-between">
-              <h2 className="font-montserrat text-lg font-semibold text-(--text-primary)">Objetivo</h2>
-            </div>
-            <p className="max-w-2xl text-(--text-secondary)">
-              {collecting?.business_summary ?? 'Adicione informações sobre seu negócio...'}
-            </p>
-          </div>
-          <p className="text-sm text-(--text-tertiary)">
-            Usa produtos próprios?{' '}
-            {collecting?.uses_company_products ? 'Sim' : 'Não informado'}
-          </p>
-        </CardSimple>
 
         <CardSimple>
           <div className="w-full">
@@ -47,7 +32,7 @@ export default function Info({
                 </p>
                 <p className="mt-1 font-medium text-(--text-primary)">
                   {formatDocument(
-                    enterprise?.document,
+                    enterprise?.document || '',
                     enterprise?.account_type,
                   ) ?? ''}
                 </p>
@@ -57,7 +42,7 @@ export default function Info({
                   Data de Criação
                 </p>
                 <p className="mt-1 font-medium text-(--text-primary)">
-                  {new Date(enterprise?.created_at).toLocaleDateString('pt-BR')}
+                  {new Date(enterprise?.created_at || '').toLocaleDateString('pt-BR')}
                 </p>
               </div>
             </div>
