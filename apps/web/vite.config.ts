@@ -70,8 +70,14 @@ export default defineConfig({
   },
 
   test: {
-    globals: true, // Permite usar `describe`, `it`, `expect` sem precisar importar
-    environment: 'jsdom', // Simula um ambiente de navegador (DOM) para testes de componentes React
+    globals: true,
+    environment: 'jsdom',
     setupFiles: [path.resolve(__dirname, './tests/setup.ts')],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'html'],
+      include: ['src/lib/utils/**', 'src/routes/**', 'pages/**', 'layouts/**'],
+      exclude: ['**/*.test.*', '**/tests/**', '**/node_modules/**'],
+    },
   },
 });
