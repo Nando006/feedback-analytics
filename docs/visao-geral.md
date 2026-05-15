@@ -59,3 +59,4 @@ No domínio `services/` o projeto foi pensado para abrigar diferentes serviços 
 - [Rodar o ambiente local → Guia de Instalação](./guia-instalacao.md)
 - [Entender como os serviços se conectam → Arquitetura](./arquitetura.md)
 - [Ver todas as funcionalidades → Funcionalidades](./funcionalidades/visao-geral.md)
+- [Entender a estratégia de testes → Testes](./testes/visao-geral.md)

@@ -5,9 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx src/index.ts",
-    "lint": "eslint --config ./eslint.config.js src types",
-    "test": "vitest run",
-    "test:watch": "vitest"
+    "lint": "eslint --config ./eslint.config.js src types"
   },
   "dependencies": {
     "@google/genai": "^1.49.0",
@@ -21,7 +19,6 @@
     "globals": "^16.3.0",
     "tsx": "^4.20.3",
     "typescript": "~5.8.3",
-    "typescript-eslint": "^8.35.1",
-    "vitest": "^3.2.4"
+    "typescript-eslint": "^8.35.1"
   }
 }
