@@ -1,4 +1,4 @@
-import { useRouteLoaderData } from "react-router-dom";
+import { useNavigation, useRouteLoaderData } from "react-router-dom";
 import type {
   Enterprise,
 } from "lib/interfaces/entities/enterprise.entity";
@@ -16,20 +16,34 @@ export default function Profile() {
   const email = user.email || "";
   const phone = user.phone || "";
   return (
-    <div className="rounded-2xl border border-(--quaternary-color)/10 bg-gradient-to-br from-(--bg-secondary) to-(--sixth-color) p-6 lg:p-8 glass-card">
-      <div className="font-work-sans space-y-6">
-        <SettingsPageHeader
-          title="Perfil do Usuário"
-          description="Gerencie suas informações pessoais e de acesso ao sistema."
+    <div className="font-work-sans space-y-6">
+      <Header
+        enterprise={enterprise}
+        user={user}
+        description="Veja suas informações pessoais. Mantenha seus dados atualizados para uma melhor experiência."
+        nextLink="/user/edit/types-feedback"
+        nextLabelLink="Configurações Premium"
+      />
+      <div className="relative space-y-8">
+        <Information
+          defaultFullName={fullName}
+          defaultEmail={email}
+          defaultPhone={phone}
         />
 
-        <div className="relative space-y-8">
-          <Information
-            defaultFullName={fullName}
-            defaultEmail={email}
-            defaultPhone={phone}
-          />
-        </div>
+        {isSavingProfile && (
+          <div className="pointer-events-none absolute inset-0 rounded-2xl border border-(--quaternary-color)/12 bg-(--bg-primary)/35 backdrop-blur-[1px]" />
+        )}
+      </div>
+
+      <div className="relative">
+        <CardSimple
+          type="accordion"
+          title="O que é Sua Empresa ?"
+          description="Preencha os dados corretamente! Esses dados são muito relevantes para um serviço de qualidade. "
+        >
+          <FormCollectingDataEnterprise />
+        </CardSimple>
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { useNavigation, useRouteLoaderData } from 'react-router-dom';
+import { MemoryRouter, useNavigation, useRouteLoaderData } from 'react-router-dom';
 import Profile from '../user/profile';
 
 vi.mock('react-router-dom', async (importActual) => {
@@ -75,15 +75,34 @@ describe('Profile Page', () => {
   it('deve renderizar os componentes principais com dados válidos', () => {
     mockUseRouteLoaderData.mockReturnValue(mockData);
 
-    render(<Profile />);
+    render(
+      <MemoryRouter>
+        <Profile />
+      </MemoryRouter>,
+    );
 
     expect(screen.getByTestId('profile-info')).toBeInTheDocument();
+  });
+
+  it('deve passar os dados corretos para o componente Header', () => {
+    mockUseRouteLoaderData.mockReturnValue(mockData);
+
+    render(<Profile />);
+
+    expect(screen.getByTestId('user-name')).toHaveTextContent('João Silva');
+    expect(screen.getByTestId('enterprise-header')).toHaveTextContent(
+      'Empresa Teste',
+    );
   });
 
   it('deve passar os dados corretos para o componente Info', () => {
     mockUseRouteLoaderData.mockReturnValue(mockData);
 
-    render(<Profile />);
+    render(
+      <MemoryRouter>
+        <Profile />
+      </MemoryRouter>,
+    );
 
     expect(screen.getByTestId('enterprise-name')).toHaveTextContent(
       'João Silva',
@@ -101,7 +120,11 @@ describe('Profile Page', () => {
 
     mockUseRouteLoaderData.mockReturnValue(dataWithoutCollecting);
 
-    render(<Profile />);
+    render(
+      <MemoryRouter>
+        <Profile />
+      </MemoryRouter>,
+    );
 
     expect(screen.getByTestId('enterprise-name')).toHaveTextContent(
       'João Silva',
@@ -111,7 +134,11 @@ describe('Profile Page', () => {
   it('deve ter a estrutura HTML correta', () => {
     mockUseRouteLoaderData.mockReturnValue(mockData);
 
-    const { container } = render(<Profile />);
+    const { container } = render(
+      <MemoryRouter>
+        <Profile />
+      </MemoryRouter>,
+    );
 
     const glassDiv = container.firstChild as HTMLElement;
     expect(glassDiv).toHaveClass('rounded-2xl', 'glass-card');
@@ -123,7 +150,11 @@ describe('Profile Page', () => {
   it('deve chamar useRouteLoaderData com a chave correta', () => {
     mockUseRouteLoaderData.mockReturnValue(mockData);
 
-    render(<Profile />);
+    render(
+      <MemoryRouter>
+        <Profile />
+      </MemoryRouter>,
+    );
 
     expect(mockUseRouteLoaderData).toHaveBeenCalledWith('user');
   });
@@ -137,7 +168,11 @@ describe('Profile Page', () => {
 
     mockUseRouteLoaderData.mockReturnValue(incompleteData);
 
-    render(<Profile />);
+    render(
+      <MemoryRouter>
+        <Profile />
+      </MemoryRouter>,
+    );
 
     expect(screen.getByTestId('profile-info')).toBeInTheDocument();
     expect(screen.getByTestId('enterprise-name')).toHaveTextContent(
