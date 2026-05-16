@@ -15,7 +15,7 @@ graph TD
     subgraph Frontend ["Nossa Aplicação React"]
         UI["1. Tela (Pages & Components)<br/>Exibe dados e captura cliques/forms"]
         Route["2. Rotas (Loaders & Actions)<br/>Orquestra a navegação e chama o serviço"]
-        Service["3. Services (src/lib/services)<br/>Monta a requisição HTTP (fetch)"]
+        Service["3. Services (src/services)<br/>Monta a requisição HTTP (fetch)"]
     end
 
     subgraph Backend ["Servidor"]
@@ -57,18 +57,61 @@ Para manter o código fácil de dar manutenção, separamos as responsabilidades
 
 3. **Rotas (`src/routes/`)** — **Os Controladores:** Onde vivem Loaders e Actions. Eles conectam a tela ao motor de dados.
 
-4. **Infraestrutura (`src/lib/`)** — **O coração da comunicação**. A pasta `services/` contém as funções que isolam todo o uso de `fetch`, URLs da API e injeção de tokens de autenticação.
+4. **Infraestrutura (`src/services/`)** — **O coração da comunicação**. Contém as funções que isolam todo o uso de `fetch`, URLs da API e injeção de tokens de autenticação.
 
 ## Onde Encontrar Cada Arquivo
 ```
 apps/web/
-├── src/routes/             → Orquestradores (Loaders, Actions e a árvore de Rotas)
-├── src/lib/services/       → Serviços HTTP (Onde as requisições são montadas)
-├── pages/                  → Montagem das telas (Área logada e pública)
-└── components/
-    ├── public/             → Formulários públicos (QR Code)
-    └── user/
-        ├── layout/         → Estrutura base (Menu, Sidebar)
-        ├── shared/         → Peças comuns (Cards, Avatares, Header)
-        └── pages/          → Peças específicas de cada tela
+├── src/
+│   ├── routes/                 → Orquestradores (Loaders, Actions e a árvore de Rotas)
+│   │   ├── actions/            → Funções de mutation (POST, PATCH, DELETE)
+│   │   ├── loaders/            → Funções de leitura (GET), uma por rota
+│   │   └── load/               → Helpers compartilhados chamados pelos loaders
+│   ├── services/               → Serviços HTTP (onde as requisições são montadas)
+│   │   ├── serviceAuth.ts
+│   │   ├── serviceCollectionPoints.ts
+│   │   ├── serviceEnterprise.ts
+│   │   ├── serviceFeedbackQRCode.ts
+│   │   ├── serviceFeedbacks.ts
+│   │   └── serviceUser.ts
+│   ├── supabase/               → Inicialização do client Supabase
+│   └── lib/
+│       ├── constants/          → Constantes de rotas e intents
+│       ├── context/            → Contextos React (ex: insightsControls)
+│       ├── mock/               → Dados mock para desenvolvimento
+│       └── utils/              → Utilitários puros (formatação, validação, http)
+├── pages/                      → Montagem das telas (composição de componentes)
+│   ├── public/                 → Páginas públicas (home, login, register, qrcode)
+│   └── user/                   → Páginas autenticadas (dashboard, profile, feedbacks…)
+├── layouts/                    → Layouts base (público e autenticado)
+├── components/
+│   ├── fallbacks/              → Componentes de fallback de carregamento
+│   ├── globals/                → Componentes globais (ex: errorPage)
+│   ├── svg/                    → Ícones e imagens SVG inline
+│   ├── public/                 → Componentes da área pública
+│   │   ├── forms/              → Formulários (login, register, qrcode, forgot/reset password)
+│   │   ├── layout/             → Header público
+│   │   ├── qrcode/             → Estados do formulário QR Code (loading, error, submitted…)
+│   │   └── shared/             → Peças comuns da área pública
+│   └── user/
+│       ├── layout/             → Estrutura base autenticada (Menu, Sidebar, Header)
+│       ├── shared/             → Peças comuns (Cards, Avatares, Skeletons, Badge)
+│       └── pages/              → Peças específicas de cada tela
+│           ├── dashboard/
+│           ├── edit/
+│           ├── feedbacks/
+│           │   ├── analytics/
+│           │   └── insights/
+│           ├── feedbacksAll/
+│           ├── feedbacksAnalyticsAll/
+│           ├── feedbacksAnalyticsNegative/
+│           ├── feedbacksAnalyticsPositive/
+│           ├── feedbacksInsightsEmotional/
+│           ├── feedbacksInsightsReport/
+│           ├── feedbacksInsightsStatistics/
+│           ├── profile/
+│           ├── qrcodeCatalog/
+│           ├── qrcodeEnterprise/
+│           └── qrcodes/
+└── styles/                     → Estilos globais
 ```
