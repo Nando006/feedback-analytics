@@ -15,7 +15,6 @@ const EMPTY_ITEM: CatalogItemInput = {
 
 const INITIAL_VISIBLE_ITEMS = 30;
 const VISIBLE_ITEMS_STEP = 30;
-const MIN_LEN = 20;
 const MAX_LEN = 150;
 
 /* ─────────────────── question helpers ─────────────────── */
@@ -85,30 +84,6 @@ function validateQuestions(questions: QrCatalogQuestionInput[]): string | null {
     }
   }
   return null;
-}
-
-/* ─────────────────── question visibility helpers ─────────────────── */
-
-function computeVisibleQCount(questions: QrCatalogQuestionInput[]): number {
-  let count = 1;
-  for (let qi = 1; qi < questions.length; qi++) {
-    const q = questions[qi];
-    if (String(q.question_text ?? '').trim().length > 0 || q.is_active) count = qi + 1;
-  }
-  return count;
-}
-
-function computeVisibleSubCounts(questions: QrCatalogQuestionInput[]): [number, number, number] {
-  const counts: [number, number, number] = [0, 0, 0];
-  questions.forEach((q, qi) => {
-    if (qi >= 3) return;
-    let subCount = 0;
-    (q.subquestions ?? []).forEach((s, si) => {
-      if (String(s.subquestion_text ?? '').trim().length > 0 || s.is_active) subCount = si + 1;
-    });
-    counts[qi] = subCount;
-  });
-  return counts;
 }
 
 /* ─────────────────── QuestionAccordion ─────────────────── */
@@ -210,10 +185,8 @@ const QuestionAccordion = memo(function QuestionAccordion({
     });
   }, []);
 
-  const handleSave = useCallback(() => {
-    const err = validateQuestions(draft);
-    if (err) { setError(err); return; }
-    setError(null);
+  const handleSaveInternal = useCallback(() => {
+    if (!onSave) return;
     onSave(
       qrItem.catalog_item_id,
       draft.map((q) => ({
@@ -236,7 +209,7 @@ const QuestionAccordion = memo(function QuestionAccordion({
       <button
         type="button"
         onClick={() => { setError(null); setIsOpen((v) => !v); }}
-        className="flex w-full items-center justify-between px-3 py-2.5 text-left"
+        className="flex w-full items-center justify-between px-3 py-2.5 text-left transition-colors hover:bg-(--quaternary-color)/5"
       >
         <div className="flex items-center gap-2">
           <svg
@@ -408,9 +381,7 @@ const QuestionAccordion = memo(function QuestionAccordion({
             )}
 
             <button
-              type="button"
-              onClick={handleSave}
-              disabled={isSaving}
+              type="button" onClick={handleSave} disabled={isSaving}
               className="w-full rounded-lg border border-(--primary-color)/30 bg-(--primary-color)/10 px-3 py-2.5 text-sm font-semibold text-(--primary-color) transition-all hover:bg-(--primary-color)/20 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {isSaving ? 'Salvando...' : 'Salvar perguntas deste item'}
@@ -425,26 +396,9 @@ const QuestionAccordion = memo(function QuestionAccordion({
 /* ─────────────────── QrPreviewImage ─────────────────── */
 
 const QrPreviewImage = memo(function QrPreviewImage({ src, alt }: { src: string; alt: string }) {
-  const ref = useRef<HTMLDivElement | null>(null);
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el || visible) return;
-    const observer = new IntersectionObserver(
-      (entries) => { if (entries[0]?.isIntersecting) { setVisible(true); observer.disconnect(); } },
-      { root: null, rootMargin: '200px', threshold: 0.01 },
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [visible]);
-
   return (
-    <div ref={ref} className="flex min-h-44 items-center justify-center rounded-lg border border-(--quaternary-color)/10 bg-(--bg-tertiary) p-3">
-      {visible
-        ? <img src={src} alt={alt} className="h-36 w-36" loading="lazy" decoding="async" />
-        : <div className="h-36 w-36 animate-pulse rounded-lg bg-(--seventh-color)" />
-      }
+    <div className="flex min-h-44 items-center justify-center rounded-lg border border-(--quaternary-color)/10 bg-(--bg-tertiary) p-3">
+      <img src={src} alt={alt} className="h-36 w-36" loading="lazy" decoding="async" />
     </div>
   );
 });
@@ -455,9 +409,9 @@ const QrSection = memo(function QrSection({ qrItem, isPending, onToggle }: QrSec
   const { enterprise } = useRouteLoaderData('user') as { enterprise: Enterprise };
 
   const feedbackUrl = useMemo(() => {
-    if (!qrItem.collection_point_id) return null;
+    if (!qrItem.collection_point_id || !enterprise?.id) return null;
     return `${window.location.origin}/feedback/qrcode?enterprise=${enterprise.id}&collection_point=${qrItem.collection_point_id}&item=${qrItem.catalog_item_id}`;
-  }, [enterprise.id, qrItem.collection_point_id, qrItem.catalog_item_id]);
+  }, [enterprise?.id, qrItem.collection_point_id, qrItem.catalog_item_id]);
 
   const qrCodeUrl = useMemo(
     () => (feedbackUrl ? getQrCodeUrl(feedbackUrl, { size: 220, format: 'png' }) : null),
@@ -501,18 +455,20 @@ const QrSection = memo(function QrSection({ qrItem, isPending, onToggle }: QrSec
           </div>
         )}
 
-        <button
-          type="button"
-          onClick={() => onToggle(qrItem.catalog_item_id, qrItem.active)}
-          disabled={isPending}
-          className={`w-full rounded-lg border px-3 py-2.5 text-sm font-semibold font-poppins transition-all disabled:cursor-not-allowed disabled:opacity-60 ${
-            qrItem.active
-              ? 'border-rose-500/25 bg-rose-500/8 text-rose-300 hover:bg-rose-500/15'
-              : 'border-(--primary-color)/40 bg-(--primary-color)/10 text-(--primary-color) hover:bg-(--primary-color)/20'
-          }`}
-        >
-          {isPending ? 'Atualizando...' : qrItem.active ? 'Desativar QR deste item' : 'Ativar QR deste item'}
-        </button>
+        <div className="flex justify-end pt-2">
+          <button
+            type="button"
+            disabled={isPending}
+            onClick={() => onToggle?.(qrItem.catalog_item_id, !qrItem.active)}
+            className={`flex items-center gap-2 rounded-lg px-4 py-1.5 text-xs font-bold transition-all active:scale-95 disabled:opacity-50 ${
+              qrItem.active
+                ? 'bg-(--bg-tertiary) border border-(--quaternary-color)/10 text-(--text-secondary) hover:bg-(--quaternary-color)/5'
+                : 'bg-(--primary-color) text-white shadow-sm hover:brightness-110'
+            }`}
+          >
+            {isPending ? 'Processando...' : qrItem.active ? 'Desativar QR' : 'Ativar QR Code'}
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -587,14 +543,14 @@ const CatalogItemRow = memo(function CatalogItemRow({
           {onSaveQuestions && (
             <QuestionAccordion
               qrItem={qrItem}
-              isSaving={isSavingQuestions ?? false}
+              isSaving={isSavingQuestions}
               onSave={onSaveQuestions}
             />
           )}
           {onToggle && (
             <QrSection
               qrItem={qrItem}
-              isPending={isPendingToggle ?? false}
+              isPending={isPendingToggle}
               onToggle={onToggle}
             />
           )}
@@ -619,9 +575,7 @@ const FieldCatalogItems = memo(function FieldCatalogItems({
   items,
   onChange,
   qrItems,
-  savingQuestionsItemId,
   onSaveQuestions,
-  togglePendingItemId,
   onToggle,
 }: FieldCatalogItemsProps) {
   const localKeySequenceRef = useRef(0);
@@ -725,9 +679,7 @@ const FieldCatalogItems = memo(function FieldCatalogItems({
                 onRemove={handleRemoveItem}
                 onChangeField={handleChangeField}
                 qrItem={qrItem}
-                isSavingQuestions={qrItem != null && savingQuestionsItemId === qrItem.catalog_item_id}
                 onSaveQuestions={onSaveQuestions}
-                isPendingToggle={qrItem != null && togglePendingItemId === qrItem.catalog_item_id}
                 onToggle={onToggle}
               />
             );

@@ -70,13 +70,13 @@ export default function Dashboard() {
         </div>
         <div className="flex flex-col gap-3 md:items-end">
           <Link
-            to="/user/feedbacks/all"
+            to="/user/feedbacks"
             className="btn-primary font-poppins inline-flex items-center gap-2 px-5 py-3 text-sm font-semibold">
             Ver feedbacks
             <FaArrowRight className="text-xs" />
           </Link>
           <Link
-            to="/user/qrcode/enterprise"
+            to="/user/settings/sharing"
             className="inline-flex items-center gap-2 text-sm text-(--text-secondary) transition-colors hover:text-(--text-primary)">
             Compartilhar formulário de feedback
             <FaArrowRight className="text-xs" />

@@ -27,6 +27,7 @@ export interface FeedbackFiltersProps {
   onCategoryFilter: (
     category: 'COMPANY' | 'PRODUCT' | 'SERVICE' | 'DEPARTMENT' | undefined,
   ) => void;
+  onSentimentFilter: (sentiment: 'positive' | 'neutral' | 'negative' | 'all' | undefined) => void;
   onLimitChange: (limit: number) => void;
 }
 

@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useSubmit, useActionData } from 'react-router-dom';
 import { useToast } from 'components/public/forms/messages/useToast';
-import { FaCircleExclamation, FaFloppyDisk, FaPenToSquare, FaSpinner, FaXmark } from 'react-icons/fa6';
+import { FaCircleExclamation, FaFloppyDisk, FaPenToSquare, FaXmark } from 'react-icons/fa6';
 import type { ActionData } from 'lib/interfaces/contracts/action-data.contract';
 import type { EditableFieldProps } from './ui.types';
 
@@ -42,15 +42,12 @@ export default function EditableField({
     handleSubmit,
     formState: { errors },
     reset,
-    watch,
   } = useForm({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resolver: zodResolver(schema as any),
     defaultValues: { [getFieldName()]: value || '' },
   });
 
-  const currentValue = watch(getFieldName());
-  const hasChanged = currentValue !== (value || '');
   const fieldName = getFieldName();
   const fieldRegistration = register(fieldName, {
     required: 'Campo obrigatório',
@@ -147,17 +144,17 @@ export default function EditableField({
           <div className="flex items-center gap-2 pt-2">
             <button
               type="submit"
-              disabled={!hasChanged || isSubmitting}
-              className={`px-4 py-2 bg-(--primary-color) text-white rounded-lg text-sm font-medium hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2`}
+              disabled={isSubmitting}
+              className="flex items-center gap-2 rounded-lg bg-(--primary-color) px-4 py-2 text-xs font-bold text-white transition-all hover:brightness-110 active:scale-95 disabled:opacity-50"
             >
               {isSubmitting ? (
                 <>
-                  <FaSpinner aria-hidden="true" className="animate-spin" />
+                  <div className="h-3 w-3 animate-spin rounded-full border-2 border-white/30 border-t-white" />
                   Salvando...
                 </>
               ) : (
                 <>
-                  <FaFloppyDisk aria-hidden="true" />
+                  <FaFloppyDisk className="h-3 w-3" />
                   Salvar
                 </>
               )}
@@ -166,9 +163,9 @@ export default function EditableField({
               type="button"
               onClick={handleCancel}
               disabled={isSubmitting}
-              className={`px-4 py-2 bg-(--quaternary-color)/20 text-(--text-secondary) rounded-lg text-sm font-medium hover:bg-(--quaternary-color)/30 transition-all flex items-center gap-2 ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+              className="flex items-center gap-2 rounded-lg border border-(--quaternary-color)/20 bg-(--bg-tertiary) px-4 py-2 text-xs font-semibold text-(--text-secondary) transition-all hover:bg-(--quaternary-color)/5 active:scale-95 disabled:opacity-50"
             >
-              <FaXmark aria-hidden="true" />
+              <FaXmark className="h-3 w-3" />
               Cancelar
             </button>
           </div>

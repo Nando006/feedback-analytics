@@ -8,7 +8,7 @@ import {
   INTENT_QR_SAVE_FEEDBACK_QUESTIONS,
 } from 'src/lib/constants/routes/intents';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Form, useFetcher, useRouteLoaderData } from 'react-router-dom';
+import { useFetcher, useRouteLoaderData } from 'react-router-dom';
 import FieldCatalogItems from '../editCollectingData/fields/fieldCatalogItems';
 import { useToast } from 'components/public/forms/messages/useToast';
 import type { QrCodeCatalogLoadItem } from 'src/routes/load/loadQrCodeCatalog';
@@ -53,7 +53,10 @@ function normalizeCatalogInput(items: CatalogItemInput[] | undefined): CatalogIt
   }));
 }
 
-export default function FormFeedbackCatalog({ catalogType, qrData }: FormFeedbackCatalogProps) {
+export default function FormFeedbackCatalog({
+  catalogType,
+  qrData,
+}: FormFeedbackCatalogProps) {
   const toast = useToast();
   const { collecting } = useRouteLoaderData('user') as {
     collecting: CollectingDataEnterprise | null;
@@ -138,7 +141,7 @@ export default function FormFeedbackCatalog({ catalogType, qrData }: FormFeedbac
       setTogglePendingItemId(catalogItemId);
       qrFetcher.submit(
         {
-          intent: isActive ? INTENT_QR_DISABLE : INTENT_QR_ENABLE,
+          intent: isActive ? INTENT_QR_ENABLE : INTENT_QR_DISABLE,
           catalog_item_id: catalogItemId,
         },
         { method: 'post' },
@@ -149,17 +152,14 @@ export default function FormFeedbackCatalog({ catalogType, qrData }: FormFeedbac
 
   const inputRef = useRef<HTMLInputElement | null>(null);
 
-  const handleSubmit = useCallback(() => {
-    if (document.activeElement instanceof HTMLElement) {
-      document.activeElement.blur();
-    }
+  useEffect(() => {
     if (inputRef.current) {
       inputRef.current.value = JSON.stringify(items);
     }
   }, [items]);
 
   return (
-    <Form method="post" onSubmit={handleSubmit} className="space-y-6">
+    <>
       <input type="hidden" name="intent" value={config.intent} />
       <input ref={inputRef} type="hidden" name="catalog_items" defaultValue="[]" />
 
@@ -175,12 +175,6 @@ export default function FormFeedbackCatalog({ catalogType, qrData }: FormFeedbac
         togglePendingItemId={togglePendingItemId}
         onToggle={qrData ? handleToggle : undefined}
       />
-
-      <div className="flex items-center border-t border-(--quaternary-color)/10 pt-5">
-        <button type="submit" className="btn-primary font-poppins px-6 py-3 text-sm">
-          Salvar Catálogo
-        </button>
-      </div>
-    </Form>
+    </>
   );
 }

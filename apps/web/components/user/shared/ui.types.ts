@@ -1,9 +1,21 @@
-import type { EnterpriseAndUser } from 'lib/interfaces/entities/enterprise-and-user.entity';
+import type { ReactNode } from 'react';
 
-export type HeaderProps = EnterpriseAndUser & {
-  nextLink?: string;
-  nextLabelLink?: string;
-  prevLink?: string;
-  prevLabelLink?: string;
+export interface SettingsPageHeaderProps {
+  title: string;
   description?: string;
-};
+  primaryAction?: {
+    label: string;
+    onClick?: () => void;
+    disabled?: boolean;
+    loading?: boolean;
+    type?: 'button' | 'submit';
+    form?: string;
+    icon?: ReactNode;
+  };
+  secondaryAction?: {
+    label: string;
+    onClick?: () => void;
+    disabled?: boolean;
+    icon?: ReactNode;
+  };
+}

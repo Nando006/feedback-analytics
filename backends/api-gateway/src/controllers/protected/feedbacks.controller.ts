@@ -72,6 +72,7 @@ export async function getFeedbacksController(req: Request, res: Response) {
   const offset = (page - 1) * limit;
 
   const rating = req.query.rating ? parseInt(req.query.rating as string) : null;
+  const sentimentFilter = (req.query.sentiment as 'positive' | 'neutral' | 'negative' | undefined) ?? undefined;
   const search = (req.query.search as string) || '';
   const item = String(req.query.item ?? '').trim();
   const categoryRaw = String(req.query.category ?? '').trim().toUpperCase();
@@ -186,6 +187,9 @@ export async function getFeedbacksController(req: Request, res: Response) {
             email,
             gender
           )
+        ),
+        feedback_analysis:feedback_analysis!left(
+          sentiment
         )
       `,
       )
@@ -193,6 +197,7 @@ export async function getFeedbacksController(req: Request, res: Response) {
       .order('created_at', { ascending: false });
 
     if (rating) query = query.eq('rating', rating);
+    if (sentimentFilter) query = query.eq('feedback_analysis.sentiment', sentimentFilter);
     if (search) query = query.ilike('message', `%${search}%`);
     if (filteredCollectionPointIds) query = query.in('collection_point_id', filteredCollectionPointIds);
 
@@ -200,6 +205,14 @@ export async function getFeedbacksController(req: Request, res: Response) {
       .from('feedback')
       .select('*', { count: 'exact', head: true })
       .eq('enterprise_id', enterprise.id);
+
+    if (sentimentFilter) {
+      countQuery = supabase
+        .from('feedback')
+        .select('*, feedback_analysis:feedback_analysis!inner(sentiment)', { count: 'exact', head: true })
+        .eq('enterprise_id', enterprise.id)
+        .eq('feedback_analysis.sentiment', sentimentFilter);
+    }
 
     if (rating) countQuery = countQuery.eq('rating', rating);
     if (search) countQuery = countQuery.ilike('message', `%${search}%`);

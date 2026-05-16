@@ -7,7 +7,7 @@ import FieldCompanyObjective from './fields/fieldCompanyObjective';
 import FieldAnalyticsGoal from './fields/fieldAnalyticsGoal';
 import FieldBusinessSummary from './fields/fieldBusinessSummary';
 
-export default function FormCollectingDataEnterprise() {
+export default function FormCollectingDataEnterprise({ hideSubmit = false }: { hideSubmit?: boolean }) {
   const { collecting } = useRouteLoaderData('user') as {
     collecting: CollectingDataEnterprise | null;
   };
@@ -33,34 +33,32 @@ export default function FormCollectingDataEnterprise() {
     }
   }, []);
 
+  const content = (
+    <div className="space-y-6">
+      <FieldCompanyObjective
+        defaultValue={collecting?.company_objective ?? ""}
+      />
+
+      <FieldAnalyticsGoal defaultValue={collecting?.analytics_goal ?? ""} />
+
+      <FieldBusinessSummary
+        defaultValue={collecting?.business_summary ?? ""}
+      />
+    </div>
+  );
+
+  if (hideSubmit) {
+    return content;
+  }
+
   return (
     <div className="relative w-full">
       <fetcher.Form
         method="post"
-        action="/user/edit/collecting-data-enterprise"
         onSubmit={handleSubmit}
         className="space-y-8"
       >
-        <div className="space-y-6">
-          <FieldCompanyObjective
-            defaultValue={collecting?.company_objective ?? ""}
-          />
-
-          <FieldAnalyticsGoal defaultValue={collecting?.analytics_goal ?? ""} />
-
-          <FieldBusinessSummary
-            defaultValue={collecting?.business_summary ?? ""}
-          />
-        </div>
-
-        <div className="flex items-center justify-end gap-4">
-          <button
-            type="submit"
-            className="btn-ghost font-poppins group flex items-center gap-2 px-8 py-3"
-          >
-            <span>Salvar Alterações</span>
-          </button>
-        </div>
+        {content}
       </fetcher.Form>
 
       {isSaving && (
