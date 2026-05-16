@@ -111,5 +111,7 @@ O `@supabase/ssr` gerencia a sessão. O loader raiz `LoaderUserProtected` verifi
 ## Veja Também
 
 - [Arquitetura e Componentes](./arquitetura-estrutura.md)
+- [System Design](./system-design.md)
+- [Interface e Performance](./interface-performance.md)
 - [Funcionalidades](../funcionalidades/visao-geral.md)
 - [Padrões de Projeto](../padroes-projeto.md)
