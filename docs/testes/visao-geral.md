@@ -24,6 +24,7 @@ npm test --workspace=apps/web -- --run
 
 ## Documentação por Domínio
 
+- [Plano de Teste Estratégico](./plano-estrategico.md)
 - [Frontend — `apps/web`](./web.md)
 - [Microserviço IA — `services/ia-analyze`](./ia-analyze.md)
 - [Backend — `backends/api-gateway`](./api-gateway.md)

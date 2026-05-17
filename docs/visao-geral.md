@@ -60,3 +60,4 @@ No domínio `services/` o projeto foi pensado para abrigar diferentes serviços 
 - [Entender como os serviços se conectam → Arquitetura](./arquitetura.md)
 - [Ver todas as funcionalidades → Funcionalidades](./funcionalidades/visao-geral.md)
 - [Entender a estratégia de testes → Testes](./testes/visao-geral.md)
+- [Ver os casos de uso do sistema → Casos de Uso](./casos-de-uso/)
