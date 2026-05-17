@@ -1,10 +1,8 @@
-# Design de Alta Fidelidade — Feedback Analytics
+# Documentação de Design — Protótipo de Baixa Fidelidade
 
 ## Visão Geral
 
-Este documento descreve o protótipo de baixa fidelidade do **Feedback Analytics**, cobrindo todas as telas do sistema, fluxos de navegação, estados de UI e comportamentos esperados para guiar a implementação front-end.
-
-O protótipo contempla transições animadas entre telas, simulando ao máximo o produto final. As seções estão organizadas por contexto de autenticação: **Usuário Deslogado**, **Usuário Logado** e **Assets de Componentes**.
+Este documento descreve o protótipo de baixa fidelidade do **Feedback Analytics**, focando na arquitetura de informação. Ele cobre as telas do sistema, fluxos de navegação básicos e os componentes estruturais esperados em cada interface para guiar a implementação front-end inicial.
 
 ---
 
@@ -42,12 +40,11 @@ São telas acessadas pelos usuários da aplicação sem autenticação válida, 
 | Campo | Tipo | Obrigatório |
 |---|---|---|
 | Avaliação geral | Estrelas (1–5) | Sim |
-| Sentimento | Seleção (Péssimo, Ruim, Mediana, Boa, Ótima) | Sim ||
+| Sentimento | Seleção (Péssimo, Ruim, Mediana, Boa, Ótima) | Sim |
 | Comentário livre | Textarea | Sim |
 | Informações pessoais | Nome, e-mail (opcionais) | Não |
 
 ---
-
 
 ## Usuário Logado
 
@@ -56,7 +53,7 @@ São telas acessadas pelos usuários da aplicação com autenticação válida, 
 ### 3. Dashboard
 
 **Rota:** `/dashboard`  
-**Objetivo:** Visão centralizada dos feedbacks coletados, com cards interativos e dados em tempo real.
+**Objetivo:** Visão centralizada dos feedbacks coletados, com cards estruturais e espaço para os dados em tempo real.
 
 #### Componentes da Tela
 
@@ -67,8 +64,6 @@ São telas acessadas pelos usuários da aplicação com autenticação válida, 
 | Card — Sentimentos | Média da satisfação geral dos clientes |
 | Card — Feedbacks Positivos | Feedbacks positivos recebidos |
 | Card — Feedbacks Críticos | Feedbacks negativos recebidos |
-| Feedbacks Recentes | Lista com os últimos feedbacks recebidos |
-| Estratégia de Coleta |  Informações da empresa para melhorar a análise feita pela IA|
 | Radar de satisfação | Lista com o total de feedbacks positivos, neutros ou negativos |
 
 ---
@@ -108,9 +103,14 @@ São telas acessadas pelos usuários da aplicação com autenticação válida, 
 
 ---
 
+### 6. Feedbacks (Listagem)
+
+**Rota:** `/feedbacks`  
+**Objetivo:** Visão de listagem dos feedbacks capturados para auditoria ou filtros manuais.
+
 #### Componentes da Tela
 
-| Componente
+| Componente |
 |---|
 | Pesquisa |
 | Painel de filtros |
@@ -119,7 +119,7 @@ São telas acessadas pelos usuários da aplicação com autenticação válida, 
 
 ---
 
-### 5. Relatório IA
+### 7. Relatório IA
 
 **Rota:** `/relatorio-ia`  
 **Objetivo:** Geração e visualização de insights automáticos baseados nos feedbacks, utilizando inteligência artificial.
@@ -132,5 +132,3 @@ São telas acessadas pelos usuários da aplicação com autenticação válida, 
 | Sentimento geral | O clima pode ser positivo, neutro ou negativo |
 | Visão geral | Uma visão geral resumida dos feedbacks coletados |
 | Sugestões de Ação | Recomendações práticas geradas pela IA |
-
----
