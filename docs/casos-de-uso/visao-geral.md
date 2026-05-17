@@ -6,7 +6,7 @@ Cada arquivo desta pasta documenta um caso de uso do sistema — uma intenção 
 
 > **Caso de Uso = Teste E2E**
 >
-> Os cenários da seção "Base para Teste E2E" de cada UC são escritos em português para humanos e mapeiam 1:1 para arquivos de teste TypeScript. Quando uma regra de negócio muda, toca-se apenas um arquivo de UC — o arquivo de teste correspondente segue a mesma estrutura.
+> Os cenários da seção "Base para Teste E2E" de cada UC e mapeiam 1:1 para arquivos de teste TypeScript. Quando uma regra de negócio muda, toca-se apenas um arquivo de UC — o arquivo de teste correspondente segue a mesma estrutura.
 
 ---
 
