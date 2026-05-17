@@ -46,13 +46,14 @@
 
 > Esta seção é documentação — nenhum arquivo de teste é criado aqui.
 > Quando o E2E for implementado, cada item abaixo vira um `it()`.
+> Execução formal: [plano-estrategico.md](../testes/plano-estrategico.md) — Fase 2, UC-11.
 
 **Cenários a cobrir:**
 
-- **Caminho feliz — analisar feedbacks:** gestor com contexto preenchido e mínimo de 10 feedbacks clica em "Analisar feedbacks" — deve processar e atualizar o clima emocional automaticamente.
-- **Caminho feliz — gerar insights:** após análise, clicar em "Gerar insights" deve atualizar o relatório com resumo e recomendações da IA.
-- **Caminho feliz — escopo por produto:** selecionar escopo "Produto" e um item de catálogo, gerar análise e confirmar que o relatório reflete aquele item específico.
-- **Caminho feliz — navegação entre abas:** após gerar relatório, navegar para "Análise Emocional" e "Estatísticas" deve exibir os dados correspondentes.
-- **Exceção — contexto incompleto:** acessar insights sem preencher todos os campos de contexto deve exibir os botões desabilitados e a mensagem de bloqueio com link para configuração.
-- **Exceção — item não selecionado:** selecionar escopo "Produto" sem escolher item deve manter os botões desabilitados.
-- **Exceção — volume insuficiente:** tentar analisar com menos de 10 feedbacks deve retornar mensagem de volume mínimo insuficiente.
+- **[CT-UC11-01]** Caminho feliz — analisar feedbacks: gestor com contexto preenchido e mínimo de 10 feedbacks clica em "Analisar feedbacks" — deve processar e atualizar o clima emocional automaticamente.
+- **[CT-UC11-02]** Caminho feliz — gerar insights: após análise, clicar em "Gerar insights" deve atualizar o relatório com resumo e recomendações da IA.
+- **[CT-UC11-03]** Caminho feliz — escopo por produto: selecionar escopo "Produto" e um item de catálogo, gerar análise e confirmar que o relatório reflete aquele item específico.
+- **[CT-UC11-04]** Caminho feliz — navegação entre abas: após gerar relatório, navegar para "Análise Emocional" e "Estatísticas" deve exibir os dados correspondentes.
+- **[CT-UC11-05]** Exceção — contexto incompleto: acessar insights sem preencher todos os campos de contexto deve exibir os botões desabilitados e a mensagem de bloqueio com link para configuração.
+- **[CT-UC11-06]** Exceção — item não selecionado: selecionar escopo "Produto" sem escolher item deve manter os botões desabilitados.
+- **[CT-UC11-07]** Exceção — volume insuficiente: tentar analisar com menos de 10 feedbacks deve retornar mensagem de volume mínimo insuficiente.

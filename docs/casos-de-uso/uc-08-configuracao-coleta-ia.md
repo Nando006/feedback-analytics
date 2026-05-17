@@ -43,10 +43,11 @@
 
 > Esta seção é documentação — nenhum arquivo de teste é criado aqui.
 > Quando o E2E for implementado, cada item abaixo vira um `it()`.
+> Execução formal: [plano-estrategico.md](../testes/plano-estrategico.md) — Fase 2, UC-08.
 
 **Cenários a cobrir:**
 
-- **Caminho feliz:** gestor preenche os três campos (objetivo, objetivo analítico, resumo), salva e recebe toast de confirmação de sucesso.
-- **Caminho feliz — campos em branco:** salvar com todos os campos vazios deve retornar sucesso sem exibir erro — campos vazios são permitidos.
-- **Caminho feliz — atualização parcial:** gestor edita apenas o resumo do negócio, salva e confirma que os demais campos permanecem inalterados.
-- **Exceção — erro ao salvar:** simular falha de rede deve exibir toast de erro sem alterar os dados do formulário.
+- **[CT-UC08-01]** Caminho feliz: gestor preenche os três campos (objetivo, objetivo analítico, resumo), salva e recebe toast de confirmação de sucesso.
+- **[CT-UC08-02]** Caminho feliz — campos em branco: salvar com todos os campos vazios deve retornar sucesso sem exibir erro — campos vazios são permitidos.
+- **[CT-UC08-03]** Caminho feliz — atualização parcial: gestor edita apenas o resumo do negócio, salva e confirma que os demais campos permanecem inalterados.
+- **[CT-UC08-04]** Exceção — erro ao salvar: simular falha de rede deve exibir toast de erro sem alterar os dados do formulário.

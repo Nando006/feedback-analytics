@@ -63,13 +63,14 @@ A tela de perfil concentra quatro seções:
 
 > Esta seção é documentação — nenhum arquivo de teste é criado aqui.
 > Quando o E2E for implementado, cada item abaixo vira um `it()`.
+> Execução formal: [plano-estrategico.md](../testes/plano-estrategico.md) — Fase 2, UC-12.
 
 **Cenários a cobrir:**
 
-- **Caminho feliz — nome:** gestor edita o nome, salva e confirma que o novo nome aparece no perfil.
-- **Caminho feliz — e-mail:** gestor informa novo e-mail válido e recebe a mensagem de sucesso (a confirmação nos dois e-mails é feita fora do app).
-- **Caminho feliz — telefone:** gestor informa novo número, recebe o SMS, insere o código de 6 dígitos e o telefone é atualizado.
-- **Caminho feliz — cancelar telefone:** durante o modo de edição ou verificação, clicar em "Cancelar" deve voltar ao modo de visualização sem alterar o número.
-- **Exceção — nome vazio:** tentar salvar com campo de nome vazio deve bloquear o envio.
-- **Exceção — telefone inválido:** informar número fora do padrão `+55 DDD NÚMERO` deve bloquear o formulário antes de enviar o SMS.
-- **Exceção — código inválido:** inserir código errado na verificação deve exibir toast de erro sem sair do modo de verificação.
+- **[CT-UC12-01]** Caminho feliz — nome: gestor edita o nome, salva e confirma que o novo nome aparece no perfil.
+- **[CT-UC12-02]** Caminho feliz — e-mail: gestor informa novo e-mail válido e recebe a mensagem de sucesso (a confirmação nos dois e-mails é feita fora do app).
+- **[CT-UC12-03]** Caminho feliz — telefone: gestor informa novo número, recebe o SMS, insere o código de 6 dígitos e o telefone é atualizado.
+- **[CT-UC12-04]** Caminho feliz — cancelar telefone: durante o modo de edição ou verificação, clicar em "Cancelar" deve voltar ao modo de visualização sem alterar o número.
+- **[CT-UC12-05]** Exceção — nome vazio: tentar salvar com campo de nome vazio deve bloquear o envio.
+- **[CT-UC12-06]** Exceção — telefone inválido: informar número fora do padrão `+55 DDD NÚMERO` deve bloquear o formulário antes de enviar o SMS.
+- **[CT-UC12-07]** Exceção — código inválido: inserir código errado na verificação deve exibir toast de erro sem sair do modo de verificação.

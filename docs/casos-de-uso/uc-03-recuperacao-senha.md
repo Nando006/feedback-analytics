@@ -44,10 +44,11 @@
 
 > Esta seção é documentação — nenhum arquivo de teste é criado aqui.
 > Quando o E2E for implementado, cada item abaixo vira um `it()`.
+> Execução formal: [plano-estrategico.md](../testes/plano-estrategico.md) — Fase 2, UC-03.
 
 **Cenários a cobrir:**
 
-- **Caminho feliz:** gestor informa e-mail válido, recebe link, acessa a tela de redefinição, define nova senha e consegue fazer login com ela.
-- **Exceção — e-mail inexistente:** informar e-mail não cadastrado deve exibir a mesma mensagem genérica de sucesso (sem revelar que não existe).
-- **Exceção — link expirado:** acessar link de redefinição já expirado deve exibir mensagem de link inválido com orientação.
-- **Exceção — senhas divergentes:** digitar senhas diferentes nos dois campos deve bloquear o envio com mensagem de inconsistência.
+- **[CT-UC03-01]** Caminho feliz: gestor informa e-mail válido, recebe link, acessa a tela de redefinição, define nova senha e consegue fazer login com ela.
+- **[CT-UC03-02]** Exceção — e-mail inexistente: informar e-mail não cadastrado deve exibir a mesma mensagem genérica de sucesso (sem revelar que não existe).
+- **[CT-UC03-03]** Exceção — link expirado: acessar link de redefinição já expirado deve exibir mensagem de link inválido com orientação.
+- **[CT-UC03-04]** Exceção — senhas divergentes: digitar senhas diferentes nos dois campos deve bloquear o envio com mensagem de inconsistência.

@@ -37,12 +37,13 @@
 
 > Esta seção é documentação — nenhum arquivo de teste é criado aqui.
 > Quando o E2E for implementado, cada item abaixo vira um `it()`.
+> Execução formal: [plano-estrategico.md](../testes/plano-estrategico.md) — Fase 2, UC-05.
 
 **Cenários a cobrir:**
 
-- **Caminho feliz — ativar/desativar:** gestor clica no botão de controle, deve exibir toast de confirmação e o estado visual do QR Code deve refletir a mudança imediatamente.
-- **Caminho feliz — download:** gestor clica em "Download", deve disparar o download de um arquivo `.png` com o nome da empresa no título.
-- **Caminho feliz — copiar link:** gestor clica em "Copiar link", deve copiar a URL correta para a área de transferência e exibir o indicador visual de cópia por 2 segundos.
-- **Caminho feliz — compartilhar:** em ambiente com `navigator.share` disponível, clicar em "Compartilhar" deve invocar a API nativa com os dados corretos.
-- **Exceção — share API indisponível:** em ambiente sem `navigator.share`, clicar em "Compartilhar" deve copiar o link para a área de transferência automaticamente.
-- **Exceção — QR desativado:** acessar o link de formulário de uma empresa com QR Code desativado deve exibir tela de erro no formulário público.
+- **[CT-UC05-01]** Caminho feliz — ativar/desativar: gestor clica no botão de controle, deve exibir toast de confirmação e o estado visual do QR Code deve refletir a mudança imediatamente.
+- **[CT-UC05-02]** Caminho feliz — download: gestor clica em "Download", deve disparar o download de um arquivo `.png` com o nome da empresa no título.
+- **[CT-UC05-03]** Caminho feliz — copiar link: gestor clica em "Copiar link", deve copiar a URL correta para a área de transferência e exibir o indicador visual de cópia por 2 segundos.
+- **[CT-UC05-04]** Caminho feliz — compartilhar: em ambiente com `navigator.share` disponível, clicar em "Compartilhar" deve invocar a API nativa com os dados corretos.
+- **[CT-UC05-05]** Exceção — share API indisponível: em ambiente sem `navigator.share`, clicar em "Compartilhar" deve copiar o link para a área de transferência automaticamente.
+- **[CT-UC05-06]** Exceção — QR desativado: acessar o link de formulário de uma empresa com QR Code desativado deve exibir tela de erro no formulário público.
