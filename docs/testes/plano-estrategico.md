@@ -1,6 +1,6 @@
 # Plano de Teste Estratégico — feedback-analytics
 
-**Sistema:** feedback-analytics (SaaS B2B de Coleta de Feedbacks via QR Code com IA)
+**Sistema:** feedback-analytics (SaaS de Coleta de Feedbacks via QR Code com IA)
 **Versão do Documento:** 1.0
 
 ---
@@ -13,7 +13,7 @@
 
 #### 1.1. Introdução
 
-O feedback-analytics é um SaaS B2B destinado a empresas que precisam coletar e interpretar avaliações de clientes de forma estruturada. O sistema resolve dois problemas centrais: **como coletar feedback com granularidade** (por empresa, produto, serviço ou departamento via QR Code físico) e **como transformar esse volume em decisões** sem que o gestor precise ler cada avaliação individualmente (via análise de IA).
+O feedback-analytics é um SaaS destinado a negócios — pessoa física (CPF) ou jurídica (CNPJ) — que precisam coletar e interpretar avaliações de clientes de forma estruturada. O sistema resolve dois problemas centrais: **como coletar feedback com granularidade** (por empresa, produto, serviço ou departamento via QR Code físico) e **como transformar esse volume em decisões** sem que o gestor precise ler cada avaliação individualmente (via análise de IA).
 
 A plataforma possui três atores distintos:
 

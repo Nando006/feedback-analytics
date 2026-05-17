@@ -134,7 +134,7 @@ Métricas são o GPS do produto. Sem elas, as decisões de onde investir tempo e
 
 **Por que é a métrica mais importante:** o trial é o coração do modelo de receita. Se a conversão for baixa, o produto não está conseguindo provar seu valor no tempo disponível. Isso pode significar problema de onboarding, de produto ou de segmento.
 
-**Meta de referência:** para SaaS B2B com trial longo, conversões acima de 15–20% são saudáveis.
+**Meta de referência:** para SaaS com trial longo voltado para negócios, conversões acima de 15–20% são saudáveis.
 
 ---
 
@@ -152,7 +152,7 @@ Métricas são o GPS do produto. Sem elas, as decisões de onde investir tempo e
 
 **Por que importa:** churn alto destrói o MRR mesmo com boa aquisição. Para um produto de R$80/mês, perder 1 cliente exige ganhar 1 novo só para ficar no mesmo lugar.
 
-**Meta de referência:** churn abaixo de 3% ao mês é considerado saudável para micro-SaaS B2B.
+**Meta de referência:** churn abaixo de 3% ao mês é considerado saudável para micro-SaaS voltado para negócios.
 
 ---
 
