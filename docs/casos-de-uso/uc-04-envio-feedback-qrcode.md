@@ -46,12 +46,13 @@
 
 > Esta seção é documentação — nenhum arquivo de teste é criado aqui.
 > Quando o E2E for implementado, cada item abaixo vira um `it()`.
+> Execução formal: [plano-estrategico.md](../testes/plano-estrategico.md) — Fase 2, UC-04.
 
 **Cenários a cobrir:**
 
-- **Caminho feliz:** cliente acessa URL válida, preenche nota, comentário, responde todas as perguntas dinâmicas e clica em "Enviar" — deve exibir a tela de agradecimento.
-- **Exceção — empresa inválida:** acessar URL com identificador de empresa inexistente deve exibir a tela de erro fatal, sem renderizar o formulário.
-- **Exceção — dispositivo duplicado:** segundo envio pelo mesmo dispositivo no mesmo dia e ponto de coleta deve exibir a tela de "feedback já registrado".
-- **Exceção — nota não selecionada:** clicar em "Enviar" sem selecionar a nota deve bloquear o envio e exibir a mensagem de campo obrigatório.
-- **Exceção — comentário vazio:** clicar em "Enviar" sem preencher o comentário deve bloquear o envio e exibir a mensagem de campo obrigatório.
-- **Exceção — perguntas não respondidas:** clicar em "Enviar" sem responder todas as perguntas dinâmicas deve bloquear o envio com a mensagem correspondente.
+- **[CT-UC04-01]** Caminho feliz: cliente acessa URL válida, preenche nota, comentário, responde todas as perguntas dinâmicas e clica em "Enviar" — deve exibir a tela de agradecimento.
+- **[CT-UC04-02]** Exceção — empresa inválida: acessar URL com identificador de empresa inexistente deve exibir a tela de erro fatal, sem renderizar o formulário.
+- **[CT-UC04-03]** Exceção — dispositivo duplicado: segundo envio pelo mesmo dispositivo no mesmo dia e ponto de coleta deve exibir a tela de "feedback já registrado".
+- **[CT-UC04-04]** Exceção — nota não selecionada: clicar em "Enviar" sem selecionar a nota deve bloquear o envio e exibir a mensagem de campo obrigatório.
+- **[CT-UC04-05]** Exceção — comentário vazio: clicar em "Enviar" sem preencher o comentário deve bloquear o envio e exibir a mensagem de campo obrigatório.
+- **[CT-UC04-06]** Exceção — perguntas não respondidas: clicar em "Enviar" sem responder todas as perguntas dinâmicas deve bloquear o envio com a mensagem correspondente.

@@ -36,11 +36,12 @@
 
 > Esta seção é documentação — nenhum arquivo de teste é criado aqui.
 > Quando o E2E for implementado, cada item abaixo vira um `it()`.
+> Execução formal: [plano-estrategico.md](../testes/plano-estrategico.md) — Fase 2, UC-09.
 
 **Cenários a cobrir:**
 
-- **Caminho feliz:** gestor autenticado acessa o dashboard e visualiza os 4 cards de métricas, gráficos e os últimos 5 feedbacks com dados reais.
-- **Caminho feliz — toast de login:** acessar o dashboard com `?login=success` na URL deve exibir o toast de boas-vindas e remover o parâmetro da URL.
-- **Exceção — sem feedbacks:** empresa sem feedbacks deve exibir o dashboard com zeros e a mensagem de lista vazia, sem erros.
-- **Exceção — erro de carregamento:** simular falha na API de estatísticas deve exibir a mensagem de erro inline no topo, sem redirecionar.
-- **Exceção — sessão expirada:** acessar o dashboard com sessão inválida deve redirecionar para `/login`.
+- **[CT-UC09-01]** Caminho feliz: gestor autenticado acessa o dashboard e visualiza os 4 cards de métricas, gráficos e os últimos 5 feedbacks com dados reais.
+- **[CT-UC09-02]** Caminho feliz — toast de login: acessar o dashboard com `?login=success` na URL deve exibir o toast de boas-vindas e remover o parâmetro da URL.
+- **[CT-UC09-03]** Exceção — sem feedbacks: empresa sem feedbacks deve exibir o dashboard com zeros e a mensagem de lista vazia, sem erros.
+- **[CT-UC09-04]** Exceção — erro de carregamento: simular falha na API de estatísticas deve exibir a mensagem de erro inline no topo, sem redirecionar.
+- **[CT-UC09-05]** Exceção — sessão expirada: acessar o dashboard com sessão inválida deve redirecionar para `/login`.

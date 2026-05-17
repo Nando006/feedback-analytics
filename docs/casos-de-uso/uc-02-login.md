@@ -32,12 +32,13 @@
 
 ## Base para Teste E2E
 
-> Nenhum arquivo de teste é criado aqui.
+> Esta seção é documentação — nenhum arquivo de teste é criado aqui.
 > Quando o E2E for implementado, cada item abaixo vira um `it()`.
+> Execução formal: [plano-estrategico.md](../testes/plano-estrategico.md) — Fase 2, UC-02.
 
 **Cenários a cobrir:**
 
-- **Caminho feliz:** gestor insere credenciais válidas, clica em "Entrar" e é redirecionado para o dashboard.
-- **Exceção — credenciais inválidas:** inserir senha errada deve exibir mensagem de erro sem redirecionar.
-- **Exceção — rate limit:** após múltiplas tentativas incorretas, deve exibir mensagem de bloqueio temporário.
-- **Exceção — campos vazios:** tentar enviar o formulário sem preencher os campos deve destacá-los como obrigatórios.
+- **[CT-UC02-01]** Caminho feliz: gestor insere credenciais válidas, clica em "Entrar" e é redirecionado para o dashboard.
+- **[CT-UC02-02]** Exceção — credenciais inválidas: inserir senha errada deve exibir mensagem de erro sem redirecionar.
+- **[CT-UC02-03]** Exceção — rate limit: após múltiplas tentativas incorretas, deve exibir mensagem de bloqueio temporário.
+- **[CT-UC02-04]** Exceção — campos vazios: tentar enviar o formulário sem preencher os campos deve destacá-los como obrigatórios.

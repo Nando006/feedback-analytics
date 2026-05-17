@@ -36,14 +36,15 @@
 
 ## Base para Teste E2E
 
-> Nenhum arquivo de teste é criado aqui.
+> Esta seção é documentação — nenhum arquivo de teste é criado aqui.
 > Quando o E2E for implementado, cada item abaixo vira um `it()`.
+> Execução formal: [plano-estrategico.md](../testes/plano-estrategico.md) — Fase 2, UC-01.
 
 **Cenários a cobrir:**
 
-- **Caminho feliz:** preencher todos os campos válidos, enviar, receber e-mail de confirmação e ativar a conta pelo link.
-- **Exceção — e-mail duplicado:** tentar cadastrar com e-mail já existente deve seguir para a tela de sucesso normalmente, sem revelar que o e-mail já está em uso. O e-mail de confirmação não chegará e a tela de sucesso deve exibir orientação para esse caso.
-- **Exceção — documento inválido:** inserir CPF ou CNPJ inválido (que não passa no cálculo matemático) deve bloquear o envio.
-- **Exceção — telefone inválido:** inserir telefone fora do padrão BR deve bloquear o campo.
-- **Exceção — termos não aceitos:** tentar enviar sem marcar os termos deve impedir o cadastro.
-- **Exceção — reenvio de e-mail:** solicitar reenvio do e-mail de confirmação deve funcionar e exibir confirmação de envio.
+- **[CT-UC01-01]** Caminho feliz: preencher todos os campos válidos, enviar, receber e-mail de confirmação e ativar a conta pelo link.
+- **[CT-UC01-02]** Exceção — e-mail duplicado: tentar cadastrar com e-mail já existente deve seguir para a tela de sucesso normalmente, sem revelar que o e-mail já está em uso. O e-mail de confirmação não chegará e a tela de sucesso deve exibir orientação para esse caso.
+- **[CT-UC01-03]** Exceção — documento inválido: inserir CPF ou CNPJ inválido (que não passa no cálculo matemático) deve bloquear o envio.
+- **[CT-UC01-04]** Exceção — telefone inválido: inserir telefone fora do padrão BR deve bloquear o campo.
+- **[CT-UC01-05]** Exceção — termos não aceitos: tentar enviar sem marcar os termos deve impedir o cadastro.
+- **[CT-UC01-06]** Exceção — reenvio de e-mail: solicitar reenvio do e-mail de confirmação deve funcionar e exibir confirmação de envio.
