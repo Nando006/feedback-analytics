@@ -48,6 +48,11 @@ O banco de dados é a camada de persistência central da plataforma. Toda a lóg
 
 ---
 
+## Diagrama (ER)
+[Imagem gerada a partir do DBeaver](https://drive.google.com/file/d/1Ka6avCSn2Yp1AhbdUxvu4LRyiTq1KtLf/view?usp=drive_link)
+
+---
+
 ## Diagrama de Entidades (ERD)
 
 ```
