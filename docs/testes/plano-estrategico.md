@@ -1,7 +1,40 @@
-# Plano de Teste Estratégico — feedback-analytics
+# Plano de Teste Estratégico
 
-**Sistema:** feedback-analytics (SaaS de Coleta de Feedbacks via QR Code com IA)
-**Versão do Documento:** 1.0
+## Para que serve este documento?
+### Está tabela serve para mostrar do por que o plano de teste estratégico é útil e como ele trabalha com os casos de uso.
+Os casos de uso e o plano estratégico dividem responsabilidades sem repetir conteúdo, cada um tem um papel único.
+
+- **Os casos de uso definem a regra:** Cada UC descreve o que o sistema precisa fazer: o fluxo, as exceções e os cenários a cobrir em linguagem de produto. É onde está a decisão de negócio — "o sistema nunca revela se um e-mail já existe", "dispositivo duplicado não gera erro mas exibe tela diferente".
+
+- **O plano transforma a regra em execução:** A Fase 1 pega os UCs e responde: quais são críticos, em que ordem testar, o que pode dar errado e o que precisa existir antes de começar. A Fase 2 pega cada cenário do UC e traduz em passos concretos: URL exata, dados de teste, resultado esperado.
+
+- **O elo entre eles são os CT-IDs:** Cada cenário no UC tem um ID ([CT-UC04-03]) que aponta para a linha correspondente na tabela da Fase 2. O UC diz o quê ("dispositivo duplicado deve exibir tela de feedback já registrado"), o plano diz como executar ("acessar URL com mesmo fingerprint, preencher e submeter").
+
+**Na prática o fluxo é assim:**
+```
+UC define o cenário
+    → Fase 1 prioriza e documenta riscos
+        → Fase 2 detalha os passos
+            → Playwright executa os passos
+                → Resultado validado contra o UC
+```
+Se uma regra mudar no UC (ex: mínimo de feedbacks para análise mudar de 10 para 5), você atualiza o UC e o CT correspondente na Fase 2 — um só lugar para cada tipo de informação. Sem o CT-ID ligando os dois, cada mudança precisaria ser rastreada manualmente nos dois documentos.
+
+
+| Dimensão | Casos de Uso | Fase 1 — Estratégia | Fase 2 — Execução |
+|---|---|---|---|
+| **O que o sistema deve fazer** | ✅ Fluxo principal + exceções | — | — |
+| **Cenários a testar (linguagem natural)** | ✅ Seção "Base para Teste E2E" | — | ✅ Formaliza com CT-IDs |
+| **Passos de execução passo a passo** | ✗ | — | ✅ "1. Acesse URL. 2. Preencha X..." |
+| **Dados de teste concretos** | ✗ | — | ✅ CPF, identificadores, notas específicas |
+| **Pré-condições por caso** | Parcial | — | ✅ Por CT ("dispositivo sem envio anterior") |
+| **Por que esses fluxos são prioritários** | ✗ | ✅ Mapa de criticidade e bloqueadores entre UCs | — |
+| **Riscos documentados** | ✗ | ✅ Anti-spam, e-mail inacessível em CI, estado sujo | — |
+| **Ambiente e ferramentas necessárias** | ✗ | ✅ Homologação, Playwright, reset de fingerprint | — |
+| **Critérios de entrada e saída dos testes** | ✗ | ✅ O que precisa existir antes de começar | — |
+| **Decisões de "por que testamos assim"** | ✗ | ✅ Permanente, não muda com o código | — |
+| **Valor sem Playwright implementado** | ✅ Alto | ✅ Alto | ⚠️ Baixo — redundante com os UCs |
+| **Valor com Playwright implementado** | ✅ Alto | ✅ Alto | ✅ Alto — é o roteiro de execução |
 
 ---
 
