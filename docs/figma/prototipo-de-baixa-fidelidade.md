@@ -1,69 +1,136 @@
-# Documentação de Design — Protótipo de Baixa Fidelidade (Wireframes)
+# Design de Alta Fidelidade — Feedback Analytics
 
-Aqui, consolidamos os conceitos básicos e a arquitetura de informação da aplicação. O protótipo de baixa fidelidade (Wireframes) serve como uma visão inicial da disposição dos elementos na tela do **Feedback Analytics**, focando na usabilidade e nos fluxos principais antes da aplicação do estilo visual definitivo.
+## Visão Geral
 
----
+Este documento descreve o protótipo de baixa fidelidade do **Feedback Analytics**, cobrindo todas as telas do sistema, fluxos de navegação, estados de UI e comportamentos esperados para guiar a implementação front-end.
 
-## 1. Home (Página Inicial)
-
-Visão estrutural inicial do que será a página de apresentação comercial do projeto. O foco aqui é o mapeamento de conteúdo e hierarquia da informação para conversão.
-
-| Elementos Estruturais | Objetivo no Wireframe |
-| :--- | :--- |
-| **Bloco Hero** | Marcação para título principal forte (H1) e um esqueleto para as imagens. |
-| **Bloco Como funciona?** | Card e imagem explicando o funcionamento do projeto de forma simples |
-| **Grid de Benefícios** | Caixas simples com imagens demarcando onde os pontos fortes da plataforma serão explicados. |
-| **Bloco de CTA** |     |
-
+O protótipo contempla transições animadas entre telas, simulando ao máximo o produto final. As seções estão organizadas por contexto de autenticação: **Usuário Deslogado**, **Usuário Logado** e **Assets de Componentes**.
 
 ---
 
-## 2. Coleta de Feedbacks
+## Usuário Deslogado
 
-Visão inicial da página pública de captura de dados. Como é a página que o cliente final acessa, o wireframe foi pensado com uma estrutura minimalista (Mobile-First).
-
-| Elementos Estruturais | Objetivo no Wireframe |
-| :--- | :--- |
-| **Identificação da Empresa** | Espaço no topo reservado para o nome ou logotipo da empresa que está sendo avaliada. |
-| **Componente de Nota** | Placeholder para a seleção de 1 a 5 estrelas. |
-| **Seleção de Sentimento** | Caixas ou botões de rádio (Radio buttons) indicando as opções emocionais (Péssimo a Ótimo). |
-| **Área de Comentário** | Caixa de texto ampla (Textarea) simulada para o cliente escrever o feedback. |
-| **Botão de Envio** | Bloco de CTA primário no final do formulário. |
+São telas acessadas pelos usuários da aplicação sem autenticação válida, seja acessados por links ou leituras de qrcode.
 
 ---
 
-## 3. Dashboard
+### 1. Home
 
-Visão inicial do painel de controle administrativo. O wireframe foca em definir a grade (Grid) e onde cada métrica principal deve ser alocada para melhor leitura do gestor.
+**Rota:** `/`  
+**Objetivo:** Primeira impressão do produto. Tela de apresentação comercial, atrativa e orientada à conversão.
 
-| Elementos Estruturais | Objetivo no Wireframe |
-| :--- | :--- |
-| **Sidebar / Menu Lateral** | Marcação dos links de navegação interna (Dashboard, Perfil, QR Codes, etc). |
-| **Linha de KPIs (Cards)** | 4 blocos retangulares no topo alinhados horizontalmente para os indicadores-chave (Total, Média, etc). |
-| **Gráficos (Placeholders)** | Quadrados com ícones de "imagem" ou gráficos em blocos indicando onde o Radar de Satisfação será renderizado. |
-| **Feedbacks Recentes** | Uma tabela simples ou lista de blocos mostrando os últimos comentários recebidos. |
+#### Seções da Página
 
----
-
-## 4. Perfil do Usuário
-
-Tela de edição e gerenciamento das informações do usuário e da empresa em sua versão conceitual.
-
-| Elementos Estruturais | Objetivo no Wireframe |
-| :--- | :--- |
-| **Avatar e Identificação** | Um círculo representando a foto de perfil ao lado do nome do usuário. |
-| **Grupos de Formulário** | Blocos de `inputs` separados por título (Dados Pessoais vs. Dados da Empresa). |
-| **Configuração de IA** | Um campo de texto maior rascunhado para a inserção dos objetivos de análise de inteligência artificial. |
-| **Ações de Formulário** | Botões de "Salvar" e "Cancelar" ao final das seções de edição. |
+| Seção | Descrição |
+|---|---|
+| Hero | Título principal, subtítulo de valor, CTA primário |
+| Como funciona | Explicação visual em etapas do fluxo do produto |
+| Benefícios | Cards destacando os diferenciais da plataforma |
+| CTA Final | Chamada para cadastro/conversão ao final da página |
 
 ---
 
-## 5. Gerenciamento de QR Code
+### 2. Coleta de Feedbacks
 
-Visão inicial da tela onde o usuário criará e administrará as origens de coleta (QR Codes).
+**Rota:** `/feedback/:qrcode?enterprise=:id`  
+**Objetivo:** Página pública onde o cliente final deposita seu feedback após escanear o QR Code.
 
-| Elementos Estruturais | Objetivo no Wireframe |
-| :--- | :--- |
-| **Header de Ações** | Um botão principal de "Novo QR Code" ou categorias em formato de abas (Tabs). |
-| **Lista/Grid de QR Codes** | Cartões rascunhados exibindo o nome do ponto de coleta, a imagem simulada do QR Code e seu status. |
-| **Controles de Ação** | Ícones básicos (Engrenagem, Download, Lixeira) ao lado de cada QR Code na lista. |
+> Esta rota é **pública**, mas só deve ser acessada via QR Code gerado por um usuário logado. Acessos diretos sem um `id` válido devem retornar erro ou página de QR Code inválido.
+
+#### Campos do Formulário
+
+| Campo | Tipo | Obrigatório |
+|---|---|---|
+| Avaliação geral | Estrelas (1–5) | Sim |
+| Sentimento | Seleção (Péssimo, Ruim, Mediana, Boa, Ótima) | Sim ||
+| Comentário livre | Textarea | Sim |
+| Informações pessoais | Nome, e-mail (opcionais) | Não |
+
+---
+
+
+## Usuário Logado
+
+São telas acessadas pelos usuários da aplicação com autenticação válida, por autenticação via tela de login.
+
+### 3. Dashboard
+
+**Rota:** `/dashboard`  
+**Objetivo:** Visão centralizada dos feedbacks coletados, com cards interativos e dados em tempo real.
+
+#### Componentes da Tela
+
+| Componente | Descrição |
+|---|---|
+| Header | Nome do usuário, e botões que facilitam o fluxo do usuário |
+| Card — Total de Feedbacks | Número total de feedbacks recebidos |
+| Card — Sentimentos | Média da satisfação geral dos clientes |
+| Card — Feedbacks Positivos | Feedbacks positivos recebidos |
+| Card — Feedbacks Críticos | Feedbacks negativos recebidos |
+| Feedbacks Recentes | Lista com os últimos feedbacks recebidos |
+| Estratégia de Coleta |  Informações da empresa para melhorar a análise feita pela IA|
+| Radar de satisfação | Lista com o total de feedbacks positivos, neutros ou negativos |
+
+---
+
+### 4. Perfil do Usuário
+
+**Rota:** `/perfil`  
+**Objetivo:** Visualização e edição das informações pessoais do usuário.
+
+#### Informações Exibidas
+
+| Campo | Editável |
+|---|---|
+| Avatar / Foto de perfil | Sim |
+| Nome completo | Sim |
+| E-mail | Sim |
+| Senha | Sim (campo separado) |
+| Data de cadastro | Não |
+| CPF/CNPJ | Não |
+
+---
+
+### 5. QR Code
+
+**Rota:** `/qrcode`  
+**Objetivo:** Gerenciamento dos QR Codes gerados pelo usuário para coleta de feedbacks.
+
+#### Ações Disponíveis por QR Code
+
+| Ação | Descrição |
+|---|---|
+| Habilitar | Habilita o QR Code para receber feedbacks |
+| Desabilitar | Desabilita o QR Code (feedbacks não são aceitos) |
+| Compartilhar | Copia o link do QR Code |
+| Copiar link | Copia a URL do QR Code para a área de transferência |
+| Download | Baixar o QR Code para a impressão |
+
+---
+
+#### Componentes da Tela
+
+| Componente
+|---|
+| Pesquisa |
+| Painel de filtros |
+| Card de Feedback |
+| Paginação |
+
+---
+
+### 5. Relatório IA
+
+**Rota:** `/relatorio-ia`  
+**Objetivo:** Geração e visualização de insights automáticos baseados nos feedbacks, utilizando inteligência artificial.
+
+#### Conteúdo do Relatório
+
+| Seção | Descrição |
+|---|---|
+| Resumo Executivo | Parágrafo gerado pela IA com os principais pontos |
+| Sentimento geral | O clima pode ser positivo, neutro ou negativo |
+| Visão geral | Uma visão geral resumida dos feedbacks coletados |
+| Sugestões de Ação | Recomendações práticas geradas pela IA |
+
+---
