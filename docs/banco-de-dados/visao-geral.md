@@ -49,49 +49,42 @@ O banco de dados é a camada de persistência central da plataforma. Toda a lóg
 ---
 
 ## Diagrama (ER)
-[Imagem gerada a partir do DBeaver](https://drive.google.com/file/d/1Ka6avCSn2Yp1AhbdUxvu4LRyiTq1KtLf/view?usp=drive_link)
+[Imagem gerada a partir do DBeaver](https://drive.google.com/file/d/1aVd_KDQH1kX06L_hKiHndOnY3fKLu0Lt/view?usp=sharing)
 
 ---
 
 ## Diagrama de Entidades (ERD)
 
+> **Legenda de cardinalidade:** `||` = exatamente 1 · `o|` = 0 ou 1 (opcional) · `|{` = 1 ou muitos · `o{` = 0 ou muitos.
+
+**Visualizar o código no site: https://mermaid.ai/** 
+```mermaid
+erDiagram
+    AUTH_USERS ||--|| ENTERPRISE : "cria via trigger"
+    ENTERPRISE ||--|| COLLECTING_DATA_ENTERPRISE : "contexto estratégico"
+    ENTERPRISE ||--o{ CATALOG_ITEMS : "possui"
+    ENTERPRISE ||--o{ COLLECTION_POINTS : "possui"
+    ENTERPRISE ||--|{ QUESTIONS_OF_FEEDBACKS : "possui (mín 3 no signup)"
+    ENTERPRISE ||--o{ CUSTOMER : "possui"
+    ENTERPRISE ||--o{ TRACKED_DEVICES : "possui"
+    ENTERPRISE ||--o{ FEEDBACK : "recebe"
+    ENTERPRISE ||--o{ FEEDBACK_INSIGHTS_REPORT : "possui"
+    CATALOG_ITEMS ||--o{ COLLECTION_POINTS : "catalog_item_id (opcional)"
+    CATALOG_ITEMS ||--o{ QUESTIONS_OF_FEEDBACKS : "catalog_item_id (condicional)"
+    CATALOG_ITEMS ||--o{ FEEDBACK_INSIGHTS_REPORT : "catalog_item_id (condicional)"
+    QUESTIONS_OF_FEEDBACKS ||--o{ FEEDBACK_QUESTION_SUBQUESTIONS : "possui"
+    CUSTOMER ||--o{ TRACKED_DEVICES : "customer_id (opcional)"
+    COLLECTION_POINTS ||--o{ FEEDBACK : "collection_point_id"
+    TRACKED_DEVICES ||--o{ FEEDBACK : "tracked_device_id (opcional)"
+    FEEDBACK ||--o{ FEEDBACK_QUESTION_ANSWERS : "possui"
+    FEEDBACK ||--o{ FEEDBACK_SUBQUESTION_ANSWERS : "possui"
+    FEEDBACK ||--o| FEEDBACK_ANALYSIS : "possui"
+    QUESTIONS_OF_FEEDBACKS ||--o{ FEEDBACK_QUESTION_ANSWERS : "question_id"
+    FEEDBACK_QUESTION_SUBQUESTIONS ||--o{ FEEDBACK_SUBQUESTION_ANSWERS : "subquestion_id"
 ```
-auth.users (Supabase Auth)
-    │
-    │ 1:1 (trigger on_auth_user_created)
-    ▼
-enterprise ──────────────────────────────────────────────────────────────┐
-    │                                                                     │
-    ├──── 1:1 ──→ collecting_data_enterprise                             │
-    │                                                                     │
-    ├──── 1:N ──→ catalog_items                                          │
-    │                   │                                                 │
-    │                   └──── 1:N ──→ collection_points ←────────────────┤
-    │                   │                                                 │
-    │                   └──── 1:N ──→ questions_of_feedbacks ←───────────┤
-    │                                         │                           │
-    │                                         └──── 1:N ──→ feedback_question_subquestions
-    │                                                                     │
-    ├──── 1:N ──→ collection_points (corporativo, sem catalog_item)      │
-    │                                                                     │
-    ├──── 1:N ──→ questions_of_feedbacks (escopo COMPANY)               │
-    │                                                                     │
-    ├──── 1:N ──→ tracked_devices                                        │
-    │                   │                                                 │
-    │                   └──── N:1 ──→ customer                          │
-    │                                                                     │
-    ├──── 1:N ──→ feedback ───────────────────────────────────────────────┘
-    │                 │
-    │                 ├──── 1:N ──→ feedback_question_answers
-    │                 │                   └──── N:1 ──→ questions_of_feedbacks
-    │                 │
-    │                 ├──── 1:N ──→ feedback_subquestion_answers
-    │                 │                   └──── N:1 ──→ feedback_question_subquestions
-    │                 │
-    │                 └──── 1:1 ──→ feedback_analysis (IA)
-    │
-    └──── 1:N ──→ feedback_insights_report (por escopo/item)
-```
+
+
+> Todas as tabelas possuem `enterprise_id` FK obrigatória (isolamento RLS multi-tenant), **exceto**: `feedback_question_subquestions`, `feedback_question_answers`, `feedback_subquestion_answers` e `feedback_analysis` — isolamento herdado via cascade da tabela pai.
 
 ---
 

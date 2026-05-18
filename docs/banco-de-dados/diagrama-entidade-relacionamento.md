@@ -6,26 +6,35 @@
 
 ## Mapa de Relacionamentos
 
+> **Legenda de cardinalidade:** `||` = exatamente 1 · `o|` = 0 ou 1 (opcional) · `|{` = 1 ou muitos · `o{` = 0 ou muitos.
+
+**Visualizar o código no site: https://mermaid.ai/** 
+```mermaid
+erDiagram
+    AUTH_USERS ||--|| ENTERPRISE : "cria via trigger"
+    ENTERPRISE ||--|| COLLECTING_DATA_ENTERPRISE : "contexto estratégico"
+    ENTERPRISE ||--o{ CATALOG_ITEMS : "possui"
+    ENTERPRISE ||--o{ COLLECTION_POINTS : "possui"
+    ENTERPRISE ||--|{ QUESTIONS_OF_FEEDBACKS : "possui (mín 3 no signup)"
+    ENTERPRISE ||--o{ CUSTOMER : "possui"
+    ENTERPRISE ||--o{ TRACKED_DEVICES : "possui"
+    ENTERPRISE ||--o{ FEEDBACK : "recebe"
+    ENTERPRISE ||--o{ FEEDBACK_INSIGHTS_REPORT : "possui"
+    CATALOG_ITEMS ||--o{ COLLECTION_POINTS : "catalog_item_id (opcional)"
+    CATALOG_ITEMS ||--o{ QUESTIONS_OF_FEEDBACKS : "catalog_item_id (condicional)"
+    CATALOG_ITEMS ||--o{ FEEDBACK_INSIGHTS_REPORT : "catalog_item_id (condicional)"
+    QUESTIONS_OF_FEEDBACKS ||--o{ FEEDBACK_QUESTION_SUBQUESTIONS : "possui"
+    CUSTOMER ||--o{ TRACKED_DEVICES : "customer_id (opcional)"
+    COLLECTION_POINTS ||--o{ FEEDBACK : "collection_point_id"
+    TRACKED_DEVICES ||--o{ FEEDBACK : "tracked_device_id (opcional)"
+    FEEDBACK ||--o{ FEEDBACK_QUESTION_ANSWERS : "possui"
+    FEEDBACK ||--o{ FEEDBACK_SUBQUESTION_ANSWERS : "possui"
+    FEEDBACK ||--o| FEEDBACK_ANALYSIS : "possui"
+    QUESTIONS_OF_FEEDBACKS ||--o{ FEEDBACK_QUESTION_ANSWERS : "question_id"
+    FEEDBACK_QUESTION_SUBQUESTIONS ||--o{ FEEDBACK_SUBQUESTION_ANSWERS : "subquestion_id"
 ```
-auth.users (1)
-    └── enterprise (1)
-            ├── collecting_data_enterprise (1:1)
-            ├── catalog_items (1:N)
-            │       ├── collection_points (1:N)
-            │       ├── questions_of_feedbacks (scope PRODUCT|SERVICE|DEPARTMENT) (1:N)
-            │       │       └── feedback_question_subquestions (1:N)
-            │       └── feedback_insights_report (1:N)
-            ├── collection_points (1:N, sem catalog_item → escopo COMPANY)
-            ├── questions_of_feedbacks (scope COMPANY) (1:N)  ← criadas automaticamente no signup
-            │       └── feedback_question_subquestions (1:N)
-            ├── customer (1:N, opcional)
-            ├── tracked_devices (1:N)
-            ├── feedback (1:N)
-            │       ├── feedback_question_answers (1:N)
-            │       ├── feedback_subquestion_answers (1:N)
-            │       └── feedback_analysis (1:1)
-            └── feedback_insights_report (1:N, scope COMPANY)
-```
+
+> Todas as tabelas possuem `enterprise_id` FK obrigatória (isolamento RLS multi-tenant), **exceto**: `feedback_question_subquestions`, `feedback_question_answers`, `feedback_subquestion_answers` e `feedback_analysis` — isolamento herdado via cascade da tabela pai.
 
 ---
 
