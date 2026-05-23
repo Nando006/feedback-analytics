@@ -37,7 +37,7 @@ export default function Home() {
             <div className="grid gap-10 md:grid-cols-[1.2fr_1fr] items-center">
               <div className="font-work-sans space-y-6">
                 <p className="inline-flex items-center rounded-full border border-(--quaternary-color)/24 bg-(--sixth-color)/14 px-4 py-1 text-xs font-semibold uppercase tracking-wide text-(--primary-color)">
-                  Feedback Analytics · IA
+                  Feedback Analytics · IA 
                 </p>
                 <h1 className="font-montserrat text-3xl leading-tight font-semibold md:text-4xl lg:text-5xl text-(--text-primary)">
                   Entenda seus clientes com análises inteligentes e rápidas.
