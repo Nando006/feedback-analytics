@@ -8,7 +8,7 @@ O projeto atualmente tem dois serviços com perfis de carga radicalmente diferen
 | API Gateway (dashboard, feedbacks) | I/O bound — queries rápidas ao Supabase | < 500ms | CPU baixa, timeout curto |
 | IA Analyze (análise de sentimentos) | CPU bound + latência externa (LLM) | 10–60 segundos | CPU alta, timeout longo |
 
-- I/O-bound: Singifica que o tempo gasto em uma operação é dominado por espera, não por processamento. No caso do nosso API Gateway, a maior parte do tempo de uma requisição é esperando o banco de dados responder. O servidor não está fazendo cálculo nenhum. Ele manda a query, fica parado aguardando, recebe o resultado e devolve. CPU quase zerada.
+- I/O-bound: Significa que o tempo gasto em uma operação é dominado por espera, não por processamento. No caso do nosso API Gateway, a maior parte do tempo de uma requisição é esperando o banco de dados responder. O servidor não está fazendo cálculo nenhum. Ele manda a query, fica parado aguardando, recebe o resultado e devolve. CPU quase zerada.
 
 - CPU-bound: Significa que o tempo de espera é denominado pelo processador calculando. No caso do nosso IA-Analyze, ele recebe os textos, manda pro LLM, pega a resposta e ainda precisa processar, estruturar e validar tudo isso. O processador trabalha de verdade.
 
@@ -45,7 +45,7 @@ No monolito, qualquer alteração — mesmo que seja só na lógica da IA — ob
 
 Na arquitetura Multi-domínio, cada serviço vai ao ar de forma independente. Mudar o modelo LLM não toca o Gateway. Corrigir um bug no dashboard não redeploiya a IA.
 
-Cada serviço tem seu próprio workflow de deploy (`.github/workflows/deploy-api.yml`, `deploy-ia-analyze.yml`). Um push em `services/ia-analyze/` dispara apenas o deploy da IA. O Gateway não é tocado, não reinicia, não tem downtime.
+Cada serviço tem seu próprio workflow de deploy (`.github/workflows/deploy-api.yml`, `.github/workflows/deploy-ia-analyze.yml`). Um push em `services/ia-analyze/` dispara apenas o deploy da IA. O Gateway não é tocado, não reinicia, não tem downtime.
 
 
 ## Por que escolhemos especificamente o Monorepo Multi-domínio
