@@ -107,3 +107,38 @@ Cada workflow serve tanto para o ambiente de testes (branch `homolog` → deploy
 
 Na hora de publicar, cada workflow aponta para o `vercel.json` do seu próprio serviço usando a flag `--local-config`. É nesse arquivo que ficam as configurações específicas de cada domínio — incluindo o `maxDuration` diferente para o Gateway e para a IA.
 
+### Vercel Serverless Functions
+
+Quando o deploy termina, o código não fica rodando num servidor dedicado esperando requisições. A Vercel usa um modelo chamado **Serverless Functions**: o código dorme, e só acorda quando uma requisição chega.
+
+Na prática funciona assim: o usuário acessa o dashboard → a Vercel cria uma instância do `api-gateway` em milissegundos → ela processa a requisição → encerra. Se ninguém acessar por um tempo, não há nada consumindo recursos.
+
+Isso tem uma consequência direta para a arquitetura Multi-domínio: cada serviço é um projeto separado na Vercel, com sua própria URL, suas próprias variáveis de ambiente e sua própria configuração. O `api-gateway` e o `ia-analyze` nunca dividem a mesma instância — são funções completamente independentes, cada uma com seu ciclo de vida.
+
+É por isso que o `maxDuration` pode ser diferente para cada um. No modelo Serverless, cada função tem seu próprio limite de tempo de execução. No monolito, seria uma única função com um único limite — e como vimos, os dois serviços precisam de limites radicalmente diferentes.
+
+Os três domínios do projeto usam modelos de deploy distintos, cada um adequado à sua natureza:
+
+| Domínio | Builder | Tipo | maxDuration |
+| :--- | :--- | :--- | :--- |
+| `apps/web` | `@vercel/static-build` | Site estático (SPA) | — |
+| `backends/api-gateway` | `@vercel/node` | Serverless Function | 30s |
+| `services/ia-analyze` | `@vercel/node` | Serverless Function | 300s |
+
+**`apps/web` — site estático**
+O frontend não é uma função — é um conjunto de arquivos estáticos (HTML, CSS, JavaScript) gerados uma única vez no momento do build e servidos direto pela CDN da Vercel. Não existe servidor, não existe tempo de execução, não existe `maxDuration`. O usuário baixa os arquivos e o React roda no próprio navegador dele.
+
+**`backends/api-gateway` — Serverless Function de curta duração**
+O Gateway é uma função Node.js que acorda a cada requisição, consulta o banco (Supabase), monta a resposta e encerra. A operação mais pesada é aguardar o banco responder — o que acontece em milissegundos. Por isso 30s de timeout é mais do que suficiente e mantém o serviço responsivo.
+
+**`services/ia-analyze` — Serverless Function de longa duração**
+A IA é também uma função Node.js, mas com um perfil completamente diferente: ela recebe os feedbacks, manda para o LLM (Gemini), aguarda a resposta — o que pode levar dezenas de segundos — e ainda processa o resultado antes de devolver. Por isso precisa de 300s de timeout. Rodar isso no mesmo projeto do Gateway seria inviável.
+
+### Escalabilidade automática
+
+No modelo Serverless, escalar não é uma decisão manual. Quando várias empresas disparam análises ao mesmo tempo, a Vercel sobe múltiplas instâncias do `ia-analyze` em paralelo automaticamente — cada requisição vai para sua própria instância isolada. Quando a demanda cai, as instâncias encerram e param de consumir recursos.
+
+Isso significa que o `ia-analyze` consegue atender 1 ou 100 análises simultâneas sem nenhuma configuração adicional. O que o projeto controla é o `maxDuration` (quanto tempo cada instância pode rodar) e o plano da Vercel (que define o limite de execuções simultâneas). O "quantas instâncias subir" é uma decisão da própria plataforma.
+
+No monolito, esse cenário seria crítico: 10 análises simultâneas significariam 10 requisições competindo pelo mesmo processo Node.js, bloqueando umas às outras. Na arquitetura Multi-domínio, cada análise tem sua própria instância — sem concorrência, sem bloqueio.
+
