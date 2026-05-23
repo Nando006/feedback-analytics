@@ -3,7 +3,10 @@
   "builds": [
     {
       "src": "backends/api-gateway/index.ts",
-      "use": "@vercel/node"
+      "use": "@vercel/node",
+      "config": {
+        "maxDuration": 30
+      }
     }
   ],
   "rewrites": [
