@@ -33,8 +33,8 @@ BEGIN
   END IF;
 
   -- insere enterprise (continua prevenindo conflito por auth_user_id)
-  INSERT INTO public.enterprise (document, account_type, terms_version, terms_accepted_at, auth_user_id)
-  VALUES (v_document, v_account_type, v_terms_version, v_terms_accepted_at, NEW.id)
+  INSERT INTO public.enterprise (document, account_type, terms_version, terms_accepted_at, auth_user_id, trial_ends_at, subscription_status)
+  VALUES (v_document, v_account_type, v_terms_version, v_terms_accepted_at, NEW.id, NOW() + INTERVAL '4 months', 'TRIAL')
   ON CONFLICT (auth_user_id) DO NOTHING;
 
   -- Busca a enterprise atual para semear perguntas padrão no contexto COMPANY.

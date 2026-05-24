@@ -52,7 +52,7 @@ Gerenciado pelo Supabase Auth. Registra o login do empresário.
 | `phone` | text | Telefone (promovido do metadata no signup) |
 | `raw_user_meta_data` | jsonb | Metadados temporários usados no signup (document, account_type, etc.) |
 
-> O trigger `on_auth_user_created` dispara ao criar o usuário e automaticamente cria a `enterprise`, semeia as 3 perguntas padrão (COMPANY) e limpa os metadados sensíveis do JWT.
+> O trigger `on_auth_user_created` dispara ao criar o usuário e automaticamente cria a `enterprise` com `trial_ends_at = NOW() + 4 months` e `subscription_status = 'TRIAL'`, semeia as 3 perguntas padrão (COMPANY) e limpa os metadados sensíveis do JWT.
 
 ---
 
@@ -64,9 +64,11 @@ Empresa vinculada ao usuário autenticado. Âncora de todo o isolamento multi-te
 | `id` | uuid | Chave primária |
 | `auth_user_id` | uuid | FK → `auth.users.id` (1:1) |
 | `document` | text | CPF ou CNPJ |
-| `account_type` | text | `PF` ou `PJ` |
+| `account_type` | text | `CPF` ou `CNPJ` |
 | `terms_version` | text | Versão dos termos aceitos |
 | `terms_accepted_at` | timestamptz | Data de aceite dos termos |
+| `trial_ends_at` | timestamptz | Data de expiração do período de teste (NOW() + 4 meses no signup) |
+| `subscription_status` | text | `TRIAL` \| `ACTIVE` \| `EXPIRED` \| `CANCELED` (default `TRIAL`) |
 
 ---
 
@@ -268,7 +270,8 @@ Relatório consolidado gerado pela IA sobre um conjunto de feedbacks. Pode cobri
 | `collection_points.status` | `ACTIVE`, `INACTIVE` |
 | `questions_of_feedbacks.scope_type` | `COMPANY`, `PRODUCT`, `SERVICE`, `DEPARTMENT` |
 | `feedback_insights_report.scope_type` | `COMPANY`, `PRODUCT`, `SERVICE`, `DEPARTMENT` |
-| `enterprise.account_type` | `PF`, `PJ` |
+| `enterprise.account_type` | `CPF`, `CNPJ` |
+| `enterprise.subscription_status` | `TRIAL`, `ACTIVE`, `EXPIRED`, `CANCELED` |
 | `answer_value` (respostas) | `PESSIMO`, `RUIM`, `MEDIANA`, `BOA`, `OTIMA` |
 
 ---

@@ -10,6 +10,29 @@
 
 ---
 
+## Assinatura e Trial
+
+### Ciclo de Vida da Conta
+
+Todo novo cadastro tem `subscription_status = 'TRIAL'` e `trial_ends_at = NOW() + 4 meses`, inicializados automaticamente pelo trigger `on_auth_user_created` no banco de dados.
+
+| `subscription_status` | Significado |
+|---|---|
+| `TRIAL` | Conta em período de teste gratuito — acesso completo |
+| `ACTIVE` | Assinatura paga ativa |
+| `EXPIRED` | Período de trial encerrado sem conversão |
+| `CANCELED` | Assinatura cancelada pelo gestor |
+
+O campo `trial_ends_at` é uma timestamp com fuso horário (`timestamptz`). O cálculo de dias restantes é feito no cliente para evitar chamadas extras.
+
+### Constraint de `account_type`
+
+A coluna `account_type` só aceita os valores `'CPF'` ou `'CNPJ'` (constraint `enterprise_account_type_check`). Tentativas de inserir outro valor resultam em erro de violação de constraint no banco.
+
+---
+
+---
+
 ## Análise IA
 
 ### Requisitos para Executar

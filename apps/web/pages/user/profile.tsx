@@ -1,6 +1,6 @@
 import { Link, useNavigation, useRouteLoaderData } from "react-router-dom";
 import type {
-  Enterprise,
+  EnterpriseContext,
 } from "lib/interfaces/entities/enterprise.entity";
 import type { AuthUser } from "lib/interfaces/entities/auth-user.entity";
 import Header from "components/user/shared/header";
@@ -11,7 +11,7 @@ import QuestionDinamicEnterprise from "components/user/pages/profile/questionsDi
 
 export default function Profile() {
   const { enterprise, user } = useRouteLoaderData("user") as {
-    enterprise: Enterprise;
+    enterprise: EnterpriseContext;
     user: AuthUser["user"];
   };
   const navigation = useNavigation();
@@ -30,7 +30,7 @@ export default function Profile() {
         user={user}
         description="Veja suas informações pessoais. Mantenha seus dados atualizados para uma melhor experiência."
         nextLink="/user/edit/types-feedback"
-        nextLabelLink="Configurações Premium"
+        nextLabelLink="Configurações do Catálogo"
       />
       <div className="relative space-y-8">
         <Information
