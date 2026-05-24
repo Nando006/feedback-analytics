@@ -54,6 +54,8 @@ Todo novo cadastro recebe **4 meses de uso gratuito** com acesso completo ao Pla
 
 Esse período existe por uma razão estratégica: feedback analytics é um produto que precisa de volume de dados para mostrar seu valor. Em 4 meses, a empresa já terá coletado feedbacks suficientes para ver insights reais e entender o que está funcionando e o que não está. O trial não é um desconto — é o tempo necessário para o produto provar o seu valor.
 
+> **Implementação técnica:** ao criar a conta, o trigger `on_auth_user_created` inicializa automaticamente `trial_ends_at = NOW() + 4 months` e `subscription_status = 'TRIAL'` na tabela `enterprise`. O badge de status no dashboard reflete em tempo real o ciclo de vida: `TRIAL` (âmbar) → `ACTIVE` (verde) / `EXPIRED` (vermelho) / `CANCELED` (cinza).
+
 ### Plano Básico
 
 | Item | Detalhe |

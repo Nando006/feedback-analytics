@@ -92,6 +92,7 @@
 | **RNE-010** | Preenchimento Automático do Catálogo (Onboarding) | RF04, RNF06 | Imediatamente após o cadastro (via *Trigger* no banco de dados), o sistema cria automaticamente 3 perguntas institucionais base (Atendimento, Qualidade e Custo-Benefício) para evitar que o cliente fique diante de um dashboard vazio. |
 | **RNE-011** | Higienização de Metadados de Autenticação | RF01, RNF01, RNF02 | O banco de dados intercepta a criação de contas e *apaga* proativamente os dados sensíveis (Documento, Telefone, Termos) do payload JSON do provedor de Auth, transferindo-os unicamente para a tabela `enterprise` com RLS, prevenindo vazamentos de dados (LGPD) no token JWT. |
 | **RNE-012** | Proteção contra Mutação Destrutiva (Storage) | RNF08, RNF09 | Para garantir rastreabilidade histórica, os arquivos de logotipo e mídias salvos em Storage não podem ser deletados (apenas substituídos ou mantidos). Um gatilho (*Trigger*) de `protect_delete` bloqueia a exclusão de *buckets* inteiros. |
+| **RNE-013** | Inicialização do Trial no Cadastro | RF01, RF21 | O trigger `on_auth_user_created` deve inicializar `trial_ends_at = NOW() + 4 meses` e `subscription_status = 'TRIAL'` automaticamente ao criar a empresa, garantindo que toda nova conta inicie com período de teste completo sem intervenção manual. |
 
 ---
 
@@ -119,6 +120,7 @@
 | **RF18** | Apresentação do Produto | Possuir uma Landing Page pública (*Home*) detalhando as funcionalidades e benefícios da plataforma. |
 | **RF19** | Exportação e Compartilhamento | O sistema deve permitir o download do QR Code (imagem PNG) e utilizar a API nativa do dispositivo para compartilhamento rápido do link de coleta. |
 | **RF20** | Filtro Semântico Anti-Poluição (IA) | O motor de IA deve isolar e remover do texto analisado as palavras contidas nas perguntas originais, evitando que os próprios enunciados do formulário poluam a nuvem de palavras-chave. |
+| **RF21** | Exibição do Status de Assinatura | O dashboard deve exibir um badge dinâmico refletindo o `subscription_status` da empresa: âmbar com dias restantes (TRIAL), verde (ACTIVE), vermelho (EXPIRED) ou cinza (CANCELED). |
 
 ---
 
@@ -147,6 +149,7 @@
 | Funcionalidade do MVP | Requisitos Funcionais | Requisitos Não Funcionais | Regras de Negócio |
 |---|---|---|---|
 | Autenticação Completa (Login, Logout, Callback) | RF01 | RNF01 | - |
+| Trial e Status de Assinatura | RF21 | RNF08 | RNE-013 |
 | Recuperação e Reenvio de E-mail | RF16, RF17 | RNF01 | - |
 | Gestão de Perfil | RF02 | RNF01, RNF08 | - |
 | Gestão de Empresa | RF03 | RNF01, RNF08 | - |
@@ -209,6 +212,7 @@
 | **RF-018** | Apresentação do Produto: Interface pública institucional (Landing Page) para atração de novos usuários. | Implementado | Baixa |
 | **RF-019** | Exportação e Compartilhamento: Extração do QR Code em imagem local e integração com APIs de compartilhamento mobile-first. | Implementado | Média |
 | **RF-020** | Filtro Semântico Anti-Poluição (IA): Lógica de exclusão de termos (perguntas matrizes) para preservação da integridade da análise de sentimento livre. | Implementado | Alta |
+| **RF-021** | Exibição do Status de Assinatura: Badge dinâmico no dashboard refletindo o ciclo de vida da conta (`subscription_status` + dias restantes de trial calculados no cliente). | Implementado | Média |
 
 ---
 

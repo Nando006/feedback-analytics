@@ -6,7 +6,7 @@ export const menuData: MenuItem[] = [
     to: "/user/profile",
   },
   {
-    label: "Catálogo Premium",
+    label: "Catálogo",
     to: "/user/edit/feedback-settings",
   },
   { label: "Dashboard", to: "/user/dashboard" },

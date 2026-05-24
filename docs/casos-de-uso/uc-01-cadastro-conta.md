@@ -13,11 +13,12 @@
 1. O visitante acessa a tela de cadastro.
 2. Preenche os dados: nome completo, e-mail, senha, documento (CPF ou CNPJ), telefone e aceite dos termos de uso.
 3. Clica em "Criar conta".
-4. O sistema valida os dados e cria a conta.
-5. O sistema envia um e-mail de confirmação para o endereço informado.
-6. O visitante abre o e-mail e clica no link de ativação.
-7. O sistema redireciona para a tela de sucesso confirmando a ativação.
-8. A conta está ativa e o gestor já pode fazer login.
+4. O sistema valida os dados e cria a conta no Supabase Auth.
+5. O trigger `on_auth_user_created` dispara automaticamente: cria a empresa (`enterprise`) com `trial_ends_at = NOW() + 4 meses` e `subscription_status = 'TRIAL'`, semeia as 3 perguntas padrão e limpa metadados sensíveis do JWT.
+6. O sistema envia um e-mail de confirmação para o endereço informado.
+7. O visitante abre o e-mail e clica no link de ativação.
+8. O sistema redireciona para a tela de sucesso confirmando a ativação.
+9. A conta está ativa e o gestor já pode fazer login.
 
 ---
 

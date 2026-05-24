@@ -79,7 +79,7 @@ O frontend (`apps/web`) é uma aplicação **React 19** com duas áreas distinta
 | `/user/insights/reports` | Painel de insights IA |
 | `/user/insights/emotional` | Análise emocional |
 | `/user/insights/statistics` | Estatísticas |
-| `/user/edit/types-feedback` | Ativar tipos de feedback Premium |
+| `/user/edit/types-feedback` | Ativar tipos de feedback (produtos, serviços, departamentos) |
 | `/user/edit/feedback-settings` | Hub de configurações de catálogo |
 | `/user/edit/feedback-products` | Catálogo de produtos |
 | `/user/edit/feedback-services` | Catálogo de serviços |

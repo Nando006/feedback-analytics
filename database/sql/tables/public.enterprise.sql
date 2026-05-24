@@ -41,6 +41,35 @@ CREATE POLICY "Usuários podem atualizar sua própria empresa" ON "public"."ente
   USING ((auth.uid() = auth_user_id))
   WITH CHECK ((auth.uid() = auth_user_id));
 
+-- Trial / Subscription
+ALTER TABLE "public"."enterprise"
+  ADD COLUMN IF NOT EXISTS "trial_ends_at" timestamp with time zone,
+  ADD COLUMN IF NOT EXISTS "subscription_status" text DEFAULT 'TRIAL';
+
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint
+    WHERE conname = 'enterprise_subscription_status_check'
+      AND conrelid = 'public.enterprise'::regclass
+  ) THEN
+    ALTER TABLE "public"."enterprise"
+      ADD CONSTRAINT enterprise_subscription_status_check
+        CHECK (subscription_status IN ('TRIAL', 'ACTIVE', 'EXPIRED', 'CANCELED'));
+  END IF;
+END $$;
+
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint
+    WHERE conname = 'enterprise_account_type_check'
+      AND conrelid = 'public.enterprise'::regclass
+  ) THEN
+    ALTER TABLE "public"."enterprise"
+      ADD CONSTRAINT enterprise_account_type_check
+        CHECK (account_type IS NULL OR account_type IN ('CPF', 'CNPJ'));
+  END IF;
+END $$;
+
 -- Triggers
 DROP TRIGGER IF EXISTS "set_updated_at" ON "public"."enterprise";
 CREATE TRIGGER "set_updated_at" BEFORE UPDATE ON "public"."enterprise"
