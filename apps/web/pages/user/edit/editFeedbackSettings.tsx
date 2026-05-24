@@ -1,11 +1,11 @@
 import { Link, useRouteLoaderData } from 'react-router-dom';
-import type { CollectingDataEnterprise, Enterprise } from 'lib/interfaces/entities/enterprise.entity';
+import type { CollectingDataEnterprise, EnterpriseContext } from 'lib/interfaces/entities/enterprise.entity';
 import Header from 'components/user/shared/header';
 import type { AuthUser } from 'lib/interfaces/entities/auth-user.entity';
 
 export default function EditFeedbackSettings() {
   const { enterprise, collecting, user } = useRouteLoaderData('user') as {
-    enterprise: Enterprise;
+    enterprise: EnterpriseContext;
     user: AuthUser['user'];
     collecting: CollectingDataEnterprise | null;
   };
@@ -43,7 +43,7 @@ export default function EditFeedbackSettings() {
       <Header 
         enterprise={enterprise}
         user={user}
-        nextLabelLink='Ative os Catálogos Premiums'
+        nextLabelLink='Configure seus Catálogos'
         nextLink='/user/edit/types-feedback'
         description="Configure os catálogos de feedbacks para produtos, serviços e departamentos. Ative os tipos de feedback para liberar as opções."
       />
