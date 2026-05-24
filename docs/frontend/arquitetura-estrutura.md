@@ -115,3 +115,51 @@ apps/web/
 │           └── qrcodes/
 └── styles/                     → Estilos globais
 ```
+
+## Tipos de Entidade: `Enterprise` vs `EnterpriseContext`
+
+O frontend usa dois tipos TypeScript distintos para representar a empresa — cada um com uma responsabilidade clara.
+
+### `Enterprise` (em `shared/interfaces/entities/enterprise.entity.ts`)
+
+Representa exatamente o que existe na tabela `public.enterprise` do banco de dados:
+
+```typescript
+interface Enterprise {
+  id: string;
+  document: string;
+  account_type?: 'CPF' | 'CNPJ';
+  terms_version?: string;
+  terms_accepted_at?: string | null;
+  created_at: string;
+  trial_ends_at: string | null;
+  subscription_status: 'TRIAL' | 'ACTIVE' | 'EXPIRED' | 'CANCELED';
+}
+```
+
+### `EnterpriseContext` (mesmo arquivo, exportado como `type`)
+
+É o tipo composto usado pelos componentes do dashboard — `Enterprise` mais os campos que vêm de `auth.users` (e são mesclados no loader):
+
+```typescript
+type EnterpriseContext = Enterprise & {
+  full_name: string | null;
+  email: string | null;
+  phone: string | null;
+};
+```
+
+### Por que essa separação?
+
+`full_name`, `email` e `phone` não existem na tabela `enterprise` — eles vivem em `auth.users`. O loader `loadUserContext` faz o merge antes de entregar os dados para as rotas:
+
+```typescript
+const enterprise: EnterpriseContext = {
+  ...enterprisePayload.enterprise,
+  email: user.email ?? null,
+  phone: user.phone ?? null,
+  full_name: user.user_metadata?.full_name ?? null,
+};
+```
+
+**Regra prática:** use `Enterprise` ao tipar dados que vêm diretamente da API/banco. Use `EnterpriseContext` em componentes de UI que precisam exibir nome, e-mail ou telefone do gestor junto com os dados da empresa.

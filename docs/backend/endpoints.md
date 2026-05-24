@@ -32,36 +32,47 @@ curl http://localhost:3000/api/health
 
 ### `GET /api/protected/user/enterprise`
 
-Retorna os dados da empresa associada ao usuário autenticado.
+Retorna os dados cadastrais da empresa associada ao usuário autenticado, incluindo o status do trial/assinatura.
 
 **Response 200**
 ```json
 {
-  "id": "uuid",
-  "full_name": "Empresa Exemplo",
-  "company_objective": "Melhorar a satisfação dos clientes",
-  "analytics_goal": "Reduzir NPS negativo em 20%",
-  "business_summary": "Restaurante familiar com 15 anos de mercado",
-  "main_products_or_services": ["Hambúrguer Artesanal", "Batata Frita"]
+  "enterprise": {
+    "id": "uuid",
+    "document": "12.345.678/0001-99",
+    "account_type": "CNPJ",
+    "terms_version": "v1",
+    "terms_accepted_at": "2026-01-15T10:00:00Z",
+    "created_at": "2026-01-15T10:00:00Z",
+    "trial_ends_at": "2026-05-15T10:00:00Z",
+    "subscription_status": "TRIAL"
+  },
+  "user": {
+    "id": "uuid",
+    "email": "gestor@empresa.com",
+    "phone": "+5511999990000"
+  }
 }
 ```
+
+> `full_name` não é retornado por este endpoint — vem do campo `phone` e `email` de `auth.users`, e de `user_metadata.full_name` retornados no objeto `user`.
 
 ---
 
 ### `PATCH /api/protected/user/enterprise`
 
-Atualiza dados parciais da empresa.
+Atualiza dados cadastrais parciais da empresa (termos, tipo de conta).
 
 **Body (todos os campos são opcionais)**
 ```json
 {
-  "full_name": "Novo Nome",
-  "company_objective": "...",
-  "analytics_goal": "...",
-  "business_summary": "...",
-  "main_products_or_services": ["..."]
+  "account_type": "CNPJ",
+  "terms_version": "v2",
+  "terms_accepted_at": "2026-05-24T10:00:00Z"
 }
 ```
+
+**Response 200** — mesmo formato de `GET /enterprise`.
 
 ---
 

@@ -133,13 +133,15 @@ erDiagram
 | `id` | uuid PK | Sim | Identificador único | **Crítico** — referenciado como `enterprise_id` em todas as demais tabelas; âncora do isolamento multi-tenant via RLS |
 | `auth_user_id` | uuid | Sim | FK para `auth.users.id` — vínculo 1:1 | **Crítico** — usado pela função `jwt_custom_claims()` para injetar `enterprise_id` no token JWT; sem ele o gestor não é associado a nenhuma empresa |
 | `document` | text | Sim | CPF ou CNPJ validado (Módulo 11) | **Alto** — exibido na tela de perfil; validado por `document_exists()` para unicidade no cadastro |
-| `account_type` | text | Não | Tipo de conta (`PF` / `PJ`) | **Médio** — exibido na tela de perfil; determina se o documento é CPF ou CNPJ |
+| `account_type` | text | Não | Tipo de conta: `CPF` (pessoa física) ou `CNPJ` (pessoa jurídica) | **Médio** — exibido na tela de perfil; determina se o documento é CPF ou CNPJ. Constraint impede valores fora do enum |
 | `terms_version` | text | Não | Versão dos termos aceitos | **Médio** — registra qual versão dos termos foi aceita; usado para auditoria legal e conformidade |
 | `terms_accepted_at` | timestamptz | Não | Data de aceite dos termos | **Médio** — auditoria legal; exibido na tela de perfil |
+| `trial_ends_at` | timestamptz | Não | Data de expiração do período de teste | **Alto** — inicializada automaticamente no signup com `NOW() + 4 months`; usada no frontend para exibir dias restantes do trial e status da conta |
+| `subscription_status` | text | Sim (default `TRIAL`) | Status da assinatura: `TRIAL` \| `ACTIVE` \| `EXPIRED` \| `CANCELED` | **Alto** — controla o badge de status exibido na UI; gerado no signup como `TRIAL`; futuramente atualizado pelo sistema de cobrança |
 | `created_at` | timestamptz | Auto | — | **Baixo** — auditoria interna |
 | `updated_at` | timestamptz | Auto | Atualizado por trigger | **Baixo** — auditoria interna |
 
-**Restrições:** `document` único por empresa; `auth_user_id` único (ON CONFLICT DO NOTHING).
+**Restrições:** `document` único por empresa; `auth_user_id` único (ON CONFLICT DO NOTHING); `subscription_status` restrito ao enum `{TRIAL, ACTIVE, EXPIRED, CANCELED}`; `account_type` restrito a `{CPF, CNPJ}` ou NULL.
 
 ---
 
@@ -358,7 +360,7 @@ erDiagram
 
 | Função | Schema | Tipo | Descrição |
 |---|---|---|---|
-| `create_enterprise_on_signup()` | public | Trigger (AFTER INSERT em `auth.users`) | Cria `enterprise`, valida documento/telefone únicos, semeia as 3 perguntas padrão e higieniza metadados do JWT |
+| `create_enterprise_on_signup()` | public | Trigger (AFTER INSERT em `auth.users`) | Cria `enterprise` com `trial_ends_at = NOW() + 4 months` e `subscription_status = 'TRIAL'`, valida documento/telefone únicos, semeia as 3 perguntas padrão e higieniza metadados do JWT |
 | `clean_user_metadata_before_change()` | public | Trigger (BEFORE UPDATE em `auth.users`) | Remove chaves sensíveis (`document`, `phone`, `account_type`, etc.) do `raw_user_meta_data` antes de qualquer update (LGPD) |
 | `generate_device_fingerprint(user_agent, ip)` | public | Utilitária | Retorna `md5(user_agent \| ip \| dia_epoch)` — fingerprint diário rotativo |
 | `can_device_send_feedback(enterprise_id, fingerprint, collection_point_id?)` | public | Query | Retorna `boolean` — verifica se o dispositivo já enviou feedback no dia para o ponto informado (com fallback legado por empresa) |
@@ -378,7 +380,7 @@ erDiagram
 
 | Trigger | Tabela | Evento | Função | Propósito |
 |---|---|---|---|---|
-| `on_auth_user_created` | `auth.users` | AFTER INSERT | `create_enterprise_on_signup()` | Onboarding automático — cria empresa e perguntas padrão |
+| `on_auth_user_created` | `auth.users` | AFTER INSERT | `create_enterprise_on_signup()` | Onboarding automático — cria empresa com trial de 4 meses (`TRIAL`), semeia perguntas padrão e higieniza metadados |
 | `on_auth_user_metadata_before_update` | `auth.users` | BEFORE UPDATE | `clean_user_metadata_before_change()` | Sanitização LGPD do JWT |
 | `validate_questions_of_feedbacks_context` | `questions_of_feedbacks` | BEFORE INSERT/UPDATE | `validate_questions_of_feedbacks_context()` | Integridade de escopo das perguntas |
 | `validate_feedback_insights_report_context` | `feedback_insights_report` | BEFORE INSERT/UPDATE | `validate_feedback_insights_report_context()` | Integridade de escopo dos relatórios |
@@ -459,6 +461,8 @@ Ao criar ou atualizar usuários, os triggers removem automaticamente do `raw_use
 | `feedback_subquestion_answers` | `feedback_subquestion_answers_answer_value_check` | Mesmo enum de valores |
 | `feedback_subquestion_answers` | `feedback_subquestion_answers_answer_score_check` | `answer_score` entre 1 e 5 |
 | `feedback_insights_report` | `feedback_insights_report_scope_type_check` | `scope_type` ∈ `{COMPANY, PRODUCT, SERVICE, DEPARTMENT}` |
+| `enterprise` | `enterprise_subscription_status_check` | `subscription_status` ∈ `{TRIAL, ACTIVE, EXPIRED, CANCELED}` |
+| `enterprise` | `enterprise_account_type_check` | `account_type` IS NULL OR `account_type` ∈ `{CPF, CNPJ}` |
 
 ### Regras de cascata por deleção
 
