@@ -3,6 +3,48 @@ import type { HeaderProps } from './ui.types';
 import Avatar from "components/user/shared/avatar";
 import CardSimple from "components/user/shared/cards/cardSimple";
 import { FaShieldHalved, FaUser } from "react-icons/fa6";
+import type { EnterpriseContext } from "lib/interfaces/entities/enterprise.entity";
+
+function getSubscriptionBadge(enterprise: EnterpriseContext) {
+  const status = enterprise.subscription_status;
+
+  if (status === 'ACTIVE') {
+    return (
+      <div className="flex items-center gap-2 px-4 py-2 bg-(--positive)/10 text-(--positive) rounded-full text-sm font-medium">
+        <div className="w-2 h-2 bg-(--positive) rounded-full animate-pulse"></div>
+        Conta ativa
+      </div>
+    );
+  }
+
+  if (status === 'TRIAL') {
+    const daysLeft = enterprise.trial_ends_at
+      ? Math.max(0, Math.ceil((new Date(enterprise.trial_ends_at).getTime() - Date.now()) / 86_400_000))
+      : null;
+    return (
+      <div className="flex items-center gap-2 px-4 py-2 bg-amber-500/10 text-amber-600 rounded-full text-sm font-medium">
+        <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></div>
+        {daysLeft !== null ? `Em período de teste · ${daysLeft} dia${daysLeft !== 1 ? 's' : ''} restante${daysLeft !== 1 ? 's' : ''}` : 'Em período de teste'}
+      </div>
+    );
+  }
+
+  if (status === 'EXPIRED') {
+    return (
+      <div className="flex items-center gap-2 px-4 py-2 bg-red-500/10 text-red-600 rounded-full text-sm font-medium">
+        <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+        Trial encerrado
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex items-center gap-2 px-4 py-2 bg-gray-500/10 text-gray-500 rounded-full text-sm font-medium">
+      <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+      Conta cancelada
+    </div>
+  );
+}
 
 export default function Header({ enterprise, user, description, nextLink, nextLabelLink, prevLink, prevLabelLink }: HeaderProps) {
   return (
@@ -30,10 +72,7 @@ export default function Header({ enterprise, user, description, nextLink, nextLa
             </Link>
           ) : (
             <div className="flex flex-wrap gap-3">
-              <div className="flex items-center gap-2 px-4 py-2 bg-(--positive)/10 text-(--positive) rounded-full text-sm font-medium">
-                <div className="w-2 h-2 bg-(--positive) rounded-full animate-pulse"></div>
-                Conta ativa
-              </div>
+              {getSubscriptionBadge(enterprise)}
               <div className="flex items-center gap-2 px-4 py-2 bg-(--primary-color)/10 text-(--primary-color) rounded-full text-sm font-medium">
                 <FaShieldHalved aria-hidden="true" />
                 Verificado
@@ -50,10 +89,7 @@ export default function Header({ enterprise, user, description, nextLink, nextLa
             </Link>
           ) : (
             <div className="flex flex-wrap gap-3">
-              <div className="flex items-center gap-2 px-4 py-2 bg-(--positive)/10 text-(--positive) rounded-full text-sm font-medium">
-                <div className="w-2 h-2 bg-(--positive) rounded-full animate-pulse"></div>
-                Conta ativa
-              </div>
+              {getSubscriptionBadge(enterprise)}
               <div className="flex items-center gap-2 px-4 py-2 bg-(--primary-color)/10 text-(--primary-color) rounded-full text-sm font-medium">
                 <FaShieldHalved aria-hidden="true" />
                 Verificado
