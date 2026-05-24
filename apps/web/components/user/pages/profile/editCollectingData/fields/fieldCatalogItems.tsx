@@ -15,6 +15,7 @@ const EMPTY_ITEM: CatalogItemInput = {
 
 const INITIAL_VISIBLE_ITEMS = 30;
 const VISIBLE_ITEMS_STEP = 30;
+const MIN_LEN = 20;
 const MAX_LEN = 150;
 
 /* ─────────────────── question helpers ─────────────────── */
@@ -55,6 +56,33 @@ function normalizeQuestions(
       }),
     };
   });
+}
+
+function computeVisibleQCount(questions: QrCatalogQuestionInput[]): number {
+  let count = 1;
+  for (let i = 0; i < questions.length; i++) {
+    const q = questions[i];
+    const hasText = String(q.question_text ?? '').trim().length > 0;
+    const hasActiveSub = (q.subquestions ?? []).some((s) => s.is_active);
+    if (q.is_active || hasText || hasActiveSub) {
+      count = i + 1;
+    }
+  }
+  return count;
+}
+
+function computeVisibleSubCounts(questions: QrCatalogQuestionInput[]): [number, number, number] {
+  return questions.map((q) => {
+    let subCount = 0;
+    const subs = q.subquestions ?? [];
+    for (let i = 0; i < subs.length; i++) {
+      const s = subs[i];
+      if (s.is_active || String(s.subquestion_text ?? '').trim().length > 0) {
+        subCount = i + 1;
+      }
+    }
+    return subCount;
+  }) as [number, number, number];
 }
 
 function validateQuestions(questions: QrCatalogQuestionInput[]): string | null {
@@ -187,6 +215,12 @@ const QuestionAccordion = memo(function QuestionAccordion({
 
   const handleSaveInternal = useCallback(() => {
     if (!onSave) return;
+    const validationError = validateQuestions(draft);
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+    setError(null);
     onSave(
       qrItem.catalog_item_id,
       draft.map((q) => ({
@@ -299,10 +333,6 @@ const QuestionAccordion = memo(function QuestionAccordion({
                                 </div>
                                 <div className="flex-1 rounded-lg border border-(--quaternary-color)/8 bg-(--bg-tertiary) px-2.5 py-2">
                                   <div className="mb-1.5 flex items-center gap-2">
-                                    {/* Vou avaliar depois se é necessário manter essa numeração ou se só a ordem já é suficiente */}
-                                    {/* <span className="text-xs text-(--text-tertiary)">
-                                      {q.question_order}.{s.subquestion_order}
-                                    </span> */}
                                     {isLastSub && (
                                       <button
                                         type="button"
@@ -381,7 +411,7 @@ const QuestionAccordion = memo(function QuestionAccordion({
             )}
 
             <button
-              type="button" onClick={handleSave} disabled={isSaving}
+              type="button" onClick={handleSaveInternal} disabled={isSaving}
               className="w-full rounded-lg border border-(--primary-color)/30 bg-(--primary-color)/10 px-3 py-2.5 text-sm font-semibold text-(--primary-color) transition-all hover:bg-(--primary-color)/20 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {isSaving ? 'Salvando...' : 'Salvar perguntas deste item'}
