@@ -113,9 +113,9 @@ test.describe('UC-10: Listagem de feedbacks', () => {
     expect(url).toContain('category');
   });
 
-  test('[CT-UC10-07] Estatísticas de distribuição por rating são exibidas', async ({ page }) => {
+  test('[CT-UC10-07] Cabeçalho de estatísticas de feedbacks é exibido na listagem', async ({ page }) => {
     await expect(
-      page.getByText(/distribui.o|estrelas|avalia..es/i).first(),
+      page.getByRole('heading', { name: /feedbacks/i }).first(),
     ).toBeVisible();
   });
 

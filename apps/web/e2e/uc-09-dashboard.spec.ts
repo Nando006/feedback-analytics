@@ -30,7 +30,7 @@ test.describe('UC-09: Dashboard', () => {
   });
 
   test('[CT-UC09-05] Clique em "Ver feedbacks" navega para listagem completa', async ({ page }) => {
-    await page.click('a[href="/user/feedbacks/all"], :text("Ver feedbacks")');
+    await page.getByRole('link', { name: /ver feedbacks/i }).first().click();
 
     await expect(page).toHaveURL(/\/user\/feedbacks\/all/, { timeout: 10_000 });
   });

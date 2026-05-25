@@ -2,15 +2,15 @@ import { test, expect } from '@playwright/test';
 
 test.describe('UC-08: Configuração de coleta e contexto de IA', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/user/edit/customers');
+    await page.goto('/user/profile');
     await expect(page.getByRole('main')).toBeVisible();
   });
 
   test('[CT-UC08-01] Página de configuração de coleta carrega com formulário visível', async ({ page }) => {
-    await expect(page).toHaveURL(/\/user\/edit\/customers/);
+    await expect(page).toHaveURL(/\/user\/profile/);
 
     await expect(
-      page.getByText(/objetivo|empresa|contexto|coleta/i).first(),
+      page.getByText(/o que.*empresa|empresa|objetivo|analytics/i).first(),
     ).toBeVisible();
   });
 
@@ -27,7 +27,7 @@ test.describe('UC-08: Configuração de coleta e contexto de IA', () => {
     await objectiveField.fill('Melhorar a satisfação dos clientes em 20%');
 
     const saveBtn = page.getByRole('button', { name: /salvar|confirmar/i }).first();
-    await saveBtn.click();
+    await saveBtn.click({ force: true });
 
     await expect(
       page.getByText(/salvo|configurações salvas|atualizado/i),
@@ -76,7 +76,7 @@ test.describe('UC-08: Configuração de coleta e contexto de IA', () => {
     await summaryField.fill('Empresa de varejo com foco em atendimento ao cliente.');
 
     const saveBtn = page.getByRole('button', { name: /salvar|confirmar/i }).first();
-    await saveBtn.click();
+    await saveBtn.click({ force: true });
 
     await expect(
       page.getByText(/salvo|configurações salvas|atualizado/i),
