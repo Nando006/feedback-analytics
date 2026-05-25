@@ -12,8 +12,8 @@ test.describe('UC-05: Geração de QR Code da empresa', () => {
     const qrElement = page.locator('canvas, img[alt*="QR"], svg[data-qr]').first();
     const hasQrElement = await qrElement.isVisible().catch(() => false);
 
-    // Se QR estiver ativo, deve haver elemento visual; se não, deve haver botão de ativar
-    const activateBtn = page.getByText(/ativar qr code|ativar coleta/i);
+    // Se QR estiver ativo, deve haver botão de desabilitar; se inativo, de habilitar
+    const activateBtn = page.getByText(/(habilitar|desabilitar|ativar) qr code|ativar coleta/i);
     const hasActivateBtn = await activateBtn.isVisible().catch(() => false);
 
     expect(hasQrElement || hasActivateBtn).toBe(true);
@@ -85,7 +85,7 @@ test.describe('UC-05: Geração de QR Code da empresa', () => {
 
   test('[CT-UC05-06] Seção de instruções de uso do QR Code é exibida', async ({ page }) => {
     await expect(
-      page.getByText(/como usar|instruções|passo a passo/i).first(),
+      page.getByText(/baixe o qr|imprima ou compartilhe|receba feedback/i).first(),
     ).toBeVisible();
   });
 });

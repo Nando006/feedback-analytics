@@ -36,7 +36,7 @@ test.describe('UC-01: Cadastro de conta', () => {
     await page.click('button[type="submit"]');
 
     await expect(
-      page.getByText(/documento|cpf|j. cadastrado/i),
+      page.getByText(/documento|cpf|j. cadastrado/i).first(),
     ).toBeVisible({ timeout: 10_000 });
   });
 
@@ -51,7 +51,7 @@ test.describe('UC-01: Cadastro de conta', () => {
     await page.click('button[type="submit"]');
 
     await expect(
-      page.getByText(/senhas não coincidem|confirmação/i),
+      page.getByText(/senhas.*conferem|nao conferem|não conferem/i).first(),
     ).toBeVisible({ timeout: 8_000 });
   });
 
@@ -81,7 +81,7 @@ test.describe('UC-01: Cadastro de conta', () => {
     await page.click('button[type="submit"]');
 
     await expect(
-      page.getByText(/termos|aceitar/i),
+      page.getByText(/necessário aceitar os termos|é necessário aceitar/i).first(),
     ).toBeVisible({ timeout: 8_000 });
   });
 });

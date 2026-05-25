@@ -47,7 +47,7 @@ test.describe('UC-12: Gestão de perfil', () => {
     }
 
     await catalogLink.click();
-    await expect(page).toHaveURL(/\/user\/edit\/types-feedback/, { timeout: 10_000 });
+    await expect(page).toHaveURL(/\/user\/edit\/(types-feedback|feedback-settings)/, { timeout: 10_000 });
   });
 
   test('[CT-UC12-05] Informações colapsáveis da empresa são expandíveis', async ({ page }) => {
