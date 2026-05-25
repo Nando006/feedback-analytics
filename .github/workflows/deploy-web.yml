@@ -47,17 +47,55 @@ jobs:
           npm ci --prefix apps/web
 
       - name: Deploy preview (homolog)
+        id: deploy-homolog
         if: github.ref_name == 'homolog'
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_WEB }}
-        run: npx vercel deploy --yes --token "$VERCEL_TOKEN" --local-config apps/web/vercel.json
+        run: |
+          DEPLOY_URL=$(npx vercel deploy --yes --token "$VERCEL_TOKEN" --local-config apps/web/vercel.json)
+          echo "url=$DEPLOY_URL" >> "$GITHUB_OUTPUT"
 
       - name: Deploy production (main)
+        id: deploy-main
         if: github.ref_name == 'main'
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_WEB }}
-        run: npx vercel deploy --yes --prod --token "$VERCEL_TOKEN" --local-config apps/web/vercel.json
+        run: |
+          DEPLOY_URL=$(npx vercel deploy --yes --prod --token "$VERCEL_TOKEN" --local-config apps/web/vercel.json)
+          echo "url=$DEPLOY_URL" >> "$GITHUB_OUTPUT"
+
+      - name: Atribuir alias fixo ao homolog
+        if: github.ref_name == 'homolog'
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          npx vercel alias set ${{ steps.deploy-homolog.outputs.url }} feedback-analytics-web-homolog.vercel.app --token "$VERCEL_TOKEN"
+
+      - name: Install Playwright browsers
+        if: github.ref_name == 'homolog'
+        run: npx playwright install chromium --with-deps
+        working-directory: apps/web
+
+      - name: Run E2E tests (homolog)
+        if: github.ref_name == 'homolog'
+        run: npm run test:e2e
+        working-directory: apps/web
+        env:
+          PLAYWRIGHT_BASE_URL: ${{ steps.deploy-homolog.outputs.url }}
+          E2E_TEST_EMAIL: ${{ secrets.E2E_TEST_EMAIL }}
+          E2E_TEST_PASSWORD: ${{ secrets.E2E_TEST_PASSWORD }}
+          E2E_TEST_ENTERPRISE_ID: ${{ secrets.E2E_TEST_ENTERPRISE_ID }}
+          SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+
+      - name: Upload Playwright report
+        if: github.ref_name == 'homolog' && always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: apps/web/playwright-report/
+          retention-days: 7

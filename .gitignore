@@ -31,3 +31,8 @@ pnpm-debug.log*
 *.sw?
 CLAUDE.md
 .claude/settings.local.json
+
+# Playwright
+apps/web/e2e/.auth/
+apps/web/playwright-report/
+apps/web/test-results/
