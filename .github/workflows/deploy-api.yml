@@ -52,8 +52,8 @@ jobs:
             --bundle \
             --platform=node \
             --target=node20 \
-            --outfile=backends/api-gateway/_bundle.mjs \
-            --format=esm
+            --outfile=backends/api-gateway/_bundle.cjs \
+            --format=cjs
 
       - name: Deploy preview (homolog)
         if: github.ref_name == 'homolog'
