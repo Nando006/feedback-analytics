@@ -19,7 +19,8 @@
     "noFallthroughCasesInSwitch": true,
 
     "paths": {
-      "lib/*": ["../../shared/*"]
+      "lib/*": ["../../shared/*"],
+      "zod": ["./node_modules/zod"]
     }
   },
   "include": [
