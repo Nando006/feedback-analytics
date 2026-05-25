@@ -26,6 +26,9 @@
     "test:e2e:ui": "npm run test:e2e:ui --prefix apps/web",
     "test:e2e:report": "npm run test:e2e:report --prefix apps/web"
   },
+  "dependencies": {
+    "zod": "^4.3.6"
+  },
   "devDependencies": {
     "concurrently": "^9.0.0"
   }
