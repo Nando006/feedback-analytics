@@ -8,6 +8,7 @@ import { Route } from 'react-router-dom';
 import { ActionLogin } from './actions/actionLogin';
 import { ActionRegister } from './actions/actionRegister';
 import AuthSuccess from 'pages/public/authSuccess';
+import AuthLinkExpired from 'pages/public/authLinkExpired';
 import ErrorPage from 'components/globals/handling/errorPage';
 import { LoaderPublicQrCodeEnterprise } from './loaders/loaderPublicQrCodeEnterprise';
 import { ActionPublicQrCodeFeedback } from './actions/actionPublicQrCodeFeedback';
@@ -55,6 +56,10 @@ export function RoutePublic() {
       <Route
         path="auth/success"
         element={<AuthSuccess />}
+      />
+      <Route
+        path="auth/link-expired"
+        element={<AuthLinkExpired />}
       />
     </Route>
   );

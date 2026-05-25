@@ -12,20 +12,23 @@ export async function authCallbackController(req: Request, res: Response) {
 
   if (type === 'email_change' && tokenHash) {
     // Fluxo de troca de e-mail: verifica o OTP para confirmar a mudança
-    await supabase.auth.verifyOtp({
+    const { error } = await supabase.auth.verifyOtp({
       type: 'email_change',
       token_hash: tokenHash,
     });
+    if (error) return res.redirect('/auth/link-expired');
   } else if (type === 'recovery' && tokenHash) {
     // Fluxo de recuperação de senha: troca o token por uma sessão autenticada.
     // Com a sessão ativa, o frontend pode chamar PATCH /api/protected/user/password.
-    await supabase.auth.verifyOtp({
+    const { error } = await supabase.auth.verifyOtp({
       type: 'recovery',
       token_hash: tokenHash,
     });
+    if (error) return res.redirect('/auth/link-expired');
   } else {
     // Fluxo padrão de confirmação de cadastro (signup)
-    await supabase.auth.exchangeCodeForSession(req.url);
+    const { error } = await supabase.auth.exchangeCodeForSession(req.url);
+    if (error) return res.redirect('/auth/link-expired');
   }
 
   return res.redirect(`/auth/success?next=${encodeURIComponent(next)}`);
