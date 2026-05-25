@@ -51,9 +51,10 @@ A análise só é executada se a empresa tiver dados de contexto preenchidos em 
 - `company_objective`
 - `analytics_goal`
 - `business_summary`
-- `main_products_or_services` (ao menos 1 item)
 
 **Se não atender:** erro `422 collecting_data_required_for_analysis`.
+
+> **Nota:** `main_products_or_services` **não** é verificado por essa função. O campo é preenchido separadamente via catálogo e não bloqueia a análise.
 
 ---
 
@@ -71,9 +72,9 @@ limit = Math.min(options.limit ?? 50, 100)
 
 - **Padrão:** 50 feedbacks por execução
 - **Máximo:** 100 feedbacks por execução
-- **Mínimo obrigatório:** `MIN_FEEDBACKS_FOR_RELEVANT_ANALYSIS = 5`
+- **Mínimo obrigatório:** `MIN_FEEDBACKS_FOR_RELEVANT_ANALYSIS = 10`
 
-Se após filtragem o total ficar abaixo de 5: erro `422 insufficient_feedbacks_for_analysis`.
+Se após filtragem o total ficar abaixo de 10: erro `422 insufficient_feedbacks_for_analysis`.
 
 ---
 
@@ -107,9 +108,24 @@ Cada batch é enviado **separadamente** ao provedor LLM externo para manter o co
 
 Perguntas fora desse intervalo são rejeitadas pela action `actionFeedbackSettings`.
 
+#### Estrutura de Perguntas por Escopo
+
+```
+TOTAL_ITEM_QUESTIONS = 3
+TOTAL_SUBQUESTIONS_PER_QUESTION = 3
+```
+
+- Cada escopo (COMPANY, PRODUCT, SERVICE, DEPARTMENT) exige **exatamente 3 perguntas** ativas.
+- Cada pergunta aceita no máximo **3 subperguntas**. Subperguntas excedentes são silenciosamente truncadas no salvamento.
+- O payload de configuração deve conter exatamente 3 perguntas; qualquer contagem diferente resulta em erro `400 INVALID_PAYLOAD`.
+
 #### Itens de Catálogo
 
 Itens são enviados como **JSON serializado** no campo do formulário (`FormData`). A action deserializa, valida a estrutura e repassa ao serviço.
+
+#### Soft-Delete de Itens
+
+Ao atualizar o catálogo via PATCH/UPSERT, itens que existem no banco mas **não estão presentes** na lista enviada são automaticamente definidos como `status = 'INACTIVE'` — não são excluídos. Isso preserva o histórico de feedbacks associados.
 
 #### Flags de Tipo
 
@@ -121,15 +137,47 @@ Itens são enviados como **JSON serializado** no campo do formulário (`FormData
 
 Desativar uma flag **não exclui** os itens cadastrados — apenas oculta o tipo da interface.
 
+Exceção: desativar `uses_company_products` (`false`) **zera automaticamente** o campo `main_products_or_services = null` no mesmo request, pois a lista de produtos deixa de ser relevante para o contexto de IA.
+
 ---
 
 ### Coleta via QR Code
 
 #### Fingerprint Anti-Spam
 
-A função de banco `generate_device_fingerprint` gera um hash único por dispositivo. A tabela `tracked_devices` registra envios por `(device_fingerprint, collection_point_id)`.
+O fingerprint de dispositivo é gerado no backend como:
+
+```
+MD5(userAgent + "|" + clientIP + "|" + dayEpoch)
+```
+
+Onde `dayEpoch` é o timestamp UNIX do início do dia corrente (`00:00:00`). Isso garante que o bloqueio seja por **dia corrido** (não janela de 24 horas). A tabela `tracked_devices` registra envios por `(device_fingerprint, collection_point_id)`.
 
 Um dispositivo que enviou feedback para o mesmo ponto de coleta no mesmo dia recebe **`409 Conflict`**.
+
+#### Fallback de Questões
+
+Quando um feedback é coletado para um item de catálogo (PRODUCT/SERVICE/DEPARTMENT) e o item tem **menos de 3 perguntas ativas** configuradas, o sistema automaticamente usa as perguntas do escopo **COMPANY** como fallback. Se o escopo já for COMPANY, nenhum fallback é aplicado.
+
+#### Validação das Respostas
+
+O payload de coleta deve incluir **exatamente 3 respostas** (`answers[]`), uma por pergunta ativa — sem duplicatas de `question_id` e sem `question_id` que não esteja no conjunto das 3 perguntas buscadas. Qualquer desvio resulta em `400 INVALID_PAYLOAD`.
+
+Da mesma forma, o campo `subanswers[]` deve conter **exatamente o mesmo número de subperguntas ativas** combinadas das 3 perguntas, sem duplicatas de `subquestion_id`. Nenhum subanswer a mais ou a menos é aceito.
+
+#### Score de Respostas
+
+Cada `answer_value` é mapeado para um `answer_score` numérico pelo backend:
+
+| `answer_value` | `answer_score` |
+|---|---|
+| `PESSIMO` | 1 |
+| `RUIM` | 2 |
+| `MEDIANA` | 3 |
+| `BOA` | 4 |
+| `OTIMA` | 5 |
+
+Valores não reconhecidos produzem `answer_score = 0`. Um score 0 em qualquer resposta ou subresposta rejeita toda a submissão com `400 INVALID_PAYLOAD`.
 
 #### Perguntas Dinâmicas — Snapshot
 
@@ -166,7 +214,7 @@ O upsert usa chave composta `(enterprise_id, scope_type, catalog_item_id)`.
 | Erro | Regra Violada | Como Resolver |
 |---|---|---|
 | `422 collecting_data_required_for_analysis` | Empresa sem contexto de negócio | Preencha ao menos um dos campos: objetivo, meta analítica ou resumo |
-| `422 insufficient_feedbacks_for_analysis` | Menos de 5 feedbacks após filtragem | Colete mais feedbacks ou remova filtros de escopo/item |
+| `422 insufficient_feedbacks_for_analysis` | Menos de 10 feedbacks após filtragem | Colete mais feedbacks ou remova filtros de escopo/item |
 | `422` no catálogo | Pergunta com texto inválido | Ajuste o texto para entre 20 e 150 caracteres |
 | `409` na coleta pública | Dispositivo já enviou feedback para este ponto hoje | Aguarde até o próximo dia ou use outro ponto de coleta |
 
