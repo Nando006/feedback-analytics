@@ -8,7 +8,7 @@ test.describe('UC-01: Cadastro de conta', () => {
     await page.goto('/register');
   });
 
-  test('[CT-UC01-01] Exibe pendência de verificação de e-mail após cadastro válido', async ({ page }) => {
+  test('[CT-UC01-01] Exibe pendência de verificação de e-mail após cadastro válido', async () => {
     test.skip(true, 'Requer fluxo de confirmação de e-mail — executar manualmente');
   });
 

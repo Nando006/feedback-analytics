@@ -38,7 +38,7 @@ test.describe('UC-02: Login', () => {
     ).toBeVisible({ timeout: 8_000 });
   });
 
-  test('[CT-UC02-04] Login com conta não verificada exibe aviso de verificação', async ({ page }) => {
+  test('[CT-UC02-04] Login com conta não verificada exibe aviso de verificação', async () => {
     test.skip(true, 'Requer conta criada mas não verificada — executar manualmente com conta de teste dedicada');
   });
 });

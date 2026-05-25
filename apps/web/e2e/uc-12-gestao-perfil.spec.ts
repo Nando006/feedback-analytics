@@ -101,7 +101,7 @@ test.describe('UC-12: Gestão de perfil', () => {
     await expect(page).toHaveURL(/\/login/, { timeout: 10_000 });
   });
 
-  test('[CT-UC12-07] Usuário não autenticado é redirecionado para login ao acessar rota protegida', async ({ page, context }) => {
+  test('[CT-UC12-07] Usuário não autenticado é redirecionado para login ao acessar rota protegida', async ({ page }) => {
     // Usa contexto sem autenticação
     const newContext = await page.context().browser()!.newContext({ storageState: { cookies: [], origins: [] } });
     const newPage = await newContext.newPage();

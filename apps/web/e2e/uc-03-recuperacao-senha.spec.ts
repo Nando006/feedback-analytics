@@ -4,7 +4,7 @@ import { TEST_USER } from './fixtures/test-data';
 test.use({ storageState: { cookies: [], origins: [] } });
 
 test.describe('UC-03: Recuperação de senha', () => {
-  test('[CT-UC03-01] Solicitação de recuperação com e-mail válido envia link', async ({ page }) => {
+  test('[CT-UC03-01] Solicitação de recuperação com e-mail válido envia link', async () => {
     test.skip(true, 'Requer verificação de e-mail recebido — executar manualmente');
   });
 
