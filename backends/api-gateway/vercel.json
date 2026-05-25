@@ -1,5 +1,6 @@
 {
   "version": 2,
+  "installCommand": "npm ci --prefix shared && npm ci --prefix backends/api-gateway",
   "builds": [
     {
       "src": "backends/api-gateway/index.ts",
