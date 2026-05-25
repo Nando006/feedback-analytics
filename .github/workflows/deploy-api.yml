@@ -46,6 +46,15 @@ jobs:
           npm ci --prefix shared
           npm ci --prefix backends/api-gateway
 
+      - name: Bundle api-gateway
+        run: |
+          ./shared/node_modules/.bin/esbuild backends/api-gateway/index.ts \
+            --bundle \
+            --platform=node \
+            --target=node20 \
+            --outfile=backends/api-gateway/_bundle.mjs \
+            --format=esm
+
       - name: Deploy preview (homolog)
         if: github.ref_name == 'homolog'
         id: deploy-homolog
