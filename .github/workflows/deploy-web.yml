@@ -85,7 +85,7 @@ jobs:
         run: npm run test:e2e
         working-directory: apps/web
         env:
-          PLAYWRIGHT_BASE_URL: ${{ steps.deploy-homolog.outputs.url }}
+          PLAYWRIGHT_BASE_URL: https://feedback-analytics-web-homolog.vercel.app
           E2E_TEST_EMAIL: ${{ secrets.E2E_TEST_EMAIL }}
           E2E_TEST_PASSWORD: ${{ secrets.E2E_TEST_PASSWORD }}
           E2E_TEST_ENTERPRISE_ID: ${{ secrets.E2E_TEST_ENTERPRISE_ID }}
