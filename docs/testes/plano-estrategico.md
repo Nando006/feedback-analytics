@@ -54,7 +54,7 @@ A plataforma possui três atores distintos:
 - **Gestor** — configura a coleta, distribui os QR Codes e analisa os resultados no dashboard.
 - **Cliente do estabelecimento** — escaneia o QR Code e submete a avaliação pelo formulário público.
 
-Stack técnica: React 19 SPA com React Router v7, Supabase (autenticação + banco de dados), API Gateway Node.js e Microsserviço de IA em Python.
+Stack técnica: React 19 SPA com React Router v7, Supabase (autenticação + banco de dados), API Gateway Node.js e Microsserviço de IA em Node.js.
 
 #### 1.2. Escopo do Teste
 
