@@ -8,9 +8,7 @@ test.describe('UC-01: Cadastro de conta', () => {
     await page.goto('/register');
   });
 
-  test('[CT-UC01-01] Exibe pendência de verificação de e-mail após cadastro válido', async () => {
-    test.skip(true, 'Requer fluxo de confirmação de e-mail — executar manualmente');
-  });
+
 
   test('[CT-UC01-02] Segue para a tela de sucesso ao tentar cadastrar com e-mail já existente (prevenção de enumeração)', async ({ page }) => {
     await page.fill('#fullName', 'Usuário Duplicado');

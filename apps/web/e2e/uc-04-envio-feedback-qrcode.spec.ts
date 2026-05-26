@@ -46,13 +46,7 @@ test.describe('UC-04: Envio de feedback via QR Code', () => {
     ).toBeVisible({ timeout: 15_000 });
   });
 
-  test('[CT-UC04-02] Segundo envio pelo mesmo dispositivo exibe bloqueio por fingerprint', async () => {
-    // O bloqueio por fingerprint requer que o UUID do dispositivo (localStorage) persista
-    // entre sessões. Em Playwright, cada contexto começa com localStorage vazio, e a API
-    // não bloqueia dois submits consecutivos dentro da mesma sessão (race condition no insert).
-    // Verificar manualmente: submeter feedback, fechar o browser, reabrir e tentar novamente.
-    test.skip(true, 'Requer persistência de fingerprint entre sessões — verificar manualmente');
-  });
+
 
   test('[CT-UC04-03] Acesso com enterprise_id inválido exibe empresa não encontrada', async ({ page }) => {
     await page.goto('/feedback/qrcode?enterprise=id-invalido-que-nao-existe');
