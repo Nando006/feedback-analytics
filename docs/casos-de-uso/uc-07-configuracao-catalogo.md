@@ -50,17 +50,16 @@
 
 ## Base para Teste E2E
 
-> Esta seção é documentação — nenhum arquivo de teste é criado aqui.
-> Quando o E2E for implementado, cada item abaixo vira um `it()`.
-> Execução formal: [plano-estrategico.md](../testes/plano-estrategico.md) — Fase 2, UC-07.
+> Os testes E2E já estão implementados no Playwright ([uc-07-configuracao-catalogo.spec.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/e2e/uc-07-configuracao-catalogo.spec.ts)).
+> Cada cenário abaixo possui a sua respectiva classificação e estratégia de execução mapeada no [Plano de Teste Estratégico](../testes/plano-estrategico.md).
 
 **Cenários a cobrir:**
 
-- **[CT-UC07-01]** Caminho feliz — adicionar item: gestor adiciona um produto com nome válido, salva e confirma que o item aparece na lista com status ativo.
-- **[CT-UC07-02]** Caminho feliz — editar item: gestor edita o nome de um produto existente, salva e confirma a atualização.
-- **[CT-UC07-03]** Caminho feliz — salvar perguntas: gestor configura uma pergunta dinâmica válida (20–150 chars) em um item, clica em "Salvar perguntas" e recebe confirmação de sucesso.
-- **[CT-UC07-04]** Caminho feliz — toggle QR Code por item: gestor ativa ou desativa o QR Code de um item via toggle — deve exibir toast de sucesso e atualizar o estado visualmente sem necessidade de salvar o catálogo.
-- **[CT-UC07-05]** Exceção — pergunta inválida (curta): tentar salvar pergunta com menos de 20 caracteres deve bloquear o envio e destacar o campo com erro.
-- **[CT-UC07-06]** Exceção — pergunta inválida (longa): tentar salvar pergunta com mais de 150 caracteres deve bloquear o envio.
-- **[CT-UC07-07]** Exceção — item inativo: desativar um produto e verificar que o formulário público daquele item exibe tela de erro fatal.
-- **[CT-UC07-08]** Exceção — QR Code desativado por item: desativar o QR Code de um item via toggle e verificar que o formulário público bloqueia novos envios para aquele item.
+- **[CT-UC07-01]** ✅ *Coberto E2E* - Caminho feliz — adicionar item: gestor adiciona um produto com nome válido, salva e confirma que o item aparece na lista com status ativo.
+- **[CT-UC07-02]** ⚠️ *Skipped Intencional* - Caminho feliz — editar item: gestor edita o nome de um produto existente, salva e confirma a atualização.
+- **[CT-UC07-03]** ⚠️ *Skipped Intencional* - Caminho feliz — salvar perguntas: gestor configura uma pergunta dinâmica válida (20–150 chars) em um item, clica em "Salvar perguntas" e recebe confirmação de sucesso.
+- **[CT-UC07-04]** ⚠️ *Skipped Intencional* - Caminho feliz — toggle QR Code por item: gestor ativa ou desativa o QR Code de um item via toggle — deve exibir toast de sucesso e atualizar o estado visualmente sem necessidade de salvar o catálogo.
+- **[CT-UC07-05]** 🔵 *Unidade já atende* - Exceção — pergunta inválida (curta): tentar salvar pergunta com menos de 20 caracteres deve bloquear o envio e destacar o campo com erro.
+- **[CT-UC07-06]** 🔵 *Unidade já atende* - Exceção — pergunta inválida (longa): tentar salvar pergunta com mais de 150 caracteres deve bloquear o envio.
+- **[CT-UC07-07]** ❌ *Cenário não coberto* - Exceção — item inativo: desativar um produto e verificar que o formulário público daquele item exibe tela de erro fatal.
+- **[CT-UC07-08]** ❌ *Cenário não coberto* - Exceção — QR Code desativado por item: desativar o QR Code de um item via toggle e verificar que o formulário público bloqueia novos envios para aquele item.

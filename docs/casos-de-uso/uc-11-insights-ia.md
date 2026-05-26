@@ -44,16 +44,15 @@
 
 ## Base para Teste E2E
 
-> Esta seção é documentação — nenhum arquivo de teste é criado aqui.
-> Quando o E2E for implementado, cada item abaixo vira um `it()`.
-> Execução formal: [plano-estrategico.md](../testes/plano-estrategico.md) — Fase 2, UC-11.
+> Os testes E2E já estão implementados no Playwright ([uc-11-insights-ia.spec.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/e2e/uc-11-insights-ia.spec.ts)).
+> Cada cenário abaixo possui a sua respectiva classificação e estratégia de execução mapeada no [Plano de Teste Estratégico](../testes/plano-estrategico.md).
 
 **Cenários a cobrir:**
 
-- **[CT-UC11-01]** Caminho feliz — analisar feedbacks: gestor com contexto preenchido e mínimo de 10 feedbacks clica em "Analisar feedbacks" — deve processar e atualizar o clima emocional automaticamente.
-- **[CT-UC11-02]** Caminho feliz — gerar insights: após análise, clicar em "Gerar insights" deve atualizar o relatório com resumo e recomendações da IA.
-- **[CT-UC11-03]** Caminho feliz — escopo por produto: selecionar escopo "Produto" e um item de catálogo, gerar análise e confirmar que o relatório reflete aquele item específico.
-- **[CT-UC11-04]** Caminho feliz — navegação entre abas: após gerar relatório, navegar para "Análise Emocional" e "Estatísticas" deve exibir os dados correspondentes.
-- **[CT-UC11-05]** Exceção — contexto incompleto: acessar insights sem preencher todos os campos de contexto deve exibir os botões desabilitados e a mensagem de bloqueio com link para configuração.
-- **[CT-UC11-06]** Exceção — item não selecionado: selecionar escopo "Produto" sem escolher item deve manter os botões desabilitados.
-- **[CT-UC11-07]** Exceção — volume insuficiente: tentar analisar com menos de 10 feedbacks deve retornar mensagem de volume mínimo insuficiente.
+- **[CT-UC11-01]** ✅ *Coberto E2E* - Caminho feliz — analisar feedbacks: gestor com contexto preenchido e mínimo de 10 feedbacks clica em "Analisar feedbacks" — deve processar e atualizar o clima emocional automaticamente.
+- **[CT-UC11-02]** ✅ *Coberto E2E* - Caminho feliz — gerar insights: após análise, clicar em "Gerar insights" deve atualizar o relatório com resumo e recomendações da IA.
+- **[CT-UC11-03]** ⚠️ *Skipped Intencional* - Caminho feliz — escopo por produto: selecionar escopo "Produto" e um item de catálogo, gerar análise e confirmar que o relatório reflete aquele item específico.
+- **[CT-UC11-04]** 🔵 *Unidade já atende* - Caminho feliz — navegação entre abas: após gerar relatório, navegar para "Análise Emocional" e "Estatísticas" deve exibir os dados correspondentes.
+- **[CT-UC11-05]** ✅ *Coberto E2E* - Exceção — contexto incompleto: acessar insights sem preencher todos os campos de contexto deve exibir os botões desabilitados e a mensagem de bloqueio com link para configuração.
+- **[CT-UC11-06]** ⚠️ *Skipped Intencional* - Exceção — item não selecionado: selecionar escopo "Produto" sem escolher item deve manter os botões desabilitados.
+- **[CT-UC11-07]** ⚠️ *Skipped Intencional* - Exceção — volume insuficiente: tentar analisar com menos de 10 feedbacks deve retornar mensagem de volume mínimo insuficiente.

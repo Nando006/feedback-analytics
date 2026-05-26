@@ -220,10 +220,10 @@ Os testes E2E do Playwright são executados por padrão apontando para o ambient
 |---|---|---|---|---|---|
 | `CT-UC05-01`<br>✅ *Coberto E2E* | Ativar/desativar (Caminho Feliz) | Gestor autenticado; página de QR Code carregada | 1. Clicar no botão de controle do QR Code. | — | Toast de confirmação exibido; estado visual atualizado imediatamente |
 | `CT-UC05-02`<br>🚫 *Não é possível testar com Playwright* | Download (Caminho Feliz) | Gestor autenticado | 1. Clicar em "Download" na página de QR Code. | — | Download de arquivo `.png` disparado com o nome da empresa no título |
-| `CT-UC05-03`<br>✅ *Coberto E2E* | Copiar link (Caminho Feliz) | Gestor autenticado | 1. Clicar em "Copiar link". | — | URL copiada para a área de transferência; indicador visual de cópia por 2 segundos |
+| `CT-UC05-03`<br>⚠️ *Skipped Intencional* | Copiar link (Caminho Feliz) | Gestor autenticado | 1. Clicar em "Copiar link". | — | URL copiada para a área de transferência; indicador visual de cópia por 2 segundos |
 | `CT-UC05-04`<br>🚫 *Não é possível testar com Playwright* | Compartilhar (Caminho Feliz) | Ambiente com `navigator.share` disponível | 1. Clicar em "Compartilhar". | — | API nativa de compartilhamento invocada com título, descrição e link corretos |
-| `CT-UC05-05`<br>✅ *Coberto E2E* | Share API indisponível (Exceção) | Ambiente sem `navigator.share` | 1. Clicar em "Compartilhar". | — | Link copiado automaticamente para a área de transferência (sem mensagem de erro) |
-| `CT-UC05-06`<br>✅ *Coberto E2E* | QR desativado — formulário bloqueado (Exceção) | QR Code da empresa no estado inativo | 1. Acessar o link do formulário público da empresa com QR Code desativado. | identifier: `empresa-teste` (QR inativo) | Tela de erro fatal no formulário público; envio bloqueado |
+| `CT-UC05-05`<br>⚠️ *Skipped Intencional* | Share API indisponível (Exceção) | Ambiente sem `navigator.share` | 1. Clicar em "Compartilhar". | — | Link copiado automaticamente para a área de transferência (sem mensagem de erro) |
+| `CT-UC05-06`<br>⚠️ *Skipped Intencional* | QR desativado — formulário bloqueado (Exceção) | QR Code da empresa no estado inativo | 1. Acessar o link do formulário público da empresa com QR Code desativado. | identifier: `empresa-teste` (QR inativo) | Tela de erro fatal no formulário público; envio bloqueado |
 
 ---
 
@@ -234,7 +234,7 @@ Os testes E2E do Playwright são executados por padrão apontando para o ambient
 | ID | Título | Pré-condições | Passos de Execução | Dados de Teste | Resultado Esperado |
 |---|---|---|---|---|---|
 | `CT-UC06-01`<br>✅ *Coberto E2E* | Ativar tipo (Caminho Feliz) | Gestor autenticado; tipo "Produtos" inativo | 1. Acessar tela de tipos de feedback. 2. Ativar o toggle "Produtos". 3. Clicar "Salvar Alterações". | — | Toast de sucesso; badge "Ativo" e link "Configurar catálogo de produtos" aparecem no card |
-| `CT-UC06-02`<br>✅ *Coberto E2E* | Desativar tipo (Caminho Feliz) | Gestor autenticado; tipo "Produtos" ativo | 1. Acessar tela de tipos de feedback. 2. Desativar o toggle "Produtos". 3. Clicar "Salvar Alterações". | — | Toast de sucesso; badge e link de catálogo desaparecem do card |
+| `CT-UC06-02`<br>⚠️ *Skipped Intencional* | Desativar tipo (Caminho Feliz) | Gestor autenticado; tipo "Produtos" ativo | 1. Acessar tela de tipos de feedback. 2. Desativar o toggle "Produtos". 3. Clicar "Salvar Alterações". | — | Toast de sucesso; badge e link de catálogo desaparecem do card |
 | `CT-UC06-03`<br>❌ *Cenário não coberto* | Toggle sem salvar (Comportamento) | Gestor autenticado | 1. Ativar toggle de um tipo. 2. NÃO clicar em "Salvar". | — | Aviso em âmbar exibido; badge "Ativo" e link de catálogo NÃO aparecem |
 | `CT-UC06-04`<br>❌ *Cenário não coberto* | Erro ao salvar (Exceção) | Gestor autenticado; rede instável | 1. Ativar toggle de um tipo. 2. Clicar "Salvar Alterações" com falha de rede simulada. | — | Toast de erro exibido; estado salvo dos tipos não alterado |
 
@@ -264,10 +264,10 @@ Os testes E2E do Playwright são executados por padrão apontando para o ambient
 
 | ID | Título | Pré-condições | Passos de Execução | Dados de Teste | Resultado Esperado |
 |---|---|---|---|---|---|
-| `CT-UC12-01`<br>✅ *Coberto E2E* | Atualizar nome (Caminho Feliz) | Gestor autenticado | 1. Acessar tela de perfil. 2. Editar o campo de nome. 3. Salvar. | nome: `Gestor Atualizado` | Novo nome aparece no perfil após salvar |
+| `CT-UC12-01`<br>❌ *Cenário não coberto* | Atualizar nome (Caminho Feliz) | Gestor autenticado | 1. Acessar tela de perfil. 2. Editar o campo de nome. 3. Salvar. | nome: `Gestor Atualizado` | Novo nome aparece no perfil após salvar |
 | `CT-UC12-02`<br>⚠️ *Skipped Intencional* | Atualizar e-mail (Caminho Feliz) | Gestor autenticado | 1. Acessar tela de perfil. 2. Informar novo e-mail válido. 3. Confirmar. | e-mail: `novo@email.com` | Mensagem de sucesso informando que confirmação foi enviada para os dois endereços |
 | `CT-UC12-03`<br>⚠️ *Skipped Intencional* | Atualizar telefone (Caminho Feliz) | Gestor autenticado | 1. Acessar tela de perfil. 2. Clicar no campo de telefone (modo edição). 3. Informar novo número e clicar "Enviar SMS". 4. Inserir código de 6 dígitos recebido. 5. Clicar "Confirmar". | número: `+55 11 99999-0001`; código: válido | Telefone atualizado na conta; tela retorna ao modo de visualização |
-| `CT-UC12-04`<br>✅ *Coberto E2E* | Cancelar atualização de telefone (Caminho Alternativo) | Gestor no modo de edição ou verificação de telefone | 1. Clicar em "Cancelar" durante qualquer etapa da atualização de telefone. | — | Tela retorna ao modo de visualização sem alterar o número atual |
+| `CT-UC12-04`<br>⚠️ *Skipped Intencional* | Cancelar atualização de telefone (Caminho Alternativo) | Gestor no modo de edição ou verificação de telefone | 1. Clicar em "Cancelar" durante qualquer etapa da atualização de telefone. | — | Tela retorna ao modo de visualização sem alterar o número atual |
 | `CT-UC12-05`<br>🔵 *Unidade já atende* | Nome vazio (Exceção) | Gestor autenticado | 1. Acessar tela de perfil. 2. Apagar o conteúdo do campo de nome. 3. Tentar salvar. | nome: `""` | Envio bloqueado; campo de nome destacado como obrigatório |
 | `CT-UC12-06`<br>🔵 *Unidade já atende* | Telefone inválido (Exceção) | Gestor no modo edição de telefone | 1. Informar número fora do padrão `+55 DDD NÚMERO`. 2. Clicar "Enviar SMS". | número: `12345` | Formulário bloqueado antes de chamar a API; mensagem de formato inválido |
 | `CT-UC12-07`<br>⚠️ *Skipped Intencional* | Código de verificação inválido (Exceção) | Gestor no modo verificação de telefone | 1. Inserir código incorreto. 2. Clicar "Confirmar". | código: `000000` (errado) | Toast de erro "Código inválido"; permanece no modo de verificação |
@@ -291,13 +291,13 @@ Os testes E2E do Playwright são executados por padrão apontando para o ambient
 | ID | Título | Pré-condições | Passos de Execução | Dados de Teste | Resultado Esperado |
 |---|---|---|---|---|---|
 | `CT-UC10-01`<br>✅ *Coberto E2E* | Caminho feliz | Gestor autenticado; empresa com feedbacks | 1. Acessar listagem de feedbacks. 2. Clicar em um feedback. | — | Lista paginada exibida; modal de detalhes com cabeçalho, mensagem completa, ponto de coleta, perguntas, dispositivo e cliente |
-| `CT-UC10-02`<br>✅ *Coberto E2E* | Filtro por nota (Caminho Feliz) | Empresa com feedbacks de notas variadas | 1. Acessar listagem. 2. Selecionar nota 5 no filtro de avaliação. | nota: 5 | Apenas feedbacks com nota 5 exibidos |
-| `CT-UC10-03`<br>✅ *Coberto E2E* | Filtro por categoria (Caminho Feliz) | Empresa com feedbacks de múltiplas categorias | 1. Acessar listagem. 2. Selecionar "Produto" no filtro de categoria. | categoria: `PRODUCT` | Apenas feedbacks de pontos de coleta do tipo Produto exibidos |
-| `CT-UC10-04`<br>✅ *Coberto E2E* | Busca textual (Caminho Feliz) | Empresa com feedbacks | 1. Acessar listagem. 2. Digitar um termo no campo de busca e aguardar ~450ms. | busca: `atendimento` | Feedbacks que contêm o termo na mensagem exibidos após o debounce |
-| `CT-UC10-05`<br>✅ *Coberto E2E* | Filtro por item (Caminho Feliz) | Empresa com feedbacks de múltiplos itens | 1. Acessar listagem. 2. Digitar nome de um item no filtro de item e aguardar ~450ms. | item: `Produto A` | Feedbacks daquele item exibidos após o debounce |
-| `CT-UC10-06`<br>✅ *Coberto E2E* | Paginação (Caminho Feliz) | Empresa com mais de 10 feedbacks | 1. Acessar listagem (padrão 10 itens/página). 2. Navegar para a segunda página. | — | Segunda página carregada; filtros ativos mantidos |
-| `CT-UC10-07`<br>✅ *Coberto E2E* | Filtro sem resultado (Exceção) | Empresa com feedbacks | 1. Aplicar filtro que não corresponde a nenhum feedback. | nota: 1 (sem feedbacks com essa nota) | Empty state com mensagem de "ajuste os filtros" exibido |
-| `CT-UC10-08`<br>✅ *Coberto E2E* | Sem feedbacks (Exceção) | Empresa sem nenhum feedback coletado | 1. Acessar listagem. | — | Empty state com mensagem de "nenhum feedback recebido" exibido |
+| `CT-UC10-02`<br>⚠️ *Skipped Intencional* | Filtro por nota (Caminho Feliz) | Empresa com feedbacks de notas variadas | 1. Acessar listagem. 2. Selecionar nota 5 no filtro de avaliação. | nota: 5 | Apenas feedbacks com nota 5 exibidos |
+| `CT-UC10-03`<br>⚠️ *Skipped Intencional* | Filtro por categoria (Caminho Feliz) | Empresa com feedbacks de múltiplas categorias | 1. Acessar listagem. 2. Selecionar "Produto" no filtro de categoria. | categoria: `PRODUCT` | Apenas feedbacks de pontos de coleta do tipo Produto exibidos |
+| `CT-UC10-04`<br>⚠️ *Skipped Intencional* | Busca textual (Caminho Feliz) | Empresa com feedbacks | 1. Acessar listagem. 2. Digitar um termo no campo de busca e aguardar ~450ms. | busca: `atendimento` | Feedbacks que contêm o termo na mensagem exibidos após o debounce |
+| `CT-UC10-05`<br>⚠️ *Skipped Intencional* | Filtro por item (Caminho Feliz) | Empresa com feedbacks de múltiplos itens | 1. Acessar listagem. 2. Digitar nome de um item no filtro de item e aguardar ~450ms. | item: `Produto A` | Feedbacks daquele item exibidos após o debounce |
+| `CT-UC10-06`<br>⚠️ *Skipped Intencional* | Paginação (Caminho Feliz) | Empresa com mais de 10 feedbacks | 1. Acessar listagem (padrão 10 itens/página). 2. Navegar para a segunda página. | — | Segunda página carregada; filtros ativos mantidos |
+| `CT-UC10-07`<br>⚠️ *Skipped Intencional* | Filtro sem resultado (Exceção) | Empresa com feedbacks | 1. Aplicar filtro que não corresponde a nenhum feedback. | nota: 1 (sem feedbacks com essa nota) | Empty state com mensagem de "ajuste os filtros" exibido |
+| `CT-UC10-08`<br>⚠️ *Skipped Intencional* | Sem feedbacks (Exceção) | Empresa sem nenhum feedback coletado | 1. Acessar listagem. | — | Empty state com mensagem de "nenhum feedback recebido" exibido |
 
 #### [UC-11] Disparo e Visualização de Insights IA → [uc-11-insights-ia.md](../casos-de-uso/uc-11-insights-ia.md)
 
@@ -305,11 +305,11 @@ Os testes E2E do Playwright são executados por padrão apontando para o ambient
 |---|---|---|---|---|---|
 | `CT-UC11-01`<br>✅ *Coberto E2E* | Analisar feedbacks (Caminho Feliz) | Contexto de IA preenchido (os 3 campos); mínimo de 10 feedbacks | 1. Acessar painel de insights. 2. Clicar em "Analisar feedbacks". | — | Processamento concluído; clima emocional (Mood) atualizado na tela |
 | `CT-UC11-02`<br>✅ *Coberto E2E* | Gerar insights (Caminho Feliz) | Feedbacks já analisados; contexto preenchido | 1. Clicar em "Gerar insights". | — | Relatório atualizado com resumo estratégico e lista de recomendações da IA |
-| `CT-UC11-03`<br>✅ *Coberto E2E* | Escopo por produto (Caminho Feliz) | Catálogo com item de produto ativo; contexto preenchido; feedbacks suficientes | 1. Selecionar escopo "Produto". 2. Escolher item de catálogo. 3. Clicar "Analisar feedbacks" e depois "Gerar insights". | escopo: PRODUCT; item: `Produto A` | Relatório reflete dados apenas daquele item específico |
-| `CT-UC11-04`<br>✅ *Coberto E2E* | Navegação entre abas (Caminho Feliz) | Relatório gerado | 1. Acessar painel de insights. 2. Navegar para aba "Análise Emocional". 3. Navegar para aba "Estatísticas". | — | Dados de análise emocional e estatísticas exibidos em cada aba correspondente |
+| `CT-UC11-03`<br>⚠️ *Skipped Intencional* | Escopo por produto (Caminho Feliz) | Catálogo com item de produto ativo; contexto preenchido; feedbacks suficientes | 1. Selecionar escopo "Produto". 2. Escolher item de catálogo. 3. Clicar "Analisar feedbacks" e depois "Gerar insights". | escopo: PRODUCT; item: `Produto A` | Relatório reflete dados apenas daquele item específico |
+| `CT-UC11-04`<br>🔵 *Unidade já atende* | Navegação entre abas (Caminho Feliz) | Relatório gerado | 1. Acessar painel de insights. 2. Navegar para aba "Análise Emocional". 3. Navegar para aba "Estatísticas". | — | Dados de análise emocional e estatísticas exibidos em cada aba correspondente |
 | `CT-UC11-05`<br>✅ *Coberto E2E* | Contexto incompleto (Exceção) | Algum dos 3 campos de contexto em branco | 1. Acessar painel de insights sem contexto completo. | Um ou mais campos de UC-08 em branco | Botões "Analisar feedbacks" e "Gerar insights" desabilitados; mensagem com link para tela de configuração |
-| `CT-UC11-06`<br>✅ *Coberto E2E* | Item não selecionado (Exceção) | Gestor autenticado | 1. Selecionar escopo "Produto". 2. NÃO escolher item de catálogo. | escopo: PRODUCT; item: não selecionado | Botões permanecem desabilitados |
-| `CT-UC11-07`<br>✅ *Coberto E2E* | Volume insuficiente (Exceção) | Contexto preenchido; menos de 10 feedbacks | 1. Acessar painel de insights. 2. Clicar "Analisar feedbacks". | feedbacks disponíveis: < 10 | Mensagem "É necessário no mínimo 10 feedbacks" retornada; ação bloqueada |
+| `CT-UC11-06`<br>⚠️ *Skipped Intencional* | Item não selecionado (Exceção) | Gestor autenticado | 1. Selecionar escopo "Produto". 2. NÃO escolher item de catálogo. | escopo: PRODUCT; item: não selecionado | Botões permanecem desabilitados |
+| `CT-UC11-07`<br>⚠️ *Skipped Intencional* | Volume insuficiente (Exceção) | Contexto preenchido; menos de 10 feedbacks | 1. Acessar painel de insights. 2. Clicar "Analisar feedbacks". | feedbacks disponíveis: < 10 | Mensagem "É necessário no mínimo 10 feedbacks" retornada; ação bloqueada |
 
 ---
 
