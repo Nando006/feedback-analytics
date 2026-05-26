@@ -55,7 +55,7 @@ test.describe('UC-11: Insights de IA', () => {
     await regenerateBtn.click();
 
     await expect(
-      page.getByText(/processando|gerando|analisando|aguarde|insights atualizados/i),
+      page.getByText(/processando|gerando|analisando|aguarde|insights atualizados/i).first(),
     ).toBeVisible({ timeout: 15_000 });
   });
 });
