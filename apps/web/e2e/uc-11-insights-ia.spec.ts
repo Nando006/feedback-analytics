@@ -22,7 +22,8 @@ test.describe('UC-11: Insights de IA', () => {
       .catch(() => false);
 
     const isEmptyState = await page
-      .getByText(/nenhum insight|sem dados|gerar insights/i)
+      .getByText(/nenhum insight|sem dados|gerar insights|ainda não há relatório/i)
+      .first()
       .isVisible()
       .catch(() => false);
 
@@ -80,7 +81,8 @@ test.describe('UC-11: Insights de IA', () => {
       .catch(() => false);
 
     const isEmptyState = await page
-      .getByText(/nenhum insight|sem dados|gerar insights/i)
+      .getByText(/nenhum insight|sem dados|gerar insights|ainda não há relatório/i)
+      .first()
       .isVisible()
       .catch(() => false);
 
