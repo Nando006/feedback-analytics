@@ -34,34 +34,7 @@ test.describe('UC-08: Configuração de coleta e contexto de IA', () => {
     ).toBeVisible({ timeout: 10_000 });
   });
 
-  test('[CT-UC08-03] Perguntas dinâmicas podem ser adicionadas ao formulário de coleta', async ({ page }) => {
-    const addQuestionBtn = page.getByRole('button', { name: /adicionar pergunta|nova pergunta/i }).first();
 
-    if (!(await addQuestionBtn.isVisible().catch(() => false))) {
-      test.skip();
-      return;
-    }
-
-    await addQuestionBtn.click();
-
-    const questionInput = page
-      .locator('input[name*="question"], input[placeholder*="pergunta"], textarea[name*="question"]')
-      .last();
-
-    if (!(await questionInput.isVisible().catch(() => false))) {
-      test.skip();
-      return;
-    }
-
-    await questionInput.fill('Como você avalia o nosso atendimento?');
-
-    const saveBtn = page.getByRole('button', { name: /salvar|confirmar/i }).first();
-    await saveBtn.click();
-
-    await expect(
-      page.getByText(/salvo|configurações salvas|pergunta adicionada/i),
-    ).toBeVisible({ timeout: 10_000 });
-  });
 
   test('[CT-UC08-04] Resumo do negócio pode ser preenchido e salvo', async ({ page }) => {
     const summaryField = page

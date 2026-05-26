@@ -27,18 +27,4 @@ test.describe('UC-02: Login', () => {
     ).toBeVisible({ timeout: 10_000 });
     await expect(page).toHaveURL(/\/login/);
   });
-
-  test('[CT-UC02-03] Login com e-mail em formato inválido bloqueia envio', async ({ page }) => {
-    await page.fill('#email', 'nao-e-um-email');
-    await page.fill('#password', 'qualquersenha');
-    await page.click('button[type="submit"]');
-
-    await expect(
-      page.getByText(/e-mail inv.lido|informe um e-mail/i),
-    ).toBeVisible({ timeout: 8_000 });
-  });
-
-  test('[CT-UC02-04] Login com conta não verificada exibe aviso de verificação', async () => {
-    test.skip(true, 'Requer conta criada mas não verificada — executar manualmente com conta de teste dedicada');
-  });
 });

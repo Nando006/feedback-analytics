@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { formatPhoneInputBR } from '../formatPhoneInputBR';
 
-describe('formatPhoneInputBR Utility', () => {
+describe('[Unidade] formatPhoneInputBR Utility', () => {
   it('formata celular completo (11 dígitos + DDD) com +55', () => {
     expect(formatPhoneInputBR('11987654321')).toBe('+55 (11) 98765-4321');
   });

@@ -61,16 +61,15 @@ A tela de perfil concentra quatro seções:
 
 ## Base para Teste E2E
 
-> Esta seção é documentação — nenhum arquivo de teste é criado aqui.
-> Quando o E2E for implementado, cada item abaixo vira um `it()`.
-> Execução formal: [plano-estrategico.md](../testes/plano-estrategico.md) — Fase 2, UC-12.
+> Os testes E2E já estão implementados no Playwright ([uc-12-gestao-perfil.spec.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/e2e/uc-12-gestao-perfil.spec.ts)).
+> Cada cenário abaixo possui a sua respectiva classificação e estratégia de execução mapeada no [Plano de Teste Estratégico](../testes/plano-estrategico.md).
 
 **Cenários a cobrir:**
 
-- **[CT-UC12-01]** Caminho feliz — nome: gestor edita o nome, salva e confirma que o novo nome aparece no perfil.
-- **[CT-UC12-02]** Caminho feliz — e-mail: gestor informa novo e-mail válido e recebe a mensagem de sucesso (a confirmação nos dois e-mails é feita fora do app).
-- **[CT-UC12-03]** Caminho feliz — telefone: gestor informa novo número, recebe o SMS, insere o código de 6 dígitos e o telefone é atualizado.
-- **[CT-UC12-04]** Caminho feliz — cancelar telefone: durante o modo de edição ou verificação, clicar em "Cancelar" deve voltar ao modo de visualização sem alterar o número.
-- **[CT-UC12-05]** Exceção — nome vazio: tentar salvar com campo de nome vazio deve bloquear o envio.
-- **[CT-UC12-06]** Exceção — telefone inválido: informar número fora do padrão `+55 DDD NÚMERO` deve bloquear o formulário antes de enviar o SMS.
-- **[CT-UC12-07]** Exceção — código inválido: inserir código errado na verificação deve exibir toast de erro sem sair do modo de verificação.
+- **[CT-UC12-01]** ❌ *Cenário não coberto* - Caminho feliz — nome: gestor edita o nome, salva e confirma que o novo nome aparece no perfil.
+- **[CT-UC12-02]** ⚠️ *Skipped Intencional* - Caminho feliz — e-mail: gestor informa novo e-mail válido e recebe a mensagem de sucesso (a confirmação nos dois e-mails é feita fora do app).
+- **[CT-UC12-03]** ⚠️ *Skipped Intencional* - Caminho feliz — telefone: gestor informa novo número, recebe o SMS, insere o código de 6 dígitos e o telefone é atualizado.
+- **[CT-UC12-04]** ⚠️ *Skipped Intencional* - Caminho feliz — cancelar telefone: durante o modo de edição ou verificação, clicar em "Cancelar" deve voltar ao modo de visualização sem alterar o número.
+- **[CT-UC12-05]** 🔵 *Unidade já atende* - Exceção — nome vazio: tentar salvar com campo de nome vazio deve bloquear o envio.
+- **[CT-UC12-06]** 🔵 *Unidade já atende* - Exceção — telefone inválido: informar número fora do padrão `+55 DDD NÚMERO` deve bloquear o formulário antes de enviar o SMS.
+- **[CT-UC12-07]** ⚠️ *Skipped Intencional* - Exceção — código inválido: inserir código errado na verificação deve exibir toast de erro sem sair do modo de verificação.

@@ -41,13 +41,12 @@
 
 ## Base para Teste E2E
 
-> Esta seção é documentação — nenhum arquivo de teste é criado aqui.
-> Quando o E2E for implementado, cada item abaixo vira um `it()`.
-> Execução formal: [plano-estrategico.md](../testes/plano-estrategico.md) — Fase 2, UC-08.
+> Os testes E2E já estão implementados no Playwright ([uc-08-configuracao-coleta-ia.spec.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/e2e/uc-08-configuracao-coleta-ia.spec.ts)).
+> Cada cenário abaixo possui a sua respectiva classificação e estratégia de execução mapeada no [Plano de Teste Estratégico](../testes/plano-estrategico.md).
 
 **Cenários a cobrir:**
 
-- **[CT-UC08-01]** Caminho feliz: gestor preenche os três campos (objetivo, objetivo analítico, resumo), salva e recebe toast de confirmação de sucesso.
-- **[CT-UC08-02]** Caminho feliz — campos em branco: salvar com todos os campos vazios deve retornar sucesso sem exibir erro — campos vazios são permitidos.
-- **[CT-UC08-03]** Caminho feliz — atualização parcial: gestor edita apenas o resumo do negócio, salva e confirma que os demais campos permanecem inalterados.
-- **[CT-UC08-04]** Exceção — erro ao salvar: simular falha de rede deve exibir toast de erro sem alterar os dados do formulário.
+- **[CT-UC08-01]** ✅ *Coberto E2E* - Caminho feliz: gestor preenche os três campos (objetivo, objetivo analítico, resumo), salva e recebe toast de confirmação de sucesso.
+- **[CT-UC08-02]** 🔵 *Unidade já atende* - Caminho feliz — campos em branco: salvar com todos os campos vazios deve retornar sucesso sem exibir erro — campos vazios são permitidos.
+- **[CT-UC08-03]** 🟠 *Integração já atende* - Caminho feliz — atualização parcial: gestor edita apenas o resumo do negócio, salva e confirma que os demais campos permanecem inalterados.
+- **[CT-UC08-04]** ❌ *Cenário não coberto* - Exceção — erro ao salvar: simular falha de rede deve exibir toast de erro sem alterar os dados do formulário.

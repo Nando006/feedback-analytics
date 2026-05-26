@@ -8,6 +8,8 @@ test.describe('UC-01: Cadastro de conta', () => {
     await page.goto('/register');
   });
 
+
+
   test('[CT-UC01-02] Segue para a tela de sucesso ao tentar cadastrar com e-mail já existente (prevenção de enumeração)', async ({ page }) => {
     await page.fill('#fullName', 'Usuário Duplicado');
     await page.fill('#email', 'gestor@empresateste.com');

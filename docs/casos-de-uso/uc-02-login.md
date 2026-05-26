@@ -32,13 +32,12 @@
 
 ## Base para Teste E2E
 
-> Esta seção é documentação — nenhum arquivo de teste é criado aqui.
-> Quando o E2E for implementado, cada item abaixo vira um `it()`.
-> Execução formal: [plano-estrategico.md](../testes/plano-estrategico.md) — Fase 2, UC-02.
+> Os testes E2E já estão implementados no Playwright ([uc-02-login.spec.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/e2e/uc-02-login.spec.ts)).
+> Cada cenário abaixo possui a sua respectiva classificação e estratégia de execução mapeada no [Plano de Teste Estratégico](../testes/plano-estrategico.md).
 
 **Cenários a cobrir:**
 
-- **[CT-UC02-01]** Caminho feliz: gestor insere credenciais válidas, clica em "Entrar" e é redirecionado para o dashboard.
-- **[CT-UC02-02]** Exceção — credenciais inválidas: inserir senha errada deve exibir mensagem de erro sem redirecionar.
-- **[CT-UC02-03]** Exceção — rate limit: após múltiplas tentativas incorretas, deve exibir mensagem de bloqueio temporário.
-- **[CT-UC02-04]** Exceção — campos vazios: tentar enviar o formulário sem preencher os campos deve destacá-los como obrigatórios.
+- **[CT-UC02-01]** ✅ *Coberto E2E* - Caminho feliz: gestor insere credenciais válidas, clica em "Entrar" e é redirecionado para o dashboard.
+- **[CT-UC02-02]** ✅ *Coberto E2E* - Exceção — credenciais inválidas: inserir senha errada deve exibir mensagem de erro sem redirecionar.
+- **[CT-UC02-03]** 🚫 *Não é possível testar com Playwright* - Exceção — rate limit: após múltiplas tentativas incorretas, deve exibir mensagem de bloqueio temporário.
+- **[CT-UC02-04]** 🔵 *Unidade já atende* - Exceção — campos vazios: tentar enviar o formulário sem preencher os campos deve destacá-los como obrigatórios.

@@ -118,16 +118,21 @@ UC-04 (Coleta de feedback)
 
 ## Relação com Testes E2E
 
-Cada UC mapeia para um arquivo de teste. A correspondência é direta:
+Cada UC possui correspondência direta com os arquivos de testes automatizados E2E do Playwright localizados em `apps/web/e2e/`:
 
-| Arquivo de UC | Arquivo de teste (futuro) |
-|---|---|
-| `uc-01-cadastro-conta.md` | `e2e/uc-01-cadastro-conta.spec.ts` |
-| `uc-02-login.md` | `e2e/uc-02-login.spec.ts` |
-| `uc-03-recuperacao-senha.md` | `e2e/uc-03-recuperacao-senha.spec.ts` |
-| ... | ... |
-| `uc-12-gestao-perfil.md` | `e2e/uc-12-gestao-perfil.spec.ts` |
+| Arquivo de UC | Arquivo de teste E2E | Status |
+|---|---|---|
+| [uc-01-cadastro-conta.md](uc-01-cadastro-conta.md) | [uc-01-cadastro-conta.spec.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/e2e/uc-01-cadastro-conta.spec.ts) | ✅ Implementado |
+| [uc-02-login.md](uc-02-login.md) | [uc-02-login.spec.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/e2e/uc-02-login.spec.ts) | ✅ Implementado |
+| [uc-03-recuperacao-senha.md](uc-03-recuperacao-senha.md) | *Removido do E2E* | ⚠️ Coberto em Unidade / Manual |
+| [uc-04-envio-feedback-qrcode.md](uc-04-envio-feedback-qrcode.md) | [uc-04-envio-feedback-qrcode.spec.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/e2e/uc-04-envio-feedback-qrcode.spec.ts) | ✅ Implementado |
+| [uc-05-geracao-qrcode.md](uc-05-geracao-qrcode.md) | [uc-05-geracao-qrcode.spec.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/e2e/uc-05-geracao-qrcode.spec.ts) | ✅ Implementado |
+| [uc-06-ativacao-tipos-feedback.md](uc-06-ativacao-tipos-feedback.md) | [uc-06-ativacao-tipos-feedback.spec.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/e2e/uc-06-ativacao-tipos-feedback.spec.ts) | ✅ Implementado |
+| [uc-07-configuracao-catalogo.md](uc-07-configuracao-catalogo.md) | [uc-07-configuracao-catalogo.spec.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/e2e/uc-07-configuracao-catalogo.spec.ts) | ✅ Implementado |
+| [uc-08-configuracao-coleta-ia.md](uc-08-configuracao-coleta-ia.md) | [uc-08-configuracao-coleta-ia.spec.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/e2e/uc-08-configuracao-coleta-ia.spec.ts) | ✅ Implementado |
+| [uc-09-dashboard.md](uc-09-dashboard.md) | [uc-09-dashboard.spec.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/e2e/uc-09-dashboard.spec.ts) | ✅ Implementado |
+| [uc-10-listagem-feedbacks.md](uc-10-listagem-feedbacks.md) | [uc-10-listagem-feedbacks.spec.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/e2e/uc-10-listagem-feedbacks.spec.ts) | ✅ Implementado |
+| [uc-11-insights-ia.md](uc-11-insights-ia.md) | [uc-11-insights-ia.spec.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/e2e/uc-11-insights-ia.spec.ts) | ✅ Implementado |
+| [uc-12-gestao-perfil.md](uc-12-gestao-perfil.md) | [uc-12-gestao-perfil.spec.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/e2e/uc-12-gestao-perfil.spec.ts) | ✅ Implementado |
 
-Cada item da seção "Base para Teste E2E" de um UC vira um bloco `it()` no arquivo correspondente. O `describe()` recebe o nome do UC.
-
-> Os testes E2E ainda não foram implementados. Esta documentação é a base para quando forem.
+Cada item da seção "Base para Teste E2E" de um caso de uso é traduzido em cenários concretos. As correspondências exatas de passos e coberturas detalhadas (incluindo testes de unidade, de integração e cenários skipped) estão mapeadas no [Plano de Teste Estratégico](../testes/plano-estrategico.md).

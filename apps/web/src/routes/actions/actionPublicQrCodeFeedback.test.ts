@@ -50,7 +50,7 @@ function createArgs(body: Record<string, string | undefined>): ActionFunctionArg
   } as unknown as ActionFunctionArgs;
 }
 
-describe('ActionPublicQrCodeFeedback', () => {
+describe('[Integração] ActionPublicQrCodeFeedback', () => {
   beforeEach(() => {
     mockServiceSubmitQrcodeFeedback.mockReset();
   });

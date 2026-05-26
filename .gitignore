@@ -31,6 +31,8 @@ pnpm-debug.log*
 *.sw?
 CLAUDE.md
 .claude/settings.local.json
+*.antigravitycli
+e2e_conflitos.md
 
 # Playwright
 apps/web/e2e/.auth/
