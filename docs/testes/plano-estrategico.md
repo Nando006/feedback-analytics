@@ -88,7 +88,7 @@ Stack técnica: React 19 SPA com React Router v7, Supabase (autenticação + ban
 
 - **Teste de Integração:** Verificação de que as camadas loader → service → API Gateway retornam dados com o contrato esperado; que as actions processam FormData e acionam os serviços corretos; e que o fluxo de autenticação Supabase + cookie funciona de ponta a ponta. Responsável: Engenharia/QA.
 
-- **Teste de Sistema (E2E):** Navegação completa pelos 12 casos de uso documentados, simulando o comportamento real dos três atores. Cobre caminho feliz e as exceções críticas de cada UC. Responsável: QA. Ferramenta: **Playwright** (a implementar).
+- **Teste de Sistema (E2E):** Navegação completa pelos 12 casos de uso documentados, simulando o comportamento real dos três atores. Cobre caminho feliz e as exceções críticas de cada UC. Responsável: QA. Ferramenta: **Playwright** (em uso).
 
 - **Teste de Aceitação (UAT):** Realizado por gestores reais em ambiente de homologação, validando se os fluxos de configuração → coleta → análise refletem as necessidades reais do negócio.
 
@@ -109,13 +109,13 @@ Stack técnica: React 19 SPA com React Router v7, Supabase (autenticação + ban
 | Finalidade | Ferramenta | Status |
 |---|---|---|
 | Testes de unidade e componentes | Vitest + @vitest/coverage-v8 | Em uso |
-| Testes E2E de interface | Playwright | A implementar |
+| Testes E2E de interface | Playwright | Em uso |
 | Mock de API em testes de integração | MSW (Mock Service Worker) | A implementar |
 | Gerenciamento de casos de teste | Casos de Uso em `docs/casos-de-uso/` | Em uso |
 
 **Ambiente de Teste:**
 
-Um ambiente de homologação espelhado na produção (branch `homolog` no Vercel), conectado a um banco de dados Supabase separado do production. O ambiente deve conter:
+Os testes E2E do Playwright são executados por padrão apontando para o ambiente de desenvolvimento local (`http://localhost:5173`), mas podem ser direcionados a outros ambientes (como homologação) configurando a variável de ambiente `PLAYWRIGHT_BASE_URL`. O ambiente de teste deve conter:
 
 - Uma empresa de teste criada, conta ativada e com gestor autenticado.
 - Tipos de feedback ativados (Produtos, Serviços e Departamentos).
