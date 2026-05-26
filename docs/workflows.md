@@ -135,8 +135,6 @@ Se o PR vier de qualquer outra branch, o job falha e o merge é bloqueado pelo G
 
 **Propósito:** Portão de qualidade obrigatório — nenhum merge é permitido se este pipeline falhar.
 
-**Passos em ordem:**
-
 | # | Step | Comando |
 |---|---|---|
 | 1 | Checkout | `actions/checkout@v4` |
@@ -146,12 +144,11 @@ Se o PR vier de qualquer outra branch, o job falha e o merge é bloqueado pelo G
 | 5 | Instalar dependências do `web` | `npm ci --prefix apps/web` |
 | 6 | Instalar dependências do `ia-analyze` | `npm ci --prefix services/ia-analyze` |
 | 7 | Linter | `npm run lint` |
-| 8 | Testes | `npm test` |
-| 9 | Build completo | `npm run build` |
+| 8 | Build completo | `npm run build` |
 
 **Cache npm:** configurado com `cache-dependency-path` apontando para os `package-lock.json` dos 4 pacotes do monorepo, acelerando execuções subsequentes.
 
-**Variáveis de ambiente injetadas nos testes (via Secrets):**
+**Variáveis de ambiente injetadas no build (via Secrets):**
 
 | Secret | Variável injetada |
 |---|---|
