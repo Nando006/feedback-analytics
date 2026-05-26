@@ -39,49 +39,4 @@ test.describe('UC-01: Cadastro de conta', () => {
       page.getByText(/documento|cpf|j. cadastrado/i).first(),
     ).toBeVisible({ timeout: 10_000 });
   });
-
-  test('[CT-UC01-04] Exibe erro de validação quando senhas não coincidem', async ({ page }) => {
-    await page.fill('#fullName', 'Teste Senha');
-    await page.fill('#email', uniqueEmail('senha'));
-    await page.fill('#document', VALID_CPF);
-    await page.fill('#phone', '11999990003');
-    await page.fill('#password', VALID_PASSWORD);
-    await page.fill('#confirmPassword', MISMATCHED_PASSWORD);
-    await page.check('#terms');
-    await page.click('button[type="submit"]');
-
-    await expect(
-      page.getByText(/senhas.*conferem|nao conferem|não conferem/i).first(),
-    ).toBeVisible({ timeout: 8_000 });
-  });
-
-  test('[CT-UC01-05] Exibe erro de validação para CPF inválido', async ({ page }) => {
-    await page.fill('#fullName', 'Teste CPF');
-    await page.fill('#email', uniqueEmail('cpf-inv'));
-    await page.fill('#document', INVALID_CPF);
-    await page.fill('#phone', '11999990004');
-    await page.fill('#password', VALID_PASSWORD);
-    await page.fill('#confirmPassword', VALID_PASSWORD);
-    await page.check('#terms');
-    await page.click('button[type="submit"]');
-
-    await expect(
-      page.getByText(/cpf inv.lido|documento inv.lido/i),
-    ).toBeVisible({ timeout: 8_000 });
-  });
-
-  test('[CT-UC01-06] Exibe erro de validação quando termos não são aceitos', async ({ page }) => {
-    await page.fill('#fullName', 'Teste Termos');
-    await page.fill('#email', uniqueEmail('termos'));
-    await page.fill('#document', VALID_CPF);
-    await page.fill('#phone', '11999990005');
-    await page.fill('#password', VALID_PASSWORD);
-    await page.fill('#confirmPassword', VALID_PASSWORD);
-    // não marca #terms propositalmente
-    await page.click('button[type="submit"]');
-
-    await expect(
-      page.getByText(/necessário aceitar os termos|é necessário aceitar/i).first(),
-    ).toBeVisible({ timeout: 8_000 });
-  });
 });

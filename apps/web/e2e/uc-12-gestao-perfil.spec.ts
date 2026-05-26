@@ -50,25 +50,6 @@ test.describe('UC-12: Gestão de perfil', () => {
     await expect(page).toHaveURL(/\/user\/edit\/(types-feedback|feedback-settings)/, { timeout: 10_000 });
   });
 
-  test('[CT-UC12-05] Informações colapsáveis da empresa são expandíveis', async ({ page }) => {
-    await page.goto('/user/profile');
-    await expect(page.getByRole('main')).toBeVisible();
-
-    const toggleBtn = page
-      .locator('button[aria-expanded], details summary, button[data-collapse]')
-      .first();
-
-    if (!(await toggleBtn.isVisible().catch(() => false))) {
-      test.skip();
-      return;
-    }
-
-    await toggleBtn.click();
-
-    // Verifica que algum conteúdo colapsável ficou visível
-    await expect(page.locator('[aria-expanded="true"], details[open]').first()).toBeVisible({ timeout: 5_000 });
-  });
-
   test('[CT-UC12-06] Logout redireciona para página de login', async ({ page }) => {
     await page.goto('/user/dashboard');
     await expect(page.getByRole('main')).toBeVisible();

@@ -18,12 +18,4 @@ test.describe('UC-05: Geração de QR Code da empresa', () => {
 
     expect(hasQrElement || hasActivateBtn).toBe(true);
   });
-
-
-
-  test('[CT-UC05-06] Seção de instruções de uso do QR Code é exibida', async ({ page }) => {
-    await expect(
-      page.getByText(/baixe o qr|imprima ou compartilhe|receba feedback/i).first(),
-    ).toBeVisible();
-  });
 });

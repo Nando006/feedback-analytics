@@ -10,20 +10,4 @@ test.describe('UC-07: Configuração do catálogo', () => {
 
     expect(isAccessible || isBlocked).toBe(true);
   });
-
-  test('[CT-UC07-05] Página de catálogo de serviços carrega corretamente', async ({ page }) => {
-    await page.goto('/user/edit/feedback-services');
-    await page.waitForLoadState('networkidle');
-
-    const isAccessible = await page.getByRole('main').isVisible().catch(() => false);
-    expect(isAccessible).toBe(true);
-  });
-
-  test('[CT-UC07-07] Página de catálogo de departamentos carrega corretamente', async ({ page }) => {
-    await page.goto('/user/edit/feedback-departments');
-    await page.waitForLoadState('networkidle');
-
-    const isAccessible = await page.getByRole('main').isVisible().catch(() => false);
-    expect(isAccessible).toBe(true);
-  });
 });

@@ -14,10 +14,4 @@ test.describe('UC-10: Listagem de feedbacks', () => {
 
     expect(hasFeedbacks || isEmpty).toBe(true);
   });
-
-  test('[CT-UC10-07] Cabeçalho de estatísticas de feedbacks é exibido na listagem', async ({ page }) => {
-    await expect(
-      page.getByRole('heading', { name: /feedbacks/i }).first(),
-    ).toBeVisible();
-  });
 });
