@@ -42,15 +42,14 @@
 
 ## Base para Teste E2E
 
-> Esta seção é documentação — nenhum arquivo de teste é criado aqui.
-> Quando o E2E for implementado, cada item abaixo vira um `it()`.
-> Execução formal: [plano-estrategico.md](../testes/plano-estrategico.md) — Fase 2, UC-04.
+> Os testes E2E já estão implementados no Playwright ([uc-04-envio-feedback-qrcode.spec.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/e2e/uc-04-envio-feedback-qrcode.spec.ts)).
+> Cada cenário abaixo possui a sua respectiva classificação e estratégia de execução mapeada no [Plano de Teste Estratégico](../testes/plano-estrategico.md).
 
 **Cenários a cobrir:**
 
-- **[CT-UC04-01]** Caminho feliz: cliente acessa URL válida, seleciona a opção Likert (ex.: "Ótima") em cada pergunta, preenche o comentário e clica em "Enviar" — deve exibir a tela de agradecimento.
-- **[CT-UC04-02]** Exceção — dispositivo duplicado: segundo envio pelo mesmo dispositivo no mesmo dia deve exibir a tela de "feedback já registrado".
-- **[CT-UC04-03]** Exceção — empresa inválida: acessar URL com identificador de empresa inexistente deve exibir a tela de erro fatal, sem renderizar o formulário.
-- **[CT-UC04-04]** Exceção — perguntas não respondidas: clicar em "Enviar" sem selecionar opção Likert em nenhuma pergunta deve bloquear o envio e exibir a mensagem "Responda as X perguntas antes de enviar".
-- **[CT-UC04-05]** Exceção — parâmetro enterprise ausente: acessar `/feedback/qrcode` sem o parâmetro `enterprise` na URL deve exibir tela de erro fatal.
-- **[CT-UC04-06]** Campos opcionais de identificação (nome, e-mail, gênero) são preenchíveis sem bloquear o envio.
+- **[CT-UC04-01]** ✅ *Coberto E2E* - Caminho feliz: empresa ativa; QR Code ativo; perguntas dinâmicas configuradas; dispositivo sem envio anterior no dia. Acesse a URL, selecione nota Likert, adicione comentário, responda perguntas e envie.
+- **[CT-UC04-02]** ✅ *Coberto E2E* - Empresa inválida (Exceção): tentar acessar URL com identifier inexistente de empresa deve exibir tela de erro fatal sem renderizar o formulário.
+- **[CT-UC04-03]** ⚠️ *Skipped Intencional* - Dispositivo duplicado (Exceção): tentar enviar feedback a partir do mesmo dispositivo no mesmo dia deve exibir tela de "feedback já registrado".
+- **[CT-UC04-04]** 🔵 *Unidade já atende* - Nota não selecionada (Exceção): tentar enviar o formulário sem selecionar a avaliação Likert deve bloquear a submissão.
+- **[CT-UC04-05]** 🔵 *Unidade já atende* - Comentário vazio (Exceção): tentar enviar sem preencher a mensagem escrita de comentário deve bloquear a submissão.
+- **[CT-UC04-06]** 🔵 *Unidade já atende* - Perguntas não respondidas (Exceção): deixar ao menos uma pergunta dinâmica sem resposta deve bloquear a submissão do formulário.

@@ -49,7 +49,7 @@ const VALID_PAYLOAD = {
   ],
 };
 
-describe('POST /internal/ia-analyze/analyze', () => {
+describe('[Integração] POST /internal/ia-analyze/analyze', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });

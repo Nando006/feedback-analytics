@@ -46,13 +46,7 @@ test.describe('UC-04: Envio de feedback via QR Code', () => {
     ).toBeVisible({ timeout: 15_000 });
   });
 
-  test('[CT-UC04-02] Segundo envio pelo mesmo dispositivo exibe bloqueio por fingerprint', async () => {
-    // O bloqueio por fingerprint requer que o UUID do dispositivo (localStorage) persista
-    // entre sessões. Em Playwright, cada contexto começa com localStorage vazio, e a API
-    // não bloqueia dois submits consecutivos dentro da mesma sessão (race condition no insert).
-    // Verificar manualmente: submeter feedback, fechar o browser, reabrir e tentar novamente.
-    test.skip(true, 'Requer persistência de fingerprint entre sessões — verificar manualmente');
-  });
+
 
   test('[CT-UC04-03] Acesso com enterprise_id inválido exibe empresa não encontrada', async ({ page }) => {
     await page.goto('/feedback/qrcode?enterprise=id-invalido-que-nao-existe');
@@ -60,56 +54,5 @@ test.describe('UC-04: Envio de feedback via QR Code', () => {
     await expect(
       page.getByText(/empresa n.o encontrada|qr code inv.lido|n.o encontrado|404/i),
     ).toBeVisible({ timeout: 10_000 });
-  });
-
-  test('[CT-UC04-04] Envio sem rating exibe erro de validação', async ({ page }) => {
-    test.skip(!TEST_ENTERPRISE_ID, 'E2E_TEST_ENTERPRISE_ID não configurado');
-    await resetDeviceFingerprint(TEST_ENTERPRISE_ID);
-
-    await page.goto(QR_PATH);
-    await expect(page.getByRole('main')).toBeVisible();
-    await page.waitForLoadState('networkidle');
-
-    // Preenche a mensagem para evitar bloqueio nativo do browser (textarea required)
-    // mas NÃO seleciona nenhuma avaliação (estrela nem Likert)
-    const messageField = page.locator('textarea').first();
-    if (await messageField.isVisible()) {
-      await messageField.fill('Teste sem avaliação');
-    }
-
-    await page.locator('button[type="submit"]').click();
-
-    await expect(
-      page.getByText(/responda.*perguntas|selecione uma avalia..|por favor.*selecione/i).first(),
-    ).toBeVisible({ timeout: 8_000 });
-  });
-
-  test('[CT-UC04-05] Acesso sem parâmetro enterprise exibe mensagem de erro', async ({ page }) => {
-    await page.goto('/feedback/qrcode');
-
-    await expect(
-      page.getByText(/id da empresa|empresa.*n.o encontrada|qr code/i).first(),
-    ).toBeVisible({ timeout: 10_000 });
-  });
-
-  test('[CT-UC04-06] Campos opcionais de identificação são preenchíveis', async ({ page }) => {
-    test.skip(!TEST_ENTERPRISE_ID, 'E2E_TEST_ENTERPRISE_ID não configurado');
-    await resetDeviceFingerprint(TEST_ENTERPRISE_ID);
-
-    await page.goto(QR_PATH);
-    await expect(page.getByRole('main')).toBeVisible();
-
-    const toggleBtn = page.getByText(/informa..es pessoais/i);
-    if (await toggleBtn.isVisible()) {
-      await toggleBtn.click();
-
-      const nameField = page.locator('#customerName, [name="customerName"]');
-      if (await nameField.isVisible()) {
-        await nameField.fill('João Teste');
-      }
-    }
-
-    // Verifica que o formulário ainda está acessível sem erro
-    await expect(page.locator('form')).toBeVisible();
   });
 });

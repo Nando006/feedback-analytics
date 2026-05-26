@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { truncateText, useTruncatedText } from '../truncateText';
 
-describe('truncateText Utility', () => {
+describe('[Unidade] truncateText Utility', () => {
   it('deve retornar texto completo quando menor que o limite padrão', () => {
     const text = 'Texto curto';
     const result = truncateText(text);
@@ -67,7 +67,7 @@ describe('truncateText Utility', () => {
   });
 });
 
-describe('useTruncatedText Hook', () => {
+describe('[Unidade] useTruncatedText Hook', () => {
   it('deve retornar props vazias para texto não truncado', () => {
     const text = 'Texto curto';
     const result = useTruncatedText(text);

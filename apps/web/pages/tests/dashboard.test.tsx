@@ -102,7 +102,7 @@ const dashboardLoaderData = {
   dashboardError: null,
 };
 
-describe('Dashboard Page', () => {
+describe('[Unidade] Dashboard Page', () => {
   beforeEach(() => {
     vi.mocked(useLoaderData).mockReturnValue(
       dashboardLoaderData as ReturnType<typeof useLoaderData>,

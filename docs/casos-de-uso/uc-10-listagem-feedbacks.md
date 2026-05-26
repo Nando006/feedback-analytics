@@ -42,17 +42,16 @@
 
 ## Base para Teste E2E
 
-> Esta seção é documentação — nenhum arquivo de teste é criado aqui.
-> Quando o E2E for implementado, cada item abaixo vira um `it()`.
-> Execução formal: [plano-estrategico.md](../testes/plano-estrategico.md) — Fase 2, UC-10.
+> Os testes E2E já estão implementados no Playwright ([uc-10-listagem-feedbacks.spec.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/e2e/uc-10-listagem-feedbacks.spec.ts)).
+> Cada cenário abaixo possui a sua respectiva classificação e estratégia de execução mapeada no [Plano de Teste Estratégico](../testes/plano-estrategico.md).
 
 **Cenários a cobrir:**
 
-- **[CT-UC10-01]** Caminho feliz: gestor acessa a lista, vê feedbacks paginados e clica em um para abrir o modal de detalhes com todas as seções (ponto de coleta, perguntas, dispositivo, cliente).
-- **[CT-UC10-02]** Caminho feliz — filtro por nota: selecionar nota 5 deve exibir apenas feedbacks com aquela avaliação.
-- **[CT-UC10-03]** Caminho feliz — filtro por categoria: selecionar "Produto" deve exibir apenas feedbacks de pontos de coleta do tipo produto.
-- **[CT-UC10-04]** Caminho feliz — busca textual: digitar um termo deve filtrar feedbacks que contenham aquele texto na mensagem (com debounce de ~450ms antes da requisição).
-- **[CT-UC10-05]** Caminho feliz — filtro por item: digitar um nome de item deve filtrar feedbacks daquele produto/serviço/departamento.
-- **[CT-UC10-06]** Caminho feliz — paginação: mudar de página deve carregar o próximo conjunto de feedbacks mantendo os filtros ativos.
-- **[CT-UC10-07]** Exceção — filtro sem resultado: aplicar filtro que não retorna feedbacks deve exibir o empty state de "ajuste os filtros".
-- **[CT-UC10-08]** Exceção — sem feedbacks: empresa sem histórico deve exibir o empty state de "nenhum feedback recebido".
+- **[CT-UC10-01]** ✅ *Coberto E2E* - Caminho feliz: gestor acessa a lista, vê feedbacks paginados e clica em um para abrir o modal de detalhes com todas as seções (ponto de coleta, perguntas, dispositivo, cliente).
+- **[CT-UC10-02]** ⚠️ *Skipped Intencional* - Caminho feliz — filtro por nota: selecionar nota 5 deve exibir apenas feedbacks com aquela avaliação.
+- **[CT-UC10-03]** ⚠️ *Skipped Intencional* - Caminho feliz — filtro por categoria: selecionar "Produto" deve exibir apenas feedbacks de pontos de coleta do tipo produto.
+- **[CT-UC10-04]** ⚠️ *Skipped Intencional* - Caminho feliz — busca textual: digitar um termo deve filtrar feedbacks que contenham aquele texto na mensagem (com debounce de ~450ms antes da requisição).
+- **[CT-UC10-05]** ⚠️ *Skipped Intencional* - Caminho feliz — filtro por item: digitar um nome de item deve filtrar feedbacks daquele produto/serviço/departamento.
+- **[CT-UC10-06]** ⚠️ *Skipped Intencional* - Caminho feliz — paginação: mudar de página deve carregar o próximo conjunto de feedbacks mantendo os filtros ativos.
+- **[CT-UC10-07]** ⚠️ *Skipped Intencional* - Exceção — filtro sem resultado: aplicar filtro que não retorna feedbacks deve exibir o empty state de "ajuste os filtros".
+- **[CT-UC10-08]** ⚠️ *Skipped Intencional* - Exceção — sem feedbacks: empresa sem histórico deve exibir o empty state de "nenhum feedback recebido".

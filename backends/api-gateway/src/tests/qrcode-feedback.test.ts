@@ -38,7 +38,7 @@ const VALID_PAYLOAD = {
   subanswers: [],
 };
 
-describe('POST /api/public/qrcode/feedback', () => {
+describe('[Integração] POST /api/public/qrcode/feedback', () => {
   let mockSupabase: ReturnType<typeof makeMockSupabase>;
 
   beforeEach(() => {
@@ -189,7 +189,7 @@ describe('POST /api/public/qrcode/feedback', () => {
   });
 });
 
-describe('GET /api/public/enterprise/:id', () => {
+describe('[Integração] GET /api/public/enterprise/:id', () => {
   let mockSupabase: ReturnType<typeof makeMockSupabase>;
 
   beforeEach(() => {

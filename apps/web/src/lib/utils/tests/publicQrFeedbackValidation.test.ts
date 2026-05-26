@@ -6,7 +6,7 @@ import {
   parsePublicQrSubanswersInput,
 } from '../publicQrFeedbackValidation';
 
-describe('publicQrFeedbackValidation', () => {
+describe('[Unidade] publicQrFeedbackValidation', () => {
   it('retorna erro de validação base quando enterprise_id está ausente', () => {
     const error = getPublicQrFeedbackBaseValidationError({
       enterprise_id: '',

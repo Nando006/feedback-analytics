@@ -5,7 +5,7 @@ import {
   VALID_SENTIMENTS,
 } from '../../services/sentimentAnalysis.service.js';
 
-describe('isValidSentiment', () => {
+describe('[Unidade] isValidSentiment', () => {
   it.each(VALID_SENTIMENTS)('aceita "%s" como sentimento válido', (sentiment) => {
     expect(isValidSentiment(sentiment)).toBe(true);
   });
@@ -24,7 +24,7 @@ describe('isValidSentiment', () => {
   });
 });
 
-describe('canProcessAnalyzedItem', () => {
+describe('[Unidade] canProcessAnalyzedItem', () => {
   const FEEDBACK_ID = 'fb-id-1';
   const feedbackById = new Map([[FEEDBACK_ID, {} as never]]);
 
