@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { uniqueEmail, VALID_CPF, INVALID_CPF, VALID_PASSWORD, MISMATCHED_PASSWORD, generateRandomCpf, generateRandomPhone } from './fixtures/test-data';
+import { uniqueEmail, VALID_CPF, VALID_PASSWORD, generateRandomCpf, generateRandomPhone } from './fixtures/test-data';
 
 test.use({ storageState: { cookies: [], origins: [] } });
 
