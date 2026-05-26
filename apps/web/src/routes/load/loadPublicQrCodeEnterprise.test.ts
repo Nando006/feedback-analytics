@@ -8,7 +8,7 @@ vi.mock('src/services/serviceEnterprise', () => ({
 
 const mockServiceGetEnterprisePublic = vi.mocked(ServiceGetEnterprisePublic);
 
-describe('loadPublicQrCodeEnterpriseData', () => {
+describe('[Integração] loadPublicQrCodeEnterpriseData', () => {
   const consoleErrorSpy = vi
     .spyOn(console, 'error')
     .mockImplementation(() => undefined);

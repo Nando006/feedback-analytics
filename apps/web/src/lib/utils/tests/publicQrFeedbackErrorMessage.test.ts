@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { getPublicQrFeedbackErrorMessage } from '../publicQrFeedbackErrorMessage';
 
-describe('getPublicQrFeedbackErrorMessage', () => {
+describe('[Unidade] getPublicQrFeedbackErrorMessage', () => {
   it('deve mapear collection_point_not_found para mensagem amigável', () => {
     const message = getPublicQrFeedbackErrorMessage({
       code: 'collection_point_not_found',

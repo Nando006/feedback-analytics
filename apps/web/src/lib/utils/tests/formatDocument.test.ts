@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { formatDocument } from '../formatDocument';
 
-describe('formatDocument Utility', () => {
+describe('[Unidade] formatDocument Utility', () => {
   it('deve formatar um CPF corretamente', () => {
     const cpf = '12345678900';
     const formatted = formatDocument(cpf, 'CPF');

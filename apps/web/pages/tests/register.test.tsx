@@ -41,7 +41,7 @@ vi.mock('components/public/forms/formRegister', () => ({
   default: () => <div data-testid="form-register">Register Form</div>,
 }));
 
-describe('Register Page', () => {
+describe('[Unidade] Register Page', () => {
   it('deve renderizar todos os elementos principais da página', () => {
     render(<Register />);
 

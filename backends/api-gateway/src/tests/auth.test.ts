@@ -10,7 +10,7 @@ vi.mock('../config/supabase.js', () => ({
 
 const mockCreateClient = vi.mocked(createSupabaseServerClient);
 
-describe('POST /api/public/auth/login', () => {
+describe('[Integração] POST /api/public/auth/login', () => {
   let mockSupabase: ReturnType<typeof makeMockSupabase>;
 
   beforeEach(() => {
@@ -81,7 +81,7 @@ describe('POST /api/public/auth/login', () => {
   });
 });
 
-describe('POST /api/public/auth/logout', () => {
+describe('[Integração] POST /api/public/auth/logout', () => {
   let mockSupabase: ReturnType<typeof makeMockSupabase>;
 
   beforeEach(() => {
@@ -96,7 +96,7 @@ describe('POST /api/public/auth/logout', () => {
   });
 });
 
-describe('POST /api/public/auth/register', () => {
+describe('[Integração] POST /api/public/auth/register', () => {
   const VALID_PAYLOAD = {
     accountType: 'CPF',
     fullName: 'João da Silva',
@@ -181,7 +181,7 @@ describe('POST /api/public/auth/register', () => {
   });
 });
 
-describe('POST /api/public/auth/forgot-password', () => {
+describe('[Integração] POST /api/public/auth/forgot-password', () => {
   let mockSupabase: ReturnType<typeof makeMockSupabase>;
 
   beforeEach(() => {

@@ -20,7 +20,7 @@ function setupAuthenticatedMock() {
   return mockSupabase;
 }
 
-describe('GET /api/protected/user/feedbacks', () => {
+describe('[Integração] GET /api/protected/user/feedbacks', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -162,7 +162,7 @@ describe('GET /api/protected/user/feedbacks', () => {
   });
 });
 
-describe('GET /api/protected/user/feedbacks/stats', () => {
+describe('[Integração] GET /api/protected/user/feedbacks/stats', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });

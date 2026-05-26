@@ -8,7 +8,7 @@ import {
 import { normalizeForComparison } from '../../utils/normalizeForComparison.js';
 import type { IaAnalyzeFeedbackInput } from '../../../../../shared/interfaces/contracts/ia-analyze/input.contract.js';
 
-describe('normalizeForComparison', () => {
+describe('[Unidade] normalizeForComparison', () => {
   it('converte para minúsculas e remove acentos', () => {
     expect(normalizeForComparison('Ótimo')).toBe('otimo');
     expect(normalizeForComparison('Atendimento Rápido')).toBe('atendimento rapido');
@@ -25,7 +25,7 @@ describe('normalizeForComparison', () => {
   });
 });
 
-describe('isGroundedInMessage', () => {
+describe('[Unidade] isGroundedInMessage', () => {
   it('retorna true quando termo está contido na mensagem normalizada', () => {
     const message = normalizeForComparison('Ótimo atendimento e qualidade');
     expect(isGroundedInMessage('atendimento', message)).toBe(true);
@@ -49,7 +49,7 @@ describe('isGroundedInMessage', () => {
   });
 });
 
-describe('sanitizeTermList', () => {
+describe('[Unidade] sanitizeTermList', () => {
   const MSG = normalizeForComparison('Atendimento rápido e produto de qualidade excelente');
   const FORBIDDEN = new Set<string>(STRUCTURED_ANSWER_LABELS);
 
@@ -107,7 +107,7 @@ describe('sanitizeTermList', () => {
   });
 });
 
-describe('buildForbiddenTerms', () => {
+describe('[Unidade] buildForbiddenTerms', () => {
   it('inclui todos os STRUCTURED_ANSWER_LABELS no Set resultante', () => {
     const feedback: IaAnalyzeFeedbackInput = {
       id: 'fb-1',
