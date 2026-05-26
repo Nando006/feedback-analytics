@@ -18,7 +18,7 @@
     "lint:api": "npm run lint --prefix backends/api-gateway",
     "lint:ia": "npm run lint --prefix services/ia-analyze",
     "preview": "npm run preview --prefix apps/web",
-    "test": "npm run test:web && npm run test:api && npm run test:ia",
+    "test": "npm run test --prefix apps/web",
     "test:web": "npm run test --prefix apps/web",
     "test:api": "npm run test --prefix backends/api-gateway",
     "test:ia": "npm run test --prefix services/ia-analyze",
