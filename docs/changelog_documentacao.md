@@ -35,6 +35,7 @@ Versão Atual → v3.0.0
 
 | Versão | Data | Descrição |
 | --- | --- | --- |
+| v4.0.0 | 16/05/2026 | Versão estável da nova arquitetura macro e micro |
 | v3.0.0 | 16/05/2026 | Versão anterior do sistema (Legado). |
 | v2.0.0 | 10/04/2026 | Nova estrutura do negócio suportando perguntas dinâmicas e sub perguntas dinâmicas no formulário de feedback |
 | v1.1.1 | 11/03/2026 | Tema de cores padronizada em todo o projeto |
