@@ -83,7 +83,7 @@ export default function FeedbackCard({ feedback, onClick }: FeedbackCardProps) {
 
   return (
     <div
-      className={`font-work-sans relative overflow-hidden rounded-2xl border border-(--quaternary-color)/10 bg-gradient-to-br from-(--bg-secondary) to-(--sixth-color) p-6 glass-card ${onClick
+      className={`font-work-sans relative overflow-hidden rounded-2xl border border-(--quaternary-color)/10 bg-gradient-to-br from-(--bg-secondary) to-(--sixth-color) p-6 glass-card feedback-card ${onClick
           ? 'cursor-pointer transition-colors hover:border-(--quaternary-color)/20'
           : ''
         }`}

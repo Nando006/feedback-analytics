@@ -1,6 +1,6 @@
-# Provar que o monorepo Multi Domínio é mais viável que o Monolítico
+# Monorepo Serverless vs. Monolito: por que separamos os serviços
 
-O projeto atualmente tem dois serviços com perfis de carga radicalmente diferentes e na arquitetura antiga(monolito) não consegue tratar recursos distintos para cada um.
+O projeto tem dois serviços com perfis de carga radicalmente diferentes. A arquitetura Serverless em Monorepo resolve isso; o monolito não consegue tratar recursos distintos para cada um.
 
 ## Por que o monolito falha para nosso projeto
 | Serviço | Tipo de carga | Latência esperada | Recursos necessários |
@@ -22,7 +22,7 @@ A proposta do API Gateway é ser rápido, respondendo em milissegundos com baixo
 
 É nessa diferença drástica de propostas que os dois serviços entram em conflito. Na Arquitetura Monolítica, a aplicação inteira roda na mesma camada e disputa o mesmo processador. Resultado: um serviço sabota o outro e o sistema trava.
 
-Para resolver isso, evoluímos para uma arquitetura Multi-domínio, onde colocamos cada serviço rodando em um servidor separado. Assim, a IA e o Gateway trabalham no seu próprio ritmo, cumprindo suas propostas sem interferências. E para manter a nossa manutenção simples e produtiva, organizamos tudo em um Monorepo: o código das duas aplicações mora no mesmo lugar, mas na hora de ir para o ar (deploy), cada um vai para sua própria máquina.
+Para resolver isso, evoluímos para uma **arquitetura Serverless**: cada serviço roda de forma independente na Vercel, no seu próprio ritmo, sem interferências. E para manter a manutenção simples e produtiva, organizamos tudo em um **Monorepo**: o código das duas aplicações mora no mesmo lugar, mas na hora de ir para o ar (deploy), cada um vai para sua própria função Serverless.
 
 ### Timeout de função (evidência de infraestrutura)
 O Feedback Analytics hoje roda em Vercel Serverless Functions. Cada serviço pode ter configuração de timeout diferente.
@@ -31,26 +31,26 @@ O Feedback Analytics hoje roda em Vercel Serverless Functions. Cada serviço pod
 | `api-gateway` | `backends/api-gateway/vercel.json` | 30s | Respostas rápidas (dashboard, login, feedbacks) |
 | `ia-analyze` | `services/ia-analyze/vercel.json` | 300s | Chamadas ao LLM (Gemini) podem demorar 30–60s |
 
-Na arquitetura monolítica: Um único `vercel.json`, teria que escolher um `maxDuration`. Se escolher 30s, a análise da IA expira, se escolher 300s, o dashboard e o login ficam 10x mais lentos. Com a arquitetura monorepo multi-domínio podemos ter um `vercel.json` para cada *domínio* e configurar o `maxDuration` para cada um.
+Na arquitetura monolítica: Um único `vercel.json`, teria que escolher um `maxDuration`. Se escolher 30s, a análise da IA expira, se escolher 300s, o dashboard e o login ficam 10x mais lentos. Com o Monorepo Serverless podemos ter um `vercel.json` para cada serviço e configurar o `maxDuration` para cada um.
 
 ### Isolamento de falhas (testes automatizados)
 
 No monolito, uma falha na chamada ao LLM (timeout, rate limit, queda do Gemini) poderia derrubar o processo inteiro — derrubando junto o dashboard, o login e os feedbacks de todos os usuários.
 
-Na arquitetura Multi-domínio, a falha da IA é contida: ela se torna um erro HTTP controlado (502) que só afeta o endpoint de análise. O restante do sistema continua funcionando normalmente.
+Na arquitetura Serverless, a falha da IA é contida: ela se torna um erro HTTP controlado (502) que só afeta o endpoint de análise. O restante do sistema continua funcionando normalmente.
 
 ### Deploy independente (evidência de agilidade de entrega)
 
 No monolito, qualquer alteração — mesmo que seja só na lógica da IA — obriga um redeploy de toda a aplicação. Isso significa downtime (ou risco de downtime) para o dashboard, o login e os feedbacks enquanto um novo modelo de IA é publicado. Não somente isso, tem outras inumeras desvantagens, efeito dominó, lentidão no deploy, desperdício de testes (overhead de CI/CD).
 
-Na arquitetura Multi-domínio, cada serviço vai ao ar de forma independente. Mudar o modelo LLM não toca o Gateway. Corrigir um bug no dashboard não redeploiya a IA.
+Na arquitetura Serverless, cada serviço vai ao ar de forma independente. Mudar o modelo LLM não toca o Gateway. Corrigir um bug no dashboard não redeploiya a IA.
 
 Cada serviço tem seu próprio workflow de deploy (`.github/workflows/deploy-api.yml`, `.github/workflows/deploy-ia-analyze.yml`). Um push em `services/ia-analyze/` dispara apenas o deploy da IA. O Gateway não é tocado, não reinicia, não tem downtime.
 
 
-## Por que escolhemos especificamente o Monorepo Multi-domínio
+## Por que escolhemos especificamente o Monorepo Serverless
 
-Existem outras arquiteturas que também separam os serviços — como ter dois repositórios completamente independentes, ou uma arquitetura de microserviços completa. A escolha pelo Monorepo Multi-domínio foi deliberada, e cada parte do nome tem um motivo.
+Existem outras arquiteturas que também separam os serviços — como ter dois repositórios completamente independentes, ou uma arquitetura de microserviços completa. A escolha pelo Monorepo Serverless foi deliberada, e cada parte tem um motivo.
 
 ### Por que Monorepo (e não dois repositórios separados)?
 
@@ -60,20 +60,20 @@ No Monorepo, os dois serviços compartilham a pasta `shared/`, onde ficam as int
 
 Além disso, para uma equipe pequena, gerenciar um repositório é infinitamente mais simples do que gerenciar dois: um único histórico de commits, uma única configuração de CI/CD, um único lugar para abrir issues e pull requests.
 
-### Por que Multi-domínio?
+### Por que Serverless (e não microserviços)?
 
-#### Por que não um arquitetura de microserviços ?
+#### Por que não uma arquitetura de microserviços?
 Uma arquitetura de microserviços decompõe tudo em dezenas de serviços minúsculos — login vira um serviço, feedbacks vira outro, notificações vira outro. Isso faz sentido para empresas grandes com dezenas de times trabalhando em paralelo, mas traz uma complexidade operacional enorme para projetos menores.
 
-No Feedback Analytics, separamos em domínios **onde havia um motivo técnico real**: a análise IA tem perfil de carga radicalmente diferente do Gateway e precisava de isolamento. O restante (dashboard, feedbacks, autenticação) ficou consolidado no API Gateway, que é a escolha certa para operações rápidas e I/O-bound.
+No Feedback Analytics, separamos em serviços **onde havia um motivo técnico real**: a análise IA tem perfil de carga radicalmente diferente do Gateway e precisava de isolamento. O restante (dashboard, feedbacks, autenticação) ficou consolidado no API Gateway, que é a escolha certa para operações rápidas e I/O-bound.
 
 Resultado: a complexidade do sistema é proporcional ao tamanho do problema — nada a mais, nada a menos.
 
-A separação por domínios também resolve um problema de escala: se a demanda da IA crescer, é possível adicionar instâncias apenas para o `ia-analyze` sem tocar no Gateway. No monolito, escalar a IA significa escalar a aplicação inteira — pagando por recursos que o Gateway não precisa.
+O modelo Serverless também resolve escala: se a demanda da IA crescer, a Vercel sobe múltiplas instâncias do `ia-analyze` automaticamente sem tocar no Gateway. No monolito, escalar a IA significa escalar a aplicação inteira — pagando por recursos que o Gateway não precisa.
 
 ### Como fizemos isso funcionar — os workflows de deploy
 
-Para que o Monorepo Multi-domínio funcione de verdade, não basta separar as pastas. É preciso que o processo de publicação (deploy) de cada serviço seja independente. É aí que entram os workflows do GitHub Actions.
+Para que o Monorepo Serverless funcione de verdade, não basta separar as pastas. É preciso que o processo de publicação (deploy) de cada serviço seja independente. É aí que entram os workflows do GitHub Actions.
 
 Criamos três workflows separados, um para cada domínio:
 
@@ -113,7 +113,7 @@ Quando o deploy termina, o código não fica rodando num servidor dedicado esper
 
 Na prática funciona assim: o usuário acessa o dashboard → a Vercel cria uma instância do `api-gateway` em milissegundos → ela processa a requisição → encerra. Se ninguém acessar por um tempo, não há nada consumindo recursos.
 
-Isso tem uma consequência direta para a arquitetura Multi-domínio: cada serviço é um projeto separado na Vercel, com sua própria URL, suas próprias variáveis de ambiente e sua própria configuração. O `api-gateway` e o `ia-analyze` nunca dividem a mesma instância — são funções completamente independentes, cada uma com seu ciclo de vida.
+Isso tem uma consequência direta para a arquitetura Serverless: cada serviço é um projeto separado na Vercel, com sua própria URL, suas próprias variáveis de ambiente e sua própria configuração. O `api-gateway` e o `ia-analyze` nunca dividem a mesma instância — são funções completamente independentes, cada uma com seu ciclo de vida.
 
 É por isso que o `maxDuration` pode ser diferente para cada um. No modelo Serverless, cada função tem seu próprio limite de tempo de execução. No monolito, seria uma única função com um único limite — e como vimos, os dois serviços precisam de limites radicalmente diferentes.
 
@@ -140,5 +140,5 @@ No modelo Serverless, escalar não é uma decisão manual. Quando várias empres
 
 Isso significa que o `ia-analyze` consegue atender 1 ou 100 análises simultâneas sem nenhuma configuração adicional. O que o projeto controla é o `maxDuration` (quanto tempo cada instância pode rodar) e o plano da Vercel (que define o limite de execuções simultâneas). O "quantas instâncias subir" é uma decisão da própria plataforma.
 
-No monolito, esse cenário seria crítico: 10 análises simultâneas significariam 10 requisições competindo pelo mesmo processo Node.js, bloqueando umas às outras. Na arquitetura Multi-domínio, cada análise tem sua própria instância — sem concorrência, sem bloqueio.
+No monolito, esse cenário seria crítico: 10 análises simultâneas significariam 10 requisições competindo pelo mesmo processo Node.js, bloqueando umas às outras. Na arquitetura Serverless, cada análise tem sua própria instância — sem concorrência, sem bloqueio.
 

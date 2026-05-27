@@ -36,7 +36,7 @@ function createArgs(body: Record<string, string | undefined>): ActionFunctionArg
   }
 }
 
-describe('ActionCollectingData', () => {
+describe('[Integração] ActionCollectingData', () => {
   beforeEach(() => {
     mockUpdateCollectingDataEnterprise.mockReset();
   });

@@ -33,7 +33,7 @@ const companyQuestionsFixture: FeedbackQuestionPublic[] = [
   },
 ];
 
-describe('publicQrFeedbackTemplateEngine', () => {
+describe('[Unidade] publicQrFeedbackTemplateEngine', () => {
   it('resolve escopo por kind quando não há perguntas no payload', () => {
     expect(resolvePublicQrFeedbackScopeFromItemKind('PRODUCT')).toBe('PRODUCT');
     expect(resolvePublicQrFeedbackScopeFromItemKind('SERVICE')).toBe('SERVICE');

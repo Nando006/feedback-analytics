@@ -52,7 +52,7 @@ Este documento mapeia quem são os stakeholders do Feedback Analytics, o que cad
 - **Descrição:** Os engenheiros responsáveis por construir, manter e evoluir o sistema.
 - **Principal Interesse / Objetivo:** Uma arquitetura clara, bem documentada, fácil de manter e que permita adicionar novas funcionalidades com segurança e agilidade.
 - **Impacto no Projeto:**
-  - A estrutura de **monorepo multi-domínios** (`web`, `api-gateway`, `ia-analyze`) foi adotada para garantir autonomia entre serviços, deploys independentes e clareza de responsabilidades.
+  - A arquitetura **Serverless em Monorepo** (`web`, `api-gateway`, `ia-analyze`) foi adotada para garantir autonomia entre serviços, deploys independentes e clareza de responsabilidades.
   - A documentação técnica (`/docs`) existe para reduzir o tempo de onboarding e evitar que o conhecimento fique concentrado em uma pessoa.
   - A **cobertura de testes** (unitários, integração, E2E) protege o time de regressões ao evoluir funcionalidades críticas.
   - O padrão de **variáveis de ambiente por domínio** e a separação de serviços reduzem o risco de mudanças em um serviço quebrarem outro.

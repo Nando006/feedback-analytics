@@ -49,7 +49,7 @@ function createArgs(body: Record<string, string | undefined>): ActionFunctionArg
   } as unknown as ActionFunctionArgs;
 }
 
-describe('ActionFeedbackSettings', () => {
+describe('[Integração] ActionFeedbackSettings', () => {
   beforeEach(() => {
     mockUpdateCollectingDataEnterprise.mockReset();
   });

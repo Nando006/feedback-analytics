@@ -29,7 +29,7 @@ function setupAuthenticatedMock() {
   return mockSupabase;
 }
 
-describe('POST /api/protected/ia-analyze/analyze-raw', () => {
+describe('[Integração] POST /api/protected/ia-analyze/analyze-raw', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -95,7 +95,7 @@ describe('POST /api/protected/ia-analyze/analyze-raw', () => {
   });
 });
 
-describe('POST /api/protected/ia-analyze/regenerate-insights', () => {
+describe('[Integração] POST /api/protected/ia-analyze/regenerate-insights', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });

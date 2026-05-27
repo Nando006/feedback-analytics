@@ -59,7 +59,7 @@ vi.mock('components/user/pages/profile/questionsDinamic/questionDinamicEnterpris
 const mockUseRouteLoaderData = vi.mocked(useRouteLoaderData);
 const mockUseNavigation = vi.mocked(useNavigation);
 
-describe('Profile Page', () => {
+describe('[Unidade] Profile Page', () => {
   const mockData = {
     enterprise: {
       id: '1',

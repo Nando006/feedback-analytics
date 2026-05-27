@@ -48,11 +48,21 @@ jobs:
 
       - name: Deploy preview (homolog)
         if: github.ref_name == 'homolog'
+        id: deploy-homolog
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets['VERCEL_PROJECT_ID_IA_ANALYZE'] }}
-        run: npx vercel deploy --yes --token "$VERCEL_TOKEN" --local-config services/ia-analyze/vercel.json
+        run: |
+          URL=$(npx vercel deploy --yes --token "$VERCEL_TOKEN" --local-config services/ia-analyze/vercel.json)
+          echo "url=$URL" >> "$GITHUB_OUTPUT"
+
+      - name: Atribuir alias fixo ao homolog
+        if: github.ref_name == 'homolog'
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          npx vercel alias set ${{ steps.deploy-homolog.outputs.url }} feedback-analytics-ia-homolog.vercel.app --token "$VERCEL_TOKEN"
 
       - name: Deploy production (main)
         if: github.ref_name == 'main'

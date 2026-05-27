@@ -10,7 +10,7 @@ vi.mock('../config/supabase.js', () => ({
 
 const mockCreateClient = vi.mocked(createSupabaseServerClient);
 
-describe('POST /api/public/auth/login', () => {
+describe('[Integração] POST /api/public/auth/login', () => {
   let mockSupabase: ReturnType<typeof makeMockSupabase>;
 
   beforeEach(() => {
@@ -81,7 +81,7 @@ describe('POST /api/public/auth/login', () => {
   });
 });
 
-describe('POST /api/public/auth/logout', () => {
+describe('[Integração] POST /api/public/auth/logout', () => {
   let mockSupabase: ReturnType<typeof makeMockSupabase>;
 
   beforeEach(() => {
@@ -96,7 +96,7 @@ describe('POST /api/public/auth/logout', () => {
   });
 });
 
-describe('POST /api/public/auth/register', () => {
+describe('[Integração] POST /api/public/auth/register', () => {
   const VALID_PAYLOAD = {
     accountType: 'CPF',
     fullName: 'João da Silva',
@@ -155,7 +155,7 @@ describe('POST /api/public/auth/register', () => {
     expect(res.body.error).toBe('invalid_payload');
   });
 
-  it('[CT-UC01-05] retorna 409 quando e-mail já cadastrado', async () => {
+  it('[CT-UC01-05] retorna 200 com confirmation_required quando e-mail já cadastrado', async () => {
     mockSupabase.auth.signUp.mockResolvedValueOnce({
       data: { user: null },
       error: { message: 'User already registered' },
@@ -165,8 +165,8 @@ describe('POST /api/public/auth/register', () => {
       .post('/api/public/auth/register')
       .send(VALID_PAYLOAD);
 
-    expect(res.status).toBe(409);
-    expect(res.body.error).toBe('email_taken');
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({ ok: true, message: 'confirmation_required' });
   });
 
   it('[CT-UC01-06] retorna 409 quando telefone já cadastrado', async () => {
@@ -181,7 +181,7 @@ describe('POST /api/public/auth/register', () => {
   });
 });
 
-describe('POST /api/public/auth/forgot-password', () => {
+describe('[Integração] POST /api/public/auth/forgot-password', () => {
   let mockSupabase: ReturnType<typeof makeMockSupabase>;
 
   beforeEach(() => {

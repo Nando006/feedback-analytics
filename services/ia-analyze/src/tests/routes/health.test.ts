@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import request from 'supertest';
 import app from '../../index.js';
 
-describe('GET /internal/health', () => {
+describe('[Integração] GET /internal/health', () => {
   it('retorna 200 com { ok: true }', async () => {
     const res = await request(app).get('/internal/health');
     expect(res.status).toBe(200);
@@ -10,7 +10,7 @@ describe('GET /internal/health', () => {
   });
 });
 
-describe('GET /internal/ia-analyze/health', () => {
+describe('[Integração] GET /internal/ia-analyze/health', () => {
   it('retorna 200 com { ok: true }', async () => {
     const res = await request(app).get('/internal/ia-analyze/health');
     expect(res.status).toBe(200);

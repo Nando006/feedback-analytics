@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { formatPhone } from '../formatPhone';
 
-describe('formatPhone Utility', () => {
+describe('[Unidade] formatPhone Utility', () => {
   it('deve formatar um número de celular com 11 dígitos corretamente', () => {
     const phone = '11987654321';
     const formatted = formatPhone(phone);

@@ -1,80 +1,58 @@
-# Testes — Microserviço IA (`services/ia-analyze`)
+# Testes — IA Analyze (`services/ia-analyze`)
 
-## Status Atual
-
-**Sem cobertura.** O `ia-analyze` não possui testes.
-
-O serviço é uma API Express em Node.js puro — sem DOM, sem Vite, sem React. O Vitest foi removido por não fazer sentido neste contexto: ele é o framework de testes do frontend web, onde o Vite já está presente como bundler. Para um serviço Node.js independente, o Vitest adiciona uma dependência sem justificativa técnica.
+Este documento detalha a arquitetura, a estrutura e a especificação dos testes automatizados do serviço Serverless **IA Analyze**. O serviço é responsável por se conectar aos modelos de linguagem da Google (Gemini API) para extrair sentimentos estruturados, palavras-chave de feedback e recomendações automáticas para os gestores.
 
 ---
 
-## O Que Não Está Sendo Testado
+## Status da Cobertura
 
-| Módulo | Responsabilidade |
-|---|---|
-| `sentimentAnalysis.service.ts` | Valida se o sentimento retornado pelo LLM é aceito |
-| `iaAnalyzePromptBuilders.ts` | Monta o prompt enviado ao LLM por escopo |
-| `keywordExtraction.service.ts` | Extrai e sanitiza palavras-chave da resposta |
-| `categorization.service.ts` | Extrai e sanitiza categorias da resposta |
-| `globalInsights.service.ts` | Monta contexto de insights por batch |
-| `iaAnalyze.service.ts` | Orquestrador do fluxo completo |
+Os testes do serviço IA utilizam o **Vitest** como motor de execução e o **Supertest** para validar os endpoints locais simulando chamadas HTTP internas vindas da API Gateway. A comunicação externa com as APIs do Gemini é mockada em tempo de teste para evitar latência e custos de infraestrutura.
+
+> **Total geral de testes do IA Analyze: 33 testes distribuídos em 4 arquivos**
 
 ---
 
-## Como Cobrir
+## Como Executar os Testes
 
-Para um serviço Node.js ESM com TypeScript, as opções mais adequadas são:
-
-### Jest com ts-jest
-
-Opção mais consolidada e com maior ecossistema de mocks para Node.js.
+Para executar a suíte de testes do serviço de IA a partir da raiz do projeto:
 
 ```bash
-npm install -D jest ts-jest @types/jest
+powershell -ExecutionPolicy Bypass -Command "npm run test:api"
 ```
 
-```ts
-// jest.config.ts
-export default {
-  preset: 'ts-jest/presets/default-esm',
-  testEnvironment: 'node',
-};
-```
+Ou diretamente no diretório do serviço:
 
-### Node Test Runner (nativo)
-
-Disponível no Node 18+ sem dependências externas. Adequado para testes simples de funções puras.
-
-```ts
-import { describe, it } from 'node:test';
-import assert from 'node:assert/strict';
-import { isValidSentiment } from '../src/services/sentimentAnalysis.service.js';
-
-describe('isValidSentiment', () => {
-  it('aceita sentimentos válidos', () => {
-    assert.equal(isValidSentiment('positive'), true);
-  });
-});
+```bash
+cd services/ia-analyze
+powershell -ExecutionPolicy Bypass -Command "npx vitest run"
 ```
 
 ---
 
-## Prioridade de Cobertura
+## Testes Automatizados
 
-Se os testes forem implementados, esta é a ordem de valor:
+Abaixo está o detalhamento sistemático de cada arquivo de teste presente no serviço, especificando sua finalidade e a quantidade de asserções executadas.
 
-| Prioridade | O que testar | Motivo |
-|---|---|---|
-| 1 | `isValidSentiment` e `canProcessAnalyzedItem` | Guardiões que descartam dados inválidos do LLM |
-| 2 | `buildIaPromptByScope` | Contrato crítico entre sistema e modelo de IA |
-| 3 | `keywordExtraction` e `categorization` | Sanitização de dados antes de salvar |
-| 4 | `iaAnalyze.service.ts` (orquestrador) | Requer mock do cliente LLM — mais complexo |
+| Arquivo de Teste | Propósito Técnico | Qtd. Testes |
+| :--- | :--- | :---: |
+| [termProcessing.test.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/services/ia-analyze/src/tests/lib/termProcessing.test.ts) | **Sanitização e Processamento de Termos:** Valida exaustivamente os algoritmos que limpam e qualificam os termos e tags sugeridos pela IA. Cobre funções como `normalizeForComparison` (remoção de acentos/pontuações e colapso de espaços), `isGroundedInMessage` (garantia de que as palavras extraídas existem no comentário real para prevenir alucinações), `sanitizeTermList` (limpeza de duplicatas e limites de contagem) e `buildForbiddenTerms` (geração de blacklist contendo termos estruturados). | **14** |
+| [sentiment.test.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/services/ia-analyze/src/tests/services/sentiment.test.ts) | **Validação de Sentimento e Integridade de Dados:** Garante que a classificação qualitativa atende ao padrão esperado pelo banco (`positive`, `neutral`, `negative`). Valida se o ID de feedback fornecido é válido, rejeita tipos incompatíveis e impede o processamento de registros cujos identificadores não estejam no mapa de cache. | **9** |
+| [analyze.test.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/services/ia-analyze/src/tests/routes/analyze.test.ts) | **Endpoint de Análise de Lotes (/analyze):** Testa a rota principal do serviço (`POST /internal/ia-analyze/analyze`). Cobre a segurança de cabeçalhos por token de autenticação interna, validações Zod do payload, processamento bem-sucedido com chamadas mockadas à IA do Gemini, resposta a lotes sem feedback e o repasse correto de erros da API do Gemini (status 502) ou erros inesperados (status 500). | **8** |
+| [health.test.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/services/ia-analyze/src/tests/routes/health.test.ts) | **Verificação de Integridade (Healthcheck):** Valida as rotas de checagem do serviço (`GET /internal/health` e `GET /internal/ia-analyze/health`), garantindo que o servidor Express responda status 200 com `{ ok: true, service: "ia-analyze" }`. | **2** |
+
+---
+
+## Estrutura de Mocks
+
+Para evitar dependências de rede externas durante os testes automatizados, o motor Gemini é mockado no controlador de rotas:
+
+* **Mock do Orquestrador (`iaAnalyze.service.js`):** O módulo orquestrador de IA é interceptado via `vi.mock('../../services/iaAnalyze.service.js')` para substituir o método `runIaAnalyzeService` por um resolvedor simulado. Isso permite testar todos os cenários de sucesso, erro de infraestrutura (`IaAnalyzeServiceError`) ou falha inesperada na chamada da API da Google sem enviar requisições reais à internet.
 
 ---
 
 ## Veja Também
 
-- [Visão Geral dos Testes](./visao-geral.md)
-- [Frontend](./web.md)
-- [Backend](./api-gateway.md)
-- [Visão Geral do Serviço IA](../servicos/ia-analyze/visao-geral.md)
+* [Plano Estratégico de Testes](file:///C:/Users/Fernando/Repositorios/feedback-analytics/docs/testes/plano-estrategico.md)
+* [Visão Geral dos Testes](file:///C:/Users/Fernando/Repositorios/feedback-analytics/docs/testes/visao-geral.md)
+* [Testes da Aplicação Web (Frontend)](file:///C:/Users/Fernando/Repositorios/feedback-analytics/docs/testes/web.md)
+* [Testes do API Gateway (Backend)](file:///C:/Users/Fernando/Repositorios/feedback-analytics/docs/testes/api-gateway.md)

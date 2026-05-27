@@ -2,7 +2,7 @@
 
 ## O Que É
 
-O `ia-analyze` é um **microserviço independente** responsável por uma única coisa: receber lotes de feedbacks, chamar o **provedor LLM externo configurável** e retornar análises estruturadas.
+O `ia-analyze` é um **serviço Serverless independente** responsável por uma única coisa: receber lotes de feedbacks, chamar o **provedor LLM externo configurável** e retornar análises estruturadas.
 
 Ele não tem banco de dados, não autentica usuários e não conhece a lógica de negócio do sistema. É um processador puro de texto.
 

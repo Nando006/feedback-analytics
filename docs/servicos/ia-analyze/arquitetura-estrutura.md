@@ -1,6 +1,6 @@
 # IA Analyze — Arquitetura e Estrutura
 
-Este documento detalha a arquitetura do microserviço de IA (`ia-analyze`). Diferente do API Gateway, este serviço não possui conexão com o banco de dados. Sua única responsabilidade é processar textos de forma isolada, recebendo dados brutos e retornando análises estruturadas.
+Este documento detalha a arquitetura do serviço Serverless de IA (`ia-analyze`). Diferente do API Gateway, este serviço não possui conexão com o banco de dados. Sua única responsabilidade é processar textos de forma isolada, recebendo dados brutos e retornando análises estruturadas.
 
 ## O Fluxo de Dados (Ida e Volta)
 
