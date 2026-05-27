@@ -5,7 +5,7 @@
 | Domínio | Pasta | Arquivos de teste | Status |
 |---|---|---|---|
 | **Frontend** | `apps/web` | 22 | Coberto (unitários + componentes + actions) |
-| **Microserviço IA** | `services/ia-analyze` | 4 | Coberto (unitários + integração de rotas) |
+| **IA Analyze** | `services/ia-analyze` | 4 | Coberto (unitários + integração de rotas) |
 | **Backend (API Gateway)** | `backends/api-gateway` | 5 | Coberto (unitários + integração com banco mockado) |
 | **Testes E2E (Playwright)** | `apps/web/e2e` | 11 | Coberto (fluxos completos do sistema) |
 
@@ -14,7 +14,7 @@
 
 ## Pirâmide de Testes Global
 
-O projeto adota uma estratégia de testes distribuída em múltiplas camadas que cobrem o frontend, a API Gateway, o microsserviço de inteligência artificial e a integração geral do ecossistema.
+O projeto adota uma estratégia de testes distribuída em múltiplas camadas que cobrem o frontend, a API Gateway, o serviço Serverless de IA e a integração geral do ecossistema.
 
 ```
            ╔═════════════════════╗
@@ -45,7 +45,7 @@ npm run test:web
 # Rodar testes unitários/integração do Backend (API Gateway)
 npm run test:api
 
-# Rodar testes unitários/integração do Microsserviço de IA
+# Rodar testes unitários/integração do IA Analyze
 npm run test:ia
 
 # Rodar testes E2E do Playwright (Navegador Headless)
@@ -61,5 +61,5 @@ npm run test:e2e:ui
 
 - [Plano de Teste Estratégico](./plano-estrategico.md)
 - [Frontend — `apps/web`](./web.md)
-- [Microserviço IA — `services/ia-analyze`](./ia-analyze.md)
+- [IA Analyze — `services/ia-analyze`](./ia-analyze.md)
 - [Backend — `backends/api-gateway`](./api-gateway.md)
