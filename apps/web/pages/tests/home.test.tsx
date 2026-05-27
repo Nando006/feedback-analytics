@@ -21,7 +21,7 @@ vi.mock('react-router-dom', async (importOriginal) => {
 import { MemoryRouter } from 'react-router-dom';
 import Home from '../public/home';
 
-describe('Home Page', () => {
+describe('[Unidade] Home Page', () => {
   it('deve renderizar o conteúdo da página home', () => {
     render(
       <MemoryRouter>

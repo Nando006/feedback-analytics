@@ -48,45 +48,43 @@ O banco de dados é a camada de persistência central da plataforma. Toda a lóg
 
 ---
 
+## Diagrama (ER)
+[Imagem gerada a partir do DBeaver](https://drive.google.com/file/d/1aVd_KDQH1kX06L_hKiHndOnY3fKLu0Lt/view?usp=sharing)
+
+---
+
 ## Diagrama de Entidades (ERD)
 
+> **Legenda de cardinalidade:** `||` = exatamente 1 · `o|` = 0 ou 1 (opcional) · `|{` = 1 ou muitos · `o{` = 0 ou muitos.
+
+**Visualizar o código no site: https://mermaid.ai/** 
+```mermaid
+erDiagram
+    AUTH_USERS ||--|| ENTERPRISE : "cria via trigger"
+    ENTERPRISE ||--|| COLLECTING_DATA_ENTERPRISE : "contexto estratégico"
+    ENTERPRISE ||--o{ CATALOG_ITEMS : "possui"
+    ENTERPRISE ||--o{ COLLECTION_POINTS : "possui"
+    ENTERPRISE ||--|{ QUESTIONS_OF_FEEDBACKS : "possui (mín 3 no signup)"
+    ENTERPRISE ||--o{ CUSTOMER : "possui"
+    ENTERPRISE ||--o{ TRACKED_DEVICES : "possui"
+    ENTERPRISE ||--o{ FEEDBACK : "recebe"
+    ENTERPRISE ||--o{ FEEDBACK_INSIGHTS_REPORT : "possui"
+    CATALOG_ITEMS ||--o{ COLLECTION_POINTS : "catalog_item_id (opcional)"
+    CATALOG_ITEMS ||--o{ QUESTIONS_OF_FEEDBACKS : "catalog_item_id (condicional)"
+    CATALOG_ITEMS ||--o{ FEEDBACK_INSIGHTS_REPORT : "catalog_item_id (condicional)"
+    QUESTIONS_OF_FEEDBACKS ||--o{ FEEDBACK_QUESTION_SUBQUESTIONS : "possui"
+    CUSTOMER ||--o{ TRACKED_DEVICES : "customer_id (opcional)"
+    COLLECTION_POINTS ||--o{ FEEDBACK : "collection_point_id"
+    TRACKED_DEVICES ||--o{ FEEDBACK : "tracked_device_id (opcional)"
+    FEEDBACK ||--o{ FEEDBACK_QUESTION_ANSWERS : "possui"
+    FEEDBACK ||--o{ FEEDBACK_SUBQUESTION_ANSWERS : "possui"
+    FEEDBACK ||--o| FEEDBACK_ANALYSIS : "possui"
+    QUESTIONS_OF_FEEDBACKS ||--o{ FEEDBACK_QUESTION_ANSWERS : "question_id"
+    FEEDBACK_QUESTION_SUBQUESTIONS ||--o{ FEEDBACK_SUBQUESTION_ANSWERS : "subquestion_id"
 ```
-auth.users (Supabase Auth)
-    │
-    │ 1:1 (trigger on_auth_user_created)
-    ▼
-enterprise ──────────────────────────────────────────────────────────────┐
-    │                                                                     │
-    ├──── 1:1 ──→ collecting_data_enterprise                             │
-    │                                                                     │
-    ├──── 1:N ──→ catalog_items                                          │
-    │                   │                                                 │
-    │                   └──── 1:N ──→ collection_points ←────────────────┤
-    │                   │                                                 │
-    │                   └──── 1:N ──→ questions_of_feedbacks ←───────────┤
-    │                                         │                           │
-    │                                         └──── 1:N ──→ feedback_question_subquestions
-    │                                                                     │
-    ├──── 1:N ──→ collection_points (corporativo, sem catalog_item)      │
-    │                                                                     │
-    ├──── 1:N ──→ questions_of_feedbacks (escopo COMPANY)               │
-    │                                                                     │
-    ├──── 1:N ──→ tracked_devices                                        │
-    │                   │                                                 │
-    │                   └──── N:1 ──→ customer                          │
-    │                                                                     │
-    ├──── 1:N ──→ feedback ───────────────────────────────────────────────┘
-    │                 │
-    │                 ├──── 1:N ──→ feedback_question_answers
-    │                 │                   └──── N:1 ──→ questions_of_feedbacks
-    │                 │
-    │                 ├──── 1:N ──→ feedback_subquestion_answers
-    │                 │                   └──── N:1 ──→ feedback_question_subquestions
-    │                 │
-    │                 └──── 1:1 ──→ feedback_analysis (IA)
-    │
-    └──── 1:N ──→ feedback_insights_report (por escopo/item)
-```
+
+
+> Todas as tabelas possuem `enterprise_id` FK obrigatória (isolamento RLS multi-tenant), **exceto**: `feedback_question_subquestions`, `feedback_question_answers`, `feedback_subquestion_answers` e `feedback_analysis` — isolamento herdado via cascade da tabela pai.
 
 ---
 
@@ -106,19 +104,21 @@ enterprise ───────────────────────
 
 ## Referência de Tabelas
 
+> A coluna **Impacto no Projeto** indica qual parte do sistema consome cada campo e o que é afetado se ele for alterado ou removido.
+
 ### `auth.users`
 
 > Schema gerenciado pelo Supabase. Tabela central de autenticação.
 
-| Coluna | Tipo | Descrição |
-|---|---|---|
-| `id` | uuid PK | Identificador único do usuário |
-| `email` | varchar | E-mail de login |
-| `encrypted_password` | varchar | Senha hasheada |
-| `raw_user_meta_data` | jsonb | Metadados temporários — higienizados por trigger |
-| `phone` | text | Telefone validado após signup |
-| `email_confirmed_at` | timestamptz | Data de confirmação do e-mail |
-| `is_anonymous` | boolean | Indica usuário anônimo |
+| Coluna | Tipo | Descrição | Impacto no Projeto |
+|---|---|---|---|
+| `id` | uuid PK | Identificador único do usuário | **Crítico** — raiz do sistema; referenciado por `enterprise.auth_user_id`; base do JWT e de toda autenticação |
+| `email` | varchar | E-mail de login | **Crítico** — credencial de acesso do gestor; usado no login e na confirmação de conta |
+| `encrypted_password` | varchar | Senha hasheada | **Crítico** — gerenciado pelo Supabase Auth; alteração direta quebra autenticação |
+| `raw_user_meta_data` | jsonb | Metadados temporários | **Crítico no signup** — carrega `document`, `phone` e `account_type` para o trigger `create_enterprise_on_signup()`; é higienizado logo após (LGPD) |
+| `phone` | text | Telefone validado após signup | **Alto** — exibido na tela de perfil; validado por `phone_exists()` para evitar duplicatas |
+| `email_confirmed_at` | timestamptz | Data de confirmação do e-mail | **Alto** — determina se a conta está ativa; gestor sem e-mail confirmado não consegue fazer login |
+| `is_anonymous` | boolean | Indica usuário anônimo | **Não utilizado** — coluna nativa do Supabase presente em todo projeto; o sistema não implementa login anônimo |
 
 **Triggers:** `on_auth_user_created` → `create_enterprise_on_signup()` | `on_auth_user_metadata_before_update` → `clean_user_metadata_before_change()`
 
@@ -128,18 +128,20 @@ enterprise ───────────────────────
 
 > Cadastro da empresa vinculada ao usuário autenticado. **Entidade raiz de todo o isolamento multi-tenant.**
 
-| Coluna | Tipo | Obrigatório | Descrição |
-|---|---|---|---|
-| `id` | uuid PK | Sim | Identificador único — referenciado por todas as tabelas |
-| `auth_user_id` | uuid | Sim | FK para `auth.users.id` — vínculo 1:1 |
-| `document` | text | Sim | CPF ou CNPJ validado (Módulo 11) |
-| `account_type` | text | Não | Tipo de conta (`PF` / `PJ`) |
-| `terms_version` | text | Não | Versão dos termos aceitos |
-| `terms_accepted_at` | timestamptz | Não | Data de aceite dos termos |
-| `created_at` | timestamptz | Auto | — |
-| `updated_at` | timestamptz | Auto | Atualizado por trigger |
+| Coluna | Tipo | Obrigatório | Descrição | Impacto no Projeto |
+|---|---|---|---|---|
+| `id` | uuid PK | Sim | Identificador único | **Crítico** — referenciado como `enterprise_id` em todas as demais tabelas; âncora do isolamento multi-tenant via RLS |
+| `auth_user_id` | uuid | Sim | FK para `auth.users.id` — vínculo 1:1 | **Crítico** — usado pela função `jwt_custom_claims()` para injetar `enterprise_id` no token JWT; sem ele o gestor não é associado a nenhuma empresa |
+| `document` | text | Sim | CPF ou CNPJ validado (Módulo 11) | **Alto** — exibido na tela de perfil; validado por `document_exists()` para unicidade no cadastro |
+| `account_type` | text | Não | Tipo de conta: `CPF` (pessoa física) ou `CNPJ` (pessoa jurídica) | **Médio** — exibido na tela de perfil; determina se o documento é CPF ou CNPJ. Constraint impede valores fora do enum |
+| `terms_version` | text | Não | Versão dos termos aceitos | **Médio** — registra qual versão dos termos foi aceita; usado para auditoria legal e conformidade |
+| `terms_accepted_at` | timestamptz | Não | Data de aceite dos termos | **Médio** — auditoria legal; exibido na tela de perfil |
+| `trial_ends_at` | timestamptz | Não | Data de expiração do período de teste | **Alto** — inicializada automaticamente no signup com `NOW() + 4 months`; usada no frontend para exibir dias restantes do trial e status da conta |
+| `subscription_status` | text | Sim (default `TRIAL`) | Status da assinatura: `TRIAL` \| `ACTIVE` \| `EXPIRED` \| `CANCELED` | **Alto** — controla o badge de status exibido na UI; gerado no signup como `TRIAL`; futuramente atualizado pelo sistema de cobrança |
+| `created_at` | timestamptz | Auto | — | **Baixo** — auditoria interna |
+| `updated_at` | timestamptz | Auto | Atualizado por trigger | **Baixo** — auditoria interna |
 
-**Restrições:** `document` único por empresa; `auth_user_id` único (ON CONFLICT DO NOTHING).
+**Restrições:** `document` único por empresa; `auth_user_id` único (ON CONFLICT DO NOTHING); `subscription_status` restrito ao enum `{TRIAL, ACTIVE, EXPIRED, CANCELED}`; `account_type` restrito a `{CPF, CNPJ}` ou NULL.
 
 ---
 
@@ -147,17 +149,17 @@ enterprise ───────────────────────
 
 > Dados estratégicos da empresa usados para contextualizar os prompts enviados à IA.
 
-| Coluna | Tipo | Obrigatório | Descrição |
-|---|---|---|---|
-| `id` | uuid PK | Sim | — |
-| `enterprise_id` | uuid FK | Sim | → `enterprise.id` |
-| `company_objective` | text | Não | Objetivo macro do negócio |
-| `analytics_goal` | text | Não | Meta de análise de feedbacks |
-| `business_summary` | text | Não | Resumo livre do negócio |
-| `main_products_or_services` | text[] | Não | Lista dos principais produtos/serviços |
-| `uses_company_products` | boolean | Sim | Habilita uso de produtos no formulário |
-| `uses_company_services` | boolean | Sim | Habilita uso de serviços no formulário |
-| `uses_company_departments` | boolean | Sim | Habilita uso de departamentos no formulário |
+| Coluna | Tipo | Obrigatório | Descrição | Impacto no Projeto |
+|---|---|---|---|---|
+| `id` | uuid PK | Sim | — | **Baixo** — identificação interna do registro |
+| `enterprise_id` | uuid FK | Sim | → `enterprise.id` | **Crítico** — isolamento multi-tenant; RLS bloqueia acesso sem correspondência |
+| `company_objective` | text | Não | Objetivo macro do negócio | **Alto** — injetado diretamente no prompt da IA; sem preenchimento, a análise fica genérica e sem contexto |
+| `analytics_goal` | text | Não | Meta de análise de feedbacks | **Alto** — idem; orienta o que a IA deve destacar na análise |
+| `business_summary` | text | Não | Resumo livre do negócio | **Alto** — idem; contextualiza o tipo de empresa para a IA |
+| `main_products_or_services` | text[] | Não | Lista dos principais produtos/serviços | **Alto** — compõe o contexto enviado à IA junto com os dados do catálogo |
+| `uses_company_products` | boolean | Sim | Habilita uso de produtos no formulário | **Crítico** — controla se o tipo `PRODUCT` aparece no catálogo e no formulário público |
+| `uses_company_services` | boolean | Sim | Habilita uso de serviços no formulário | **Crítico** — controla se o tipo `SERVICE` aparece no catálogo e no formulário público |
+| `uses_company_departments` | boolean | Sim | Habilita uso de departamentos no formulário | **Crítico** — controla se o tipo `DEPARTMENT` aparece no catálogo e no formulário público |
 
 ---
 
@@ -165,15 +167,15 @@ enterprise ───────────────────────
 
 > Catálogo de itens da empresa (produtos, serviços, departamentos) — base para segmentação de QR Codes e feedback.
 
-| Coluna | Tipo | Obrigatório | Descrição |
-|---|---|---|---|
-| `id` | uuid PK | Sim | — |
-| `enterprise_id` | uuid FK | Sim | → `enterprise.id` ON DELETE CASCADE |
-| `kind` | text | Sim | `PRODUCT` \| `SERVICE` \| `DEPARTMENT` |
-| `name` | text | Sim | Nome exibido no formulário e dashboard |
-| `description` | text | Não | Descrição opcional |
-| `status` | text | Sim | `ACTIVE` (default) \| `INACTIVE` |
-| `sort_order` | integer | Sim | Ordenação exibição (default 0) |
+| Coluna | Tipo | Obrigatório | Descrição | Impacto no Projeto |
+|---|---|---|---|---|
+| `id` | uuid PK | Sim | — | **Crítico** — referenciado por `collection_points`, `questions_of_feedbacks` e `feedback_insights_report` |
+| `enterprise_id` | uuid FK | Sim | → `enterprise.id` ON DELETE CASCADE | **Crítico** — isolamento multi-tenant; RLS |
+| `kind` | text | Sim | `PRODUCT` \| `SERVICE` \| `DEPARTMENT` | **Crítico** — determina em qual aba/seção o item aparece no frontend; filtrado pelos flags `uses_company_*` de `collecting_data_enterprise` |
+| `name` | text | Sim | Nome exibido no formulário e dashboard | **Alto** — exibido no formulário público, na tela de catálogo e nos relatórios de insights |
+| `description` | text | Não | Descrição opcional | **Baixo** — informativo; não impacta fluxos funcionais |
+| `status` | text | Sim | `ACTIVE` (default) \| `INACTIVE` | **Crítico** — itens `INACTIVE` bloqueiam acesso ao formulário via RLS anon; QR Codes vinculados ao item deixam de aceitar feedbacks |
+| `sort_order` | integer | Sim | Ordenação exibição (default 0) | **Médio** — controla a ordem de listagem no frontend; sem ele os itens aparecem em ordem indefinida |
 
 **Índices:** `(enterprise_id, kind)`, `(status)`
 
@@ -183,15 +185,15 @@ enterprise ───────────────────────
 
 > Pontos de coleta de feedback — representam cada QR Code físico ou digital gerado.
 
-| Coluna | Tipo | Obrigatório | Descrição |
-|---|---|---|---|
-| `id` | uuid PK | Sim | — |
-| `enterprise_id` | uuid FK | Sim | → `enterprise.id` ON DELETE CASCADE |
-| `catalog_item_id` | uuid FK | Não | → `catalog_items.id` ON DELETE SET NULL — `null` = ponto corporativo |
-| `name` | text | Sim | Nome do ponto de coleta |
-| `type` | text | Sim | `QR_CODE` (único tipo atual) |
-| `identifier` | text | Não | Identificador externo/slug |
-| `status` | text | Sim | `ACTIVE` (default) \| `INACTIVE` |
+| Coluna | Tipo | Obrigatório | Descrição | Impacto no Projeto |
+|---|---|---|---|---|
+| `id` | uuid PK | Sim | — | **Crítico** — compõe a URL do formulário público; referenciado por `feedback.collection_point_id` |
+| `enterprise_id` | uuid FK | Sim | → `enterprise.id` ON DELETE CASCADE | **Crítico** — multi-tenant; RLS |
+| `catalog_item_id` | uuid FK | Não | → `catalog_items.id` ON DELETE SET NULL — `null` = ponto corporativo | **Alto** — determina o escopo do QR Code e quais perguntas dinâmicas são exibidas no formulário |
+| `name` | text | Sim | Nome do ponto de coleta | **Médio** — exibido na tela de gerenciamento de QR Codes do dashboard |
+| `type` | text | Sim | `QR_CODE` (único tipo atual) | **Crítico** — verificado pela RLS de inserção de `feedback`; envios via pontos de outro tipo são recusados |
+| `identifier` | text | Não | Identificador externo/slug | **Médio** — usado na URL pública do formulário para identificar o ponto de coleta |
+| `status` | text | Sim | `ACTIVE` (default) \| `INACTIVE` | **Crítico** — `INACTIVE` bloqueia a inserção de novos feedbacks via RLS anon; formulário retorna erro ao tentar acessar ponto inativo |
 
 **Regra de negócio:** o formulário público só fica acessível se o ponto está `ACTIVE` **e**, quando vinculado a item de catálogo, o item também está `ACTIVE` (verificado pela policy RLS anon).
 
@@ -201,15 +203,15 @@ enterprise ───────────────────────
 
 > Perguntas dinâmicas exibidas no formulário público. Cada empresa tem até 3 perguntas por escopo (empresa ou item de catálogo).
 
-| Coluna | Tipo | Obrigatório | Descrição |
-|---|---|---|---|
-| `id` | uuid PK | Sim | — |
-| `enterprise_id` | uuid FK | Sim | → `enterprise.id` ON DELETE CASCADE |
-| `scope_type` | text | Sim | `COMPANY` \| `PRODUCT` \| `SERVICE` \| `DEPARTMENT` |
-| `catalog_item_id` | uuid FK | Condicional | → `catalog_items.id` — obrigatório quando `scope_type ≠ COMPANY` |
-| `question_order` | integer | Sim | Posição da pergunta: `1`, `2` ou `3` |
-| `question_text` | text | Sim | Texto da pergunta (20–150 caracteres) |
-| `is_active` | boolean | Sim | Controla exibição no formulário (default `true`) |
+| Coluna | Tipo | Obrigatório | Descrição | Impacto no Projeto |
+|---|---|---|---|---|
+| `id` | uuid PK | Sim | — | **Crítico** — referenciado por `feedback_question_answers` e `feedback_question_subquestions` |
+| `enterprise_id` | uuid FK | Sim | → `enterprise.id` ON DELETE CASCADE | **Crítico** — multi-tenant; RLS |
+| `scope_type` | text | Sim | `COMPANY` \| `PRODUCT` \| `SERVICE` \| `DEPARTMENT` | **Crítico** — determina em qual contexto a pergunta é exibida; o formulário filtra por este campo + `catalog_item_id` para montar as perguntas corretas |
+| `catalog_item_id` | uuid FK | Condicional | → `catalog_items.id` — obrigatório quando `scope_type ≠ COMPANY` | **Crítico** — junto com `scope_type`, forma a chave de lookup das perguntas de um item específico |
+| `question_order` | integer | Sim | Posição da pergunta: `1`, `2` ou `3` | **Alto** — define a sequência de exibição das perguntas no formulário |
+| `question_text` | text | Sim | Texto da pergunta (20–150 caracteres) | **Crítico** — exibido no formulário público; capturado como snapshot em `question_text_snapshot` no momento do envio |
+| `is_active` | boolean | Sim | Controla exibição no formulário (default `true`) | **Alto** — `false` oculta a pergunta do formulário sem deletá-la nem perder o histórico de respostas |
 
 **Perguntas padrão** (semeadas automaticamente no signup):
 1. "Como foi sua experiência em relação ao atendimento?"
@@ -224,13 +226,13 @@ enterprise ───────────────────────
 
 > Subperguntas opcionais vinculadas a cada pergunta principal — ativadas individualmente pelo gestor.
 
-| Coluna | Tipo | Obrigatório | Descrição |
-|---|---|---|---|
-| `id` | uuid PK | Sim | — |
-| `question_id` | uuid FK | Sim | → `questions_of_feedbacks.id` ON DELETE CASCADE |
-| `subquestion_order` | integer | Sim | Posição: `1`, `2` ou `3` |
-| `subquestion_text` | text | Sim | Texto da subpergunta (20–150 caracteres) |
-| `is_active` | boolean | Sim | `false` por padrão — ativação explícita pelo gestor |
+| Coluna | Tipo | Obrigatório | Descrição | Impacto no Projeto |
+|---|---|---|---|---|
+| `id` | uuid PK | Sim | — | **Crítico** — referenciado por `feedback_subquestion_answers` |
+| `question_id` | uuid FK | Sim | → `questions_of_feedbacks.id` ON DELETE CASCADE | **Crítico** — vincula a subpergunta à pergunta pai; cascade garante remoção automática |
+| `subquestion_order` | integer | Sim | Posição: `1`, `2` ou `3` | **Médio** — define a ordem de exibição das subperguntas no formulário |
+| `subquestion_text` | text | Sim | Texto da subpergunta (20–150 caracteres) | **Crítico** — exibido no formulário; capturado como snapshot em `subquestion_text_snapshot` no envio |
+| `is_active` | boolean | Sim | `false` por padrão — ativação explícita pelo gestor | **Alto** — `false` oculta a subpergunta sem deletá-la; controle granular de quais subperguntas aparecem |
 
 **Constraint:** `(question_id, subquestion_order)` único.
 
@@ -240,13 +242,13 @@ enterprise ───────────────────────
 
 > Cadastro opcional do cliente final que se identificou ao enviar feedback.
 
-| Coluna | Tipo | Obrigatório | Descrição |
-|---|---|---|---|
-| `id` | uuid PK | Sim | — |
-| `enterprise_id` | uuid FK | Sim | → `enterprise.id` |
-| `name` | text | Não | Nome informado pelo cliente |
-| `email` | text | Não | E-mail informado |
-| `gender` | text | Não | Gênero informado |
+| Coluna | Tipo | Obrigatório | Descrição | Impacto no Projeto |
+|---|---|---|---|---|
+| `id` | uuid PK | Sim | — | **Alto** — referenciado por `tracked_devices.customer_id` para associar dispositivo ao cliente identificado |
+| `enterprise_id` | uuid FK | Sim | → `enterprise.id` | **Crítico** — isolamento multi-tenant; RLS |
+| `name` | text | Não | Nome informado pelo cliente | **Baixo** — exibido no painel de feedbacks do dashboard quando disponível; totalmente opcional |
+| `email` | text | Não | E-mail informado | **Baixo** — exibido no painel de feedbacks; sem impacto funcional |
+| `gender` | text | Não | Gênero informado | **Baixo** — informativo; não impacta nenhum fluxo do sistema |
 
 ---
 
@@ -254,20 +256,20 @@ enterprise ───────────────────────
 
 > Dispositivos rastreados por fingerprint para aplicar a regra anti-spam (1 feedback/dia por ponto de coleta).
 
-| Coluna | Tipo | Obrigatório | Descrição |
-|---|---|---|---|
-| `id` | uuid PK | Sim | — |
-| `enterprise_id` | uuid FK | Sim | → `enterprise.id` ON DELETE CASCADE |
-| `customer_id` | uuid FK | Não | → `customer.id` — associado quando cliente se identifica |
-| `device_fingerprint` | text | Sim | Hash MD5 diário `(user_agent \| ip \| dia)` |
-| `user_agent` | text | Não | User-Agent do navegador |
-| `ip_address` | inet | Não | IP do cliente |
-| `is_blocked` | boolean | Não | Bloqueio manual pelo gestor (default `false`) |
-| `blocked_reason` | text | Não | Motivo do bloqueio |
-| `blocked_at` | timestamptz | Não | Data do bloqueio |
-| `blocked_by` | uuid | Não | ID do gestor que bloqueou |
-| `feedback_count` | integer | Sim | Contador total de feedbacks (default 0) |
-| `last_feedback_at` | timestamptz | Não | Data/hora do último envio |
+| Coluna | Tipo | Obrigatório | Descrição | Impacto no Projeto |
+|---|---|---|---|---|
+| `id` | uuid PK | Sim | — | **Alto** — referenciado opcionalmente por `feedback.tracked_device_id` |
+| `enterprise_id` | uuid FK | Sim | → `enterprise.id` ON DELETE CASCADE | **Crítico** — isolamento multi-tenant; RLS |
+| `customer_id` | uuid FK | Não | → `customer.id` — associado quando cliente se identifica | **Baixo** — enriquece o registro do dispositivo com dados do cliente; não impacta o fluxo anti-spam |
+| `device_fingerprint` | text | Sim | Hash MD5 diário `(user_agent \| ip \| dia)` | **Crítico** — chave de lookup de `can_device_send_feedback()` e `register_device_feedback()`; sem ele não há controle de spam |
+| `user_agent` | text | Não | User-Agent do navegador | **Médio** — um dos três componentes do fingerprint; armazenado para auditoria e identificação do dispositivo |
+| `ip_address` | inet | Não | IP do cliente | **Médio** — um dos três componentes do fingerprint; armazenado para auditoria |
+| `is_blocked` | boolean | Não | Bloqueio manual pelo gestor (default `false`) | **Crítico** — verificado pela RLS de inserção de `feedback`; `true` recusa qualquer novo envio deste dispositivo |
+| `blocked_reason` | text | Não | Motivo do bloqueio | **Baixo** — informativo para o gestor; sem impacto funcional |
+| `blocked_at` | timestamptz | Não | Data do bloqueio | **Baixo** — auditoria do bloqueio |
+| `blocked_by` | uuid | Não | ID do gestor que bloqueou | **Baixo** — rastreabilidade de quem aplicou o bloqueio |
+| `feedback_count` | integer | Sim | Contador total de feedbacks (default 0) | **Alto** — incrementado por `register_device_feedback()`; usado para métricas de volume e como sinal de comportamento suspeito |
+| `last_feedback_at` | timestamptz | Não | Data/hora do último envio | **Alto** — usado por `can_device_send_feedback()` para verificar o limite diário por ponto de coleta |
 
 ---
 
@@ -275,14 +277,14 @@ enterprise ───────────────────────
 
 > Feedback bruto recebido do cliente via formulário público.
 
-| Coluna | Tipo | Obrigatório | Descrição |
-|---|---|---|---|
-| `id` | uuid PK | Sim | — |
-| `enterprise_id` | uuid FK | Sim | → `enterprise.id` ON DELETE CASCADE |
-| `collection_point_id` | uuid FK | Sim | → `collection_points.id` — QR Code de origem |
-| `tracked_device_id` | uuid FK | Não | → `tracked_devices.id` — dispositivo emissor |
-| `message` | text | Sim | Texto livre do cliente |
-| `rating` | integer | Não | Nota global da experiência (1–5) |
+| Coluna | Tipo | Obrigatório | Descrição | Impacto no Projeto |
+|---|---|---|---|---|
+| `id` | uuid PK | Sim | — | **Crítico** — referenciado por `feedback_question_answers`, `feedback_subquestion_answers` e `feedback_analysis` |
+| `enterprise_id` | uuid FK | Sim | → `enterprise.id` ON DELETE CASCADE | **Crítico** — multi-tenant; RLS |
+| `collection_point_id` | uuid FK | Sim | → `collection_points.id` — QR Code de origem | **Crítico** — identifica qual QR Code originou o feedback; base para filtros por escopo no dashboard |
+| `tracked_device_id` | uuid FK | Não | → `tracked_devices.id` — dispositivo emissor | **Alto** — vincula o feedback ao dispositivo; usado para rastreamento de abuso e bloqueio posterior |
+| `message` | text | Sim | Texto livre do cliente | **Crítico** — principal entrada do motor de IA; enviado ao serviço `ia-analyze` para análise de sentimento e extração de temas |
+| `rating` | integer | Não | Nota global da experiência (1–5) | **Crítico** — exibido nos cards de métricas do dashboard (média, positivos, críticos) e na listagem de feedbacks |
 
 **RLS de inserção anônima** valida: ponto ativo, empresa correspondente, tipo QR_CODE, dispositivo não bloqueado.
 
@@ -292,14 +294,14 @@ enterprise ───────────────────────
 
 > Respostas às perguntas dinâmicas para cada feedback enviado. Inclui snapshot do texto da pergunta para preservar histórico.
 
-| Coluna | Tipo | Obrigatório | Descrição |
-|---|---|---|---|
-| `id` | uuid PK | Sim | — |
-| `feedback_id` | uuid FK | Sim | → `feedback.id` ON DELETE CASCADE |
-| `question_id` | uuid FK | Sim | → `questions_of_feedbacks.id` ON DELETE CASCADE |
-| `question_text_snapshot` | text | Sim | Texto da pergunta no momento do envio (imutável) |
-| `answer_value` | text | Sim | `PESSIMO` \| `RUIM` \| `MEDIANA` \| `BOA` \| `OTIMA` |
-| `answer_score` | integer | Sim | Valor numérico correspondente (1–5) |
+| Coluna | Tipo | Obrigatório | Descrição | Impacto no Projeto |
+|---|---|---|---|---|
+| `id` | uuid PK | Sim | — | **Baixo** — identificação interna do registro |
+| `feedback_id` | uuid FK | Sim | → `feedback.id` ON DELETE CASCADE | **Crítico** — associação com o feedback pai; cascade garante limpeza automática |
+| `question_id` | uuid FK | Sim | → `questions_of_feedbacks.id` ON DELETE CASCADE | **Crítico** — associação com a pergunta respondida |
+| `question_text_snapshot` | text | Sim | Texto da pergunta no momento do envio (imutável) | **Alto** — preserva o contexto histórico; enviado ao serviço de IA junto com o `message` e o `answer_value` |
+| `answer_value` | text | Sim | `PESSIMO` \| `RUIM` \| `MEDIANA` \| `BOA` \| `OTIMA` | **Crítico** — valor categórico exibido na listagem de feedbacks e lido pela IA para análise de sentimento por pergunta |
+| `answer_score` | integer | Sim | Valor numérico correspondente (1–5) | **Crítico** — usado para cálculo de médias por pergunta nos componentes analíticos do dashboard |
 
 **Constraint:** `(feedback_id, question_id)` único — 1 resposta por pergunta por feedback.
 
@@ -309,14 +311,14 @@ enterprise ───────────────────────
 
 > Respostas às subperguntas para cada feedback. Mesma lógica de snapshot das respostas principais.
 
-| Coluna | Tipo | Obrigatório | Descrição |
-|---|---|---|---|
-| `id` | uuid PK | Sim | — |
-| `feedback_id` | uuid FK | Sim | → `feedback.id` ON DELETE CASCADE |
-| `subquestion_id` | uuid FK | Sim | → `feedback_question_subquestions.id` ON DELETE CASCADE |
-| `subquestion_text_snapshot` | text | Sim | Texto da subpergunta no momento do envio |
-| `answer_value` | text | Sim | `PESSIMO` \| `RUIM` \| `MEDIANA` \| `BOA` \| `OTIMA` |
-| `answer_score` | integer | Sim | Valor numérico (1–5) |
+| Coluna | Tipo | Obrigatório | Descrição | Impacto no Projeto |
+|---|---|---|---|---|
+| `id` | uuid PK | Sim | — | **Baixo** — identificação interna do registro |
+| `feedback_id` | uuid FK | Sim | → `feedback.id` ON DELETE CASCADE | **Crítico** — associação com o feedback pai; cascade garante limpeza automática |
+| `subquestion_id` | uuid FK | Sim | → `feedback_question_subquestions.id` ON DELETE CASCADE | **Crítico** — associação com a subpergunta respondida |
+| `subquestion_text_snapshot` | text | Sim | Texto da subpergunta no momento do envio | **Alto** — preserva contexto histórico; enviado ao serviço de IA junto com o `answer_value` |
+| `answer_value` | text | Sim | `PESSIMO` \| `RUIM` \| `MEDIANA` \| `BOA` \| `OTIMA` | **Crítico** — valor categórico lido pela IA para análise de sentimento no nível de subpergunta |
+| `answer_score` | integer | Sim | Valor numérico (1–5) | **Crítico** — usado para cálculo de médias nos componentes analíticos do dashboard |
 
 **Constraint:** `(feedback_id, subquestion_id)` único.
 
@@ -326,13 +328,13 @@ enterprise ───────────────────────
 
 > Resultado da análise de sentimento e extração semântica gerada pelo motor de IA para cada feedback.
 
-| Coluna | Tipo | Obrigatório | Descrição |
-|---|---|---|---|
-| `id` | uuid PK | Sim | — |
-| `feedback_id` | uuid FK | Sim | → `feedback.id` ON DELETE CASCADE |
-| `sentiment` | text | Não | `Positivo` \| `Neutro` \| `Negativo` |
-| `categories` | text[] | Não | Categorias semânticas extraídas pela IA |
-| `keywords` | text[] | Não | Palavras-chave extraídas (com filtro anti-poluição) |
+| Coluna | Tipo | Obrigatório | Descrição | Impacto no Projeto |
+|---|---|---|---|---|
+| `id` | uuid PK | Sim | — | **Baixo** — identificação interna do registro |
+| `feedback_id` | uuid FK | Sim | → `feedback.id` ON DELETE CASCADE | **Crítico** — relação 1:1 com o feedback analisado; cascade garante limpeza automática |
+| `sentiment` | text | Não | `Positivo` \| `Neutro` \| `Negativo` | **Crítico** — exibido nos cards de sentimento do dashboard; base do filtro por sentimento na listagem de feedbacks |
+| `categories` | text[] | Não | Categorias semânticas extraídas pela IA | **Alto** — exibido no painel de insights; usado para agrupar e filtrar feedbacks por tema no dashboard |
+| `keywords` | text[] | Não | Palavras-chave extraídas (com filtro anti-poluição) | **Alto** — exibido no painel de insights como nuvem de palavras; filtro anti-poluição já aplicado pelo serviço `ia-analyze` |
 
 ---
 
@@ -340,15 +342,15 @@ enterprise ───────────────────────
 
 > Relatório consolidado de insights por empresa e por escopo (empresa, produto, serviço ou departamento). Upsert — há exatamente **1 registro por contexto**.
 
-| Coluna | Tipo | Obrigatório | Descrição |
-|---|---|---|---|
-| `id` | uuid PK | Sim | — |
-| `enterprise_id` | uuid FK | Sim | → `enterprise.id` ON DELETE CASCADE |
-| `scope_type` | text | Sim | `COMPANY` \| `PRODUCT` \| `SERVICE` \| `DEPARTMENT` |
-| `catalog_item_id` | uuid FK | Condicional | → `catalog_items.id` ON DELETE CASCADE — obrigatório quando `scope_type ≠ COMPANY` |
-| `catalog_item_name` | text | Não | Nome do item no momento do relatório |
-| `summary` | text | Não | Resumo situacional gerado pela IA |
-| `recommendations` | text[] | Não | Lista de recomendações acionáveis |
+| Coluna | Tipo | Obrigatório | Descrição | Impacto no Projeto |
+|---|---|---|---|---|
+| `id` | uuid PK | Sim | — | **Baixo** — identificação interna do registro |
+| `enterprise_id` | uuid FK | Sim | → `enterprise.id` ON DELETE CASCADE | **Crítico** — multi-tenant; RLS |
+| `scope_type` | text | Sim | `COMPANY` \| `PRODUCT` \| `SERVICE` \| `DEPARTMENT` | **Crítico** — determina o escopo do relatório; usado no seletor de escopo da tela de insights |
+| `catalog_item_id` | uuid FK | Condicional | → `catalog_items.id` ON DELETE CASCADE — obrigatório quando `scope_type ≠ COMPANY` | **Crítico** — junto com `scope_type` e `enterprise_id`, forma a chave única do relatório; distingue insights de diferentes itens do catálogo |
+| `catalog_item_name` | text | Não | Nome do item no momento do relatório | **Médio** — snapshot do nome para exibição; garante que relatórios antigos mostrem o nome correto mesmo se o item for renomeado |
+| `summary` | text | Não | Resumo situacional gerado pela IA | **Crítico** — conteúdo principal exibido no painel de insights da tela de Relatório IA |
+| `recommendations` | text[] | Não | Lista de recomendações acionáveis | **Crítico** — lista de ações sugeridas pela IA exibida no painel de insights |
 
 **Índice único:** `(enterprise_id, scope_type, catalog_item_id) NULLS NOT DISTINCT` — garante um relatório por contexto, sobrescrito a cada análise.
 
@@ -358,7 +360,7 @@ enterprise ───────────────────────
 
 | Função | Schema | Tipo | Descrição |
 |---|---|---|---|
-| `create_enterprise_on_signup()` | public | Trigger (AFTER INSERT em `auth.users`) | Cria `enterprise`, valida documento/telefone únicos, semeia as 3 perguntas padrão e higieniza metadados do JWT |
+| `create_enterprise_on_signup()` | public | Trigger (AFTER INSERT em `auth.users`) | Cria `enterprise` com `trial_ends_at = NOW() + 4 months` e `subscription_status = 'TRIAL'`, valida documento/telefone únicos, semeia as 3 perguntas padrão e higieniza metadados do JWT |
 | `clean_user_metadata_before_change()` | public | Trigger (BEFORE UPDATE em `auth.users`) | Remove chaves sensíveis (`document`, `phone`, `account_type`, etc.) do `raw_user_meta_data` antes de qualquer update (LGPD) |
 | `generate_device_fingerprint(user_agent, ip)` | public | Utilitária | Retorna `md5(user_agent \| ip \| dia_epoch)` — fingerprint diário rotativo |
 | `can_device_send_feedback(enterprise_id, fingerprint, collection_point_id?)` | public | Query | Retorna `boolean` — verifica se o dispositivo já enviou feedback no dia para o ponto informado (com fallback legado por empresa) |
@@ -378,7 +380,7 @@ enterprise ───────────────────────
 
 | Trigger | Tabela | Evento | Função | Propósito |
 |---|---|---|---|---|
-| `on_auth_user_created` | `auth.users` | AFTER INSERT | `create_enterprise_on_signup()` | Onboarding automático — cria empresa e perguntas padrão |
+| `on_auth_user_created` | `auth.users` | AFTER INSERT | `create_enterprise_on_signup()` | Onboarding automático — cria empresa com trial de 4 meses (`TRIAL`), semeia perguntas padrão e higieniza metadados |
 | `on_auth_user_metadata_before_update` | `auth.users` | BEFORE UPDATE | `clean_user_metadata_before_change()` | Sanitização LGPD do JWT |
 | `validate_questions_of_feedbacks_context` | `questions_of_feedbacks` | BEFORE INSERT/UPDATE | `validate_questions_of_feedbacks_context()` | Integridade de escopo das perguntas |
 | `validate_feedback_insights_report_context` | `feedback_insights_report` | BEFORE INSERT/UPDATE | `validate_feedback_insights_report_context()` | Integridade de escopo dos relatórios |
@@ -459,6 +461,8 @@ Ao criar ou atualizar usuários, os triggers removem automaticamente do `raw_use
 | `feedback_subquestion_answers` | `feedback_subquestion_answers_answer_value_check` | Mesmo enum de valores |
 | `feedback_subquestion_answers` | `feedback_subquestion_answers_answer_score_check` | `answer_score` entre 1 e 5 |
 | `feedback_insights_report` | `feedback_insights_report_scope_type_check` | `scope_type` ∈ `{COMPANY, PRODUCT, SERVICE, DEPARTMENT}` |
+| `enterprise` | `enterprise_subscription_status_check` | `subscription_status` ∈ `{TRIAL, ACTIVE, EXPIRED, CANCELED}` |
+| `enterprise` | `enterprise_account_type_check` | `account_type` IS NULL OR `account_type` ∈ `{CPF, CNPJ}` |
 
 ### Regras de cascata por deleção
 

@@ -1,346 +1,131 @@
 # Testes — Frontend (`apps/web`)
 
-## Pirâmide de Testes
-
-```
-        ╔══════════╗
-        ║   E2E    ║  ← não existe ainda — simularia a jornada real do usuário no navegador
-        ╚══════════╝
-     ╔════════════════╗
-     ║  Integração    ║  ← actions e loaders — testa contratos entre módulos
-     ╚════════════════╝
-  ╔══════════════════════╗
-  ║      Unidade         ║  ← utils e componentes React — testa funções e renders isolados
-  ╚══════════════════════╝
-```
+Este documento detalha a arquitetura, estrutura e especificação dos testes na aplicação Web (Frontend). Nele, você encontrará a distribuição exata dos testes separados por sua granularidade: **Unidade**, **Integração** e **Fim a Fim (E2E)**, incluindo a finalidade e a contagem exata de testes de cada arquivo físico.
 
 ---
+
 
 ## Cobertura de Testes (Vitest Coverage)
 
 ### O que é e por que usamos
 
-**Vitest Coverage** é a ferramenta de cobertura nativa do Vitest, alimentada pelo motor **V8** (o mesmo motor JavaScript do Node.js e do Chrome). Ela instrumenta o código em tempo de execução e rastreia quais linhas, funções e branches foram executados durante os testes.
+**Vitest Coverage** é a ferramenta de cobertura nativa do Vitest, alimentada pelo motor **V8**. Ela instrumenta o código em tempo de execução e rastreia quais linhas, funções e ramificações condicionais (*branches*) foram executadas durante os testes.
 
-Usamos coverage no projeto por uma razão objetiva: **evitar que a documentação minta**. Qualquer número de cobertura escrito à mão em um doc envelhece e vira desinformação. Com `npm run test:coverage`, os números são sempre gerados a partir do código real no momento em que o comando é rodado.
+Usamos a geração automática de cobertura para **evitar desinformação**. O comando de cobertura extrai dados reais e dinâmicos do código executado em vez de estimativas manuais que perdem a validade rapidamente.
 
-### Como rodar
+### Como executar a cobertura
 
-```bash
-cd apps/web && npm run test:coverage
-```
-
-O relatório é gerado em dois formatos:
-- **Terminal** — tabela imediata com percentuais por arquivo
-- **HTML** — relatório visual detalhado em `apps/web/coverage/index.html` — mostra linha a linha o que foi ou não coberto
-
-### Como interpretar as métricas
-
-| Métrica | O que mede |
-|---|---|
-| **% Stmts** (statements) | Percentual de instruções executadas — é a métrica mais fiel ao que realmente rodou |
-| **% Branch** | Percentual de ramificações cobertas — cada `if/else`, ternário e `&&` conta como dois caminhos |
-| **% Funcs** | Percentual de funções que foram chamadas pelo menos uma vez nos testes |
-| **% Lines** | Percentual de linhas executadas — equivale a Stmts na maioria dos casos |
-
-> A métrica mais importante é **% Branch** — uma função pode ter 100% de linhas cobertas mas deixar metade dos caminhos condicionais sem teste.
-
-### Snapshot atual
-
-Rodado em 2026-05-15. Para ver números atualizados, execute `npm run test:coverage`.
-
-| Área | % Stmts | % Branch | % Funcs |
-|---|---|---|---|
-| `src/lib/utils` | 64,73% | 80,92% | **97,29%** |
-| `src/routes/actions` | 43,51% | 50,87% | 75,00% |
-| `src/routes/load` | 18,93% | 55,00% | 55,55% |
-| `pages` (login, register) | **100%** | **100%** | **100%** |
-| `pages` (demais) | 0–93% | 0–66% | 0–100% |
-| `layouts` | 52,17% | 64,78% | 15,38% |
-| **Total geral** | **33,43%** | **62,10%** | **64,39%** |
-
-O número total baixo (33% de statements) reflete que boa parte das páginas e loaders ainda não tem testes — o que é esperado para o estágio atual do projeto. A cobertura de **funções dos utilitários está em 97%**, que é a camada mais crítica de testar.
-
----
-
-## Visão do Domínio
-
-O frontend concentra a maior parte da cobertura de testes do projeto. Os testes estão distribuídos em três camadas que correspondem à estrutura de pastas do próprio código.
-
-```
-apps/web/
-├── src/lib/utils/tests/     ← unitários (funções puras)
-├── src/routes/actions/      ← integração (actions do React Router)
-├── src/routes/load/         ← integração (loaders do React Router)
-├── pages/tests/             ← componentes (páginas)
-├── layouts/tests/           ← componentes (layouts)
-└── tests/setup.ts           ← setup global compartilhado
-```
-
-**Framework:** Vitest com ambiente jsdom  
-**Config:** `apps/web/vite.config.ts`
+Para rodar a suíte completa de testes unitários/integração com relatório de cobertura:
 
 ```bash
-# Rodar os testes do frontend
-cd apps/web && npx vitest
-
-# Execução única (CI)
-cd apps/web && npx vitest run
+cd apps/web
+powershell -ExecutionPolicy Bypass -Command "npm run test:coverage"
 ```
+
+O relatório é gerado em dois formatos principais:
+1. **Terminal** — Tabela imediata com percentuais e linhas não cobertas.
+2. **HTML** — Relatório interativo detalhado gerado em [index.html](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/coverage/index.html).
 
 ---
 
 ## Setup Global (`tests/setup.ts`)
 
-Executado antes de cada arquivo de teste. Configura dois mocks obrigatórios para o ambiente jsdom:
+O arquivo [setup.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/tests/setup.ts) é executado antes de cada arquivo de testes do Vitest para emular o ambiente de navegador (*jsdom*):
 
-| Mock | Por quê |
+| Mock / Setup | Por quê |
 |---|---|
-| `useRouteLoaderData` (react-router-dom) | jsdom não tem contexto de rota — sem o mock todos os componentes que usam esse hook quebram |
-| `window.matchMedia` | jsdom não implementa a API de media queries — componentes responsivos que verificam breakpoints causariam erro |
+| `useRouteLoaderData` | O *jsdom* não possui contexto do React Router; este mock evita quebras de hooks de dados em páginas protegidas. |
+| `window.matchMedia` | A API de media queries não é nativa do *jsdom*; esse mock impede erros na renderização de componentes responsivos. |
 
 ---
 
-## O Critério de Classificação
+## Critério de Classificação
 
-O que define se um teste é **unidade** ou **integração** não é o tipo de artefato sendo testado (função vs componente), mas sim **se ele cruza uma fronteira real entre módulos**.
+O que define se um teste é classificado como **Unidade** ou **Integração** é o escopo e o cruzamento de fronteiras dos módulos, e não simplesmente o arquivo ser um utilitário ou componente:
 
-| É unidade quando... | É integração quando... |
-|---|---|
-| Todos os colaboradores externos são substituídos por mocks | O fluxo passa por dois ou mais módulos reais sem mocks no meio |
-| O teste verifica o comportamento de uma única peça isolada | O teste verifica o contrato entre peças — o que entra em uma deve sair corretamente na outra |
-| Uma falha aponta diretamente para aquele artefato | Uma falha pode estar na fronteira entre os módulos |
-
-**Por isso, neste projeto:**
-
-- **Funções utilitárias** → unidade. Não dependem de nada externo, testadas com entrada e saída direta.
-- **Componentes React** → unidade. Todos os filhos são mockados com `vi.mock`. O componente é a única peça real em execução.
-- **Actions e Loaders** → integração. O `FormData` entra no handler, que transforma os dados e chama o serviço — dois módulos reais cruzando fronteira, mesmo que o HTTP seja mockado no final.
+* **Unidade:** Todos os colaboradores ou serviços externos do arquivo/função em teste são substituídos por mocks (`vi.mock` ou `vi.spyOn`). O teste valida o comportamento isolado daquela unidade isolada de código.
+* **Integração:** Valida contratos entre diferentes peças ou módulos reais. O fluxo de dados transita de forma real entre múltiplos módulos (ex: da *Action* do React Router que processa dados estruturados até as validações internas, mockando apenas a comunicação HTTP com a API externa).
+* **E2E (End-to-End):** O fluxo roda a aplicação inteira integrada (Frontend, API-Gateway, IA-Analyze e banco de dados Supabase real), simulando a interação visual de um usuário real em um browser.
 
 ---
 
-## Camada 1 — Unidade
+## 1. Testes de Unidade (`Unit Tests`)
 
-Testam código em isolamento total — funções puras e componentes React com todos os filhos mockados. Nenhum módulo real externo é envolvido. São os testes mais rápidos e de menor custo de manutenção.
+> **Total: 104 testes em 18 arquivos**
+>
+> Validam funções de utilidade pura, parsers, validadores locais e componentes de página e layout isolados (com seus componentes filhos mockados).
 
-### Funções puras (`src/lib/utils/tests/`)
-
-### Formatação de Documentos
-
-**`formatDocument.test.ts`** e **`formatDocumentInput.test.ts`**
-
-Formatação de CPF e CNPJ — tanto o display estático quanto a formatação progressiva durante a digitação.
-
-```
-'12345678900'   → '123.456.789-00'    (CPF)
-'12345678000199' → '12.345.678/0001-99' (CNPJ)
-''               → ''                  (vazio)
-tipo desconhecido → retorna só os dígitos
-```
-
----
-
-### Filtro de Dígitos — `digitsOnly.test.ts`
-
-Remove qualquer caractere não-numérico de uma string. Usado como preprocessador antes dos formatadores de CPF, CNPJ e telefone.
-
----
-
-### Formatação de Telefone
-
-**`formatPhoneInputBR.test.ts`** e **`formtPhone.test.ts`**
-
-Telefone brasileiro no padrão `(DD) XXXXX-XXXX` — um para formatação progressiva em input, outro para exibição estática.
+| Arquivo de Teste | Propósito do Arquivo | Qtd. Testes |
+| :--- | :--- | :---: |
+| [userLayout.test.tsx](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/layouts/tests/userLayout.test.tsx) | Valida a renderização e interatividade estrutural do layout base do gestor (`UserLayout`), incluindo menus de navegação lateral (Sidebar), recolhimento/colapso do menu, links e cabeçalhos contextuais. | **19** |
+| [truncateText.test.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/src/lib/utils/tests/truncateText.test.ts) | Garante o truncamento correto de strings longas, adicionando reticências (`...`) baseadas no limite de caracteres especificado, cobrindo cenários com valores nulos ou curtos. | **11** |
+| [formtPhone.test.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/src/lib/utils/tests/formtPhone.test.ts) | Valida a formatação estática de números de telefone comerciais no padrão brasileiro (`(DD) XXXXX-XXXX` ou `(DD) XXXX-XXXX`) para exibição visual estática. | **10** |
+| [publicQrFeedbackValidation.test.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/src/lib/utils/tests/publicQrFeedbackValidation.test.ts) | Testa as validações de payload no lado do cliente antes do envio do formulário de feedback do QR Code (ausência de dados essenciais, notas zeradas, etc.). | **8** |
+| [register.test.tsx](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/pages/tests/register.test.tsx) | Valida a renderização e o comportamento isolado da página de criação de conta (Registro do Gestor), incluindo campos de entrada de dados, regras de botões e links. | **8** |
+| [login.test.tsx](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/pages/tests/login.test.tsx) | Valida o comportamento e a estrutura da página de login do gestor, garantindo a exibição de títulos, links de termos de uso e a renderização do formulário. | **7** |
+| [profile.test.tsx](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/pages/tests/profile.test.tsx) | Testa a renderização da página de gerenciamento de dados do perfil do gestor, validando a integridade dos inputs de texto estruturados. | **7** |
+| [publicQrFeedbackForm.test.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/src/lib/utils/tests/publicQrFeedbackForm.test.ts) | Valida as funções auxiliares que gerenciam o formulário de feedback público (ordenação de respostas de subperguntas, identificação de tipos de catálogo e perguntas válidas). | **5** |
+| [formatDocument.test.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/src/lib/utils/tests/formatDocument.test.ts) | Testa a formatação estática de CPFs e CNPJs para exibição amigável ao usuário. | **4** |
+| [publicQrFeedbackErrorMessage.test.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/src/lib/utils/tests/publicQrFeedbackErrorMessage.test.ts) | Valida o mapeamento de códigos de erro de validação em strings legíveis em português para serem exibidas em alertas do formulário de feedback. | **4** |
+| [publicQrFeedbackTemplateEngine.test.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/src/lib/utils/tests/publicQrFeedbackTemplateEngine.test.ts) | Testa a interpolação de variáveis dinâmicas em perguntas customizáveis (ex: substituição de `{{nome_empresa}}`). | **4** |
+| [formatDocumentInput.test.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/src/lib/utils/tests/formatDocumentInput.test.ts) | Testa a máscara progressiva de CPF/CNPJ aplicada em tempo real à medida que o usuário digita nos campos de texto. | **3** |
+| [formatPhoneInputBR.test.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/src/lib/utils/tests/formatPhoneInputBR.test.ts) | Valida a máscara dinâmica de telefone brasileiro de 8 ou 9 dígitos aplicada progressivamente durante a digitação no input. | **3** |
+| [passwordStrength.test.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/src/lib/utils/tests/passwordStrength.test.ts) | Testa a engine de cálculo da força de senhas (Zod base), que retorna progresso percentual, cor visual da barra e o rótulo de complexidade. | **3** |
+| [dashboard.test.tsx](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/pages/tests/dashboard.test.tsx) | Valida a estrutura inicial e renderização dos cartões de métrica e elementos gráficos do painel de controle principal do gestor. | **3** |
+| [home.test.tsx](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/pages/tests/home.test.tsx) | Valida o carregamento estrutural e o estado da página principal de boas-vindas do sistema. | **2** |
+| [digitsOnly.test.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/src/lib/utils/tests/digitsOnly.test.ts) | Valida a função utilitária que remove todos os caracteres não numéricos de uma string para processamento limpo. | **2** |
+| [sentiment.test.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/src/lib/utils/tests/sentiment.test.ts) | Valida o mapeamento amigável de categorias de sentimentos da IA (`positive`, `neutral`, `negative`) para português (`Positivo`, `Neutro`, `Negativo`). | **1** |
 
 ---
 
-### Força de Senha — `passwordStrength.test.ts`
+## 2. Testes de Integração (`Integration Tests`)
 
-A função `getPasswordStrength` retorna `{ showBar, percent, label, color }` com base na complexidade.
+> **Total: 18 testes em 4 arquivos**
+>
+> Validam os handlers de rota do React Router (Actions e Loaders) que fazem a ponte entre os dados preenchidos nos formulários da interface e a chamada dos serviços que conversam com a API Gateway.
 
-| Senha de entrada | `percent` | `label` | `color` |
-|---|---|---|---|
-| `''` (vazia) | 0 | Muito fraca | — |
-| `'abc'` (curta, só minúsculas) | 25 | Fraca | `bg-red-500` |
-| `'Abcdef1!'` (complexa) | 100 | Muito forte | `bg-purple-600` |
-
----
-
-### Mapeamento de Sentimento — `sentiment.test.ts`
-
-Converte os valores internos da API para labels em português exibidos na interface.
-
-```
-'positive' → 'Positivo'
-'neutral'  → 'Neutro'
-'negative' → 'Negativo'
-```
+| Arquivo de Teste | Propósito do Arquivo | Qtd. Testes |
+| :--- | :--- | :---: |
+| [actionCollectingData.test.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/src/routes/actions/actionCollectingData.test.ts) | Testa a `action` de persistência das configurações de coleta e catálogos (produtos, serviços e departamentos), garantindo a conversão correta dos dados enviados para JSON e preservação de perguntas. | **6** |
+| [actionFeedbackSettings.test.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/src/routes/actions/actionFeedbackSettings.test.ts) | Testa a `action` centralizada de configurações de feedback baseada no campo `intent`, validando fluxos válidos de alteração, erros de validação local de strings vazias e mapeamento incorreto de ações. | **5** |
+| [actionPublicQrCodeFeedback.test.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/src/routes/actions/actionPublicQrCodeFeedback.test.ts) | Testa a integração do envio do formulário público do QR Code pela `action`, validando a conversão de campos, preenchimento de obrigatórios e envio final aos serviços. | **4** |
+| [loadPublicQrCodeEnterprise.test.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/src/routes/load/loadPublicQrCodeEnterprise.test.ts) | Valida o comportamento do `loader` responsável por buscar os dados estruturados e perguntas da empresa ao carregar a página pública de coleta de feedback via QR Code. | **3** |
 
 ---
 
-### Truncamento de Texto — `truncateText.test.ts`
+## 3. Testes Fim a Fim (`E2E Tests — Playwright`)
 
-Corta strings longas adicionando reticências. Usado em componentes de listagem onde o espaço é limitado.
+> **Total: 28 testes em 11 arquivos**
+>
+> Executados no navegador Chrome real via Playwright. Simulam a experiência ponta a ponta do usuário, cobrindo os fluxos principais dos 12 Casos de Uso (UC) homologados no projeto.
 
----
+> [!NOTE]
+> Por padrão, os testes E2E executam apontando para o ambiente de desenvolvimento local (`http://localhost:5173`) configurado em `apps/web/.env`. Para rodá-los:
+> ```bash
+> cd apps/web
+> powershell -ExecutionPolicy Bypass -Command "npx playwright test"
+> ```
 
-### Formulário de Feedback via QR Code
-
-Quatro arquivos que cobrem aspectos diferentes do mesmo fluxo público (sem autenticação):
-
-#### `publicQrFeedbackValidation.test.ts`
-
-Valida o payload antes do envio ao servidor.
-
-| Campo ausente | Erro retornado |
-|---|---|
-| `enterprise_id` vazio | `missingEnterpriseId` |
-| `rating` igual a zero | `missingRating` |
-| `message` só com espaços | `missingMessage` |
-| Tudo preenchido | `null` (sem erro) |
-
-Também testa o parsing de respostas dinâmicas:
-- `answer_value` é **normalizado para uppercase** (`'boa'` → `'BOA'`)
-- Subanswers com IDs duplicados retornam `null` (rejeitados)
-- Campo de subanswers vazio retorna `[]` (permitido)
-
-#### `publicQrFeedbackForm.test.ts`
-
-Funções que gerenciam o estado do formulário multi-etapa:
-
-| Função | O que verifica |
-|---|---|
-| `filterAnswersForQuestions` | Remove respostas de perguntas fora do contexto atual |
-| `filterSubanswersForQuestions` | Remove subrespostas de subperguntas inativas |
-| `hasAllRequiredAnswers` | Valida se todas as perguntas obrigatórias foram respondidas |
-| `hasAllRequiredSubanswers` | Valida subrespostas obrigatórias |
-| `orderAnswersByQuestions` | Ordena respostas pela `question_order` configurada |
-| `orderSubanswersByQuestions` | Ordena subrespostas pela `subquestion_order` |
-| `getActiveSubquestions` | Retorna só subperguntas com `is_active: true`, ordenadas |
-| `getItemKindLabel` | `'PRODUCT'` → `'Produto'`, `'SERVICE'` → `'Serviço'`… |
-
-#### `publicQrFeedbackErrorMessage.test.ts`
-
-Mensagens de erro exibidas ao usuário para cada código de falha de validação.
-
-#### `publicQrFeedbackTemplateEngine.test.ts`
-
-Motor de templates que personaliza textos de perguntas dinâmicas (ex: substituição de variáveis como `{{nome_empresa}}`).
-
----
-
-### Componentes e Páginas (`pages/tests/`, `layouts/tests/`)
-
-Testam renderização e estrutura visual usando **React Testing Library** + **jsdom**. Componentes filhos são mockados com `vi.mock` — o componente sendo testado é a unidade, sem dependências reais.
-
-#### Padrão de Isolamento
-
-```tsx
-// Mock dos filhos — foco só na página sendo testada
-vi.mock('components/public/forms/formLogin', () => ({
-  default: () => <div data-testid="form-login">Login Form</div>,
-}));
-
-describe('Login Page', () => {
-  it('deve renderizar o formulário de login', () => {
-    render(<Login />);
-    expect(screen.getByTestId('form-login')).toBeInTheDocument();
-  });
-});
-```
-
-#### Páginas — `pages/tests/`
-
-| Arquivo | O que verifica |
-|---|---|
-| `login.test.tsx` | Título "Bem-vindo de volta", formulário, ícone, link `/register`, links de Termos e Privacidade, classes CSS de layout, elementos decorativos |
-| `register.test.tsx` | Fluxo de cadastro — título, formulário de criação de conta, link de retorno ao login |
-| `home.test.tsx` | Página inicial pós-autenticação — boas-vindas e navegação |
-| `dashboard.test.tsx` | Estrutura do painel — métricas, gráficos e filtros com dados mockados |
-| `profile.test.tsx` | Perfil do usuário — campos de dados pessoais e seções de configuração |
-
-#### Layout — `layouts/tests/`
-
-| Arquivo | O que verifica |
-|---|---|
-| `userLayout.test.tsx` | Wrapper de páginas autenticadas — sidebar, header, slot de conteúdo renderizando filhos |
-
-#### Seletores Usados
-
-| Seletor | Quando usar |
-|---|---|
-| `screen.getByTestId('id')` | Elemento com `data-testid` — preferido para estrutura |
-| `screen.getByText('texto')` | Texto visível ao usuário — preferido para conteúdo |
-| `screen.getByRole('button')` | Elementos semânticos — preferido para acessibilidade |
-| `container.querySelector('.classe')` | Apenas quando testamos classes de estilo |
-
----
-
-## Camada 2 — Integração
-
-Actions e Loaders são os handlers de dados do React Router v6. Ficam entre componentes e serviços HTTP — recebem um `Request`, processam e retornam dados.
-
-Aqui está a integração real: o teste cruza a fronteira entre o formulário, o handler e o serviço — verificando o contrato entre esses módulos. O serviço HTTP é mockado, mas o fluxo de dados entre as camadas é real.
-
-### Como o Request é Simulado
-
-```ts
-function createRequest(body: Record<string, string | undefined>) {
-  const formData = new URLSearchParams();
-  Object.entries(body).forEach(([key, value]) => {
-    if (typeof value !== 'undefined') formData.append(key, value);
-  });
-
-  return new Request('http://localhost/user/edit/rota', {
-    method: 'POST',
-    body: formData,
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
-  });
-}
-```
-
-### `actionCollectingData.test.ts`
-
-Salva configurações de coleta da empresa (produtos, serviços, departamentos, perguntas).
-
-| Caso | Comportamento verificado |
-|---|---|
-| `uses_company_products = 'on'` | Envia lista de produtos parseada |
-| `uses_company_products = 'false'` | Envia arrays vazios |
-| `catalog_products` JSON presente | Prioriza catálogo estruturado sobre campo legado `main_products_or_services` |
-| Subperguntas com estrutura 3x3 | Preserva hierarquia perguntas → subperguntas |
-| Campos de catálogo ausentes | **Não sobrescreve** dados existentes |
-
-### `actionFeedbackSettings.test.ts`
-
-Gerencia múltiplas sub-ações via campo `intent`.
-
-| `intent` | Resposta esperada |
-|---|---|
-| Valor inválido | `{ error: 'Ação inválida.' }` — serviço não é chamado |
-| `save_company_feedback_questions` (válida) | `{ ok: true, scope: 'COMPANY', message: '...' }` |
-| `save_company_feedback_questions` (texto curto) | `{ error: 'Perguntas da empresa inválidas...' }` |
-| `save_products_catalog` | `{ ok: true, scope: 'PRODUCT', message: '...' }` |
-| `save_services_catalog` (JSON inválido) | `{ error: 'Itens de catálogo inválidos.' }` |
-
-### `actionPublicQrCodeFeedback.test.ts`
-
-Envio de feedback via QR Code público (sem autenticação). Cobre validação de payload, envio correto com respostas dinâmicas e tratamento de erros.
-
-### `loadPublicQrCodeEnterprise.test.ts`
-
-Loader que busca dados da empresa para a página pública de QR Code.
-
-| Cenário | Resultado |
-|---|---|
-| Empresa encontrada | Retorna perguntas ativas e configurações de exibição |
-| `enterprise_id` inválido | Lança erro → redireciona para página de erro |
-| Serviço indisponível | Propaga o erro corretamente |
+| Arquivo de Teste | Caso de Uso e Propósito do Arquivo | Qtd. Testes |
+| :--- | :--- | :---: |
+| [auth.setup.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/e2e/fixtures/auth.setup.ts) | **Setup de Autenticação:** Realiza o fluxo de login inicial do gestor de testes e armazena os cookies e tokens de sessão no arquivo `.auth/user.json`. Esse estado é compartilhado globalmente para evitar que todos os outros testes protegidos precisem fazer login individualmente. | **1** |
+| [uc-01-cadastro-conta.spec.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/e2e/uc-01-cadastro-conta.spec.ts) | **UC-01: Cadastro de Conta:** Valida a criação de conta de gestor, checando restrições de CPFs já cadastrados/inválidos, não-aceitação de termos obrigatórios e a política de prevenção de enumeração de e-mails duplicados. | **2** |
+| [uc-02-login.spec.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/e2e/uc-02-login.spec.ts) | **UC-02: Login:** Valida os fluxos de login no painel administrativo, cobrindo credenciais válidas com redirecionamento correto para o dashboard, senhas incorretas e validação de formato de e-mail. | **2** |
+| [uc-04-envio-feedback-qrcode.spec.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/e2e/uc-04-envio-feedback-qrcode.spec.ts) | **UC-04: Envio de Feedback via QR Code:** Simula o envio de avaliação pelo cliente final, incluindo notas em estrelas, seleção de satisfação por itens configurados, comentário escrito, envio anônimo ou identificado, e validações de e-mail/campos vazios. | **2** |
+| [uc-05-geracao-qrcode.spec.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/e2e/uc-05-geracao-qrcode.spec.ts) | **UC-05: Geração de QR Code:** Valida as configurações e disponibilização do QR Code no painel do gestor (ativar/desativar QR Code, copiar link para clipboard, checar parâmetros corretos de redirecionamento e instruções de impressão). | **1** |
+| [uc-06-ativacao-tipos-feedback.spec.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/e2e/uc-06-ativacao-tipos-feedback.spec.ts) | **UC-06: Ativação de Tipos de Feedback:** Testa o painel onde o gestor pode ativar ou desativar de forma imediata quais escopos (produtos, serviços ou departamentos) farão parte do formulário de coleta dinâmica. | **1** |
+| [uc-07-configuracao-catalogo.spec.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/e2e/uc-07-configuracao-catalogo.spec.ts) | **UC-07: Configuração de Catálogo:** Valida a inserção, edição, exclusão e verificação visual em lista de itens vinculados aos catálogos da empresa (produtos, serviços e departamentos). | **1** |
+| [uc-08-configuracao-coleta-ia.spec.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/e2e/uc-08-configuracao-coleta-ia.spec.ts) | **UC-08: Configuração de Coleta e Contexto de IA:** Valida as telas onde o gestor define o objetivo de negócio e perguntas personalizadas dinâmicas que alimentam o formulário de feedback e as análises cognitivas da IA. | **3** |
+| [uc-09-dashboard.spec.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/e2e/uc-09-dashboard.spec.ts) | **UC-09: Dashboard Principal:** Valida o painel com as métricas essenciais pós-autenticação, incluindo saudação amigável ao gestor logado, contagem de feedbacks no período, distribuição gráfica de sentimentos e link de navegação rápida para listagens completas. | **5** |
+| [uc-10-listagem-feedbacks.spec.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/e2e/uc-10-listagem-feedbacks.spec.ts) | **UC-10: Listagem de Feedbacks:** Valida as ferramentas de pesquisa na tabela principal de feedbacks (busca de termos textuais, filtragem por nota/estrelas, filtragem por categoria, paginação, visualização detalhada em modal e limpeza completa de filtros). | **1** |
+| [uc-11-insights-ia.spec.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/e2e/uc-11-insights-ia.spec.ts) | **UC-11: Insights de IA:** Testa o processamento e exibição de relatórios sintéticos pela inteligência artificial (análise qualitativa de sentimentos e palavras-chave, humor predominante, recomendações acionáveis automáticas, regeneração manual de insights e tratamento do estado sem feedbacks mínimos suficientes). | **3** |
+| [uc-12-gestao-perfil.spec.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/e2e/uc-12-gestao-perfil.spec.ts) | **UC-12: Gestão de Perfil:** Valida a área de gerenciamento pessoal e segurança do gestor, testando visualização de e-mail e dados da empresa, links de redirecionamento, fluxos colapsáveis de segurança, fluxo de logout, e a proteção geral de rotas autenticadas. | **6** |
 
 ---
 
 ## Veja Também
 
-- [Visão Geral dos Testes](./visao-geral.md)
-- [Microserviço IA](./ia-analyze.md)
-- [Backend](./api-gateway.md)
+* [Plano Estratégico de Testes](file:///C:/Users/Fernando/Repositorios/feedback-analytics/docs/testes/plano-estrategico.md)
+* [Visão Geral dos Testes](file:///C:/Users/Fernando/Repositorios/feedback-analytics/docs/testes/visao-geral.md)
+* [Testes da API Gateway](file:///C:/Users/Fernando/Repositorios/feedback-analytics/docs/testes/api-gateway.md)
+* [Testes do Serviço de IA](file:///C:/Users/Fernando/Repositorios/feedback-analytics/docs/testes/ia-analyze.md)

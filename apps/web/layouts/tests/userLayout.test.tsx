@@ -31,7 +31,7 @@ vi.mock('components/user/layout/Sidebar', () => ({
 import LayoutUser from '../user';
 import { useFetcher, useLoaderData, useNavigation } from 'react-router-dom';
 
-describe('LayoutUser', () => {
+describe('[Unidade] LayoutUser', () => {
   beforeEach(() => {
     vi.mocked(useLoaderData).mockReturnValue({
       enterprise: {

@@ -371,7 +371,7 @@ export async function getEnterpriseController(req: Request, res: Response) {
 
   const { data: enterprise, error } = await supabase
     .from('enterprise')
-    .select('id, document, account_type, terms_version, terms_accepted_at, created_at')
+    .select('id, document, account_type, terms_version, terms_accepted_at, created_at, trial_ends_at, subscription_status')
     .eq('auth_user_id', user.id)
     .single();
 
@@ -391,7 +391,7 @@ export async function patchEnterpriseController(req: Request, res: Response) {
     .from('enterprise')
     .update(parsed.data)
     .eq('auth_user_id', user.id)
-    .select('id, document, account_type, terms_version, terms_accepted_at, created_at')
+    .select('id, document, account_type, terms_version, terms_accepted_at, created_at, trial_ends_at, subscription_status')
     .single();
 
   if (error) return sendTypedError(res, 401, API_ERROR_ENTERPRISE_NOT_FOUND);

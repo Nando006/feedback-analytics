@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useFetcher, useLoaderData, useRouteLoaderData } from 'react-router-dom';
 import { getQrCodeUrl } from 'src/lib/utils/qrcode';
 import { useToast } from 'components/public/forms/messages/useToast';
-import type { Enterprise } from 'lib/interfaces/entities/enterprise.entity';
+import type { EnterpriseContext } from 'lib/interfaces/entities/enterprise.entity';
 import type { AuthUser } from 'lib/interfaces/entities/auth-user.entity';
 import type { LoaderQrCodeEnterprise } from 'src/routes/loaders/loaderQrCodeEnterprise';
 import {
@@ -18,7 +18,7 @@ import { FaPowerOff, FaCheck } from 'react-icons/fa6';
 
 export default function QRCodeEnterprise() {
   const { enterprise } = useRouteLoaderData('user') as {
-    enterprise: Enterprise;
+    enterprise: EnterpriseContext;
     user: AuthUser['user'];
   };
   const qrLoaderData =

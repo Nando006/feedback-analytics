@@ -72,7 +72,7 @@ const questionsFixture: FeedbackQuestionPublic[] = [
   },
 ];
 
-describe('publicQrFeedbackForm utils', () => {
+describe('[Unidade] publicQrFeedbackForm utils', () => {
   it('filtra respostas para manter somente perguntas válidas do contexto', () => {
     const answers: FeedbackQuestionAnswerInput[] = [
       { question_id: 'question-1', answer_value: 'BOA' },

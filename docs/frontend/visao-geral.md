@@ -9,16 +9,45 @@ O frontend (`apps/web`) é uma aplicação **React 19** com duas áreas distinta
 
 ## Tecnologias
 
+### Runtime
+
 | Tecnologia | Versão | Papel |
 |---|---|---|
-| **React** | 19.x | UI |
-| **React Router DOM** | 7.x | Roteamento + data fetching (loaders/actions) |
-| **React Hook Form + Zod** | 7.x / 4.x | Formulários com validação de schema |
-| **Tailwind CSS** | 4.x | Estilização |
-| **Supabase JS + SSR** | 2.x / 0.6.x | Client de autenticação (SSR) |
+| **React** | 19.x | Biblioteca de UI |
+| **React Router DOM** | 7.x | Roteamento SPA + data fetching (loaders/actions) |
+| **React Hook Form** | 7.x | Gerenciamento de estado de formulários |
+| **@hookform/resolvers** | 5.x | Integração do React Hook Form com schemas Zod |
+| **Zod** | 4.x | Validação e parsing de schemas |
+| **Tailwind CSS** | 4.x | Estilização utilitária |
+| **Supabase JS** | 2.x | Client do Supabase (auth, queries) |
+| **@supabase/ssr** | 0.6.x | Adaptador SSR para gerenciamento de sessão |
+| **React Icons** | 5.x | Biblioteca de ícones |
 | **TypeScript** | 5.8.x | Tipagem estática |
-| **Vite** | 7.x | Build tool |
-| **Vitest + Testing Library** | 3.x | Testes unitários |
+
+### Build
+
+| Tecnologia | Versão | Papel |
+|---|---|---|
+| **Vite** | 7.x | Build tool e dev server |
+| **@vitejs/plugin-react** | 4.x | Suporte a React (Fast Refresh + JSX) no Vite |
+
+### Testes
+
+| Tecnologia | Versão | Papel |
+|---|---|---|
+| **Vitest** | 3.x | Runner de testes unitários |
+| **@vitest/coverage-v8** | 3.x | Relatório de cobertura de código via V8 |
+| **@testing-library/react** | 16.x | Renderização de componentes em testes |
+| **@testing-library/user-event** | 14.x | Simulação de interações do usuário |
+| **@testing-library/jest-dom** | 6.x | Matchers customizados para DOM |
+| **jsdom** | 27.x | Ambiente DOM simulado para os testes |
+
+### Qualidade de Código
+
+| Tecnologia | Versão | Papel |
+|---|---|---|
+| **ESLint** | 9.x | Linting de código |
+| **typescript-eslint** | 8.x | Regras de lint específicas para TypeScript |
 
 ---
 
@@ -50,7 +79,7 @@ O frontend (`apps/web`) é uma aplicação **React 19** com duas áreas distinta
 | `/user/insights/reports` | Painel de insights IA |
 | `/user/insights/emotional` | Análise emocional |
 | `/user/insights/statistics` | Estatísticas |
-| `/user/edit/types-feedback` | Ativar tipos de feedback Premium |
+| `/user/edit/types-feedback` | Ativar tipos de feedback (produtos, serviços, departamentos) |
 | `/user/edit/feedback-settings` | Hub de configurações de catálogo |
 | `/user/edit/feedback-products` | Catálogo de produtos |
 | `/user/edit/feedback-services` | Catálogo de serviços |
@@ -82,5 +111,8 @@ O `@supabase/ssr` gerencia a sessão. O loader raiz `LoaderUserProtected` verifi
 ## Veja Também
 
 - [Arquitetura e Componentes](./arquitetura-estrutura.md)
+- [System Design](./system-design.md)
+- [Interface e Performance](./interface-performance.md)
+- [Fluxo de Autenticação e Navegação](./fluxo-autenticacao.md)
 - [Funcionalidades](../funcionalidades/visao-geral.md)
 - [Padrões de Projeto](../padroes-projeto.md)

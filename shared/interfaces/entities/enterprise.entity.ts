@@ -9,10 +9,20 @@ export interface Enterprise {
   terms_version?: string;
   terms_accepted_at?: string | null;
   created_at: string;
-  full_name?: string | null;
-  email?: string | null;
-  phone?: string | null;
+  trial_ends_at: string | null;
+  subscription_status: 'TRIAL' | 'ACTIVE' | 'EXPIRED' | 'CANCELED';
 }
+
+/**
+ * Enterprise enriquecido com dados de contato do usuário autenticado (auth.users).
+ * Usado no frontend: os campos full_name/email/phone não existem na tabela enterprise,
+ * mas são mesclados pelo loadUserContext para conveniência dos componentes.
+ */
+export type EnterpriseContext = Enterprise & {
+  full_name: string | null;
+  email: string | null;
+  phone: string | null;
+};
 
 /**
  * Resposta de API com empresa e, opcionalmente, usuário relacionado.

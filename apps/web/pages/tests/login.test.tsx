@@ -39,7 +39,7 @@ vi.mock('components/svg/lock', () => ({
   default: () => <div data-testid="svg-lock">Lock Icon</div>,
 }));
 
-describe('Login Page', () => {
+describe('[Unidade] Login Page', () => {
   it('deve renderizar todos os elementos principais da página', () => {
     render(<Login />);
 

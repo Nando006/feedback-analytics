@@ -3,7 +3,10 @@
   "builds": [
     {
       "src": "services/ia-analyze/src/index.ts",
-      "use": "@vercel/node"
+      "use": "@vercel/node",
+      "config": {
+        "maxDuration": 300
+      }
     }
   ],
   "rewrites": [

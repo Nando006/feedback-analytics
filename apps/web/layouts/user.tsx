@@ -15,7 +15,7 @@ import FeedbackDetailsSkeleton from 'components/user/pages/feedbacks/FeedbackDet
 import InsightsReportSkeleton from 'components/user/pages/feedbacks/insights/InsightsReportSkeleton';
 import EditProfileSkeleton from 'components/user/pages/edit/EditProfileSkeleton';
 import EditFeedbackSettingsSkeleton from 'components/user/pages/edit/EditFeedbackSettingsSkeleton';
-import type { CollectingDataEnterprise, Enterprise } from 'lib/interfaces/entities/enterprise.entity';
+import type { CollectingDataEnterprise, EnterpriseContext } from 'lib/interfaces/entities/enterprise.entity';
 import type { InsightScopeOption, InsightsCatalogItemOption } from 'components/user/pages/feedbacksInsightsReport/ui.types';
 import { getCookie, setCookie } from 'src/lib/utils/cookies';
 import { INTENT_LOGOUT, INTENT_FEEDBACK_ANALYZE_RAW, INTENT_FEEDBACK_RUN_IA } from 'src/lib/constants/routes/intents';
@@ -69,7 +69,7 @@ export default function User() {
   const navigation = useNavigation();
   const toast = useToast();
   const { enterprise, collecting } = useLoaderData() as {
-    enterprise: Enterprise;
+    enterprise: EnterpriseContext;
     collecting: CollectingDataEnterprise | null;
   };
 

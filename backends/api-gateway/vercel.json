@@ -2,8 +2,11 @@
   "version": 2,
   "builds": [
     {
-      "src": "backends/api-gateway/index.ts",
-      "use": "@vercel/node"
+      "src": "backends/api-gateway/_bundle.cjs",
+      "use": "@vercel/node",
+      "config": {
+        "maxDuration": 30
+      }
     }
   ],
   "rewrites": [
@@ -13,7 +16,7 @@
     },
     {
       "source": "/api/(.*)",
-      "destination": "/backends/api-gateway/index.ts"
+      "destination": "/backends/api-gateway/_bundle.cjs"
     }
   ]
 }

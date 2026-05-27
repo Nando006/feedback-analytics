@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { getPasswordStrength } from '../passwordStrength';
 
-describe('passwordStrength Utility', () => {
+describe('[Unidade] passwordStrength Utility', () => {
   it('retorna estado inicial quando vazio', () => {
     const s = getPasswordStrength('');
     expect(s.showBar).toBe(false);

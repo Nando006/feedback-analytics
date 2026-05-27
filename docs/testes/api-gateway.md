@@ -1,93 +1,59 @@
 # Testes — Backend (`backends/api-gateway`)
 
-## Status Atual
-
-**Sem cobertura.** O API Gateway não tem nenhum arquivo de teste.
-
-Isso representa o maior risco de regressão do projeto — o gateway é o ponto de entrada de todas as requisições, concentra autenticação, lógica de negócio, acesso ao banco via Prisma e comunicação com o serviço IA.
+Este documento detalha a arquitetura, a estrutura e a especificação dos testes automatizados do serviço **API Gateway**. Os testes cobrem as rotas, os controladores (*controllers*), as validações de esquema (*Zod schemas*) e a integração com serviços adjacentes, isolando o banco de dados e as chamadas externas por meio de mocks.
 
 ---
 
-## O Que Não Está Sendo Testado
+## Status da Cobertura
 
-| Área | Risco |
-|---|---|
-| Middlewares de autenticação (JWT) | Um bug silencia o sistema ou abre acesso indevido |
-| Endpoints de feedback (`/api/feedback/*`) | Regressão em regras de negócio só aparece em produção |
-| Integração com Prisma / banco de dados | Queries quebradas não são detectadas antes do deploy |
-| Chamada ao serviço `ia-analyze` | Falha de contrato (payload errado) não é percebida |
-| Validações de entrada (Zod) | Dados inválidos podem alcançar o banco |
-| Anti-spam e fingerprint | Lógica de bloqueio pode ser quebrada silenciosamente |
+Os testes do API Gateway utilizam o **Vitest** como motor de testes e o **Supertest** para simular requisições HTTP reais diretamente contra a aplicação Express. O banco de dados Supabase é completamente mockado em memória nas fixtures de teste para garantir a velocidade e a repetibilidade das asserções.
+
+> **Total geral de testes do API Gateway: 35 testes distribuídos em 5 arquivos**
 
 ---
 
-## Como Cobrir
+## Como Executar os Testes
 
-### Testes de Integração com Supertest
-
-A abordagem recomendada é usar **Supertest** apontando diretamente para o Express app, com banco de dados de teste isolado (PostgreSQL em container).
+Para executar os testes do API Gateway a partir da raiz do projeto:
 
 ```bash
-npm install -D supertest @types/supertest vitest
+powershell -ExecutionPolicy Bypass -Command "npm run test:api"
 ```
 
-Exemplo de estrutura:
+Ou diretamente no diretório do serviço:
 
-```
-backends/api-gateway/
-└── src/
-    └── __tests__/
-        ├── auth.test.ts          ← login, token, refresh
-        ├── feedback.test.ts      ← envio e listagem de feedbacks
-        ├── enterprise.test.ts    ← configurações da empresa
-        └── setup.ts              ← conexão com banco de teste
-```
-
-Exemplo de teste:
-
-```ts
-import request from 'supertest';
-import { app } from '../app';
-
-describe('POST /api/auth/login', () => {
-  it('retorna token com credenciais válidas', async () => {
-    const res = await request(app)
-      .post('/api/auth/login')
-      .send({ email: 'user@test.com', password: 'senha123' });
-
-    expect(res.status).toBe(200);
-    expect(res.body).toHaveProperty('token');
-  });
-
-  it('rejeita credenciais inválidas com 401', async () => {
-    const res = await request(app)
-      .post('/api/auth/login')
-      .send({ email: 'user@test.com', password: 'errado' });
-
-    expect(res.status).toBe(401);
-  });
-});
+```bash
+cd backends/api-gateway
+powershell -ExecutionPolicy Bypass -Command "npx vitest run"
 ```
 
 ---
 
-## Endpoints Prioritários
+## Testes Automatizados
 
-Se a cobertura for implementada em etapas, esta é a ordem de prioridade:
+Abaixo está o detalhamento sistemático de cada arquivo de teste presente no serviço, especificando sua finalidade técnica e o volume de asserções executadas.
 
-| Prioridade | Endpoint | Motivo |
-|---|---|---|
-| 1 | `POST /api/auth/login` | Porta de entrada do sistema |
-| 2 | `POST /api/feedback/qr` | Endpoint público de alto volume |
-| 3 | `GET /api/dashboard/*` | Queries de agregação — risco de regressão em performance |
-| 4 | `POST /internal/ia-analyze/*` | Contrato com o microserviço IA |
-| 5 | `PUT /api/enterprise/*` | Configurações críticas da empresa |
+| Arquivo de Teste | Propósito Técnico | Qtd. Testes |
+| :--- | :--- | :---: |
+| [auth.test.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/backends/api-gateway/src/tests/auth.test.ts) | **Fluxo de Autenticação e Gestão de Contas:** Valida os endpoints de Login (`/login`), Registro de Conta (`/register`), Recuperação de Senha (`/recover-password`) e Logout (`/logout`). Garante regras como bloqueio de payloads inválidos por Zod, erro de CPFs inválidos, recusa de senhas divergentes, tratamento de e-mails não verificados e a política de **privacidade anti-enumeração** (retornando status 200 de sucesso quando o e-mail inserido já estiver cadastrado). | **15** |
+| [feedbacks.test.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/backends/api-gateway/src/tests/feedbacks.test.ts) | **Histórico e Estatísticas de Feedbacks:** Testa a consulta protegida de feedbacks (`GET /api/protected/feedbacks`) e a agregação de dados para os cards do dashboard (`GET /api/protected/feedbacks/stats`). Valida a paginação padrão, proteção contra requisições anônimas (retorna 401), filtros de busca por categoria do catálogo/nota e tratamento de empresas não existentes. | **7** |
+| [ia-analyze.test.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/backends/api-gateway/src/tests/ia-analyze.test.ts) | **Integração com Microsserviço de IA:** Valida as pontes de comunicação com a IA (`/analyze-raw` e `/regenerate`). Garante o tratamento correto de erros específicos do motor de IA (`IaAnalyzeServiceError` retornando códigos de erro tipados ao frontend), falhas genéricas de conexão HTTP (retornando status 500) e restrição de tokens de acesso JWT. | **6** |
+| [qrcode-feedback.test.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/backends/api-gateway/src/tests/qrcode-feedback.test.ts) | **Coleta de Feedback via QR Code Público:** Valida a ingestão pública de dados de feedbacks via QR Code (`POST /api/public/feedback`) e a leitura dos metadados da empresa (`GET /api/public/feedback/enterprise/:id`). Cobre regras como bloqueio contra múltiplos envios diários de um mesmo dispositivo (*fingerprint anti-spam*), validações de campos obrigatórios e tratamento de ID empresarial inválido. | **6** |
+| [health.test.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/backends/api-gateway/src/tests/health.test.ts) | **Verificação de Integridade (Liveness/Readiness):** Valida a resposta do endpoint de healthcheck (`GET /api/health`), garantindo que o gateway responda com sucesso e status `{ ok: true }`. | **1** |
+
+---
+
+## Estrutura de Mocks
+
+Para manter os testes unitários isolados de redes externas ou do banco Supabase real, é configurado um mock global para o Supabase no arquivo de fixture:
+
+* **[supabase-mock.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/backends/api-gateway/src/tests/helpers/supabase-mock.ts):** Mocka as funções do cliente `createSupabaseServerClient`, interceptando chamadas de autenticação e persistência (como chamadas a `auth.signUp`, `auth.signInWithPassword`, `from().select()`, `from().insert()`, etc.) e retornando dados estáticos previsíveis definidos para teste.
 
 ---
 
 ## Veja Também
 
-- [Visão Geral dos Testes](./visao-geral.md)
-- [Frontend](./web.md)
-- [Microserviço IA](./ia-analyze.md)
-- [Visão Geral do Backend](../backend/visao-geral.md)
+* [Plano Estratégico de Testes](file:///C:/Users/Fernando/Repositorios/feedback-analytics/docs/testes/plano-estrategico.md)
+* [Visão Geral dos Testes](file:///C:/Users/Fernando/Repositorios/feedback-analytics/docs/testes/visao-geral.md)
+* [Testes da Aplicação Web (Frontend)](file:///C:/Users/Fernando/Repositorios/feedback-analytics/docs/testes/web.md)
+* [Testes do Serviço de IA](file:///C:/Users/Fernando/Repositorios/feedback-analytics/docs/testes/ia-analyze.md)
