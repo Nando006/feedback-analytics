@@ -14,7 +14,7 @@ Ele segue uma topologia **Hub-and-Spoke**, onde o API Gateway é o centro (hub) 
 
 - O banco de dados (Supabase / PostgreSQL).
 - O serviço de autenticação (Supabase Auth).
-- Outros microserviços internos.
+- Outros serviços Serverless.
 
 **Vantagens disso:** Centraliza a validação de segurança (tokens JWT) e isola lógicas complexas, deixando o Frontend mais leve.
 
@@ -30,13 +30,13 @@ Internamente, o API Gateway adota uma **Arquitetura em Camadas** com responsabil
 
 Há também pastas de apoio estrutural, como a `libs/`, que contém funções puras de domínio (sem efeitos colaterais) para ajudar em lógicas específicas (como montar lotes de análise para a IA), e os `providers/`, que fazem a comunicação HTTP com outros serviços
 
-### Suporte a Microserviços Independentes
+### Suporte a Serviços Serverless Independentes
 
-Ao invés de processar tudo no mesmo lugar e sobrecarregar o API Gateway, nossa arquitetura oferece suporte à extração de processamentos pesados ou integrações específicas para **microserviços independentes**.
+Ao invés de processar tudo no mesmo lugar e sobrecarregar o API Gateway, nossa arquitetura oferece suporte à extração de processamentos pesados ou integrações específicas para **serviços Serverless independentes**.
 
 **Por que separar?**
 - **Escalabilidade independente:** Serviços com alta demanda de processamento podem escalar sem exigir mais recursos do Gateway.
 - **Isolamento de falhas:** Se um serviço ou integração externa falhar, o sistema principal continua operando normalmente.
 - **Responsividade:** Permite que o Gateway continue rápido e responsivo para as requisições do Frontend, mesmo lidando com tarefas demoradas.
 
-Um exemplo prático dessa aplicação no nosso sistema é o microserviço `ia-analyze`, que lida com a inteligência artificial. Ele isola as chamadas à API do provedor LLM externo, garantindo que o Gateway não sofra gargalos durante análises massivas de texto.
+Um exemplo prático dessa aplicação no nosso sistema é o serviço Serverless `ia-analyze`, que lida com a inteligência artificial. Ele isola as chamadas à API do provedor LLM externo, garantindo que o Gateway não sofra gargalos durante análises massivas de texto.
