@@ -1,12 +1,12 @@
-# Testes — Microserviço IA (`services/ia-analyze`)
+# Testes — IA Analyze (`services/ia-analyze`)
 
-Este documento detalha a arquitetura, a estrutura e a especificação dos testes automatizados do microsserviço **IA Analyze**. O microsserviço é responsável por se conectar aos modelos de linguagem da Google (Gemini API) para extrair sentimentos estruturados, palavras-chave de feedback e recomendações automáticas para os gestores.
+Este documento detalha a arquitetura, a estrutura e a especificação dos testes automatizados do serviço Serverless **IA Analyze**. O serviço é responsável por se conectar aos modelos de linguagem da Google (Gemini API) para extrair sentimentos estruturados, palavras-chave de feedback e recomendações automáticas para os gestores.
 
 ---
 
 ## Status da Cobertura
 
-Os testes do microsserviço de IA utilizam o **Vitest** como motor de execução e o **Supertest** para validar os endpoints locais simulando chamadas HTTP internas vindas da API Gateway. A comunicação externa com as APIs do Gemini é mockada em tempo de teste para evitar latência e custos de infraestrutura.
+Os testes do serviço IA utilizam o **Vitest** como motor de execução e o **Supertest** para validar os endpoints locais simulando chamadas HTTP internas vindas da API Gateway. A comunicação externa com as APIs do Gemini é mockada em tempo de teste para evitar latência e custos de infraestrutura.
 
 > **Total geral de testes do IA Analyze: 33 testes distribuídos em 4 arquivos**
 
@@ -14,13 +14,13 @@ Os testes do microsserviço de IA utilizam o **Vitest** como motor de execução
 
 ## Como Executar os Testes
 
-Para executar a suíte de testes do microsserviço de IA a partir da raiz do projeto:
+Para executar a suíte de testes do serviço de IA a partir da raiz do projeto:
 
 ```bash
 powershell -ExecutionPolicy Bypass -Command "npm run test:api"
 ```
 
-Ou diretamente no diretório do microsserviço:
+Ou diretamente no diretório do serviço:
 
 ```bash
 cd services/ia-analyze
@@ -37,8 +37,8 @@ Abaixo está o detalhamento sistemático de cada arquivo de teste presente no se
 | :--- | :--- | :---: |
 | [termProcessing.test.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/services/ia-analyze/src/tests/lib/termProcessing.test.ts) | **Sanitização e Processamento de Termos:** Valida exaustivamente os algoritmos que limpam e qualificam os termos e tags sugeridos pela IA. Cobre funções como `normalizeForComparison` (remoção de acentos/pontuações e colapso de espaços), `isGroundedInMessage` (garantia de que as palavras extraídas existem no comentário real para prevenir alucinações), `sanitizeTermList` (limpeza de duplicatas e limites de contagem) e `buildForbiddenTerms` (geração de blacklist contendo termos estruturados). | **14** |
 | [sentiment.test.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/services/ia-analyze/src/tests/services/sentiment.test.ts) | **Validação de Sentimento e Integridade de Dados:** Garante que a classificação qualitativa atende ao padrão esperado pelo banco (`positive`, `neutral`, `negative`). Valida se o ID de feedback fornecido é válido, rejeita tipos incompatíveis e impede o processamento de registros cujos identificadores não estejam no mapa de cache. | **9** |
-| [analyze.test.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/services/ia-analyze/src/tests/routes/analyze.test.ts) | **Endpoint de Análise de Lotes (/analyze):** Testa a rota principal do microsserviço (`POST /internal/ia-analyze/analyze`). Cobre a segurança de cabeçalhos por token de autenticação interna, validações Zod do payload, processamento bem-sucedido com chamadas mockadas à IA do Gemini, resposta a lotes sem feedback e o repasse correto de erros da API do Gemini (status 502) ou erros inesperados (status 500). | **8** |
-| [health.test.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/services/ia-analyze/src/tests/routes/health.test.ts) | **Verificação de Integridade (Healthcheck):** Valida as rotas de checagem do microsserviço (`GET /internal/health` e `GET /internal/ia-analyze/health`), garantindo que o servidor Express responda status 200 com `{ ok: true, service: "ia-analyze" }`. | **2** |
+| [analyze.test.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/services/ia-analyze/src/tests/routes/analyze.test.ts) | **Endpoint de Análise de Lotes (/analyze):** Testa a rota principal do serviço (`POST /internal/ia-analyze/analyze`). Cobre a segurança de cabeçalhos por token de autenticação interna, validações Zod do payload, processamento bem-sucedido com chamadas mockadas à IA do Gemini, resposta a lotes sem feedback e o repasse correto de erros da API do Gemini (status 502) ou erros inesperados (status 500). | **8** |
+| [health.test.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/services/ia-analyze/src/tests/routes/health.test.ts) | **Verificação de Integridade (Healthcheck):** Valida as rotas de checagem do serviço (`GET /internal/health` e `GET /internal/ia-analyze/health`), garantindo que o servidor Express responda status 200 com `{ ok: true, service: "ia-analyze" }`. | **2** |
 
 ---
 

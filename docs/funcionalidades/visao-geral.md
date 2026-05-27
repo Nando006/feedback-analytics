@@ -136,7 +136,7 @@
 | **RNF06** | Usabilidade (UX) | Interface *mobile-first* responsiva, focando em simplicidade extrema no formulário de coleta (público). |
 | **RNF07** | Escalabilidade | Arquitetura Cloud/Serverless (BFF Node.js + Supabase) com provisionamento automático sob demanda. |
 | **RNF08** | Confiabilidade | Garantia de integridade referencial no banco de dados (chaves estrangeiras) refletindo precisão absoluta no dashboard. |
-| **RNF09** | Manutenibilidade | Arquitetura Monorepo Multidomínio (Workspace), separação estrita de domínios, e tipagem global forte com TypeScript. |
+| **RNF09** | Manutenibilidade | Monorepo (npm Workspaces), separação estrita de serviços com deploys independentes, e tipagem global forte com TypeScript. |
 | **RNF10** | Acurácia de IA | A Inteligência Artificial deve atingir >= 80% de precisão semântica nos testes de sentimento e "sanitização" contra alucinações. |
 | **RNF11** | Monitoramento da API | O sistema deve expor um *Endpoint* de *Health Check* ultraleve para monitoramento de disponibilidade da infraestrutura. |
 | **RNF12** | Resiliência de IA (Fallback Local) | O sistema deve possuir um mecanismo de contingência que utilize algoritmos de extração locais (baseados em *stopwords*) caso a API externa do provedor de IA falhe ou gere "alucinações" inaceitáveis. |
