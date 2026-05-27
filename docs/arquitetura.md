@@ -1,8 +1,26 @@
 # Arquitetura do Sistema
 
-## Visão Geral
+## Arquitetura Serverless (Macro)
 
-O projeto é um **monorepo multidomínios** gerenciado com npm Workspaces. Cada domínio tem escopo, responsabilidade e ciclo de execução próprios, mas compartilham versionamento único e dependências cruzadas via pacote `shared`.
+A infraestrutura do projeto roda integralmente na **Vercel**, sem servidores dedicados. Cada serviço é uma unidade independente que dorme até receber uma requisição — o modelo **Serverless Functions** da Vercel.
+
+| Domínio | Builder | Tipo de Deploy | `maxDuration` |
+|---|---|---|---|
+| `apps/web` | `@vercel/static-build` | Site estático via CDN | — |
+| `backends/api-gateway` | `@vercel/node` | Serverless Function | 30s |
+| `services/ia-analyze` | `@vercel/node` | Serverless Function | 300s |
+
+- **Frontend (`apps/web`):** arquivos estáticos (HTML, CSS, JS) gerados no build e servidos diretamente pela CDN da Vercel. Não há servidor — o React roda no navegador do usuário.
+- **API-Gateway:** função Node.js que acorda a cada requisição, consulta o banco (Supabase) e encerra. Operações I/O-bound, timeout de 30s é mais que suficiente.
+- **IA-Analyze:** função Node.js de longa duração — recebe feedbacks, chama o LLM externo (pode levar 30–60s) e processa o resultado. Precisa de 300s de timeout, inviável de rodar no mesmo projeto do Gateway.
+
+A escalabilidade é automática: quando várias empresas disparam análises simultaneamente, a Vercel sobe múltiplas instâncias do `ia-analyze` em paralelo. Quando a demanda cai, as instâncias encerram e param de consumir recursos.
+
+---
+
+## Monorepo — Organização Interna (Micro)
+
+Todo o código vive em um único repositório, gerenciado com **npm Workspaces**. Cada serviço tem escopo, responsabilidade e ciclo de deploy independentes, mas compartilham versionamento único e dependências cruzadas via pacote `shared`.
 
 | Domínio | Tipo | Descrição |
 |---|---|---|
@@ -12,12 +30,13 @@ O projeto é um **monorepo multidomínios** gerenciado com npm Workspaces. Cada 
 | `services/ia-analyze` | Serviço Externo | Processamento de IA com escopo e volume próprios |
 | `services/*` | Serviços Externos | Integrações menores agrupadas em um único domínio de serviços |
 
+O Monorepo resolve o problema de sincronização de contratos: quando o formato de comunicação entre Gateway e IA-Analyze muda, um único commit afeta os dois serviços e o TypeScript avisa imediatamente se algum lado quebrou.
+
+A partir daqui, cada serviço tem sua própria arquitetura interna — veja os links em **Veja Também**.
+
 ---
 
 ## Responsabilidades por Camada
-
-**Monorepo Multidomínio**
-Organiza aplicações, serviços e libs no mesmo repositório com versionamento único e execução independente por domínio. Evita duplicação de dependências e garante consistência de contratos.
 
 **Frontend React SPA**
 Responsável pela experiência do usuário, navegação via React Router (loaders/actions), e consumo das APIs do Gateway. Nunca acessa o banco ou serviços de IA diretamente.
@@ -28,7 +47,7 @@ Ponto único de entrada para o frontend. Concentra autenticação (JWT via Supab
 **Shared Cross-Package**
 Pacote interno importado por múltiplos domínios. Evita duplicação de tipos TypeScript — contratos de API, interfaces de entidades e tipos de integração vivem aqui e são a fonte de verdade para todos os serviços.
 
-**Serviços Externos (Microserviços)**
+**Serviços Externos (Serverless)**
 Divididos em dois perfis: integrações de menor impacto são agrupadas em um único domínio `services/`; serviços de grande volume ou complexidade (como o IA Analyze) ganham domínio próprio para escalar e evoluir de forma independente.
 
 ---
