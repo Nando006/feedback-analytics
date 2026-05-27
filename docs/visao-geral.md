@@ -40,9 +40,9 @@ O **Feedback Analytics** transforma coleta e análise de feedbacks em um process
 
 ## Estrutura do Sistema
 
-O projeto é um **monorepo multi domínios**. Cada domínio é independente, com seu próprio workflow no GitHub e servidor, mas todos compartilham o mesmo banco de dados.
+A infraestrutura é **Serverless** (Vercel Functions + CDN) e todo o código vive em um **Monorepo** (npm Workspaces). Cada serviço é independente, com seu próprio workflow no GitHub e servidor, mas todos compartilham o mesmo banco de dados.
 
-Atualmente temos os seguintes domínios:
+Atualmente temos os seguintes serviços:
 
 - `apps/web/` → Frontend React (público + dashboard)
 - `backends/api-gateway/` → API REST — ponto único de entrada do backend
