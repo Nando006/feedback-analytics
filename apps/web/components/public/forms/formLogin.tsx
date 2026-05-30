@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import {
@@ -17,7 +17,6 @@ import {
   loginSchema,
   type LoginFormValues,
 } from 'lib/schemas/public/loginSchema';
-import { ServiceResendConfirmation } from 'src/services/serviceAuth';
 import type { RegisterIssue } from './ui.types';
 
 const LOGIN_ISSUE_FIELD_PRIORITY = ['email', 'password', 'remember'] as const;
@@ -25,7 +24,7 @@ const LOGIN_ISSUE_FIELD_PRIORITY = ['email', 'password', 'remember'] as const;
 function normalizeText(value: string) {
   return value
     .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[̀-ͯ]/g, '')
     .toLowerCase();
 }
 
@@ -66,18 +65,6 @@ function inferLoginErrorByMessage(rawMessage?: string) {
     return {
       message: 'E-mail ou senha incorretos.',
       description: 'Revise as credenciais e tente novamente.',
-    };
-  }
-
-  if (
-    normalized.includes('email not confirmed') ||
-    normalized.includes('email_not_confirmed') ||
-    normalized.includes('conta nao verificada')
-  ) {
-    return {
-      message: 'Conta não verificada.',
-      description:
-        'Verifique seu e-mail e clique no link de confirmação para ativar sua conta.',
     };
   }
 
@@ -169,121 +156,18 @@ function getInvalidLoginPayloadErrorMessage(actionData: ActionData) {
   };
 }
 
-function inferResendErrorByMessage(rawMessage?: string) {
-  if (!rawMessage) return null;
-
-  const normalized = normalizeText(rawMessage);
-
-  if (
-    normalized.includes('too many requests') ||
-    normalized.includes('rate limit') ||
-    normalized.includes('muitas solicitacoes')
-  ) {
-    return {
-      message: 'Muitas solicitações de reenvio.',
-      description: 'Aguarde alguns instantes antes de tentar novamente.',
-    };
-  }
-
-  if (
-    normalized.includes('invalid email') ||
-    normalized.includes('unable to validate email address') ||
-    normalized.includes('e-mail invalido')
-  ) {
-    return {
-      message: 'E-mail inválido.',
-      description: 'Informe um e-mail válido para reenviar a confirmação.',
-    };
-  }
-
-  if (
-    normalized.includes('service unavailable') ||
-    normalized.includes('temporarily unavailable') ||
-    normalized.includes('indisponivel')
-  ) {
-    return {
-      message: 'Serviço de reenvio indisponível.',
-      description: 'Tente novamente em alguns instantes.',
-    };
-  }
-
-  if (
-    normalized.includes('network error') ||
-    normalized.includes('failed to fetch') ||
-    normalized.includes('conexao')
-  ) {
-    return {
-      message: 'Falha de conexão.',
-      description: 'Verifique sua internet e tente novamente.',
-    };
-  }
-
-  return null;
-}
-
-function getResendConfirmationErrorMessage(error?: string, message?: string) {
-  if (error === 'invalid_payload') {
-    return {
-      message: 'E-mail inválido.',
-      description: message ?? 'Informe um e-mail válido para reenviar a confirmação.',
-    };
-  }
-
-  if (error === 'rate_limited') {
-    return {
-      message: 'Muitas solicitações de reenvio.',
-      description: message ?? 'Aguarde alguns instantes antes de tentar novamente.',
-    };
-  }
-
-  if (error === 'service_unavailable') {
-    return {
-      message: 'Serviço de reenvio indisponível.',
-      description: message ?? 'Tente novamente em alguns instantes.',
-    };
-  }
-
-  if (error === 'network_error') {
-    return {
-      message: 'Falha de conexão.',
-      description: message ?? 'Verifique sua internet e tente novamente.',
-    };
-  }
-
-  if (error === 'resend_failed') {
-    return {
-      message: 'Não foi possível reenviar o e-mail.',
-      description: message ?? 'Tente novamente em alguns instantes.',
-    };
-  }
-
-  const inferredByMessage = inferResendErrorByMessage(message);
-  if (inferredByMessage) {
-    return inferredByMessage;
-  }
-
-  return {
-    message: 'Erro ao reenviar confirmação.',
-    description: message ?? 'Tente novamente em instantes.',
-  };
-}
-
 function getLoginErrorMessage(actionData: ActionData) {
   if (actionData.error === 'invalid_payload') {
     return getInvalidLoginPayloadErrorMessage(actionData);
   }
 
+  // RNE-014 (Proteção contra Enumeração de Usuários): tanto credenciais inválidas
+  // quanto e-mail não confirmado chegam aqui como 'invalid_credentials' e exibem a
+  // MESMA mensagem genérica — a UI nunca revela se a conta existe ou está pendente.
   if (actionData.error === 'invalid_credentials') {
     return {
       message: 'E-mail ou senha incorretos.',
       description: 'Revise as credenciais e tente novamente.',
-    };
-  }
-
-  if (actionData.error === 'email_not_confirmed') {
-    return {
-      message: 'Conta não verificada.',
-      description: 'Verifique seu e-mail e clique no link de confirmação para ativar sua conta. Se não conseguir encontrar o e-mail clique embaixo para reenviar o e-mail de verificação.',
     };
   }
 
@@ -335,27 +219,10 @@ export default function FormLogin() {
     navigation.state === 'submitting' &&
     (navigation.formAction?.includes('/login') ?? false);
 
-  const handleResendConfirmation = useCallback(async (email: string) => {
-    if (!email) {
-      toast.error('Informe um e-mail válido.', 'Digite um e-mail antes de solicitar o reenvio.');
-      return;
-    }
-
-    const result = await ServiceResendConfirmation(email);
-
-    if (result.ok) {
-      toast.success('E-mail reenviado!', result.message || 'Verifique sua caixa de entrada.');
-    } else {
-      const resendError = getResendConfirmationErrorMessage(result.error, result.message);
-      toast.error(resendError.message, resendError.description);
-    }
-  }, [toast]);
-
   const {
     register,
     handleSubmit,
     formState: { errors },
-    getValues,
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     mode: 'onSubmit',
@@ -367,19 +234,8 @@ export default function FormLogin() {
     if (!actionData?.error && !actionData?.message) return;
 
     const { message, description } = getLoginErrorMessage(actionData);
-    const shouldShowResendAction = actionData.error === 'email_not_confirmed';
-
-    if (shouldShowResendAction) {
-      toast.error(message, description, {
-        actionLabel: 'Clique para reenviar e-mail',
-        onAction: () => handleResendConfirmation(getValues('email')),
-        duration: 14000,
-      });
-      return;
-    }
-
     toast.error(message, description);
-  }, [actionData, getValues, handleResendConfirmation, toast]);
+  }, [actionData, toast]);
 
   const onSubmit = (data: LoginFormValues) => {
     const formData = new FormData();

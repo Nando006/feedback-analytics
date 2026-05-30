@@ -12,6 +12,23 @@
 
 ---
 
+### Proteção contra Enumeração de Usuários (RNE-014)
+
+**Como funciona:** os fluxos públicos de autenticação retornam mensagens genéricas e padronizadas para tudo que envolva a existência de um **e-mail**, impedindo que atacantes descubram quais e-mails têm cadastro ativo.
+
+| Fluxo | Endpoint | Comportamento |
+|---|---|---|
+| Login — credenciais inválidas | `POST /public/auth/login` | `401 invalid_credentials` — "E-mail ou senha incorretos." |
+| Login — e-mail não confirmado | `POST /public/auth/login` | **Mesma** resposta `401 invalid_credentials`. O erro `email_not_confirmed` do Supabase é remapeado em `auth.controller.ts` para não revelar que a conta existe porém está pendente. |
+| Cadastro — e-mail já existente | `POST /public/auth/register` | `200 { ok: true, message: 'confirmation_required' }` — segue para a tela de sucesso sem indicar duplicidade. |
+| Recuperação de senha | `POST /public/auth/forgot-password` | `200` com "Se este e-mail estiver cadastrado, você receberá as instruções em breve." — independente de o e-mail existir. |
+
+> **Escopo:** a regra cobre apenas o identificador **e-mail**. As validações de telefone e documento no cadastro permanecem explícitas (`409 phone_taken` / `409 document_taken`) por serem decisões de UX de cadastro fora do escopo desta regra.
+
+> **Nota (frontend):** `formLogin.tsx` também não diferencia conta não confirmada — exibe a mesma mensagem genérica e não oferece reenvio nesse ponto. O reenvio de confirmação continua disponível nos fluxos de pós-cadastro (`registerEmailPendingNotice.tsx`) e de link de ativação expirado (`/auth/link-expired`).
+
+---
+
 ### Assinatura e Trial
 
 #### Ciclo de Vida da Conta

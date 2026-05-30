@@ -93,6 +93,7 @@
 | **RNE-011** | Higienização de Metadados de Autenticação | RF01, RNF01, RNF02 | O banco de dados intercepta a criação de contas e *apaga* proativamente os dados sensíveis (Documento, Telefone, Termos) do payload JSON do provedor de Auth, transferindo-os unicamente para a tabela `enterprise` com RLS, prevenindo vazamentos de dados (LGPD) no token JWT. |
 | **RNE-012** | Proteção contra Mutação Destrutiva (Storage) | RNF08, RNF09 | Para garantir rastreabilidade histórica, os arquivos de logotipo e mídias salvos em Storage não podem ser deletados (apenas substituídos ou mantidos). Um gatilho (*Trigger*) de `protect_delete` bloqueia a exclusão de *buckets* inteiros. |
 | **RNE-013** | Inicialização do Trial no Cadastro | RF01, RF21 | O trigger `on_auth_user_created` deve inicializar `trial_ends_at = NOW() + 4 meses` e `subscription_status = 'TRIAL'` automaticamente ao criar a empresa, garantindo que toda nova conta inicie com período de teste completo sem intervenção manual. |
+| **RNE-014** | Proteção contra Enumeração de Usuários (Higienização de Respostas) | RF01, RF16, RNF01 | Nos fluxos de login, cadastro e recuperação de senha, as respostas relativas ao **e-mail** devem ser genéricas e indistinguíveis. O login responde a e-mail inexistente, senha incorreta e conta não confirmada com a **mesma** mensagem (`invalid_credentials`); o cadastro com e-mail já existente segue para a tela de sucesso (`confirmation_required`) sem revelar duplicidade; a recuperação sempre exibe a mesma mensagem genérica. Impede que atacantes descubram, por varredura automatizada, quais e-mails possuem cadastro ativo. |
 
 ---
 
@@ -148,9 +149,9 @@
 
 | Funcionalidade do MVP | Requisitos Funcionais | Requisitos Não Funcionais | Regras de Negócio |
 |---|---|---|---|
-| Autenticação Completa (Login, Logout, Callback) | RF01 | RNF01 | - |
+| Autenticação Completa (Login, Logout, Callback) | RF01 | RNF01 | RNE-014 |
 | Trial e Status de Assinatura | RF21 | RNF08 | RNE-013 |
-| Recuperação e Reenvio de E-mail | RF16, RF17 | RNF01 | - |
+| Recuperação e Reenvio de E-mail | RF16, RF17 | RNF01 | RNE-014 |
 | Gestão de Perfil | RF02 | RNF01, RNF08 | - |
 | Gestão de Empresa | RF03 | RNF01, RNF08 | - |
 | Coleta de Dados de Contexto | RF04 | RNF01 | - |
