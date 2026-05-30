@@ -26,7 +26,7 @@
 | Muitas tentativas seguidas (rate limit) | Bloqueia temporariamente e exibe mensagem pedindo para aguardar antes de tentar novamente |
 | Servidor de autenticação indisponível | Exibe mensagem informando que o serviço está temporariamente indisponível |
 | Sem conexão com a internet | Exibe mensagem pedindo para verificar a conexão |
-| Conta não ativada (e-mail não confirmado) | Exibe mensagem orientando o gestor a confirmar o e-mail e oferece opção de reenvio |
+| Conta não ativada (e-mail não confirmado) | Por segurança (RNE-014 — proteção contra enumeração de usuários), exibe a **mesma** mensagem genérica de credenciais inválidas, sem revelar que a conta existe mas ainda não foi confirmada. O reenvio de confirmação continua disponível pelos fluxos de pós-cadastro e de link de ativação expirado |
 
 ---
 

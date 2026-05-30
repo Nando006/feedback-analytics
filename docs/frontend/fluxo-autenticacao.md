@@ -108,10 +108,13 @@ redirect       retorna payload de erro para a tela
 
 | Cenário | Mensagem exibida |
 |---|---|
-| Credenciais inválidas | "Não foi possível realizar o login. Verifique os dados." |
+| Credenciais inválidas | "E-mail ou senha incorretos." |
+| Conta não confirmada (e-mail pendente) | **Mesma** mensagem de credenciais inválidas — por segurança (RNE-014, proteção contra enumeração de usuários) a UI não revela que a conta existe mas está pendente, e não oferece reenvio neste ponto |
 | Rate limit (429) | "Muitas tentativas de login. Aguarde e tente novamente." |
 | Servidor indisponível (5xx) | "Serviço de login temporariamente indisponível." |
 | Sem conexão | "Não foi possível conectar ao servidor. Verifique sua conexão." |
+
+> O reenvio de confirmação permanece acessível pelos fluxos de pós-cadastro e de [link de ativação expirado](#fluxo-de-recuperação-de-senha) — apenas não é exposto a partir do erro de login, para não vazar a existência da conta.
 
 ---
 

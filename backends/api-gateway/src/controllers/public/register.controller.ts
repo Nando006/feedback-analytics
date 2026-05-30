@@ -115,7 +115,6 @@ function mapSupabaseRegisterError(rawMessage?: string): {
 
 export async function registerUserController(req: Request, res: Response) {
   try {
-    console.log('REGISTER CONTROLLER RECEIVED BODY:', req.body);
     const parsed = registerSchema.safeParse(req.body);
 
     if (!parsed.success) {

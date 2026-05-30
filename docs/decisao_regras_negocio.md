@@ -28,6 +28,16 @@ O detalhamento técnico de como cada regra é implementada está em [regras-nego
 
 ---
 
+### O sistema não revela quais e-mails têm cadastro
+
+**Decisão:** nas telas de login, cadastro e recuperação de senha, o sistema nunca confirma se um e-mail específico já está cadastrado. Quem erra a senha, tenta entrar com uma conta ainda não confirmada ou digita um e-mail que não existe recebe sempre a **mesma** mensagem genérica. No cadastro com e-mail já em uso, o fluxo segue normalmente para a tela de sucesso, sem avisar que o e-mail já existe.
+
+**Por quê:** se o sistema dissesse "essa conta existe mas não foi confirmada" ou "esse e-mail já está cadastrado", um atacante poderia testar listas de e-mails em massa e descobrir quem tem conta na plataforma — o primeiro passo para ataques direcionados. Mensagens genéricas tornam essa varredura inviável. O custo é pequeno: um gestor legítimo com conta não confirmada ainda consegue reenviar o e-mail de ativação pelos fluxos de cadastro e de link expirado.
+
+**Observação:** por enquanto a regra vale para o e-mail. Telefone e documento ainda são validados de forma explícita no cadastro.
+
+---
+
 ## Conta e Acesso
 
 ### Toda conta nova começa com 4 meses de acesso gratuito
