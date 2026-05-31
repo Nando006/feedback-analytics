@@ -66,7 +66,7 @@ describe('[Integração] POST /api/public/auth/login', () => {
     expect(res.body.error).toBe('invalid_credentials');
   });
 
-  it('retorna 401 quando e-mail não foi confirmado', async () => {
+  it('[RNE-014] e-mail não confirmado retorna a mesma resposta de credenciais inválidas (anti-enumeração)', async () => {
     mockSupabase.auth.signInWithPassword.mockResolvedValueOnce({
       data: { user: null, session: null },
       error: { code: 'email_not_confirmed', message: 'Email not confirmed' },
@@ -76,8 +76,14 @@ describe('[Integração] POST /api/public/auth/login', () => {
       .post('/api/public/auth/login')
       .send({ email: 'novo@teste.com', password: 'Senha@123' });
 
+    // A resposta deve ser indistinguível da de credenciais inválidas: não pode
+    // revelar que a conta existe (porém não confirmada).
     expect(res.status).toBe(401);
-    expect(res.body.error).toBe('email_not_confirmed');
+    expect(res.body.error).toBe('invalid_credentials');
+
+    const serialized = JSON.stringify(res.body).toLowerCase();
+    expect(serialized).not.toContain('confirm');
+    expect(serialized).not.toContain('verificad');
   });
 });
 

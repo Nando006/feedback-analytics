@@ -3,7 +3,6 @@ import { loginSchema } from '../../../../../shared/schemas/public/loginSchema.js
 import { createSupabaseServerClient } from '../../config/supabase.js';
 import {
   API_ERROR_INTERNAL_ERROR,
-  API_ERROR_EMAIL_NOT_CONFIRMED,
   API_ERROR_INVALID_CREDENTIALS,
   API_ERROR_INVALID_PAYLOAD,
 } from '../../config/errors.js';
@@ -12,7 +11,6 @@ import { sendTypedError } from '../../utils/sendTypedError.js';
 type LoginEndpointErrorCode =
   | typeof API_ERROR_INVALID_PAYLOAD
   | typeof API_ERROR_INVALID_CREDENTIALS
-  | typeof API_ERROR_EMAIL_NOT_CONFIRMED
   | typeof API_ERROR_INTERNAL_ERROR
   | 'rate_limited'
   | 'service_unavailable'
@@ -26,6 +24,11 @@ function mapSupabaseLoginError(error: { code?: string; message?: string }): {
   const message = error.message?.trim() ?? '';
   const msg = message.toLowerCase();
 
+  // RNE-014 (Proteção contra Enumeração de Usuários): um e-mail cadastrado porém
+  // não confirmado NÃO pode gerar uma resposta distinta da de credenciais
+  // inválidas. Caso contrário, um atacante distinguiria contas existentes (mas
+  // não verificadas) de e-mails inexistentes, viabilizando varredura de cadastros.
+  // Por isso retornamos a MESMA resposta genérica de credenciais inválidas.
   if (
     error.code === 'email_not_confirmed' ||
     msg.includes('email not confirmed') ||
@@ -33,9 +36,8 @@ function mapSupabaseLoginError(error: { code?: string; message?: string }): {
   ) {
     return {
       status: 401,
-      code: API_ERROR_EMAIL_NOT_CONFIRMED,
-      message:
-        'Conta não verificada. Verifique seu e-mail e use o link de confirmação para ativar o acesso.',
+      code: API_ERROR_INVALID_CREDENTIALS,
+      message: 'E-mail ou senha incorretos. Revise as credenciais e tente novamente.',
     };
   }
 
