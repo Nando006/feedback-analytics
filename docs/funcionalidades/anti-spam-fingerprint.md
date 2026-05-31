@@ -79,7 +79,7 @@ Dispositivos marcados com `is_blocked = true` na tabela `tracked_devices` são p
 ## Detalhes Técnicos
 
 - O fingerprint é calculado via `MD5(userAgent | clientIP | dayEpoch)` — muda a cada dia automaticamente
-- A função de geração é executada no banco via `generate_device_fingerprint`
+- O cálculo do MD5 é feito na **própria aplicação** (API Gateway, com o `crypto` do Node), assim como a verificação do limite diário. Existe uma função equivalente no banco — `generate_device_fingerprint` (e também `can_device_send_feedback` / `register_device_feedback`) — porém ela **não é invocada** pelo fluxo atual
 - A tabela `tracked_devices` armazena: fingerprint, collection_point_id, data de envio, `is_blocked`
 - O bloqueio diário (409) é por `collection_point_id` — o mesmo dispositivo em pontos diferentes passa normalmente
 - O bloqueio permanente (403) é absoluto — bloqueia qualquer submissão daquele dispositivo

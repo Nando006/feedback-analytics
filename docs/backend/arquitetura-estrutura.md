@@ -20,13 +20,15 @@ Ele segue uma topologia **Hub-and-Spoke**, onde o API Gateway é o centro (hub) 
 
 ## Visão Micro: Arquitetura em Camadas (Layered Architecture)
 
-Internamente, o API Gateway adota uma **Arquitetura em Camadas** com responsabilidades estritamente definidas. O fluxo de dados segue um caminho rigoroso de *ida e volta*, onde nenhuma camada pula a outra:
+Internamente, o API Gateway adota uma **Arquitetura em Camadas** como padrão de referência. O fluxo ideal segue um caminho de *ida e volta* entre as camadas:
 
 1. **Rotas (`routes/`):** A porta de entrada. Recebem a requisição HTTP e direcionam para o controller correto.
-2. **Middlewares (`middlewares/`):** A segurança. Validam a autenticação (ex: o token JWT) antes de deixar a requisição prosseguir.
-3. **Controllers (`controllers/`):** Os "gerentes". Eles recebem a requisição validada, extraem os parâmetros ou o corpo (body), formatam e repassam a tarefa para o *Service*. Eles não tocam no banco de dados.
-4. **Services (`services/`):** O "cérebro". Aqui vivem as regras de negócio. O Service toma as decisões, valida requisitos (ex: verificar se há feedbacks suficientes para analisar) e orquestra o fluxo de dados.
-5. **Repositories (`repositories/`):** Os "arquivistas". É a única camada autorizada a fazer queries no banco de dados (Supabase) para ler, inserir ou atualizar dados.
+2. **Middlewares (`middlewares/`):** A segurança. Validam a autenticação (o `requireAuth` valida a sessão/JWT via Supabase Auth) antes de deixar a requisição prosseguir, injetando `req.user` e `req.supabase` na request.
+3. **Controllers (`controllers/`):** Os "gerentes". Recebem a requisição validada, extraem os parâmetros ou o corpo (body) e resolvem a resposta.
+4. **Services (`services/`):** O "cérebro". Concentram as regras de negócio mais complexas, validam requisitos (ex: verificar se há feedbacks suficientes para analisar) e orquestram o fluxo de dados.
+5. **Repositories (`repositories/`):** Os "arquivistas". Encapsulam as queries ao banco de dados (Supabase) para ler, inserir ou atualizar dados.
+
+> **Estado atual da implementação:** o padrão completo Controller → Service → Repository está aplicado nos fluxos mais complexos — em especial a **análise de IA** (`iaAnalyze.service.ts` + `iaAnalyze.repository.ts`) e, parcialmente, os **pontos de coleta/QR** (`collectionPointsQr.repository.ts`). Nos demais fluxos (autenticação, cadastro, empresa, feedbacks públicos, usuário), os **Controllers acessam o banco diretamente** pelo cliente Supabase (`req.supabase.from(...)`), sem passar por Services/Repositories. Migrar progressivamente esses fluxos para o padrão em camadas é um trabalho em aberto.
 
 Há também pastas de apoio estrutural, como a `libs/`, que contém funções puras de domínio (sem efeitos colaterais) para ajudar em lógicas específicas (como montar lotes de análise para a IA), e os `providers/`, que fazem a comunicação HTTP com outros serviços
 
