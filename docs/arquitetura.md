@@ -64,9 +64,9 @@ O sistema tem uma topologia **hub-and-spoke**: o API Gateway é o hub central. O
 
 ### Área Protegida (empresa logada)
 
-1. O Frontend autentica via **Supabase Auth** e obtém um JWT
-2. Todas as requisições ao Gateway carregam esse JWT no header `Authorization`
-3. O middleware `requireAuth` valida o token e injeta `req.user` + `req.supabase` na request
+1. O Frontend autentica via **Supabase Auth**; a sessão (JWT) é mantida em **cookies httpOnly** definidos pela API
+2. Todas as requisições ao Gateway são enviadas com `credentials: 'include'`, levando os cookies de sessão automaticamente
+3. O middleware `requireAuth` valida a sessão (`supabase.auth.getUser()`) e injeta `req.user` + `req.supabase` na request
 4. O Gateway lê/escreve no banco (Supabase) e, quando necessário, chama o IA Analyze
 
 ### Fluxo de Análise IA

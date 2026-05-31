@@ -22,7 +22,7 @@
 
 ## Visão Geral
 
-O banco de dados é a camada de persistência central da plataforma. Toda a lógica de isolamento multi-tenant, autorização, anti-spam e integridade referencial é aplicada diretamente no banco — não apenas na camada de aplicação — garantindo segurança em profundidade.
+O banco de dados é a camada de persistência central da plataforma. A lógica de isolamento multi-tenant, autorização e integridade referencial é aplicada diretamente no banco (RLS, constraints e triggers), garantindo segurança em profundidade. Já o controle **anti-spam** de feedback é aplicado na **camada de aplicação** (API Gateway): o banco oferece a estrutura de apoio (tabela `tracked_devices` e funções auxiliares), mas o cálculo do fingerprint e o limite diário são verificados no Gateway.
 
 **Princípios arquiteturais:**
 
@@ -398,26 +398,26 @@ erDiagram
 
 O sistema usa **duas camadas de autorização**:
 
-1. **API Gateway:** valida JWT, extrai `enterprise_id` dos claims e injeta nas queries.
-2. **RLS no PostgreSQL:** cada tabela possui policies que verificam `auth.uid()` e `enterprise_id` independentemente, sendo a barreira final.
+1. **API Gateway:** o middleware `requireAuth` valida a sessão/JWT (Supabase Auth, via cookies httpOnly) e injeta `req.user` + `req.supabase` na requisição; as queries rodam no contexto autenticado do usuário.
+2. **RLS no PostgreSQL:** cada tabela possui policies que derivam a empresa do usuário a partir de `auth.uid()` — subconsulta `SELECT id FROM public.enterprise WHERE auth_user_id = auth.uid()` — sendo a barreira final.
 
 ### Perfis de acesso
 
 | Perfil | Descrição | Tabelas com acesso |
 |---|---|---|
 | `anon` | Cliente final sem login (formulário público) | `collection_points` (SELECT ativo), `catalog_items` (SELECT ativo), `questions_of_feedbacks` (SELECT ativo), `feedback_question_subquestions` (SELECT ativo), `tracked_devices` (SELECT/INSERT/UPDATE próprio), `feedback` (INSERT), `feedback_question_answers` (INSERT), `feedback_subquestion_answers` (INSERT) |
-| `authenticated` | Gestor logado com JWT válido | Todas as tabelas `public.*` via `enterprise_id` do JWT |
+| `authenticated` | Gestor logado com sessão válida | Todas as tabelas `public.*`, isoladas por `auth.uid()` (subconsulta em `enterprise`) |
 
 ### Claims JWT customizados
 
-A função `jwt_custom_claims()` injeta no token:
+A função `jwt_custom_claims()` está definida para compor claims auxiliares no token:
 ```json
 {
   "role": "enterprise",
   "enterprise_id": "<uuid da empresa do usuário>"
 }
 ```
-Isso permite que as policies RLS referenciem `enterprise_id` diretamente do token sem subconsultas adicionais.
+> **Observação:** essas claims são uma conveniência para a aplicação. As policies RLS atuais **não** consomem o `enterprise_id` do token — elas derivam a empresa de `auth.uid()` via subconsulta em `public.enterprise`. Ou seja, a autorização no banco não depende dessa claim estar presente no JWT.
 
 ### Higienização LGPD
 
@@ -479,7 +479,7 @@ Ao criar ou atualizar usuários, os triggers removem automaticamente do `raw_use
 
 ## Storage
 
-O Supabase Storage armazena logotipos e mídias das empresas. Três triggers de proteção estão ativos:
+O Supabase Storage está provisionado para armazenar logotipos e mídias das empresas, com três triggers de proteção ativos. *(A infraestrutura e as proteções de Storage já existem; o fluxo de upload de logotipos pela aplicação ainda não está implementado.)*
 
 | Trigger | Tabela | Proteção |
 |---|---|---|
