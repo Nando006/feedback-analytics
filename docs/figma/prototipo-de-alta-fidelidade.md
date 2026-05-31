@@ -50,14 +50,14 @@ São telas acessadas pelos usuários da aplicação sem autenticação válida, 
 - Alternância entre Login e Cadastro sem navegação de página (toggle/tab)
 - Validação de campos em tempo real (inline errors)
 - Loading state no botão de submit durante a requisição
-- Redirecionamento para `/dashboard` após autenticação bem-sucedida
+- Redirecionamento para `/user/dashboard` após autenticação bem-sucedida
 - Exibição de mensagem de erro em caso de credenciais inválidas
 
 ---
 
 ### 3. Coleta de Feedbacks
 
-**Rota:** `/feedback/:qrcode?enterprise=:id`  
+**Rota:** `/feedback/qrcode?enterprise=:id`  
 **Objetivo:** Página pública onde o cliente final deposita seu feedback após escanear o QR Code.
 
 > Esta rota é **pública**, mas só deve ser acessada via QR Code gerado por um usuário logado. Acessos diretos sem um `id` válido devem retornar erro ou página de QR Code inválido.
@@ -84,7 +84,7 @@ Telas acessíveis apenas com autenticação. Usuários não autenticados devem s
 
 ### 4. Dashboard
 
-**Rota:** `/dashboard`  
+**Rota:** `/user/dashboard`  
 **Objetivo:** Visão centralizada dos feedbacks coletados, com cards interativos e dados em tempo real.
 
 #### Componentes da Tela
@@ -110,7 +110,7 @@ Telas acessíveis apenas com autenticação. Usuários não autenticados devem s
 
 ### 5. Perfil do Usuário
 
-**Rota:** `/perfil`  
+**Rota:** `/user/profile`  
 **Objetivo:** Visualização e edição das informações pessoais do usuário.
 
 #### Informações Exibidas
@@ -132,7 +132,7 @@ Telas acessíveis apenas com autenticação. Usuários não autenticados devem s
 
 ### 6. QR Code
 
-**Rota:** `/qrcode`  
+**Rota:** `/user/qrcode/enterprise`  
 **Objetivo:** Gerenciamento dos QR Codes gerados pelo usuário para coleta de feedbacks.
 
 #### Ações Disponíveis por QR Code
@@ -153,7 +153,7 @@ Telas acessíveis apenas com autenticação. Usuários não autenticados devem s
 
 ### 7. Feedbacks
 
-**Rota:** `/feedbacks`  
+**Rota:** `/user/feedbacks/all`  
 **Objetivo:** Listagem completa de todos os feedbacks recebidos, com filtros e pesquisa.
 
 #### Filtros Disponíveis
@@ -178,7 +178,7 @@ Telas acessíveis apenas com autenticação. Usuários não autenticados devem s
 
 ### 8. Visão Geral dos Feedbacks
 
-**Rota:** `/visao-geral`  
+**Rota:** `/user/feedbacks/analytics/all`  
 **Objetivo:** Painel analítico com dados agregados dos feedbacks, sem listagem individual.
 
 #### Métricas Exibidas
@@ -193,7 +193,7 @@ Telas acessíveis apenas com autenticação. Usuários não autenticados devem s
 
 ### 9. Relatório IA
 
-**Rota:** `/relatorio-ia`  
+**Rota:** `/user/insights/reports` (abas: `/user/insights/reports`, `/user/insights/emotional`, `/user/insights/statistics`)  
 **Objetivo:** Geração e visualização de insights automáticos baseados nos feedbacks, utilizando inteligência artificial.
 
 #### Fluxo de Geração

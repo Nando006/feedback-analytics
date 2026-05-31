@@ -30,7 +30,7 @@ São telas acessadas pelos usuários da aplicação sem autenticação válida, 
 
 ### 2. Coleta de Feedbacks
 
-**Rota:** `/feedback/:qrcode?enterprise=:id`  
+**Rota:** `/feedback/qrcode?enterprise=:id`  
 **Objetivo:** Página pública onde o cliente final deposita seu feedback após escanear o QR Code.
 
 > Esta rota é **pública**, mas só deve ser acessada via QR Code gerado por um usuário logado. Acessos diretos sem um `id` válido devem retornar erro ou página de QR Code inválido.
@@ -52,7 +52,7 @@ São telas acessadas pelos usuários da aplicação com autenticação válida, 
 
 ### 3. Dashboard
 
-**Rota:** `/dashboard`  
+**Rota:** `/user/dashboard`  
 **Objetivo:** Visão centralizada dos feedbacks coletados, com cards estruturais e espaço para os dados em tempo real.
 
 #### Componentes da Tela
@@ -70,7 +70,7 @@ São telas acessadas pelos usuários da aplicação com autenticação válida, 
 
 ### 4. Perfil do Usuário
 
-**Rota:** `/perfil`  
+**Rota:** `/user/profile`  
 **Objetivo:** Visualização e edição das informações pessoais do usuário.
 
 #### Informações Exibidas
@@ -88,7 +88,7 @@ São telas acessadas pelos usuários da aplicação com autenticação válida, 
 
 ### 5. QR Code
 
-**Rota:** `/qrcode`  
+**Rota:** `/user/qrcode/enterprise`  
 **Objetivo:** Gerenciamento dos QR Codes gerados pelo usuário para coleta de feedbacks.
 
 #### Ações Disponíveis por QR Code
@@ -105,7 +105,7 @@ São telas acessadas pelos usuários da aplicação com autenticação válida, 
 
 ### 6. Feedbacks (Listagem)
 
-**Rota:** `/feedbacks`  
+**Rota:** `/user/feedbacks/all`  
 **Objetivo:** Visão de listagem dos feedbacks capturados para auditoria ou filtros manuais.
 
 #### Componentes da Tela
@@ -121,7 +121,7 @@ São telas acessadas pelos usuários da aplicação com autenticação válida, 
 
 ### 7. Relatório IA
 
-**Rota:** `/relatorio-ia`  
+**Rota:** `/user/insights/reports`  
 **Objetivo:** Geração e visualização de insights automáticos baseados nos feedbacks, utilizando inteligência artificial.
 
 #### Conteúdo do Relatório
