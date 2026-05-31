@@ -15,10 +15,10 @@ Define a estrutura de dados que será preenchida pelo cliente final.
 
 | Campo | Tipo | Obrigatório |
 | :--- | :--- | :---: |
-| Avaliação geral | Estrelas (1–5) | Sim |
-| Sentimento | Seleção (Péssimo, Ruim, Mediana, Boa, Ótima) | Sim |
+| Avaliação geral | Estrelas (1–5) — "Como você avalia sua experiência?" (Muito insatisfeito → Muito satisfeito) | Sim |
+| Perguntas dinâmicas (3 por escopo) | Escala Péssimo / Ruim / Mediana / Boa / Ótima, cada pergunta com até 3 subperguntas opcionais na mesma escala | Sim |
 | Comentário livre | Textarea | Sim |
-| Informações pessoais | Nome, e-mail | Não |
+| Informações pessoais | Nome, e-mail e gênero (opcionais) | Não |
 
 ### 1.2. Perfil do Usuário
 Define quais informações da conta e da empresa são exibidas e quais permitem edição.
