@@ -30,6 +30,12 @@ backends/api-gateway/
 
 | Método | Caminho | Descrição |
 |---|---|---|
+| `GET` | `/api/protected/user/auth_user` | Dados do usuário autenticado (do JWT) |
+| `PATCH` | `/api/protected/user/email` | Atualiza e-mail (envia confirmação) |
+| `PATCH` | `/api/protected/user/metadados` | Atualiza metadados do usuário (ex.: nome) |
+| `POST` | `/api/protected/user/phone/start` | Inicia verificação de telefone (envia SMS) |
+| `POST` | `/api/protected/user/phone/verify` | Confirma o código SMS do telefone |
+| `PATCH` | `/api/protected/user/password` | Redefine a senha (usa sessão de recuperação) |
 | `GET` | `/api/protected/user/enterprise` | Dados da empresa |
 | `PATCH` | `/api/protected/user/enterprise` | Atualiza empresa |
 | `GET` | `/api/protected/user/collecting_data` | Configurações de coleta |
@@ -38,6 +44,13 @@ backends/api-gateway/
 | `GET` | `/api/protected/user/feedbacks/stats` | Estatísticas |
 | `GET` | `/api/protected/user/feedbacks/insights/report` | Relatório de insights |
 | `GET` | `/api/protected/user/feedbacks/analysis` | Análises da IA |
+| `GET` | `/api/protected/user/collection-points/qr/status` | Status do QR Code da empresa |
+| `POST` | `/api/protected/user/collection-points/qr/enable` | Ativa o QR Code da empresa |
+| `POST` | `/api/protected/user/collection-points/qr/disable` | Desativa o QR Code da empresa |
+| `GET` | `/api/protected/user/collection-points/qr/catalog` | Lista itens de catálogo + status de QR (query `kind`) |
+| `POST` | `/api/protected/user/collection-points/qr/catalog/questions/upsert` | Upsert das perguntas de um item de catálogo |
+| `POST` | `/api/protected/user/collection-points/qr/catalog/enable` | Ativa o QR Code de um item de catálogo |
+| `POST` | `/api/protected/user/collection-points/qr/catalog/disable` | Desativa o QR Code de um item de catálogo |
 | `POST` | `/api/protected/ia-analyze/analyze-raw` | Analisa feedbacks brutos |
 | `POST` | `/api/protected/ia-analyze/regenerate-insights` | Regenera insights |
 
@@ -46,7 +59,13 @@ backends/api-gateway/
 | Método | Caminho | Descrição |
 |---|---|---|
 | `GET` | `/api/health` | Health check |
-| `GET` | `/api/public/enterprise/:id` | Dados públicos da empresa para validação do formulário |
+| `POST` | `/api/public/auth/login` | Login (cria sessão via cookie) |
+| `POST` | `/api/public/auth/logout` | Logout (invalida o cookie) |
+| `POST` | `/api/public/auth/register` | Cadastro de nova conta |
+| `POST` | `/api/public/auth/forgot-password` | Solicita e-mail de redefinição de senha |
+| `POST` | `/api/public/auth/resend-confirmation` | Reenvia o e-mail de confirmação de cadastro |
+| `GET` | `/api/public/auth/callback` | Callback de confirmação/recuperação (redireciona) |
+| `GET` | `/api/public/enterprise/:id` | Dados públicos da empresa + perguntas para o formulário |
 | `POST` | `/api/public/qrcode/feedback` | Submissão de feedback via QR Code |
 
 ## Tecnologias

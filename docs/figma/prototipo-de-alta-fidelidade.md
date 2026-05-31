@@ -66,10 +66,10 @@ São telas acessadas pelos usuários da aplicação sem autenticação válida, 
 
 | Campo | Tipo | Obrigatório |
 |---|---|---|
-| Avaliação geral | Estrelas (1–5) | Sim |
-| Sentimento | Seleção (Péssimo, Ruim, Mediana, Boa, Ótima) | Sim ||
+| Avaliação geral | Estrelas (1–5) — "Como você avalia sua experiência?" (Muito insatisfeito → Muito satisfeito) | Sim |
+| Perguntas dinâmicas (3 por escopo) | Escala Péssimo / Ruim / Mediana / Boa / Ótima, cada pergunta com até 3 subperguntas opcionais na mesma escala | Sim |
 | Comentário livre | Textarea | Sim |
-| Informações pessoais | Nome, e-mail (opcionais) | Não |
+| Informações pessoais | Nome, e-mail e gênero (opcionais) | Não |
 
 #### Comportamentos
 - Não requer autenticação
@@ -180,6 +180,8 @@ Telas acessíveis apenas com autenticação. Usuários não autenticados devem s
 
 **Rota:** `/user/feedbacks/analytics/all`  
 **Objetivo:** Painel analítico com dados agregados dos feedbacks, sem listagem individual.
+
+> Esta visão tem três recortes implementados como telas próprias: todos (`/user/feedbacks/analytics/all`), positivos (`/user/feedbacks/analytics/positive`) e negativos (`/user/feedbacks/analytics/negative`).
 
 #### Métricas Exibidas
 
