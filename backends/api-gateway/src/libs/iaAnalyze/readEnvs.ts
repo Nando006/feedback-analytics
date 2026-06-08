@@ -6,7 +6,7 @@ import { normalizeBaseUrl } from './normalize.js';
  *
  * Usado quando a variável de ambiente IA_ANALYZE_REMOTE_TIMEOUT_MS não está definida ou é inválida.
  */
-const DEFAULT_REMOTE_TIMEOUT_MS = 20_000;
+const DEFAULT_REMOTE_TIMEOUT_MS = 110_000;
 
 /**
  * URL padrão usada como alias para o serviço IA remoto em ambientes de preview (deploy temporário).

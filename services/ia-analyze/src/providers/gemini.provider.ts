@@ -49,6 +49,7 @@ export function createIaApiClient(apiKey: string): IaApiClient {
         const aiResponse = await ai.models.generateContent({
           model: 'gemini-2.5-flash',
           contents: prompt,
+          config: { thinkingConfig: { thinkingBudget: 0 } },
         });
 
         const maybeText = (aiResponse as AiResponseShape).text;
