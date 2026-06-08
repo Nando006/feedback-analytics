@@ -9,11 +9,12 @@ import {
   INTENT_QR_DISABLE,
   INTENT_QR_ENABLE,
 } from 'src/lib/constants/routes/intents';
-import SectionQrHeader from 'components/user/pages/qrcodeEnterprise/SectionQrHeader';
 import SectionQrInstructions from 'components/user/pages/qrcodeEnterprise/SectionQrInstructions';
 import SectionQrCodeDisplay from 'components/user/pages/qrcodeEnterprise/SectionQrCodeDisplay';
 import SectionQrUsageTips from 'components/user/pages/qrcodeEnterprise/SectionQrUsageTips';
 import type { QrCodeEnterpriseActionResponse } from './ui.types';
+import SettingsPageHeader from 'components/user/shared/settingsPageHeader';
+import { FaPowerOff, FaCheck } from 'react-icons/fa6';
 
 export default function QRCodeEnterprise() {
   const { enterprise } = useRouteLoaderData('user') as {
@@ -128,12 +129,15 @@ export default function QRCodeEnterprise() {
 
   return (
     <div className="font-work-sans space-y-8 pb-8">
-      <SectionQrHeader
-        enterpriseName={enterprise.full_name}
-        qrActive={qrActive}
-        qrLoading={qrLoading}
-        qrError={qrError}
-        onToggleQr={handleToggleQr}
+      <SettingsPageHeader
+        title="QR Code para Feedback"
+        description="Gere e compartilhe seu QR Code personalizado para coletar feedback dos seus clientes."
+        primaryAction={{
+          label: qrActive ? 'Desativar Coleta' : 'Ativar Coleta',
+          onClick: handleToggleQr,
+          loading: qrLoading,
+          icon: qrActive ? <FaPowerOff className="h-4 w-4" /> : <FaCheck className="h-4 w-4" />,
+        }}
       />
 
       <SectionQrInstructions />
@@ -158,6 +162,12 @@ export default function QRCodeEnterprise() {
           <div className="pointer-events-none absolute inset-0 rounded-2xl border border-(--quaternary-color)/12 bg-(--bg-primary)/40 backdrop-blur-[1px]" />
         )}
       </div>
+
+      {qrError && (
+        <p className="mt-4 text-center text-sm text-rose-300 bg-rose-500/10 py-2 rounded-lg border border-rose-500/20">
+          {qrError}
+        </p>
+      )}
     </div>
   );
 }

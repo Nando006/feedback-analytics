@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useLoaderData } from 'react-router-dom';
 import type { LoaderFeedbacksInsightsEmotional } from 'src/routes/loaders/loaderFeedbacksInsightsEmotional';
 import InsightsEmotionalErrorState from 'components/user/pages/feedbacksInsightsEmotional/InsightsEmotionalErrorState';
@@ -6,10 +6,53 @@ import InsightsEmotionalEmptyState from 'components/user/pages/feedbacksInsights
 import InsightsEmotionalThermometerSection from 'components/user/pages/feedbacksInsightsEmotional/InsightsEmotionalThermometerSection';
 import InsightsEmotionalClustersSection from 'components/user/pages/feedbacksInsightsEmotional/InsightsEmotionalClustersSection';
 import type { EmotionalCluster } from 'components/user/pages/feedbacksInsightsEmotional/ui.types';
+import { useInsightsControls } from 'src/lib/context/insightsControls';
+import type { FeedbackAnalysisItem, FeedbackAnalysisSummary } from 'lib/interfaces/domain/feedback.domain';
+import { ServiceGetFeedbackAnalysis } from 'src/services/serviceFeedbacks';
+import InsightsEmotionalSkeleton from 'components/user/pages/feedbacks/insights/InsightsEmotionalSkeleton';
 
-export default function FeedbacksInsigthsEmotional() {
-  const { items, summary, error } =
-    useLoaderData<Awaited<ReturnType<typeof LoaderFeedbacksInsightsEmotional>>>();
+export default function FeedbacksInsigthsEmotional({ isTab = false }: { isTab?: boolean }) {
+  const loaderData = useLoaderData<Awaited<ReturnType<typeof LoaderFeedbacksInsightsEmotional>>>();
+  const { scope, catalogItemId } = useInsightsControls();
+
+  const [items, setItems] = useState<FeedbackAnalysisItem[]>([]);
+  const [summary, setSummary] = useState<FeedbackAnalysisSummary | null>(null);
+  const [loading, setLoading] = useState(!isTab);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchData = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+
+    const scopeParam = scope;
+    const catalogParam = scopeParam !== 'COMPANY' ? catalogItemId || undefined : undefined;
+
+    try {
+      const response = await ServiceGetFeedbackAnalysis({
+        scope_type: scopeParam,
+        catalog_item_id: catalogParam,
+      });
+
+      setItems(response.items);
+      setSummary(response.summary);
+    } catch (err) {
+      console.error('Erro ao carregar analytics emocional:', err);
+      setError('Erro ao carregar insights emocionais');
+    } finally {
+      setLoading(false);
+    }
+  }, [scope, catalogItemId]);
+
+  useEffect(() => {
+    if (isTab) {
+      fetchData();
+    } else if (loaderData) {
+      setItems(loaderData.items);
+      setSummary(loaderData.summary);
+      setError(loaderData.error);
+      setLoading(false);
+    }
+  }, [isTab, loaderData, fetchData]);
 
   const clusters = useMemo<EmotionalCluster[]>(() => {
     if (!items.length) return [];
@@ -62,6 +105,10 @@ export default function FeedbacksInsigthsEmotional() {
 
     return clustersOut;
   }, [items]);
+
+  if (loading) {
+    return <InsightsEmotionalSkeleton />;
+  }
 
   if (error) {
     return <InsightsEmotionalErrorState error={error} />;

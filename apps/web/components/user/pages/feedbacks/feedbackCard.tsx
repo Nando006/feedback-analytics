@@ -52,6 +52,21 @@ export default function FeedbackCard({ feedback, onClick }: FeedbackCardProps) {
     return 'text-rose-300 bg-rose-500/10 border-rose-500/30';
   };
 
+  // Função para obter cor do sentimento
+  const getSentimentColor = (sentiment: string) => {
+    if (sentiment === 'positive') return 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20';
+    if (sentiment === 'neutral') return 'text-amber-400 bg-amber-500/10 border-amber-500/20';
+    if (sentiment === 'negative') return 'text-rose-400 bg-rose-500/10 border-rose-500/20';
+    return 'text-slate-400 bg-slate-500/10 border-slate-500/20';
+  };
+
+  const getSentimentLabel = (sentiment: string) => {
+    if (sentiment === 'positive') return 'Positivo';
+    if (sentiment === 'neutral') return 'Neutro';
+    if (sentiment === 'negative') return 'Negativo';
+    return sentiment;
+  };
+
   // Função para obter texto do rating
   const getRatingText = (rating: number) => {
     const texts = {
@@ -99,6 +114,14 @@ export default function FeedbackCard({ feedback, onClick }: FeedbackCardProps) {
             )}`}>
             {feedback.rating} - {getRatingText(feedback.rating)}
           </div>
+          {feedback.feedback_analysis?.sentiment && (
+            <div
+              className={`font-poppins px-3 py-1 rounded-full text-xs font-medium border ${getSentimentColor(
+                feedback.feedback_analysis.sentiment,
+              )}`}>
+              {getSentimentLabel(feedback.feedback_analysis.sentiment)}
+            </div>
+          )}
           <div className="flex items-center gap-1">
             {renderStars(feedback.rating)}
           </div>

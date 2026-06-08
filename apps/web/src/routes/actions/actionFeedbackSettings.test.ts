@@ -32,7 +32,7 @@ function createRequest(body: Record<string, string | undefined>) {
     }
   });
 
-  return new Request('http://localhost/user/edit/feedback-settings', {
+  return new Request('http://localhost/user/settings/form', {
     method: 'POST',
     body: formData,
     headers: {

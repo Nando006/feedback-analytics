@@ -26,9 +26,7 @@ export interface FieldCatalogItemsProps {
   items: CatalogItemInput[];
   onChange: Dispatch<SetStateAction<CatalogItemInput[]>>;
   qrItems?: QrCodeCatalogLoadItem[];
-  savingQuestionsItemId?: string | null;
   onSaveQuestions?: (catalogItemId: string, questions: QrCatalogQuestionInput[]) => void;
-  togglePendingItemId?: string | null;
   onToggle?: (catalogItemId: string, isActive: boolean) => void;
 }
 
@@ -46,9 +44,7 @@ export interface CatalogItemRowProps {
     value: string,
   ) => void;
   qrItem?: QrCodeCatalogLoadItem;
-  isSavingQuestions?: boolean;
   onSaveQuestions?: (catalogItemId: string, questions: QrCatalogQuestionInput[]) => void;
-  isPendingToggle?: boolean;
   onToggle?: (catalogItemId: string, isActive: boolean) => void;
 }
 
@@ -74,14 +70,14 @@ export interface FieldCompanyFeedbackQuestionsProps {
 
 export interface QuestionAccordionProps {
   qrItem: QrCodeCatalogLoadItem;
-  isSaving: boolean;
-  onSave: (catalogItemId: string, questions: QrCatalogQuestionInput[]) => void;
+  isSaving?: boolean;
+  onSave?: (catalogItemId: string, questions: QrCatalogQuestionInput[]) => void;
 }
 
 export interface QrSectionProps {
   qrItem: QrCodeCatalogLoadItem;
-  isPending: boolean;
-  onToggle: (catalogItemId: string, isActive: boolean) => void;
+  isPending?: boolean;
+  onToggle?: (catalogItemId: string, isActive: boolean) => void;
 }
 
 /**

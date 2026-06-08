@@ -1,44 +1,22 @@
 import type { MenuItem } from 'components/user/layout/ui.types';
 
 export const menuData: MenuItem[] = [
-  {
-    label: "Perfil",
-    to: "/user/profile",
-  },
-  {
-    label: "Catálogo",
-    to: "/user/edit/feedback-settings",
-  },
   { label: "Dashboard", to: "/user/dashboard" },
   {
     label: "Feedbacks",
-    children: [
-      { label: "Recebidos", to: "/user/feedbacks/all" },
-      {
-        label: "Analisados",
-        children: [
-          {
-            label: "Todos",
-            to: "/user/feedbacks/analytics/all",
-          },
-          {
-            label: "Positivos",
-            to: "/user/feedbacks/analytics/positive",
-          },
-          {
-            label: "Negativos",
-            to: "/user/feedbacks/analytics/negative",
-          },
-        ],
-      },
-    ],
+    to: "/user/feedbacks",
   },
   {
-    label: "Insigths",
+    label: "Insights",
+    to: "/user/insights",
+  },
+  { label: "Perfil", to: "/user/profile" },
+  {
+    label: "Configurações",
     children: [
-      { label: "Relatórios", to: "/user/insights/reports" },
-      { label: "Emocional", to: "/user/insights/emotional" },
-      { label: "Estatísticas", to: "/user/insights/statistics" },
+      { label: "Formulário", to: "/user/settings/form" },
+      { label: "Catálogo", to: "/user/settings/catalog" },
+      { label: "Compartilhamento", to: "/user/settings/sharing" },
     ],
   },
 ];

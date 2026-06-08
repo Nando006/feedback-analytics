@@ -11,7 +11,7 @@ const FEEDBACK_TYPES = [
     description:
       'Clientes avaliam itens específicos do seu catálogo de produtos via QR Code dedicado.',
     benefit: 'Identifique quais produtos encantam e quais precisam de melhorias.',
-    configLink: '/user/edit/feedback-products',
+    configLink: '/user/settings/catalog',
     configLabel: 'Configurar catálogo de produtos',
     icon: (
       <svg
@@ -38,7 +38,7 @@ const FEEDBACK_TYPES = [
     description:
       'Clientes avaliam serviços prestados pela sua empresa via QR Code por serviço.',
     benefit: 'Descubra quais serviços geram mais satisfação e onde melhorar.',
-    configLink: '/user/edit/feedback-services',
+    configLink: '/user/settings/catalog',
     configLabel: 'Configurar catálogo de serviços',
     icon: (
       <svg
@@ -65,7 +65,7 @@ const FEEDBACK_TYPES = [
     description:
       'Clientes avaliam áreas ou setores da sua empresa separadamente.',
     benefit: 'Monitore a performance de cada área e tome decisões por setor.',
-    configLink: '/user/edit/feedback-departments',
+    configLink: '/user/settings/catalog',
     configLabel: 'Configurar catálogo de departamentos',
     icon: (
       <svg
@@ -85,7 +85,7 @@ const FEEDBACK_TYPES = [
   },
 ] as const;
 
-export default function FormTypesFeedback() {
+export default function FormTypesFeedback({ hideSubmit = false }: { hideSubmit?: boolean }) {
   const { collecting } = useRouteLoaderData('user') as {
     collecting: CollectingDataEnterprise | null;
   };
@@ -106,8 +106,8 @@ export default function FormTypesFeedback() {
     }
   }, []);
 
-  return (
-    <Form method="post" onSubmit={handleSubmit} className="space-y-6">
+  const content = (
+    <div className="space-y-6">
       {FEEDBACK_TYPES.map((type) => {
         const localEnabled = localState[type.name];
         const savedEnabled = collecting?.[type.savedKey] ?? false;
@@ -219,27 +219,16 @@ export default function FormTypesFeedback() {
           </div>
         );
       })}
+    </div>
+  );
 
-      <div className="flex items-center justify-end gap-3 border-t border-(--quaternary-color)/10 pt-4">
-        <button
-          type="submit"
-          className="btn-primary font-poppins group flex items-center gap-2 px-8 py-3"
-        >
-          <span>Salvar Alterações</span>
-          <svg
-            className="h-4 w-4 transition-transform group-hover:translate-x-1"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <polyline points="9 18 15 12 9 6" />
-          </svg>
-        </button>
-      </div>
+  if (hideSubmit) {
+    return content;
+  }
+
+  return (
+    <Form method="post" onSubmit={handleSubmit} className="space-y-6">
+      {content}
     </Form>
   );
 }

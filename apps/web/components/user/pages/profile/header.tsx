@@ -74,7 +74,7 @@ export default function Header({ enterprise, user }: EnterpriseAndUser) {
           {/* Links de navegação */}
           <div className="flex gap-3">
             <Link
-              to="/user/edit/profile"
+              to="/user/profile"
               className="btn-ghost font-poppins flex items-center gap-2 px-4 py-2 text-sm hover:scale-105 transition-transform"
             >
               <FaUser aria-hidden="true" />

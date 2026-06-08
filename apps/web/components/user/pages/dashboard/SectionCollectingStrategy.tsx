@@ -67,7 +67,7 @@ export default function SectionCollectingStrategy({
       </div>
 
       <Link
-        to="/user/edit/collecting-data-enterprise"
+        to="/user/settings/form"
         className="mt-6 inline-flex items-center gap-2 text-sm text-(--text-secondary) transition-colors hover:text-(--text-primary)">
         Ajustar informações de coleta
         <FaArrowRight className="text-xs" />

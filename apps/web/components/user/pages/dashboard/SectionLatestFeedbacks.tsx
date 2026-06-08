@@ -26,7 +26,7 @@ export default function SectionLatestFeedbacks({
           </p>
         </div>
         <Link
-          to="/user/feedbacks/all"
+          to="/user/feedbacks"
           className="inline-flex items-center gap-2 text-sm text-(--text-secondary) transition-colors hover:text-(--text-primary)">
           Ver todos
           <FaArrowRight className="text-xs" />

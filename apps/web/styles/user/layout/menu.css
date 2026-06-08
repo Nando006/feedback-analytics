@@ -1,22 +1,22 @@
-aside.shrink-0.h-\[calc\(100vh-64px\)\].w-72 {
+aside.shrink-0.h-[calc(100vh-64px)].w-72 {
   overflow: visible;
 }
 
-aside.shrink-0.h-\[calc\(100vh-64px\)\].w-0 {
+aside.shrink-0.h-[calc(100vh-64px)].w-0 {
   overflow: hidden;
 }
 
-aside.shrink-0.h-\[calc\(100vh-64px\)\]>* {
+aside.shrink-0.h-[calc(100vh-64px)]>* {
   transition: opacity 180ms ease, transform 200ms ease;
   will-change: opacity, transform;
 }
 
-aside.shrink-0.h-\[calc\(100vh-64px\)\].w-0>* {
+aside.shrink-0.h-[calc(100vh-64px)].w-0>* {
   opacity: 0;
   transform: translateX(-6px);
 }
 
-aside.shrink-0.h-\[calc\(100vh-64px\)\].w-72>* {
+aside.shrink-0.h-[calc(100vh-64px)].w-72>* {
   opacity: 1;
   transform: translateX(0);
 }
@@ -34,13 +34,16 @@ li.group>div+div::before {
   height: 100%;
 }
 
-li.group:hover>div:first-child {
+/* Indicador lateral (barra vertical) para HOVER em qualquer item */
+li.group:hover>div:first-child,
+li:hover>a {
   background-color: color-mix(in srgb, var(--seventh-color) 92%, transparent) !important;
   color: var(--text-primary) !important;
   position: relative;
 }
 
-li.group:hover>div:first-child::before {
+li.group:hover>div:first-child::before,
+li:hover>a::before {
   content: '';
   position: absolute;
   left: 0;
@@ -49,15 +52,35 @@ li.group:hover>div:first-child::before {
   width: 3px;
   border-radius: 9999px;
   background-color: var(--primary-color);
+  z-index: 10;
 }
 
+/* Indicador lateral (barra vertical) para estado ATIVO em qualquer item */
 aside nav a[aria-current='page'],
-aside nav a[data-pending-current='true'] {
+aside nav a[data-pending-current='true'],
+li.group:has(a[aria-current='page'])>div:first-child,
+li.group:has(a[data-pending-current='true'])>div:first-child {
   color: var(--text-primary) !important;
   background-color: color-mix(in srgb, var(--seventh-color) 88%, transparent) !important;
   position: relative;
 }
 
+aside nav a[aria-current='page']::before,
+aside nav a[data-pending-current='true']::before,
+li.group:has(a[aria-current='page'])>div:first-child::before,
+li.group:has(a[data-pending-current='true'])>div:first-child::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 6px;
+  bottom: 6px;
+  width: 3px;
+  border-radius: 9999px;
+  background-color: var(--primary-color);
+  z-index: 10;
+}
+
+/* Brilho (glow/dot) para estado ATIVO */
 aside nav a[aria-current='page']::after,
 aside nav a[data-pending-current='true']::after {
   content: '●';
@@ -82,7 +105,8 @@ aside nav[data-has-pending='true'] a[aria-current='page']:not([data-pending-curr
   background-color: transparent !important;
 }
 
-aside nav[data-has-pending='true'] a[aria-current='page']:not([data-pending-current='true'])::after {
+aside nav[data-has-pending='true'] a[aria-current='page']:not([data-pending-current='true'])::after,
+aside nav[data-has-pending='true'] a[aria-current='page']:not([data-pending-current='true'])::before {
   content: none;
 }
 
@@ -101,20 +125,9 @@ aside nav[data-has-pending='true'] a[aria-current='page']:not([data-pending-curr
   height: 100%;
 }
 
-li.group:has(a[aria-current='page'])>div:first-child,
-li.group:has(a[data-pending-current='true'])>div:first-child {
-  background-color: color-mix(in srgb, var(--seventh-color) 92%, transparent) !important;
-  color: var(--text-primary) !important;
-}
-
 li.group:has(a[aria-current='page'])>div:first-child svg,
 li.group:has(a[data-pending-current='true'])>div:first-child svg {
   color: var(--quaternary-color) !important;
-}
-
-li.group:has(a[aria-current='page'])>div:first-child,
-li.group:has(a[data-pending-current='true'])>div:first-child {
-  position: relative;
 }
 
 li.group:has(a[aria-current='page'])>div:first-child span::after,
@@ -144,7 +157,8 @@ aside nav[data-has-pending='true'] li.group:has(a[aria-current='page']):not(:has
   color: var(--text-tertiary) !important;
 }
 
-aside nav[data-has-pending='true'] li.group:has(a[aria-current='page']):not(:has(a[data-pending-current='true']))>div:first-child span::after {
+aside nav[data-has-pending='true'] li.group:has(a[aria-current='page']):not(:has(a[data-pending-current='true']))>div:first-child span::after,
+aside nav[data-has-pending='true'] li.group:has(a[aria-current='page']):not(:has(a[data-pending-current='true']))>div:first-child::before {
   content: none;
 }
 

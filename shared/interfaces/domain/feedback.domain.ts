@@ -68,6 +68,9 @@ export interface Feedback {
   collection_points: CollectionPoint;
   tracked_devices: TrackedDevice | null;
   feedback_question_answers?: FeedbackQuestionAnswer[];
+  feedback_analysis?: {
+    sentiment: FeedbackSentiment;
+  } | null;
 }
 
 /**
@@ -136,6 +139,7 @@ export interface FeedbackFilters {
   search?: string;
   category?: FeedbackCategory;
   item?: string;
+  sentiment?: FeedbackSentiment | 'all';
 }
 
 /**

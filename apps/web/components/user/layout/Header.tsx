@@ -3,6 +3,7 @@ import { FaBars, FaLayerGroup } from 'react-icons/fa6';
 import { useInsightsControls } from 'src/lib/context/insightsControls';
 import InsightsHeaderControls from 'components/user/pages/feedbacksInsightsReport/InsightsHeaderControls';
 import type { InsightScopeOption } from 'components/user/pages/feedbacksInsightsReport/ui.types';
+import { useLocation } from 'react-router-dom';
 
 export default function Header({
   isOverlayMode,
@@ -24,6 +25,9 @@ export default function Header({
     isAnalyzingRaw,
     isRegeneratingInsights,
   } = useInsightsControls();
+
+  const location = useLocation();
+  const isSettingsPath = location.pathname.includes('/user/settings') || location.pathname === '/user/profile';
 
   const handleScopeChange = (next: InsightScopeOption) => {
     setScope(next);
@@ -61,19 +65,21 @@ export default function Header({
       </div>
 
       <div className="ml-auto">
-        <InsightsHeaderControls
-          refreshing={isRegeneratingInsights}
-          analyzingRaw={isAnalyzingRaw}
-          canAnalyze={canAnalyze}
-          availableScopes={availableScopes}
-          selectedScope={scope}
-          selectedCatalogItemId={catalogItemId}
-          catalogItemOptions={catalogItemOptions}
-          onScopeChange={handleScopeChange}
-          onCatalogItemChange={setCatalogItemId}
-          onRefreshSelected={regenerateInsights}
-          onAnalyzeRaw={analyzeRaw}
-        />
+        {!isSettingsPath && (
+          <InsightsHeaderControls
+            refreshing={isRegeneratingInsights}
+            analyzingRaw={isAnalyzingRaw}
+            canAnalyze={canAnalyze}
+            availableScopes={availableScopes}
+            selectedScope={scope}
+            selectedCatalogItemId={catalogItemId}
+            catalogItemOptions={catalogItemOptions}
+            onScopeChange={handleScopeChange}
+            onCatalogItemChange={setCatalogItemId}
+            onRefreshSelected={regenerateInsights}
+            onAnalyzeRaw={analyzeRaw}
+          />
+        )}
       </div>
     </div>
   );
