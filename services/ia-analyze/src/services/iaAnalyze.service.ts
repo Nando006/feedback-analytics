@@ -58,26 +58,36 @@ export async function runIaAnalyzeService(
   const analysesByFeedbackId = new Map<string, IaAnalyzeRemoteFeedbackAnalysis>();
   const contexts: IaAnalyzeContext[] = [];
 
-  for (const batch of batches) {
-    if (!Array.isArray(batch.feedbacks) || batch.feedbacks.length === 0) {
-      continue;
-    }
-
-    let parsed: Awaited<ReturnType<typeof iaApiClient.analyzeBatch>>;
-
-    try {
-      parsed = await iaApiClient.analyzeBatch({
-        scopeType: batch.scope_type,
-        enterpriseContext: request.enterprise_context,
-        feedbacks: batch.feedbacks,
-      });
-    } catch (error) {
-      if (error instanceof IaApiClientError && error.code === 'failed_ia_request') {
-        throw new IaAnalyzeServiceError('Failed to call model API', 502, 'failed_ia_request');
+  const batchResults = await Promise.all(
+    batches.map(async (batch) => {
+      if (!Array.isArray(batch.feedbacks) || batch.feedbacks.length === 0) {
+        return null;
       }
 
-      throw new IaAnalyzeServiceError('Invalid AI response JSON', 502, 'invalid_ai_response');
-    }
+      let parsed: Awaited<ReturnType<typeof iaApiClient.analyzeBatch>>;
+
+      try {
+        parsed = await iaApiClient.analyzeBatch({
+          scopeType: batch.scope_type,
+          enterpriseContext: request.enterprise_context,
+          feedbacks: batch.feedbacks,
+        });
+      } catch (error) {
+        if (error instanceof IaApiClientError && error.code === 'failed_ia_request') {
+          throw new IaAnalyzeServiceError('Failed to call model API', 502, 'failed_ia_request');
+        }
+
+        throw new IaAnalyzeServiceError('Invalid AI response JSON', 502, 'invalid_ai_response');
+      }
+
+      return { batch, parsed };
+    }),
+  );
+
+  for (const result of batchResults) {
+    if (!result) continue;
+
+    const { batch, parsed } = result;
 
     contexts.push(buildBatchContext(batch, parsed?.global_insights));
 

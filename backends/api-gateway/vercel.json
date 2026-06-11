@@ -5,7 +5,7 @@
       "src": "backends/api-gateway/_bundle.cjs",
       "use": "@vercel/node",
       "config": {
-        "maxDuration": 30
+        "maxDuration": 120
       }
     }
   ],
