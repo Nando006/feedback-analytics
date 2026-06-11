@@ -221,3 +221,12 @@ export type FeedbackInsightsReportOptions = {
   scope_type?: FeedbackInsightScopeType;
   catalog_item_id?: string;
 };
+
+/**
+ * Filtro de escopo para as métricas do dashboard (stats).
+ * COMPANY (Geral) considera apenas o QR da empresa (catalog_item_id NULL).
+ */
+export type FeedbackStatsOptions = {
+  scope_type?: FeedbackInsightScopeType;
+  catalog_item_id?: string;
+};

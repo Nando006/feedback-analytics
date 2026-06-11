@@ -6,6 +6,7 @@ import type {
   FeedbackInsightsReport,
   FeedbackAnalysisOptions,
   FeedbackInsightsReportOptions,
+  FeedbackStatsOptions,
 } from 'lib/interfaces/domain/feedback.domain';
 import type {
   IaAnalyzeRawRunRequest,
@@ -33,8 +34,23 @@ export function ServiceGetFeedbacks(filters: FeedbackFilters = {}) {
   return getJson<FeedbacksResponse>(url);
 }
 
-export function ServiceGetFeedbackStats() {
-  return getJson<FeedbackStats>('/api/protected/user/feedbacks/stats');
+export function ServiceGetFeedbackStats(params?: FeedbackStatsOptions) {
+  const searchParams = new URLSearchParams();
+
+  if (params?.scope_type) {
+    searchParams.append('scope_type', params.scope_type);
+  }
+
+  if (params?.catalog_item_id) {
+    searchParams.append('catalog_item_id', params.catalog_item_id);
+  }
+
+  const queryString = searchParams.toString();
+  const url = `/api/protected/user/feedbacks/stats${
+    queryString ? `?${queryString}` : ''
+  }`;
+
+  return getJson<FeedbackStats>(url);
 }
 
 export function ServiceGetFeedbackAnalysis(params?: FeedbackAnalysisOptions) {

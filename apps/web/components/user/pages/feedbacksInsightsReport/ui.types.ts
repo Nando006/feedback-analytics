@@ -1,4 +1,7 @@
-import type { FeedbackAnalysisSummary } from 'lib/interfaces/domain/feedback.domain';
+import type {
+  FeedbackAnalysisSummary,
+  FeedbackInsightsReport,
+} from 'lib/interfaces/domain/feedback.domain';
 
 export type InsightScopeOption = 'COMPANY' | 'PRODUCT' | 'SERVICE' | 'DEPARTMENT';
 
@@ -72,6 +75,14 @@ export interface InsightsReportMoodSectionProps {
   positivePct: number;
   neutralPct: number;
   negativePct: number;
+}
+
+/**
+ * Props do conteúdo (resumo + recomendações) do relatório de insights.
+ * Usado em: components/user/pages/feedbacksInsightsReport/InsightsReportContent.tsx.
+ */
+export interface InsightsReportContentProps {
+  report: FeedbackInsightsReport | null;
 }
 
 /**

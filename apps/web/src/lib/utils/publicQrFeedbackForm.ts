@@ -5,7 +5,9 @@ import type {
 } from 'lib/interfaces/contracts/qrcode/question.contract';
 import type { QrPublicContext } from 'lib/interfaces/contracts/qrcode/feedback.contract';
 
-export const REQUIRED_QUESTION_COUNT = 3;
+// Limite máximo de perguntas por escopo. A contagem é variável (0 a 3): cada
+// escopo mostra exatamente as perguntas ativas que o gestor configurou.
+export const MAX_QUESTION_COUNT = 3;
 
 function getSortedQuestions(questions: FeedbackQuestionPublic[]) {
   return [...questions].sort(
@@ -47,8 +49,9 @@ export function hasAllRequiredAnswers(
 ) {
   const questionIds = new Set(questions.map((question) => question.id));
 
+  // Todas as perguntas ativas exibidas devem estar respondidas (0 perguntas => ok).
   return (
-    answers.length === REQUIRED_QUESTION_COUNT &&
+    answers.length === questions.length &&
     answers.every((answer) => questionIds.has(answer.question_id))
   );
 }

@@ -1,4 +1,5 @@
 import type { Request, Response } from 'express';
+import type { SupabaseClient } from '@supabase/supabase-js';
 import {
   API_ERROR_ENTERPRISE_NOT_FOUND,
   API_ERROR_FAILED_TO_COUNT_FEEDBACKS,
@@ -61,6 +62,96 @@ function parseInsightScopeType(rawValue: unknown) {
     return normalized;
   }
   return undefined;
+}
+
+type InsightScopeType = 'COMPANY' | 'PRODUCT' | 'SERVICE' | 'DEPARTMENT';
+
+/**
+ * Resolve o escopo selecionado (header) para a lista de `collection_point` ids
+ * que as métricas/análises devem considerar.
+ *
+ * Retorno:
+ *  - `{ ids: null }`     => sem filtro de escopo (todos os feedbacks da empresa)
+ *  - `{ ids: string[] }` => filtrar `feedback` por esses ids (`[]` => nenhum resultado)
+ *  - `{ error: true }`   => falha de query (o chamador escolhe o código de erro)
+ *
+ * COMPANY (Geral) => apenas o ponto de coleta da empresa (`catalog_item_id IS NULL`).
+ * Compartilhado por stats e analysis para manter o mesmo critério de escopo.
+ */
+async function resolveScopeCollectionPointIds(params: {
+  supabase: SupabaseClient;
+  enterpriseId: string;
+  scopeType: InsightScopeType | undefined;
+  catalogItemId: string | null;
+}): Promise<{ error: true } | { error: false; ids: string[] | null }> {
+  const { supabase, enterpriseId, scopeType, catalogItemId } = params;
+
+  if (!scopeType && !catalogItemId) {
+    return { error: false, ids: null };
+  }
+
+  if (scopeType === 'COMPANY') {
+    if (catalogItemId) {
+      return { error: false, ids: [] };
+    }
+
+    const { data: companyPoints, error: companyCpError } = await supabase
+      .from('collection_points')
+      .select('id')
+      .eq('enterprise_id', enterpriseId)
+      .is('catalog_item_id', null);
+
+    if (companyCpError) return { error: true };
+    return { error: false, ids: ((companyPoints ?? []) as IdRow[]).map((cp) => cp.id) };
+  }
+
+  if (catalogItemId) {
+    if (scopeType) {
+      const { data: catalogItem, error: catalogItemError } = await supabase
+        .from('catalog_items')
+        .select('id')
+        .eq('enterprise_id', enterpriseId)
+        .eq('id', catalogItemId)
+        .eq('kind', scopeType)
+        .maybeSingle();
+
+      if (catalogItemError) return { error: true };
+      if (!catalogItem) return { error: false, ids: [] };
+    }
+
+    const { data: points, error: pointsError } = await supabase
+      .from('collection_points')
+      .select('id')
+      .eq('enterprise_id', enterpriseId)
+      .eq('catalog_item_id', catalogItemId);
+
+    if (pointsError) return { error: true };
+    return { error: false, ids: ((points ?? []) as IdRow[]).map((cp) => cp.id) };
+  }
+
+  // scopeType sem catalogItemId (ex.: todos os itens de um kind).
+  const { data: catalogItems, error: catalogItemsError } = await supabase
+    .from('catalog_items')
+    .select('id')
+    .eq('enterprise_id', enterpriseId)
+    .eq('kind', scopeType);
+
+  if (catalogItemsError) return { error: true };
+
+  const catalogIds = ((catalogItems ?? []) as IdRow[]).map((item) => item.id);
+
+  if (catalogIds.length === 0) {
+    return { error: false, ids: [] };
+  }
+
+  const { data: points, error: pointsError } = await supabase
+    .from('collection_points')
+    .select('id')
+    .eq('enterprise_id', enterpriseId)
+    .in('catalog_item_id', catalogIds);
+
+  if (pointsError) return { error: true };
+  return { error: false, ids: ((points ?? []) as IdRow[]).map((cp) => cp.id) };
 }
 
 export async function getFeedbacksController(req: Request, res: Response) {
@@ -331,6 +422,9 @@ export async function getFeedbacksStatsController(req: Request, res: Response) {
   const supabase = req.supabase!;
   const user = req.user!;
 
+  const scopeType = parseInsightScopeType(req.query.scope_type);
+  const catalogItemId = String(req.query.catalog_item_id ?? '').trim() || null;
+
   try {
     const { data: enterprise, error: enterpriseError } = await supabase
       .from('enterprise')
@@ -342,10 +436,30 @@ export async function getFeedbacksStatsController(req: Request, res: Response) {
       return sendTypedError(res, 404, API_ERROR_ENTERPRISE_NOT_FOUND);
     }
 
-    const { data: stats, error: statsError } = await supabase
+    // Métricas filtradas pelo escopo selecionado no header (Geral = só o QR da empresa).
+    const scopeResolution = await resolveScopeCollectionPointIds({
+      supabase,
+      enterpriseId: enterprise.id,
+      scopeType,
+      catalogItemId,
+    });
+
+    if (scopeResolution.error) {
+      return sendTypedError(res, 500, API_ERROR_FAILED_TO_FETCH_STATS);
+    }
+
+    const filteredCollectionPointIds = scopeResolution.ids;
+
+    let statsQuery = supabase
       .from('feedback')
       .select('rating')
       .eq('enterprise_id', enterprise.id);
+
+    if (filteredCollectionPointIds) {
+      statsQuery = statsQuery.in('collection_point_id', filteredCollectionPointIds);
+    }
+
+    const { data: stats, error: statsError } = await statsQuery;
 
     if (statsError) return sendTypedError(res, 500, API_ERROR_FAILED_TO_FETCH_STATS);
 
@@ -483,72 +597,18 @@ export async function getFeedbacksAnalysisController(req: Request, res: Response
       summary: { totalAnalyzed: 0, sentiments: { positive: 0, neutral: 0, negative: 0 }, topCategories: [], topKeywords: [] },
     };
 
-    let filteredCollectionPointIds: string[] | null = null;
+    const scopeResolution = await resolveScopeCollectionPointIds({
+      supabase,
+      enterpriseId: enterprise.id,
+      scopeType,
+      catalogItemId,
+    });
 
-    if (scopeType || catalogItemId) {
-      if (scopeType === 'COMPANY') {
-        if (catalogItemId) {
-          filteredCollectionPointIds = [];
-        } else {
-          const { data: companyPoints, error: companyCpError } = await supabase
-            .from('collection_points')
-            .select('id')
-            .eq('enterprise_id', enterprise.id)
-            .is('catalog_item_id', null);
-
-          if (companyCpError) return sendTypedError(res, 500, API_ERROR_FAILED_TO_FETCH_FEEDBACK_ANALYSIS);
-          filteredCollectionPointIds = ((companyPoints ?? []) as IdRow[]).map((cp) => cp.id);
-        }
-      } else if (catalogItemId) {
-        const pointsQuery = supabase
-          .from('collection_points')
-          .select('id')
-          .eq('enterprise_id', enterprise.id)
-          .eq('catalog_item_id', catalogItemId);
-
-        if (scopeType) {
-          const { data: catalogItem, error: catalogItemError } = await supabase
-            .from('catalog_items')
-            .select('id')
-            .eq('enterprise_id', enterprise.id)
-            .eq('id', catalogItemId)
-            .eq('kind', scopeType)
-            .maybeSingle();
-
-          if (catalogItemError) return sendTypedError(res, 500, API_ERROR_FAILED_TO_FETCH_FEEDBACK_ANALYSIS);
-          if (!catalogItem) filteredCollectionPointIds = [];
-        }
-
-        if (!filteredCollectionPointIds) {
-          const { data: points, error: pointsError } = await pointsQuery;
-          if (pointsError) return sendTypedError(res, 500, API_ERROR_FAILED_TO_FETCH_FEEDBACK_ANALYSIS);
-          filteredCollectionPointIds = ((points ?? []) as IdRow[]).map((cp) => cp.id);
-        }
-      } else if (scopeType) {
-        const { data: catalogItems, error: catalogItemsError } = await supabase
-          .from('catalog_items')
-          .select('id')
-          .eq('enterprise_id', enterprise.id)
-          .eq('kind', scopeType);
-
-        if (catalogItemsError) return sendTypedError(res, 500, API_ERROR_FAILED_TO_FETCH_FEEDBACK_ANALYSIS);
-
-        const catalogIds = ((catalogItems ?? []) as IdRow[]).map((item) => item.id);
-
-        if (catalogIds.length === 0) {
-          filteredCollectionPointIds = [];
-        } else {
-          const { data: points, error: pointsError } = await supabase
-            .from('collection_points')
-            .select('id')
-            .eq('enterprise_id', enterprise.id)
-            .in('catalog_item_id', catalogIds);
-
-          if (pointsError) return sendTypedError(res, 500, API_ERROR_FAILED_TO_FETCH_FEEDBACK_ANALYSIS);
-          filteredCollectionPointIds = ((points ?? []) as IdRow[]).map((cp) => cp.id);
-        }
-      }
+    if (scopeResolution.error) {
+      return sendTypedError(res, 500, API_ERROR_FAILED_TO_FETCH_FEEDBACK_ANALYSIS);
     }
+
+    const filteredCollectionPointIds = scopeResolution.ids;
 
     if (filteredCollectionPointIds && filteredCollectionPointIds.length === 0) {
       return res.json(emptyResult);
