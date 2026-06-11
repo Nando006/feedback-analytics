@@ -117,25 +117,31 @@ function validateQuestionsDraft(questions: QrCatalogQuestionInput[]) {
 
   for (const question of questions) {
     const normalizedQuestionText = String(question.question_text ?? '').trim();
+    const subquestions = question.subquestions ?? [];
+    const hasFilledSubquestion = subquestions.some(
+      (subquestion) => String(subquestion.subquestion_text ?? '').trim().length > 0,
+    );
+
+    // Contagem variável: slots vazios são ignorados (não serão salvos). Só
+    // validamos perguntas efetivamente preenchidas. Uma subpergunta preenchida
+    // exige que a pergunta principal também esteja preenchida.
+    if (normalizedQuestionText.length === 0) {
+      if (hasFilledSubquestion) {
+        return 'Preencha a pergunta principal antes de adicionar subperguntas.';
+      }
+      continue;
+    }
 
     if (!hasValidQuestionLength(normalizedQuestionText)) {
       return 'Cada pergunta principal deve ter entre 20 e 150 caracteres.';
     }
 
-    if (question.is_active && normalizedQuestionText.length === 0) {
-      return 'Perguntas ativas precisam ter texto válido.';
-    }
-
-    for (const subquestion of question.subquestions ?? []) {
+    for (const subquestion of subquestions) {
       const normalizedSubquestionText = String(
         subquestion.subquestion_text ?? '',
       ).trim();
 
       if (normalizedSubquestionText.length === 0) {
-        if (subquestion.is_active) {
-          return 'Subperguntas ativas precisam ter texto válido.';
-        }
-
         continue;
       }
 
@@ -259,20 +265,6 @@ const QrCatalogItemCard = memo(function QrCatalogItemCard({
     [],
   );
 
-  const handleQuestionToggle = useCallback((questionIndex: number, value: boolean) => {
-    setQuestionsDraft((prev) => {
-      const next = [...prev];
-      const currentQuestion = next[questionIndex];
-
-      next[questionIndex] = {
-        ...currentQuestion,
-        is_active: value,
-      };
-
-      return next;
-    });
-  }, []);
-
   const handleSubquestionTextChange = useCallback(
     (questionIndex: number, subquestionIndex: number, value: string) => {
       setQuestionsDraft((prev) => {
@@ -297,30 +289,6 @@ const QrCatalogItemCard = memo(function QrCatalogItemCard({
     [],
   );
 
-  const handleSubquestionToggle = useCallback(
-    (questionIndex: number, subquestionIndex: number, value: boolean) => {
-      setQuestionsDraft((prev) => {
-        const next = [...prev];
-        const currentQuestion = next[questionIndex];
-        const subquestions = [...(currentQuestion.subquestions ?? [])];
-        const currentSubquestion = subquestions[subquestionIndex];
-
-        subquestions[subquestionIndex] = {
-          ...currentSubquestion,
-          is_active: value,
-        };
-
-        next[questionIndex] = {
-          ...currentQuestion,
-          subquestions,
-        };
-
-        return next;
-      });
-    },
-    [],
-  );
-
   const handleSaveQuestions = useCallback(() => {
     const validationMessage = validateQuestionsDraft(questionsDraft);
     if (validationMessage) {
@@ -332,16 +300,25 @@ const QrCatalogItemCard = memo(function QrCatalogItemCard({
 
     onSaveQuestions(
       item.catalog_item_id,
-      questionsDraft.map((question) => ({
-        question_order: question.question_order,
-        question_text: String(question.question_text ?? '').trim(),
-        is_active: question.is_active,
-        subquestions: (question.subquestions ?? []).map((subquestion) => ({
-          subquestion_order: subquestion.subquestion_order,
-          subquestion_text: String(subquestion.subquestion_text ?? '').trim(),
-          is_active: subquestion.is_active,
-        })),
-      })),
+      questionsDraft.map((question) => {
+        const questionText = String(question.question_text ?? '').trim();
+
+        return {
+          question_order: question.question_order,
+          question_text: questionText,
+          // Texto preenchido ⇒ pergunta ativa (será exibida no QR daquele item).
+          is_active: questionText.length > 0,
+          subquestions: (question.subquestions ?? []).map((subquestion) => {
+            const subquestionText = String(subquestion.subquestion_text ?? '').trim();
+
+            return {
+              subquestion_order: subquestion.subquestion_order,
+              subquestion_text: subquestionText,
+              is_active: subquestionText.length > 0,
+            };
+          }),
+        };
+      }),
     );
   }, [item.catalog_item_id, onSaveQuestions, questionsDraft]);
 
@@ -430,16 +407,7 @@ const QrCatalogItemCard = memo(function QrCatalogItemCard({
                     <p className="text-xs font-semibold text-(--text-primary)">
                       Pergunta {question.question_order}
                     </p>
-                    <label className="flex items-center gap-2 text-xs text-(--text-secondary)">
-                      <input
-                        type="checkbox"
-                        checked={question.is_active}
-                        onChange={(event) =>
-                          handleQuestionToggle(questionIndex, event.target.checked)
-                        }
-                      />
-                      Ativa
-                    </label>
+                    <span className="text-[11px] text-(--text-tertiary)">Opcional</span>
                   </div>
 
                   <input
@@ -472,20 +440,7 @@ const QrCatalogItemCard = memo(function QrCatalogItemCard({
                             <p className="text-[11px] font-semibold text-(--text-primary)">
                               Subpergunta {question.question_order}.{subquestion.subquestion_order}
                             </p>
-                            <label className="flex items-center gap-2 text-[11px] text-(--text-secondary)">
-                              <input
-                                type="checkbox"
-                                checked={subquestion.is_active}
-                                onChange={(event) =>
-                                  handleSubquestionToggle(
-                                    questionIndex,
-                                    subquestionIndex,
-                                    event.target.checked,
-                                  )
-                                }
-                              />
-                              Ativa
-                            </label>
+                            <span className="text-[10px] text-(--text-tertiary)">Opcional</span>
                           </div>
 
                           <input

@@ -5,6 +5,9 @@ export const feedbackBaseSchema = z.object({
   enterprise_id: z.uuidv4(),
   rating: z.number().int().min(1).max(5),
   message: z.string().min(3).max(5000),
+  // Contagem variável: cada escopo (empresa/produto/serviço/departamento) pode
+  // ter de 0 a 3 perguntas ativas configuradas. O controller valida que as
+  // respostas batem exatamente com as perguntas ativas do contexto.
   answers: z
     .array(
       z.object({
@@ -12,7 +15,8 @@ export const feedbackBaseSchema = z.object({
         answer_value: z.enum(['PESSIMO', 'RUIM', 'MEDIANA', 'BOA', 'OTIMA']),
       }),
     )
-    .length(3),
+    .min(0)
+    .max(3),
   subanswers: z
     .array(
       z.object({

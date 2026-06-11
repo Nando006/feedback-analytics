@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "tsx index.ts",
+    "dev": "tsx watch index.ts",
     "lint": "eslint --config ./eslint.config.js .",
     "test": "vitest run",
     "test:watch": "vitest",

@@ -1,5 +1,4 @@
 import type { LoaderUserDashboard } from 'src/routes/loaders/loaderUserDashboard';
-import type { LoaderUserProtected } from 'src/routes/loaders/loaderUserProtected';
 
 /**
  * Props da seção de métricas principais do dashboard.
@@ -10,23 +9,6 @@ export interface SectionMetricProps {
   averageRating: number;
   positive: number;
   negative: number;
-}
-
-/**
- * Tipo auxiliar dos feedbacks recentes retornados pelo loader do dashboard.
- * Usado em: components/user/pages/dashboard/SectionLatestFeedbacks.tsx.
- */
-export type LatestFeedbacks = Awaited<
-  ReturnType<typeof LoaderUserDashboard>
->['latestFeedbacks'];
-
-/**
- * Props da seção de feedbacks recentes.
- * Usado em: components/user/pages/dashboard/SectionLatestFeedbacks.tsx.
- */
-export interface LatestFeedbacksProps {
-  latestFeedbacks: LatestFeedbacks;
-  latestLimit: number;
 }
 
 /**
@@ -53,20 +35,4 @@ export interface SectionSatisfactionRadarProps {
   positive: number;
   neutral: number;
   negative: number;
-}
-
-/**
- * Tipo auxiliar de dados de coleta vindos do loader protegido.
- * Usado em: components/user/pages/dashboard/SectionCollectingStrategy.tsx.
- */
-export type CollectingData = Awaited<
-  ReturnType<typeof LoaderUserProtected>
->['collecting'];
-
-/**
- * Props da seção de estratégia de coleta.
- * Usado em: components/user/pages/dashboard/SectionCollectingStrategy.tsx.
- */
-export interface SectionCollectingStrategyProps {
-  collecting: CollectingData | null;
 }

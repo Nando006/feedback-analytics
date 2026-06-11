@@ -14,6 +14,7 @@ import {
   API_ERROR_INVALID_PAYLOAD,
 } from '../../config/errors.js';
 import { sendTypedError } from '../../utils/sendTypedError.js';
+import { fetchActiveQuestionsForScope } from '../../repositories/publicQuestions.repository.js';
 
 function mapAnswerScore(answerValue: string): number {
   switch (answerValue) {
@@ -92,43 +93,13 @@ export async function submitQrCodeFeedbackController(req: Request, res: Response
       ? cpCatalogItem.kind
       : 'COMPANY';
 
-  const fetchQuestions = async (
-    scopeType: 'COMPANY' | 'PRODUCT' | 'SERVICE' | 'DEPARTMENT',
-    catalogItemId: string | null,
-  ) => {
-    let query = supabase
-      .from('questions_of_feedbacks')
-      .select(
-        'id, question_order, question_text, subquestions:feedback_question_subquestions(id, question_id, subquestion_order, subquestion_text, is_active)',
-      )
-      .eq('enterprise_id', payload.enterprise_id)
-      .eq('scope_type', scopeType)
-      .eq('is_active', true)
-      .order('question_order', { ascending: true });
-
-    if (scopeType === 'COMPANY') {
-      query = query.is('catalog_item_id', null);
-    } else {
-      query = catalogItemId
-        ? query.eq('catalog_item_id', catalogItemId)
-        : query.is('catalog_item_id', null);
-    }
-
-    return await query;
-  };
-
-  let { data: currentQuestions, error: currentQuestionsError } =
-    await fetchQuestions(contextScope, collectionPoint.catalog_item_id ?? null);
-
-  if (
-    !currentQuestionsError &&
-    contextScope !== 'COMPANY' &&
-    (!currentQuestions || currentQuestions.length < 3)
-  ) {
-    const fallback = await fetchQuestions('COMPANY', null);
-    currentQuestions = fallback.data;
-    currentQuestionsError = fallback.error;
-  }
+  const { data: currentQuestions, error: currentQuestionsError } =
+    await fetchActiveQuestionsForScope({
+      supabase,
+      enterpriseId: payload.enterprise_id,
+      scopeType: contextScope,
+      catalogItemId: collectionPoint.catalog_item_id ?? null,
+    });
 
   const normalizedQuestions = (currentQuestions ?? []).map((question) => ({
     id: String(question.id),
@@ -147,17 +118,21 @@ export async function submitQrCodeFeedbackController(req: Request, res: Response
       : [],
   }));
 
-  if (currentQuestionsError || normalizedQuestions.length !== 3) {
-    console.error('Perguntas não configuradas para o contexto do feedback:', currentQuestionsError);
+  // Contagem variável (0..3): apenas erro real de query bloqueia. Sem fallback
+  // para Geral — o cliente responde exatamente as perguntas ativas do escopo
+  // (ou nenhuma, enviando só nota + mensagem).
+  if (currentQuestionsError) {
+    console.error('Erro ao carregar perguntas do contexto do feedback:', currentQuestionsError);
     return sendTypedError(res, 400, API_ERROR_INVALID_PAYLOAD);
   }
 
   const allowedQuestionIds = new Set(normalizedQuestions.map((question) => question.id));
   const payloadQuestionIds = payload.answers.map((answer) => answer.question_id);
 
+  // As respostas precisam bater EXATAMENTE com as perguntas ativas configuradas.
   if (
-    payload.answers.length !== 3 ||
-    new Set(payloadQuestionIds).size !== 3 ||
+    payload.answers.length !== normalizedQuestions.length ||
+    new Set(payloadQuestionIds).size !== normalizedQuestions.length ||
     payloadQuestionIds.some((questionId) => !allowedQuestionIds.has(questionId))
   ) {
     return sendTypedError(res, 400, API_ERROR_INVALID_PAYLOAD);
@@ -346,14 +321,17 @@ export async function submitQrCodeFeedbackController(req: Request, res: Response
     return sendTypedError(res, 400, API_ERROR_INVALID_PAYLOAD);
   }
 
-  const { error: answersError } = await supabase
-    .from('feedback_question_answers')
-    .insert(answerRows);
+  // Contagem variável: pode não haver respostas (escopo sem perguntas ativas).
+  if (answerRows.length > 0) {
+    const { error: answersError } = await supabase
+      .from('feedback_question_answers')
+      .insert(answerRows);
 
-  if (answersError) {
-    console.error('Erro ao inserir respostas do feedback:', answersError);
-    await supabase.from('feedback').delete().eq('id', feedbackId);
-    return sendTypedError(res, 500, API_ERROR_FEEDBACK_INSERT_FAILED);
+    if (answersError) {
+      console.error('Erro ao inserir respostas do feedback:', answersError);
+      await supabase.from('feedback').delete().eq('id', feedbackId);
+      return sendTypedError(res, 500, API_ERROR_FEEDBACK_INSERT_FAILED);
+    }
   }
 
   if (subanswerRows.length > 0) {

@@ -216,20 +216,31 @@ const QuestionAccordion = memo(function QuestionAccordion({
     setError(null);
     onSave(
       qrItem.catalog_item_id,
-      draft.map((q) => ({
-        question_order: q.question_order,
-        question_text: String(q.question_text ?? '').trim(),
-        is_active: q.is_active,
-        subquestions: (q.subquestions ?? []).map((s) => ({
-          subquestion_order: s.subquestion_order,
-          subquestion_text: String(s.subquestion_text ?? '').trim(),
-          is_active: s.is_active,
-        })),
-      })),
+      draft.map((q) => {
+        const qText = String(q.question_text ?? '').trim();
+
+        return {
+          question_order: q.question_order,
+          question_text: qText,
+          // Texto preenchido ⇒ pergunta ativa (será exibida no QR daquele item).
+          is_active: qText.length > 0,
+          subquestions: (q.subquestions ?? []).map((s) => {
+            const sText = String(s.subquestion_text ?? '').trim();
+
+            return {
+              subquestion_order: s.subquestion_order,
+              subquestion_text: sText,
+              is_active: sText.length > 0,
+            };
+          }),
+        };
+      }),
     );
   }, [draft, qrItem.catalog_item_id, onSave]);
 
-  const activeCount = draft.filter((q) => q.is_active).length;
+  const activeCount = draft.filter(
+    (q) => String(q.question_text ?? '').trim().length > 0,
+  ).length;
 
   return (
     <div className="mt-3 overflow-hidden rounded-lg border border-(--quaternary-color)/10 bg-(--bg-secondary)">

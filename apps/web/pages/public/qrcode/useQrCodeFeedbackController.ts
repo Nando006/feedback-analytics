@@ -7,7 +7,6 @@ import type {
 } from 'lib/interfaces/contracts/qrcode/feedback.contract';
 import type { FeedbackAnswerValue } from 'lib/interfaces/contracts/qrcode/question.contract';
 import {
-  REQUIRED_QUESTION_COUNT,
   filterAnswersForQuestions,
   filterSubanswersForQuestions,
   hasAllRequiredAnswers,
@@ -149,11 +148,8 @@ export function useQrCodeFeedbackController({
       return;
     }
 
-    if (questions.length !== REQUIRED_QUESTION_COUNT) {
-      setError(PUBLIC_QR_FEEDBACK_ERRORS.questionsNotConfigured);
-      return;
-    }
-
+    // Contagem variável: valida apenas que as perguntas ativas exibidas (0..3)
+    // foram respondidas. Sem perguntas, só nota + mensagem são exigidos.
     if (!hasAllRequiredAnswers(formData.answers, questions)) {
       setError(PUBLIC_QR_FEEDBACK_ERRORS.missingAnswers);
       return;
