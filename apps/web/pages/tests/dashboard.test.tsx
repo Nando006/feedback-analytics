@@ -7,6 +7,7 @@ const mocks = vi.hoisted(() => ({
   useRouteLoaderData: vi.fn(),
   getFeedbackStats: vi.fn(),
   useInsightsControls: vi.fn(),
+  useScopedInsightsReport: vi.fn(),
 }));
 
 vi.mock('react-router-dom', async () => {
@@ -26,6 +27,10 @@ vi.mock('src/services/serviceFeedbacks', () => ({
 
 vi.mock('src/lib/context/insightsControls', () => ({
   useInsightsControls: mocks.useInsightsControls,
+}));
+
+vi.mock('src/lib/hooks/useScopedInsightsReport', () => ({
+  useScopedInsightsReport: mocks.useScopedInsightsReport,
 }));
 
 import { useLoaderData, useRouteLoaderData } from 'react-router-dom';
@@ -79,36 +84,6 @@ const feedbackStats = {
 
 const dashboardLoaderData = {
   stats: feedbackStats,
-  latestFeedbacks: [
-    {
-      id: 'fb-1',
-      message: 'Excelente atendimento e produto!',
-      rating: 5,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      collection_points: {
-        id: 'cp-1',
-        name: 'QR Code principal',
-        type: 'QR_CODE',
-        identifier: 'main-qrcode',
-      },
-      tracked_devices: {
-        id: 'td-1',
-        device_fingerprint: 'fingerprint',
-        user_agent: 'Mozilla',
-        ip_address: '127.0.0.1',
-        feedback_count: 3,
-        is_blocked: false,
-        customer_id: 'customer-1',
-        customer: {
-          id: 'customer-1',
-          name: 'Cliente XPTO',
-          email: 'cliente@example.com',
-          gender: 'Masculino',
-        },
-      },
-    },
-  ],
   dashboardError: null,
 };
 
@@ -125,6 +100,13 @@ describe('[Unidade] Dashboard Page', () => {
       scope: 'COMPANY',
       catalogItemId: '',
     });
+    mocks.useScopedInsightsReport.mockReturnValue({
+      report: null,
+      summary: null,
+      loading: false,
+      error: null,
+      reload: vi.fn(),
+    });
   });
 
   afterEach(() => {
@@ -140,7 +122,7 @@ describe('[Unidade] Dashboard Page', () => {
     );
 
     expect(
-      screen.getByText('Acompanhe o desempenho dos seus feedbacks, veja tendências e monitore como os clientes estão interagindo com a sua empresa.'),
+      screen.getByText('Acompanhe as métricas e os insights dos seus feedbacks no escopo selecionado.'),
     ).toBeInTheDocument();
 
     await waitFor(() => {
@@ -175,19 +157,16 @@ describe('[Unidade] Dashboard Page', () => {
     expect(within(criticalCard!).getByText('2')).toBeInTheDocument();
   });
 
-  it('lista o feedback mais recente ao finalizar o carregamento', async () => {
+  it('exibe o bloco de relatório de insights (estado vazio sem relatório)', async () => {
     render(
       <MemoryRouter>
         <Dashboard />
       </MemoryRouter>,
     );
 
-    await waitFor(() => {
-      expect(screen.getByText('Excelente atendimento e produto!')).toBeInTheDocument();
-    });
-
+    expect(screen.getByText('Relatório de Insights')).toBeInTheDocument();
     expect(
-      screen.getByText((_, node) => node?.textContent === 'Cliente: Cliente XPTO'),
+      screen.getByText('Ainda não há relatório para este escopo'),
     ).toBeInTheDocument();
   });
 });
