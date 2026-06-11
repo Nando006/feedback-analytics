@@ -6,6 +6,7 @@ import {
   API_ERROR_INTERNAL_SERVER_ERROR,
 } from '../../config/errors.js';
 import { sendTypedError } from '../../utils/sendTypedError.js';
+import { fetchActiveQuestionsForScope } from '../../repositories/publicQuestions.repository.js';
 
 export async function getPublicEnterpriseController(req: Request, res: Response) {
   const { id } = req.params;
@@ -67,48 +68,18 @@ export async function getPublicEnterpriseController(req: Request, res: Response)
       }
     }
 
-    const fetchQuestions = async (
-      scopeType: 'COMPANY' | 'PRODUCT' | 'SERVICE' | 'DEPARTMENT',
-      catalogItemContextId: string | null,
-    ) => {
-      let query = supabase
-        .from('questions_of_feedbacks')
-        .select(
-          'id, scope_type, catalog_item_id, question_order, question_text, subquestions:feedback_question_subquestions(id, question_id, subquestion_order, subquestion_text, is_active)',
-        )
-        .eq('enterprise_id', enterprise.id)
-        .eq('scope_type', scopeType)
-        .eq('is_active', true)
-        .order('question_order', { ascending: true });
-
-      if (scopeType === 'COMPANY') {
-        query = query.is('catalog_item_id', null);
-      } else {
-        query = catalogItemContextId
-          ? query.eq('catalog_item_id', catalogItemContextId)
-          : query.is('catalog_item_id', null);
-      }
-
-      return await query;
-    };
-
     const currentScope: 'COMPANY' | 'PRODUCT' | 'SERVICE' | 'DEPARTMENT' =
       contextItemKind ?? 'COMPANY';
 
-    let { data: questions, error: questionsError } = await fetchQuestions(
-      currentScope,
-      contextCatalogItemId,
-    );
-
-    if (
-      !questionsError &&
-      currentScope !== 'COMPANY' &&
-      (!questions || questions.length < 3)
-    ) {
-      const fallback = await fetchQuestions('COMPANY', null);
-      questions = fallback.data;
-      questionsError = fallback.error;
-    }
+    // Contagem variável por escopo, SEM fallback para Geral: retorna exatamente
+    // as perguntas ativas configuradas para o escopo resolvido (pode ser nenhuma).
+    const { data: questions, error: questionsError } =
+      await fetchActiveQuestionsForScope({
+        supabase,
+        enterpriseId: enterprise.id,
+        scopeType: currentScope,
+        catalogItemId: contextCatalogItemId,
+      });
 
     if (questionsError) {
       console.error('Erro ao buscar perguntas públicas de feedback:', questionsError);

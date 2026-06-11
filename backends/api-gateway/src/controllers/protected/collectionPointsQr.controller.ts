@@ -249,14 +249,16 @@ export async function getQrCatalogController(req: Request, res: Response) {
 
 export async function upsertCatalogQuestionsController(req: Request, res: Response) {
   const catalogItemId = String(req.body?.catalog_item_id ?? '').trim();
-  if (!catalogItemId) return sendTypedError(res, 400, API_ERROR_INVALID_PAYLOAD);
+  if (!catalogItemId) {
+    return sendTypedError(res, 400, API_ERROR_INVALID_PAYLOAD, { reason: 'catalog_item_id_missing' });
+  }
 
   const rawQuestions = Array.isArray(req.body?.questions)
     ? (req.body.questions as CatalogQuestionInput[])
     : null;
 
   if (!rawQuestions || rawQuestions.length !== TOTAL_ITEM_QUESTIONS) {
-    return sendTypedError(res, 400, API_ERROR_INVALID_PAYLOAD);
+    return sendTypedError(res, 400, API_ERROR_INVALID_PAYLOAD, { reason: 'questions_must_have_3_slots' });
   }
 
   const supabase = req.supabase!;
@@ -282,7 +284,9 @@ export async function upsertCatalogQuestionsController(req: Request, res: Respon
   }
 
   const catalogKind = getCatalogKind(catalogItem.kind);
-  if (!catalogKind) return sendTypedError(res, 400, API_ERROR_INVALID_PAYLOAD);
+  if (!catalogKind) {
+    return sendTypedError(res, 400, API_ERROR_INVALID_PAYLOAD, { reason: 'invalid_catalog_kind' });
+  }
 
   const questionByOrder = new Map<
     QuestionOrder,
@@ -297,20 +301,28 @@ export async function upsertCatalogQuestionsController(req: Request, res: Respon
   for (let index = 0; index < rawQuestions.length; index += 1) {
     const rawQuestion = rawQuestions[index];
     if (!rawQuestion || typeof rawQuestion !== 'object') {
-      return sendTypedError(res, 400, API_ERROR_INVALID_PAYLOAD);
+      return sendTypedError(res, 400, API_ERROR_INVALID_PAYLOAD, { reason: 'question_not_object' });
     }
 
     const questionOrder = normalizeQuestionOrder(rawQuestion.question_order, index + 1);
-    if (questionByOrder.has(questionOrder)) return sendTypedError(res, 400, API_ERROR_INVALID_PAYLOAD);
+    if (questionByOrder.has(questionOrder)) {
+      return sendTypedError(res, 400, API_ERROR_INVALID_PAYLOAD, { reason: 'duplicate_question_order' });
+    }
 
     const questionText = String(rawQuestion.question_text ?? '').trim();
     const questionIsActive = rawQuestion.is_active === true;
 
     if (questionText.length > 0 && !hasValidQuestionLength(questionText)) {
-      return sendTypedError(res, 400, API_ERROR_INVALID_PAYLOAD);
+      return sendTypedError(res, 400, API_ERROR_INVALID_PAYLOAD, {
+        reason: 'question_length_invalid',
+        question_order: questionOrder,
+      });
     }
     if (questionIsActive && questionText.length === 0) {
-      return sendTypedError(res, 400, API_ERROR_INVALID_PAYLOAD);
+      return sendTypedError(res, 400, API_ERROR_INVALID_PAYLOAD, {
+        reason: 'active_question_without_text',
+        question_order: questionOrder,
+      });
     }
 
     const rawSubquestions = Array.isArray(rawQuestion.subquestions)
@@ -322,20 +334,30 @@ export async function upsertCatalogQuestionsController(req: Request, res: Respon
     for (let subIndex = 0; subIndex < rawSubquestions.length; subIndex += 1) {
       const rawSubquestion = rawSubquestions[subIndex];
       if (!rawSubquestion || typeof rawSubquestion !== 'object') {
-        return sendTypedError(res, 400, API_ERROR_INVALID_PAYLOAD);
+        return sendTypedError(res, 400, API_ERROR_INVALID_PAYLOAD, { reason: 'subquestion_not_object' });
       }
 
       const subquestionOrder = normalizeSubquestionOrder(rawSubquestion.subquestion_order, subIndex + 1);
-      if (subquestionsByOrder.has(subquestionOrder)) return sendTypedError(res, 400, API_ERROR_INVALID_PAYLOAD);
+      if (subquestionsByOrder.has(subquestionOrder)) {
+        return sendTypedError(res, 400, API_ERROR_INVALID_PAYLOAD, { reason: 'duplicate_subquestion_order' });
+      }
 
       const subquestionText = String(rawSubquestion.subquestion_text ?? '').trim();
       const subquestionIsActive = rawSubquestion.is_active === true;
 
       if (subquestionText.length > 0 && !hasValidQuestionLength(subquestionText)) {
-        return sendTypedError(res, 400, API_ERROR_INVALID_PAYLOAD);
+        return sendTypedError(res, 400, API_ERROR_INVALID_PAYLOAD, {
+          reason: 'subquestion_length_invalid',
+          question_order: questionOrder,
+          subquestion_order: subquestionOrder,
+        });
       }
       if (subquestionIsActive && subquestionText.length === 0) {
-        return sendTypedError(res, 400, API_ERROR_INVALID_PAYLOAD);
+        return sendTypedError(res, 400, API_ERROR_INVALID_PAYLOAD, {
+          reason: 'active_subquestion_without_text',
+          question_order: questionOrder,
+          subquestion_order: subquestionOrder,
+        });
       }
 
       subquestionsByOrder.set(subquestionOrder, {
@@ -358,7 +380,7 @@ export async function upsertCatalogQuestionsController(req: Request, res: Respon
     .filter((question): question is NonNullable<typeof question> => Boolean(question));
 
   if (orderedQuestions.length !== TOTAL_ITEM_QUESTIONS) {
-    return sendTypedError(res, 400, API_ERROR_INVALID_PAYLOAD);
+    return sendTypedError(res, 400, API_ERROR_INVALID_PAYLOAD, { reason: 'ordered_questions_not_3' });
   }
 
   const hasAnyQuestionText = orderedQuestions.some((question) => question.question_text.length > 0);
@@ -376,17 +398,50 @@ export async function upsertCatalogQuestionsController(req: Request, res: Respon
     return res.json({ catalog_item_id: catalogItem.id, questions: [] });
   }
 
-  const hasAllQuestionTexts = orderedQuestions.every(
-    (question) => hasValidQuestionLength(question.question_text),
-  );
-  if (!hasAllQuestionTexts) return sendTypedError(res, 400, API_ERROR_INVALID_PAYLOAD);
-
+  // Contagem variável: o gestor pode configurar 1, 2 ou 3 perguntas. Cada slot
+  // (question_order) é tratado individualmente — não exigimos as 3 preenchidas.
   for (const question of orderedQuestions) {
+    const hasText = hasValidQuestionLength(question.question_text);
+
+    // Slot sem texto válido: remove a pergunta (e subperguntas) daquele order, se existir.
+    if (!hasText) {
+      const { data: existingRows, error: findExistingError } = await supabase
+        .from('questions_of_feedbacks')
+        .select('id')
+        .eq('enterprise_id', enterprise.id)
+        .eq('scope_type', catalogKind)
+        .eq('catalog_item_id', catalogItem.id)
+        .eq('question_order', question.question_order);
+
+      if (findExistingError) return sendTypedError(res, 500, API_ERROR_UPDATE_FAILED);
+
+      const existingId = existingRows?.[0]?.id as string | undefined;
+
+      if (existingId) {
+        const { error: deleteSubError } = await supabase
+          .from('feedback_question_subquestions')
+          .delete()
+          .eq('question_id', existingId);
+
+        if (deleteSubError) return sendTypedError(res, 500, API_ERROR_UPDATE_FAILED);
+
+        const { error: deleteQuestionError } = await supabase
+          .from('questions_of_feedbacks')
+          .delete()
+          .eq('id', existingId);
+
+        if (deleteQuestionError) return sendTypedError(res, 500, API_ERROR_UPDATE_FAILED);
+      }
+
+      continue;
+    }
+
+    // Slot com texto válido: persistido como ATIVO (texto definido ⇒ pergunta exibida).
     const { data: updatedQuestionRows, error: updateQuestionError } = await supabase
       .from('questions_of_feedbacks')
       .update({
         question_text: question.question_text,
-        is_active: question.is_active,
+        is_active: true,
         updated_at: new Date().toISOString(),
       })
       .eq('enterprise_id', enterprise.id)
@@ -408,7 +463,7 @@ export async function upsertCatalogQuestionsController(req: Request, res: Respon
           catalog_item_id: catalogItem.id,
           question_order: question.question_order,
           question_text: question.question_text,
-          is_active: question.is_active,
+          is_active: true,
         })
         .select('id')
         .single();
@@ -435,7 +490,7 @@ export async function upsertCatalogQuestionsController(req: Request, res: Respon
         .from('feedback_question_subquestions')
         .update({
           subquestion_text: subquestion.subquestion_text,
-          is_active: subquestion.is_active,
+          is_active: true,
           updated_at: new Date().toISOString(),
         })
         .eq('question_id', questionId)
@@ -451,7 +506,7 @@ export async function upsertCatalogQuestionsController(req: Request, res: Respon
           question_id: questionId,
           subquestion_order: subquestion.subquestion_order,
           subquestion_text: subquestion.subquestion_text,
-          is_active: subquestion.is_active,
+          is_active: true,
         });
 
       if (insertSubquestionError) return sendTypedError(res, 500, API_ERROR_UPDATE_FAILED);

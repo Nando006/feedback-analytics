@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Link,
   useLoaderData,
@@ -15,6 +15,9 @@ import SectionLatestFeedbacks from 'components/user/pages/dashboard/SectionLates
 import SectionCollectingStrategy from 'components/user/pages/dashboard/SectionCollectingStrategy';
 import SectionSatisfactionRadar from 'components/user/pages/dashboard/SectionSatisfactionRadar';
 import { useToast } from 'components/public/forms/messages/useToast';
+import { useInsightsControls } from 'src/lib/context/insightsControls';
+import { ServiceGetFeedbackStats } from 'src/services/serviceFeedbacks';
+import type { FeedbackStats } from 'lib/interfaces/domain/feedback.domain';
 import type { DashboardLoaderData, UserLoaderData } from './ui.types';
 
 
@@ -25,6 +28,7 @@ export default function Dashboard() {
   const dashboardLoaderData = useLoaderData<DashboardLoaderData>();
   const [searchParams, setSearchParams] = useSearchParams();
   const toast = useToast();
+  const { scope, catalogItemId } = useInsightsControls();
 
   const toastShownRef = useRef(false);
 
@@ -42,9 +46,28 @@ export default function Dashboard() {
   const user = userLoaderData?.user;
   const enterprise = userLoaderData?.enterprise;
   const collecting = userLoaderData?.collecting ?? null;
-  const stats = dashboardLoaderData?.stats ?? null;
+  const [stats, setStats] = useState<FeedbackStats | null>(
+    dashboardLoaderData?.stats ?? null,
+  );
   const latestFeedbacks = dashboardLoaderData?.latestFeedbacks ?? [];
   const error = dashboardLoaderData?.dashboardError ?? null;
+
+  // Métricas seguem o escopo selecionado no header (Geral = só o QR da empresa).
+  const fetchStats = useCallback(async () => {
+    const catalogParam =
+      scope !== 'COMPANY' ? catalogItemId || undefined : undefined;
+
+    const data = await ServiceGetFeedbackStats({
+      scope_type: scope,
+      catalog_item_id: catalogParam,
+    }).catch(() => null);
+
+    setStats(data);
+  }, [scope, catalogItemId]);
+
+  useEffect(() => {
+    fetchStats();
+  }, [fetchStats]);
 
   const displayName =
     user?.user_metadata?.full_name || enterprise?.full_name || user?.email || 'Dashboard';

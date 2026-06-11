@@ -8,8 +8,9 @@ const LATEST_LIMIT = 5;
 export async function LoaderUserDashboard(_args: LoaderFunctionArgs) {
   void _args;
 
+  // Escopo inicial = COMPANY (Geral), igual ao padrão do seletor no header.
   const [stats, latestFeedbacks] = await Promise.all([
-    loadFeedbackStatsData(),
+    loadFeedbackStatsData({ scope_type: 'COMPANY' }),
     loadFeedbacksData({ limit: LATEST_LIMIT, page: 1 }),
   ]);
 

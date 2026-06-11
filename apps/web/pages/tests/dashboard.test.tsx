@@ -5,6 +5,8 @@ import { MemoryRouter } from 'react-router-dom';
 const mocks = vi.hoisted(() => ({
   useLoaderData: vi.fn(),
   useRouteLoaderData: vi.fn(),
+  getFeedbackStats: vi.fn(),
+  useInsightsControls: vi.fn(),
 }));
 
 vi.mock('react-router-dom', async () => {
@@ -17,6 +19,14 @@ vi.mock('react-router-dom', async () => {
     useRouteLoaderData: mocks.useRouteLoaderData,
   };
 });
+
+vi.mock('src/services/serviceFeedbacks', () => ({
+  ServiceGetFeedbackStats: mocks.getFeedbackStats,
+}));
+
+vi.mock('src/lib/context/insightsControls', () => ({
+  useInsightsControls: mocks.useInsightsControls,
+}));
 
 import { useLoaderData, useRouteLoaderData } from 'react-router-dom';
 import Dashboard from '../user/dashboard';
@@ -110,6 +120,11 @@ describe('[Unidade] Dashboard Page', () => {
     vi.mocked(useRouteLoaderData).mockReturnValue(
       loaderData as ReturnType<typeof useRouteLoaderData>,
     );
+    mocks.getFeedbackStats.mockResolvedValue(feedbackStats);
+    mocks.useInsightsControls.mockReturnValue({
+      scope: 'COMPANY',
+      catalogItemId: '',
+    });
   });
 
   afterEach(() => {
