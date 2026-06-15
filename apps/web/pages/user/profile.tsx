@@ -3,7 +3,7 @@ import type {
   EnterpriseContext,
 } from "lib/interfaces/entities/enterprise.entity";
 import type { AuthUser } from "lib/interfaces/entities/auth-user.entity";
-import Header from "components/user/shared/header";
+import PageHeader from "components/user/shared/PageHeader";
 import Information from "components/user/pages/profile/editUser/information";
 import CardSimple from "components/user/shared/cards/cardSimple";
 import FormCollectingDataEnterprise from "components/user/pages/profile/editCollectingData/formCollectingDataEnterprise";
@@ -25,13 +25,7 @@ export default function Profile() {
 
   return (
     <div className="font-work-sans space-y-6">
-      <Header
-        enterprise={enterprise}
-        user={user}
-        description="Veja suas informações pessoais. Mantenha seus dados atualizados para uma melhor experiência."
-        nextLink="/user/edit/types-feedback"
-        nextLabelLink="Configurações do Catálogo"
-      />
+      <PageHeader />
       <div className="relative space-y-8">
         <Information
           defaultFullName={fullName}

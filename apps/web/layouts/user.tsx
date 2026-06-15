@@ -279,6 +279,9 @@ export default function User() {
               setIsOverlayMode(false);
               setCookie('sidebarLayout', 'push');
             }}
+            enterprise={enterprise}
+            onSignOut={handleSignOut}
+            isSigningOut={isSigningOut}
           />
         </header>
 
@@ -302,10 +305,6 @@ export default function User() {
               isOverlayMode={false}
               isOpen={isSidebarOpen}
               pendingPathname={pendingPathname}
-              enterpriseName={enterprise.full_name ?? undefined}
-              onSignOut={handleSignOut}
-              isSigningOut={isSigningOut}
-
             />
           )}
 
@@ -330,9 +329,6 @@ export default function User() {
               scheduleClose();
             }}
             pendingPathname={pendingPathname}
-            enterpriseName={enterprise.full_name ?? undefined}
-            onSignOut={handleSignOut}
-            isSigningOut={isSigningOut}
           />
         )}
       </div>

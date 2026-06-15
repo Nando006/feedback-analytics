@@ -1,4 +1,3 @@
-import CardProfile from "../shared/cards/cardProfile";
 import Menu from "./Menu";
 import type { SidebarProps } from "./ui.types";
 
@@ -8,9 +7,6 @@ export default function Sidebar({
   onOpen,
   onClose,
   pendingPathname,
-  enterpriseName,
-  onSignOut,
-  isSigningOut = false,
 }: SidebarProps) {
   if (isOverlayMode) {
     return (
@@ -27,15 +23,6 @@ export default function Sidebar({
           <div className="flex-1">
             <Menu pendingPathname={pendingPathname} />
           </div>
-          <div className="mt-2 border-t border-(--quaternary-color)/10">
-            <div className="flex justify-end">
-              <CardProfile
-                fullName={enterpriseName}
-                onSignOut={onSignOut}
-                isSigningOut={isSigningOut}
-              />
-            </div>
-          </div>
         </div>
       </aside>
     );
@@ -50,15 +37,6 @@ export default function Sidebar({
       <div className="flex h-full flex-col">
         <div className="flex-1">
           <Menu pendingPathname={pendingPathname} />
-        </div>
-        <div className="mt-2 border-t border-(--quaternary-color)/10">
-          <div className="flex justify-end">
-            <CardProfile
-              fullName={enterpriseName}
-              onSignOut={onSignOut}
-              isSigningOut={isSigningOut}
-            />
-          </div>
         </div>
       </div>
     </aside>

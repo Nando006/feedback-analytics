@@ -37,6 +37,16 @@ export interface InsightsHeaderControlsProps {
   onCatalogItemChange: (id: string) => void;
   onRefreshSelected: () => void;
   onAnalyzeRaw: () => void;
+  /** Quando false, oculta os botões "Analisar feedbacks" e "Gerar insights" (ex.: no dashboard). Padrão: true. */
+  showActions?: boolean;
+}
+
+/**
+ * Props da versão conectada dos controles de insights (lê o contexto).
+ * Usado em: components/user/pages/feedbacksInsightsReport/InsightsControlsBar.tsx.
+ */
+export interface InsightsControlsBarProps {
+  showActions?: boolean;
 }
 
 /**

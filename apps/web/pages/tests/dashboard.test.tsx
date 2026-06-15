@@ -33,6 +33,10 @@ vi.mock('src/lib/hooks/useScopedInsightsReport', () => ({
   useScopedInsightsReport: mocks.useScopedInsightsReport,
 }));
 
+vi.mock('components/user/pages/feedbacksInsightsReport/InsightsControlsBar', () => ({
+  default: () => <div data-testid="scope-controls" />,
+}));
+
 import { useLoaderData, useRouteLoaderData } from 'react-router-dom';
 import Dashboard from '../user/dashboard';
 

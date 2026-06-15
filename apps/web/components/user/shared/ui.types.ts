@@ -1,9 +1,12 @@
-import type { EnterpriseAndUser } from 'lib/interfaces/entities/enterprise-and-user.entity';
+import type { ReactNode } from 'react';
 
-export type HeaderProps = EnterpriseAndUser & {
-  nextLink?: string;
-  nextLabelLink?: string;
-  prevLink?: string;
-  prevLabelLink?: string;
+/**
+ * Props do cabeçalho padrão das telas logadas (PageHeader).
+ * `title`/`description` sobrescrevem os valores derivados do routeMeta;
+ * `actions` exibe controles à direita do título.
+ */
+export type PageHeaderProps = {
+  title?: string;
   description?: string;
+  actions?: ReactNode;
 };

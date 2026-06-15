@@ -37,6 +37,7 @@ export default function InsightsHeaderControls({
   onCatalogItemChange,
   onRefreshSelected,
   onAnalyzeRaw,
+  showActions = true,
 }: InsightsHeaderControlsProps) {
   const itemSelectionEnabled = selectedScope !== 'COMPANY';
   const filteredCatalogItems = catalogItemOptions.filter((item) => item.kind === selectedScope);
@@ -66,23 +67,27 @@ export default function InsightsHeaderControls({
         </HeaderSelect>
       )}
 
-      <button
-        type="button"
-        onClick={onAnalyzeRaw}
-        disabled={analysisDisabled}
-        className="btn-secondary font-poppins h-8 px-3 text-xs disabled:opacity-60"
-      >
-        {analyzingRaw ? 'Analisando...' : 'Analisar feedbacks'}
-      </button>
+      {showActions && (
+        <>
+          <button
+            type="button"
+            onClick={onAnalyzeRaw}
+            disabled={analysisDisabled}
+            className="btn-secondary font-poppins h-8 px-3 text-xs disabled:opacity-60"
+          >
+            {analyzingRaw ? 'Analisando...' : 'Analisar feedbacks'}
+          </button>
 
-      <button
-        type="button"
-        onClick={onRefreshSelected}
-        disabled={analysisDisabled}
-        className="btn-secondary font-poppins h-8 px-3 text-xs disabled:opacity-60"
-      >
-        {refreshing ? 'Gerando...' : 'Gerar insights'}
-      </button>
+          <button
+            type="button"
+            onClick={onRefreshSelected}
+            disabled={analysisDisabled}
+            className="btn-secondary font-poppins h-8 px-3 text-xs disabled:opacity-60"
+          >
+            {refreshing ? 'Gerando...' : 'Gerar insights'}
+          </button>
+        </>
+      )}
     </div>
   );
 }

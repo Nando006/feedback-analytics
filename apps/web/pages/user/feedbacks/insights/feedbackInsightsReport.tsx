@@ -7,6 +7,8 @@ import InsightsReportErrorState from 'components/user/pages/feedbacksInsightsRep
 import InsightsReportHeaderSection from 'components/user/pages/feedbacksInsightsReport/InsightsReportHeaderSection';
 import InsightsReportMoodSection from 'components/user/pages/feedbacksInsightsReport/InsightsReportMoodSection';
 import InsightsReportContent from 'components/user/pages/feedbacksInsightsReport/InsightsReportContent';
+import InsightsControlsBar from 'components/user/pages/feedbacksInsightsReport/InsightsControlsBar';
+import PageHeader from 'components/user/shared/PageHeader';
 
 function getMoodFromSummary(summary: FeedbackAnalysisSummary | null) {
   if (!summary || summary.totalAnalyzed === 0) {
@@ -87,6 +89,7 @@ export default function FeedbacksInsightsReport() {
   return (
     <>
       <div className="font-work-sans space-y-6 pb-8">
+        <PageHeader actions={<InsightsControlsBar />} />
         <div className="relative overflow-hidden rounded-2xl border border-(--quaternary-color)/10 bg-gradient-to-br from-(--bg-secondary) to-(--sixth-color) p-6 glass-card space-y-6">
           <InsightsReportHeaderSection
             updatedLabel={updatedLabel}

@@ -32,19 +32,8 @@ vi.mock('components/user/pages/profile/editUser/information', () => ({
   ),
 }));
 
-vi.mock('components/user/shared/header', () => ({
-  default: ({
-    enterprise,
-    user,
-  }: {
-    enterprise?: { name?: string };
-    user?: { name?: string };
-  }) => (
-    <div data-testid="profile-header">
-      <div data-testid="user-name">{user?.name}</div>
-      <div data-testid="enterprise-header">{enterprise?.name}</div>
-    </div>
-  ),
+vi.mock('components/user/shared/PageHeader', () => ({
+  default: () => <div data-testid="page-header">PageHeader</div>,
 }));
 
 vi.mock('components/user/pages/profile/editCollectingData/formCollectingDataEnterprise', () => ({
@@ -103,11 +92,11 @@ describe('[Unidade] Profile Page', () => {
       </MemoryRouter>,
     );
 
-    expect(screen.getByTestId('profile-header')).toBeInTheDocument();
+    expect(screen.getByTestId('page-header')).toBeInTheDocument();
     expect(screen.getByTestId('profile-info')).toBeInTheDocument();
   });
 
-  it('deve passar os dados corretos para o componente Header', () => {
+  it('deve renderizar o cabeçalho de página (PageHeader)', () => {
     mockUseRouteLoaderData.mockReturnValue(mockData);
 
     render(
@@ -116,10 +105,7 @@ describe('[Unidade] Profile Page', () => {
       </MemoryRouter>,
     );
 
-    expect(screen.getByTestId('user-name')).toHaveTextContent('João Silva');
-    expect(screen.getByTestId('enterprise-header')).toHaveTextContent(
-      'Empresa Teste',
-    );
+    expect(screen.getByTestId('page-header')).toBeInTheDocument();
   });
 
   it('deve passar os dados corretos para o componente Info', () => {
@@ -198,11 +184,8 @@ describe('[Unidade] Profile Page', () => {
       </MemoryRouter>,
     );
 
-    expect(screen.getByTestId('profile-header')).toBeInTheDocument();
+    expect(screen.getByTestId('page-header')).toBeInTheDocument();
     expect(screen.getByTestId('profile-info')).toBeInTheDocument();
-    expect(screen.getByTestId('user-name')).toHaveTextContent(
-      'Usuário Parcial',
-    );
     expect(screen.getByTestId('enterprise-name')).toHaveTextContent(
       'Empresa Parcial',
     );

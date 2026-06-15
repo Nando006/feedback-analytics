@@ -16,6 +16,7 @@ import InsightsReportContent from 'components/user/pages/feedbacksInsightsReport
 import { useToast } from 'components/public/forms/messages/useToast';
 import { useInsightsControls } from 'src/lib/context/insightsControls';
 import { useScopedInsightsReport } from 'src/lib/hooks/useScopedInsightsReport';
+import InsightsControlsBar from 'components/user/pages/feedbacksInsightsReport/InsightsControlsBar';
 import { ServiceGetFeedbackStats } from 'src/services/serviceFeedbacks';
 import type { FeedbackStats } from 'lib/interfaces/domain/feedback.domain';
 import type { DashboardLoaderData, UserLoaderData } from './ui.types';
@@ -90,6 +91,10 @@ export default function Dashboard() {
           </p>
         </div>
         <div className="flex flex-col gap-3 md:items-end">
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-(--text-tertiary)">Escopo</span>
+            <InsightsControlsBar showActions={false} />
+          </div>
           <Link
             to="/user/feedbacks/all"
             className="btn-primary font-poppins inline-flex items-center gap-2 px-5 py-3 text-sm font-semibold">

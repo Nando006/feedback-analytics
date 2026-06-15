@@ -1,3 +1,5 @@
+import type { EnterpriseContext } from 'lib/interfaces/entities/enterprise.entity';
+
 /**
  * Props do cabeçalho de layout do usuário autenticado.
  * Usado em: components/user/layout/Header.tsx.
@@ -8,6 +10,9 @@ export interface HeaderProps {
   onToggleSidebar: () => void;
   onSetOverlay: () => void;
   onSetPush: () => void;
+  enterprise: EnterpriseContext;
+  onSignOut: () => void;
+  isSigningOut?: boolean;
 }
 
 /**
@@ -30,7 +35,14 @@ export interface SidebarProps {
   onOpen?: () => void;
   onClose?: () => void;
   pendingPathname?: string;
-  enterpriseName?: string;
+}
+
+/**
+ * Props do menu de conta no topo do layout.
+ * Usado em: components/user/layout/AccountMenu.tsx.
+ */
+export interface AccountMenuProps {
+  enterprise: EnterpriseContext;
   onSignOut: () => void;
   isSigningOut?: boolean;
 }
