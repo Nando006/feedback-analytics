@@ -17,7 +17,7 @@ Os testes do serviço IA utilizam o **Vitest** como motor de execução e o **Su
 Para executar a suíte de testes do serviço de IA a partir da raiz do projeto:
 
 ```bash
-powershell -ExecutionPolicy Bypass -Command "npm run test:api"
+powershell -ExecutionPolicy Bypass -Command "npm run test:ia"
 ```
 
 Ou diretamente no diretório do serviço:

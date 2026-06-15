@@ -47,9 +47,9 @@
 
 **Cenários a cobrir:**
 
-- **[CT-UC04-01]** ✅ *Coberto E2E* - Caminho feliz: empresa ativa; QR Code ativo; perguntas dinâmicas configuradas; dispositivo sem envio anterior no dia. Acesse a URL, selecione nota Likert, adicione comentário, responda perguntas e envie.
-- **[CT-UC04-02]** ✅ *Coberto E2E* - Empresa inválida (Exceção): tentar acessar URL com identifier inexistente de empresa deve exibir tela de erro fatal sem renderizar o formulário.
-- **[CT-UC04-03]** ⚠️ *Skipped Intencional* - Dispositivo duplicado (Exceção): tentar enviar feedback a partir do mesmo dispositivo no mesmo dia deve exibir tela de "feedback já registrado".
+- **[CT-UC04-01]** ✅ *Coberto E2E (skip condicional)* - Caminho feliz: empresa ativa; QR Code ativo; perguntas dinâmicas configuradas; dispositivo sem envio anterior no dia. Acessa a URL, seleciona nota Likert, adiciona comentário, responde perguntas e envia. O teste contém `test.skip(!TEST_ENTERPRISE_ID, ...)` — é **pulado** quando a variável `E2E_TEST_ENTERPRISE_ID` não está configurada. (Spec: `[CT-UC04-01] Envio válido exibe confirmação de feedback recebido`.)
+- **[CT-UC04-02]** 📝 *Planejado / não implementado* - Dispositivo duplicado (Exceção): tentar enviar feedback a partir do mesmo dispositivo no mesmo dia deve exibir tela de "feedback já registrado". Não há teste E2E com este ID no spec.
+- **[CT-UC04-03]** ✅ *Coberto E2E* - Empresa inválida (Exceção): acessar a URL com identifier de empresa inexistente deve exibir tela de empresa não encontrada / erro, sem renderizar o formulário. (Spec: `[CT-UC04-03] Acesso com enterprise_id inválido exibe empresa não encontrada`.)
 - **[CT-UC04-04]** 🔵 *Unidade já atende* - Nota não selecionada (Exceção): tentar enviar o formulário sem selecionar a avaliação Likert deve bloquear a submissão.
 - **[CT-UC04-05]** 🔵 *Unidade já atende* - Comentário vazio (Exceção): tentar enviar sem preencher a mensagem escrita de comentário deve bloquear a submissão.
 - **[CT-UC04-06]** 🔵 *Unidade já atende* - Perguntas não respondidas (Exceção): deixar ao menos uma pergunta dinâmica sem resposta deve bloquear a submissão do formulário.

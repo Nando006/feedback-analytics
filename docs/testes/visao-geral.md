@@ -18,19 +18,19 @@ O projeto adota uma estratégia de testes distribuída em múltiplas camadas que
 
 ```
            ╔═════════════════════╗
-           ║     E2E (28)        ║  ← Playwright: Jornada real integrada (front + back + Supabase real)
+           ║     E2E (27)        ║  ← Playwright: Jornada real integrada (front + back + Supabase real)
            ╚═════════════════════╝
         ╔═══════════════════════════╗
-        ║     Integração (63)       ║  ← Express (35 api-gateway + 10 ia-analyze) e Actions/Loaders (18 frontend)
+        ║     Integração (65)       ║  ← Express (37 api-gateway + 10 ia-analyze) e Actions/Loaders (18 frontend)
         ╚═══════════════════════════╝
      ╔═════════════════════════════════╗
-     ║        Unidade (127)            ║  ← Regras puras (104 frontend + 23 ia-analyze) e componentes isolados
+     ║        Unidade (129)            ║  ← Regras puras (106 frontend + 23 ia-analyze) e componentes isolados
      ╚═════════════════════════════════╝
 ```
 
-* **Testes de Unidade (127 testes):** Validam a menor unidade lógica de forma isolada e rápida. Incluem 104 testes unitários e de componentes no [Frontend](file:///C:/Users/Fernando/Repositorios/feedback-analytics/docs/testes/web.md) e 23 testes utilitários de termos e sentimentos no [Serviço de IA](file:///C:/Users/Fernando/Repositorios/feedback-analytics/docs/testes/ia-analyze.md).
-* **Testes de Integração (63 testes):** Validam o contrato e o fluxo de dados cruzando fronteiras de múltiplos módulos. Incluem 18 testes de Actions e Loaders do React Router no [Frontend](file:///C:/Users/Fernando/Repositorios/feedback-analytics/docs/testes/web.md), 35 testes de controllers e rotas no [API Gateway](file:///C:/Users/Fernando/Repositorios/feedback-analytics/docs/testes/api-gateway.md) e 10 testes de rotas no [Serviço de IA](file:///C:/Users/Fernando/Repositorios/feedback-analytics/docs/testes/ia-analyze.md).
-* **Testes E2E (28 testes):** Validam cenários de negócio ponta a ponta em navegador Chrome real (via Playwright) cobrindo as jornadas dos 12 Casos de Uso integrados.
+* **Testes de Unidade (129 testes):** Validam a menor unidade lógica de forma isolada e rápida. Incluem 106 testes unitários e de componentes no [Frontend](file:///C:/Users/Fernando/Repositorios/feedback-analytics/docs/testes/web.md) e 23 testes utilitários de termos e sentimentos no [Serviço de IA](file:///C:/Users/Fernando/Repositorios/feedback-analytics/docs/testes/ia-analyze.md).
+* **Testes de Integração (65 testes):** Validam o contrato e o fluxo de dados cruzando fronteiras de múltiplos módulos. Incluem 18 testes de Actions e Loaders do React Router no [Frontend](file:///C:/Users/Fernando/Repositorios/feedback-analytics/docs/testes/web.md), 37 testes de controllers e rotas no [API Gateway](file:///C:/Users/Fernando/Repositorios/feedback-analytics/docs/testes/api-gateway.md) e 10 testes de rotas no [Serviço de IA](file:///C:/Users/Fernando/Repositorios/feedback-analytics/docs/testes/ia-analyze.md).
+* **Testes E2E (27 testes):** Validam cenários de negócio ponta a ponta em navegador Chrome real (via Playwright) cobrindo as jornadas de 11 Casos de Uso integrados (UC-01, UC-02 e UC-04 a UC-12; o UC-03 não possui spec E2E).
 
 ---
 

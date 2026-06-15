@@ -31,7 +31,7 @@ Cada item cadastrado recebe um QR Code único automaticamente
         ↓
 A empresa configura perguntas customizadas por item (opcional)
         ↓
-Se não houver perguntas no item, o sistema usa as 3 perguntas base da empresa
+Se não houver perguntas no item, o formulário exibe só nota + mensagem (sem fallback para outro escopo)
         ↓
 Cliente escaneia → formulário carrega com as perguntas daquele escopo
         ↓
@@ -59,10 +59,10 @@ Cada item pode ter **perguntas customizadas com subperguntas hierárquicas**:
 
 - A empresa define a pergunta principal (ex: "Como foi a qualidade do produto?")
 - Cada pergunta pode ter subperguntas que detalham o aspecto avaliado
-- As subperguntas usam uma escala estruturada: `PESSIMO → RUIM → REGULAR → BOM → OTIMA`
+- As subperguntas usam uma escala estruturada: `PESSIMO → RUIM → MEDIANA → BOA → OTIMA`
 - A visibilidade das subperguntas pode depender da resposta selecionada na pergunta pai
 
-O sistema exige **exatamente 3 perguntas ativas** por ponto de coleta. Se o item não tiver perguntas configuradas, usa as 3 perguntas base da empresa.
+O sistema usa uma **contagem variável de 0 a 3 perguntas ativas** por ponto de coleta. Se o item não tiver perguntas configuradas, o formulário exibe apenas nota + mensagem — nunca faz fallback para as perguntas de outro escopo.
 
 ---
 
@@ -82,7 +82,7 @@ O sistema exige **exatamente 3 perguntas ativas** por ponto de coleta. Se o item
 
 - A ativação de escopos (Produtos, Serviços, Departamentos) é feita via flags no banco: `uses_company_products`, `uses_company_services`, `uses_company_departments`
 - Um QR Code só aceita submissões se **tanto o QR quanto o item do catálogo** estiverem `ACTIVE` (RNE-009)
-- O sistema valida exatamente 3 perguntas por ponto de coleta; se insuficientes no item, faz fallback para as perguntas da empresa
+- O sistema aceita uma contagem variável de 0 a 3 perguntas por ponto de coleta; sem fallback — as respostas precisam bater exatamente com as perguntas ativas do escopo (ou nenhuma)
 - Cada feedback armazenado carrega o `collection_point_id`, permitindo filtrar e agrupar por escopo
 
 ---

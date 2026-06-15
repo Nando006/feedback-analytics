@@ -7,12 +7,14 @@ A infraestrutura do projeto roda integralmente na **Vercel**, sem servidores ded
 | Domínio | Builder | Tipo de Deploy | `maxDuration` |
 |---|---|---|---|
 | `apps/web` | `@vercel/static-build` | Site estático via CDN | — |
-| `backends/api-gateway` | `@vercel/node` | Serverless Function | 30s |
+| `backends/api-gateway` | `@vercel/node` | Serverless Function | 120s |
 | `services/ia-analyze` | `@vercel/node` | Serverless Function | 300s |
 
 - **Frontend (`apps/web`):** arquivos estáticos (HTML, CSS, JS) gerados no build e servidos diretamente pela CDN da Vercel. Não há servidor — o React roda no navegador do usuário.
-- **API-Gateway:** função Node.js que acorda a cada requisição, consulta o banco (Supabase) e encerra. Operações I/O-bound, timeout de 30s é mais que suficiente.
+- **API-Gateway:** função Node.js que acorda a cada requisição, consulta o banco (Supabase) e encerra. O timeout de 120s cobre com folga as operações de I/O e a orquestração das chamadas à IA.
 - **IA-Analyze:** função Node.js de longa duração — recebe feedbacks, chama o LLM externo (pode levar 30–60s) e processa o resultado. Precisa de 300s de timeout, inviável de rodar no mesmo projeto do Gateway.
+
+> **Nota — bundle do Gateway:** antes do deploy, o `deploy-api.yml` roda uma etapa de esbuild que empacota `backends/api-gateway/index.ts` em `backends/api-gateway/_bundle.cjs`. É esse bundle que o `vercel.json` do Gateway aponta como `src`.
 
 A escalabilidade é automática: quando várias empresas disparam análises simultaneamente, a Vercel sobe múltiplas instâncias do `ia-analyze` em paralelo. Quando a demanda cai, as instâncias encerram e param de consumir recursos.
 
@@ -106,7 +108,7 @@ Os tipos TypeScript que transitam entre Gateway e IA Analyze **não são duplica
 | Backend Framework | Express | — |
 | Autenticação | Supabase JS | 2.x |
 | Banco de Dados | Supabase (PostgreSQL) | — |
-| IA | Provedor LLM Externo Configurável (via API REST) | — |
+| IA | Provedor LLM externo — atualmente Google Gemini (`@google/genai`, modelo `gemini-2.5-flash`), configurável via `GEMINI_API_KEY`; trocar de provedor exige alteração de código | — |
 | Testes | Vitest + Testing Library | — |
 | Monorepo | npm Workspaces + concurrently | — |
 

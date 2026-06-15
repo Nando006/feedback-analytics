@@ -10,7 +10,7 @@ Este documento descreve como o frontend decide o que mostrar para cada usuário:
 
 | Tipo | Rotas | Acesso |
 |---|---|---|
-| **Pública** | `/`, `/login`, `/register`, `/forgot-password`, `/auth/reset-password`, `/auth/success`, `/feedback/qrcode` | Qualquer visitante, sem verificação |
+| **Pública** | `/`, `/login`, `/register`, `/forgot-password`, `/auth/reset-password`, `/auth/success`, `/auth/link-expired`, `/feedback/qrcode` | Qualquer visitante, sem verificação |
 | **Protegida** | Tudo em `/user/*` | Exige sessão válida — verificada antes de renderizar |
 
 ---
@@ -56,7 +56,7 @@ Esses dados ficam disponíveis via `useRouteLoaderData` em qualquer componente d
 
 ### Como a sessão é armazenada
 
-A sessão **não usa localStorage**. O token de autenticação trafega exclusivamente via **cookie HttpOnly**, gerenciado pelo backend. Todas as requisições para `/api/protected/*` e `/api/public/auth/*` usam `credentials: 'include'`, que envia o cookie automaticamente.
+O token usado nas chamadas à API trafega via **cookie HttpOnly**, gerenciado pelo backend. Todas as requisições para `/api/protected/*` e `/api/public/auth/*` usam `credentials: 'include'`, que envia o cookie automaticamente. A sessão do Supabase, por outro lado, é persistida em **localStorage** por padrão (`persistSession: true`, sem storage customizado).
 
 ### Renovação automática de token
 

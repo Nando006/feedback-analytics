@@ -124,9 +124,24 @@ erDiagram
 
 ---
 
+### `enterprise_public` (objeto público)
+
+> Relação pública (provável **VIEW**) que expõe apenas `id` e `name` da empresa para o fluxo de coleta **sem login**. É o caminho crítico que resolve o **nome** da empresa exibido no formulário público — consultada via `supabase.from('enterprise_public').select('id, name')` em `enterprise.controller.ts` e `qrcode.controller.ts`.
+
+| Coluna | Tipo | Descrição | Impacto no Projeto |
+|---|---|---|---|
+| `id` | uuid | Identificador da empresa (= `enterprise.id`) | **Crítico** — usado pelo formulário público para validar a empresa e carregar perguntas |
+| `name` | text | Nome público da empresa | **Crítico** — exibido no formulário de coleta; **derivado de `auth.users.raw_user_meta_data.full_name`** (a tabela `enterprise` não possui coluna `name`) |
+
+> **Lacuna de versionamento:** **não há DDL versionado** para `enterprise_public` em `database/sql/` (existem apenas as funções `enterprise_public_documents_fn()` e `enterprise_public_ids_fn()`). A definição desse objeto deveria ser adicionada ao schema versionado.
+
+---
+
 ### `public.enterprise`
 
 > Cadastro da empresa vinculada ao usuário autenticado. **Entidade raiz de todo o isolamento multi-tenant.**
+>
+> **Atenção:** esta tabela **não tem coluna `name`**. O "nome" da empresa exibido publicamente (ex.: no formulário de coleta) **não** vem daqui — vem de `auth.users.user_metadata.full_name`, exposto via a relação [`enterprise_public`](#enterprise_public-objeto-público). O `full_name` é gravado no metadata no signup (`register.controller.ts`) e lido pelo serviço de IA (`iaAnalyze.repository.ts`).
 
 | Coluna | Tipo | Obrigatório | Descrição | Impacto no Projeto |
 |---|---|---|---|---|
@@ -268,7 +283,7 @@ erDiagram
 | `blocked_reason` | text | Não | Motivo do bloqueio | **Baixo** — informativo para o gestor; sem impacto funcional |
 | `blocked_at` | timestamptz | Não | Data do bloqueio | **Baixo** — auditoria do bloqueio |
 | `blocked_by` | uuid | Não | ID do gestor que bloqueou | **Baixo** — rastreabilidade de quem aplicou o bloqueio |
-| `feedback_count` | integer | Sim | Contador total de feedbacks (default 0) | **Alto** — incrementado por `register_device_feedback()`; usado para métricas de volume e como sinal de comportamento suspeito |
+| `feedback_count` | integer | Sim | Contador total de feedbacks (default 0) | **Alto** — incrementado pelo controller no fluxo de envio (insere com `0` e faz `update +1` em `qrcode.controller.ts`); usado para métricas de volume e como sinal de comportamento suspeito. A função `register_device_feedback()` existe, mas **não** é usada no caminho atual |
 | `last_feedback_at` | timestamptz | Não | Data/hora do último envio | **Alto** — usado por `can_device_send_feedback()` para verificar o limite diário por ponto de coleta |
 
 ---
@@ -384,11 +399,13 @@ erDiagram
 | `on_auth_user_metadata_before_update` | `auth.users` | BEFORE UPDATE | `clean_user_metadata_before_change()` | Sanitização LGPD do JWT |
 | `validate_questions_of_feedbacks_context` | `questions_of_feedbacks` | BEFORE INSERT/UPDATE | `validate_questions_of_feedbacks_context()` | Integridade de escopo das perguntas |
 | `validate_feedback_insights_report_context` | `feedback_insights_report` | BEFORE INSERT/UPDATE | `validate_feedback_insights_report_context()` | Integridade de escopo dos relatórios |
-| `set_updated_at` | todas (exceto `feedback_question_answers`) | BEFORE UPDATE | `update_updated_at_column()` | Auditoria automática de timestamps |
+| `set_updated_at` | todas (exceto `feedback_question_answers` e `feedback_subquestion_answers`, que só têm `created_at`) | BEFORE UPDATE | `update_updated_at_column()` | Auditoria automática de timestamps |
 | `enforce_bucket_name_length_trigger` | `storage.buckets` | BEFORE INSERT/UPDATE | `storage.enforce_bucket_name_length()` | Valida tamanho do nome do bucket |
 | `protect_buckets_delete` | `storage.buckets` | BEFORE DELETE | `storage.protect_delete()` | Bloqueia exclusão de buckets (RNE-012) |
 | `protect_objects_delete` | `storage.objects` | BEFORE DELETE | `storage.protect_delete()` | Bloqueia exclusão de mídias (RNE-012) |
 | `update_objects_updated_at` | `storage.objects` | BEFORE UPDATE | `storage.update_updated_at_column()` | Timestamp de Storage |
+
+> **Nota:** o consolidado `database/sql/triggers/all_triggers.sql` está desatualizado em relação aos arquivos por-tabela — ele **não** lista o `set_updated_at` de `feedback_insights_report`, cujo trigger é definido no próprio `database/sql/tables/public.feedback_insights_report.sql`.
 
 ---
 
@@ -421,7 +438,7 @@ A função `jwt_custom_claims()` está definida para compor claims auxiliares no
 
 ### Higienização LGPD
 
-Ao criar ou atualizar usuários, os triggers removem automaticamente do `raw_user_meta_data` os campos sensíveis: `document`, `phone`, `company_name`, `account_type`, `terms_version`, `terms_accepted_at`. Esses dados vivem **apenas** em `public.enterprise` com RLS, nunca no payload JWT.
+Ao criar ou atualizar usuários, os triggers removem automaticamente do `raw_user_meta_data` os campos sensíveis: `document`, `phone`, `company_name`, `account_type`, `terms_version`, `terms_accepted_at`, `email`, `email_verified`, `phone_verified`. Esses dados vivem **apenas** em `public.enterprise` com RLS, nunca no payload JWT.
 
 ---
 

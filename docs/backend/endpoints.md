@@ -2,10 +2,7 @@
 
 > **Base URL (desenvolvimento):** `http://localhost:3000`
 
-Todos os endpoints protegidos exigem o header:
-```
-Authorization: Bearer <supabase_jwt>
-```
+Todos os endpoints protegidos usam a sessão que trafega por **cookies HttpOnly** (gerenciada via `@supabase/ssr`). O cliente deve enviar as requisições com `credentials: 'include'`. **Não** há header `Authorization: Bearer`.
 
 > **Nota:** todas as rotas são prefixadas com `/api` (ex.: `GET /api/health`).
 
@@ -185,14 +182,26 @@ Atualiza dados cadastrais parciais da empresa (termos, tipo de conta).
 
 Retorna as configurações de coleta da empresa — tipos ativos, catálogo e perguntas.
 
-**Response 200**
+**Response 200** — tudo aninhado em `collecting` (ou `{ "collecting": null }` quando não há registro).
 ```json
 {
-  "uses_company_products": true,
-  "uses_company_services": false,
-  "uses_company_departments": false,
-  "catalog_items": [...],
-  "questions": [...]
+  "collecting": {
+    "id": "uuid",
+    "enterprise_id": "uuid",
+    "company_objective": "...",
+    "analytics_goal": "...",
+    "business_summary": "...",
+    "main_products_or_services": "...",
+    "uses_company_products": true,
+    "uses_company_services": false,
+    "uses_company_departments": false,
+    "created_at": "2026-01-15T10:00:00Z",
+    "updated_at": "2026-01-15T10:00:00Z",
+    "catalog_products": [...],
+    "catalog_services": [...],
+    "catalog_departments": [...],
+    "company_feedback_questions": [...]
+  }
 }
 ```
 
@@ -200,11 +209,11 @@ Retorna as configurações de coleta da empresa — tipos ativos, catálogo e pe
 
 ### `PATCH /api/protected/user/collecting_data`
 
-Atualiza parcialmente as configurações de coleta.
+Atualiza parcialmente as configurações de coleta. **Response 200** — mesmo formato de `GET` (objeto `collecting`).
 
 ### `PUT /api/protected/user/collecting_data`
 
-Upsert completo (cria se não existir, substitui se existir).
+Upsert completo (cria se não existir, substitui se existir). **Response 200** — mesmo formato de `GET` (objeto `collecting`).
 
 ---
 
@@ -237,9 +246,12 @@ Lista todos os feedbacks da empresa com paginação e filtros.
       "collection_points": {
         "id": "uuid",
         "name": "Caixa Principal",
-        "type": "enterprise",
+        "type": "QR_CODE",
+        "identifier": "uuid | null",
+        "catalog_item_id": "uuid | null",
         "catalog_item_name": null,
-        "catalog_item_kind": null
+        "catalog_item_kind": null,
+        "catalog_items": null
       },
       "feedback_question_answers": []
     }
@@ -260,6 +272,13 @@ Lista todos os feedbacks da empresa com paginação e filtros.
 ### `GET /api/protected/user/feedbacks/stats`
 
 Retorna estatísticas agregadas dos feedbacks da empresa.
+
+**Query Params**
+
+| Parâmetro | Tipo | Descrição |
+|---|---|---|
+| `scope_type` | `COMPANY \| PRODUCT \| SERVICE \| DEPARTMENT` | Segmenta as estatísticas por escopo (padrão: `COMPANY`) |
+| `catalog_item_id` | `string` | Segmenta por item de catálogo específico |
 
 **Response 200**
 ```json
@@ -395,7 +414,7 @@ Lista os itens de catálogo de um tipo, com o status do QR Code e o snapshot de 
 
 **Response 200**
 ```json
-{ "items": [ { "catalog_item_id": "uuid", "name": "Produto X", "active": true, "questions": [] } ] }
+{ "items": [ { "catalog_item_id": "uuid", "name": "Produto X", "description": "...", "kind": "PRODUCT", "active": true, "collection_point_id": "uuid | null", "questions": [] } ] }
 ```
 
 **Response 400** `collection_point_error` — `kind` inválido ou ausente.
@@ -404,7 +423,7 @@ Lista os itens de catálogo de um tipo, com o status do QR Code e o snapshot de 
 
 ### `POST /api/protected/user/collection-points/qr/catalog/questions/upsert`
 
-Cria/atualiza as perguntas dinâmicas de um item de catálogo. Exige **exatamente 3 perguntas** (20–150 caracteres) e até 3 subperguntas por pergunta.
+Cria/atualiza as perguntas dinâmicas de um item de catálogo. O array deve ter **3 slots**, mas o gestor pode preencher **1 a 3 perguntas efetivas** (20–150 caracteres cada; slots vazios são ignorados, e todos vazios limpam as perguntas do item) e até 3 subperguntas por pergunta.
 
 **Body**
 ```json
@@ -501,8 +520,9 @@ Analisa feedbacks **ainda não analisados** e persiste os resultados.
 | `401` | `unauthorized` | JWT ausente ou inválido |
 | `422` | `collecting_data_required_for_analysis` | Dados de contexto da empresa não preenchidos |
 | `422` | `insufficient_feedbacks_for_analysis` | Menos de 10 feedbacks disponíveis |
-| `502` | `failed_ia_request` | Falha na comunicação com o provedor LLM |
-| `502` | `invalid_ai_response` | Provedor LLM retornou resposta inválida |
+| `502` | `failed_remote_ia_analyze_request` | Falha na comunicação com o serviço `ia-analyze` |
+| `502` | `remote_ia_analyze_error` | Serviço `ia-analyze` retornou status de erro |
+| `502` | `invalid_remote_ia_analyze_response_shape` | Resposta do serviço `ia-analyze` com formato inválido |
 
 ---
 
@@ -606,9 +626,14 @@ Cria uma nova conta. Por segurança (RNE-014), e-mail já cadastrado **não** é
 | Status | Código | Descrição |
 |---|---|---|
 | `400` | `invalid_payload` | Dados de cadastro inválidos |
+| `400` | `document_required` | Documento obrigatório ausente |
+| `400` | `database_error` | Falha ao salvar o novo usuário |
 | `409` | `phone_taken` | Telefone já cadastrado |
 | `409` | `document_taken` | Documento já cadastrado |
+| `400` | `signup_failed` | Falha de cadastro (e-mail/senha inválidos, captcha ou erro genérico) |
 | `429` | `signup_failed` | Muitas tentativas (rate limit) |
+| `502` | `signup_failed` | Falha ao enviar o e-mail de confirmação |
+| `503` | `signup_failed` | Novos cadastros temporariamente indisponíveis |
 
 > O e-mail duplicado **não** gera erro — retorna `200 confirmation_required` (anti-enumeração).
 
@@ -679,7 +704,7 @@ Retorna os dados públicos de uma empresa **e as perguntas do escopo** para mont
 | `collection_point` | `string` | ID do ponto de coleta (resolve o escopo/item) |
 | `catalog_item` | `string` | ID do item de catálogo (alternativa ao ponto de coleta) |
 
-> Quando o item de catálogo tem menos de 3 perguntas ativas, o backend faz fallback automático para as perguntas do escopo `COMPANY`.
+> O backend retorna **exatamente** as perguntas ativas configuradas para o escopo resolvido (0 a 3) — **nunca** faz fallback para o escopo `COMPANY`. Quando não há perguntas ativas, `questions` vem vazio (o formulário exibe apenas nota + mensagem).
 
 **Response 200**
 ```json
@@ -739,7 +764,7 @@ Submete um feedback via formulário público. Não requer autenticação. O `dev
 | `channel` | `"QRCODE"` | Sim | literal |
 | `rating` | `number` | Sim | inteiro de 1 a 5 |
 | `message` | `string` | Sim | 3 a 5000 caracteres |
-| `answers` | `array` | Sim | **exatamente 3**; `answer_value` ∈ `PESSIMO\|RUIM\|MEDIANA\|BOA\|OTIMA` |
+| `answers` | `array` | Sim | contagem variável (0 a 3), igual ao número de perguntas ativas do escopo; `answer_value` ∈ `PESSIMO\|RUIM\|MEDIANA\|BOA\|OTIMA` |
 | `subanswers` | `array` | Não | deve cobrir **todas** as subperguntas ativas (máx. 9) |
 | `collection_point_id` / `catalog_item_id` | `string (UUID)` | Não | resolvem o escopo |
 | `customer_*` | vários | Não | dados opcionais de quem respondeu |
@@ -764,8 +789,8 @@ Submete um feedback via formulário público. Não requer autenticação. O `dev
 | Sintoma | Causa Provável | O Que Verificar |
 |---|---|---|
 | `401` em qualquer endpoint protegido | JWT expirado ou ausente | Faça login novamente; verifique o header `Authorization` |
-| `422 collecting_data_required` | Empresa sem dados de contexto | Preencha Objetivo e Resumo em Configurações da empresa |
+| `422 collecting_data_required` | Empresa sem dados de contexto | Preencha os três campos obrigatórios (`company_objective`, `analytics_goal` e `business_summary`) em Configurações da empresa |
 | `422 insufficient_feedbacks_for_analysis` | Base de feedbacks pequena | Colete pelo menos 10 feedbacks antes de analisar |
-| `502` nos endpoints de IA | Serviço `ia-analyze` offline ou provedor LLM com erro | Verifique se o serviço `ia-analyze` está rodando e se `GEMINI_API_KEY` está configurado |
+| `502` nos endpoints de IA | Serviço `ia-analyze` offline ou provedor LLM com erro | Verifique se o serviço `ia-analyze` está rodando e se `IA_ANALYZE_REMOTE_URL` / `IA_ANALYZE_REMOTE_TOKEN` estão configurados no gateway (a `GEMINI_API_KEY` é do serviço `ia-analyze`, não do gateway) |
 | `409` no POST público | Fingerprint já registrado hoje neste ponto de coleta | Aguarde até o próximo dia ou use outro ponto de coleta |
 | `403` no POST público | Dispositivo permanentemente bloqueado | Dispositivo marcado como `is_blocked` — requer intervenção manual |

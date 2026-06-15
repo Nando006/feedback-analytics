@@ -51,7 +51,7 @@ O que define se um teste é classificado como **Unidade** ou **Integração** é
 
 ## 1. Testes de Unidade (`Unit Tests`)
 
-> **Total: 104 testes em 18 arquivos**
+> **Total: 106 testes em 18 arquivos**
 >
 > Validam funções de utilidade pura, parsers, validadores locais e componentes de página e layout isolados (com seus componentes filhos mockados).
 
@@ -60,7 +60,7 @@ O que define se um teste é classificado como **Unidade** ou **Integração** é
 | [userLayout.test.tsx](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/layouts/tests/userLayout.test.tsx) | Valida a renderização e interatividade estrutural do layout base do gestor (`UserLayout`), incluindo menus de navegação lateral (Sidebar), recolhimento/colapso do menu, links e cabeçalhos contextuais. | **19** |
 | [truncateText.test.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/src/lib/utils/tests/truncateText.test.ts) | Garante o truncamento correto de strings longas, adicionando reticências (`...`) baseadas no limite de caracteres especificado, cobrindo cenários com valores nulos ou curtos. | **11** |
 | [formtPhone.test.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/src/lib/utils/tests/formtPhone.test.ts) | Valida a formatação estática de números de telefone comerciais no padrão brasileiro (`(DD) XXXXX-XXXX` ou `(DD) XXXX-XXXX`) para exibição visual estática. | **10** |
-| [publicQrFeedbackValidation.test.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/src/lib/utils/tests/publicQrFeedbackValidation.test.ts) | Testa as validações de payload no lado do cliente antes do envio do formulário de feedback do QR Code (ausência de dados essenciais, notas zeradas, etc.). | **8** |
+| [publicQrFeedbackValidation.test.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/src/lib/utils/tests/publicQrFeedbackValidation.test.ts) | Testa as validações de payload no lado do cliente antes do envio do formulário de feedback do QR Code (ausência de dados essenciais, notas zeradas, etc.). | **10** |
 | [register.test.tsx](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/pages/tests/register.test.tsx) | Valida a renderização e o comportamento isolado da página de criação de conta (Registro do Gestor), incluindo campos de entrada de dados, regras de botões e links. | **8** |
 | [login.test.tsx](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/pages/tests/login.test.tsx) | Valida o comportamento e a estrutura da página de login do gestor, garantindo a exibição de títulos, links de termos de uso e a renderização do formulário. | **7** |
 | [profile.test.tsx](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/pages/tests/profile.test.tsx) | Testa a renderização da página de gerenciamento de dados do perfil do gestor, validando a integridade dos inputs de texto estruturados. | **7** |
@@ -95,9 +95,9 @@ O que define se um teste é classificado como **Unidade** ou **Integração** é
 
 ## 3. Testes Fim a Fim (`E2E Tests — Playwright`)
 
-> **Total: 28 testes em 11 arquivos**
+> **Total: 27 testes em 11 specs** (mais o `auth.setup.ts`, que é fixture de setup e não conta como caso de teste)
 >
-> Executados no navegador Chrome real via Playwright. Simulam a experiência ponta a ponta do usuário, cobrindo os fluxos principais dos 12 Casos de Uso (UC) homologados no projeto.
+> Executados no navegador Chrome real via Playwright. Simulam a experiência ponta a ponta do usuário, cobrindo os fluxos principais de 11 Casos de Uso (UC-01, UC-02 e UC-04 a UC-12). O UC-03 (recuperação de senha) não possui spec E2E.
 
 > [!NOTE]
 > Por padrão, os testes E2E executam apontando para o ambiente de desenvolvimento local (`http://localhost:5173`) configurado em `apps/web/.env`. Para rodá-los:

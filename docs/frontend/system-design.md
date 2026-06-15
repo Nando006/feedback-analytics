@@ -71,7 +71,7 @@ No roteador raiz (`src/routes/source.tsx`), o `errorElement` captura qualquer er
 O `ErrorPage` global está em `components/globals/handling/errorPage.tsx`.  
 A área logada tem sua própria versão em `components/user/shared/handling/errorPage.tsx`.
 
-> **Pendente:** o componente `ErrorPage` global está como placeholder (`return <></>`). A tela de feedback amigável para o usuário ainda precisa ser implementada.
+> **Pendente:** ambos os componentes `ErrorPage` (o global e o da área logada) estão como placeholders vazios (`return <></>`). A tela de feedback amigável para o usuário ainda precisa ser implementada.
 
 ---
 

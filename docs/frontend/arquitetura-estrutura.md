@@ -44,9 +44,9 @@ graph TD
 
 ### O que isso significa na prática ?
 
-- **Para ler (Loaders):** Quando o usuário acessa `insights`, o `loader` pede os dados, chamando o `serviceFeedbacks.getInsights()`. O **Service** anexa o JWT, faz o GET no Gateway, trata possíveis erros HTTP e devolve o JSON limpo para o `loader`. O `loader` entrega para a tela via `useRouteLoaderData()`.
+- **Para ler (Loaders):** Quando o usuário acessa `insights`, o `loader` pede os dados, chamando o `serviceFeedbacks.ServiceGetFeedbackInsightsReport()`. O **Service** anexa o JWT, faz o GET no Gateway, trata possíveis erros HTTP e devolve o JSON limpo para o `loader`. O `loader` entrega para a tela via `useRouteLoaderData()`.
 
-- **Para escrever (Actions):** O usuário preenche um `<Form>` e submete. A `action` extrai os dados do formulário e repassa para o `serviceEnterprise.updateSettings(dados)`. O **Service** faz o POST/PATCH. A `action` apenas recebe a confirmação e avisa a tela.
+- **Para escrever (Actions):** O usuário preenche um `<Form>` e submete. A `action` extrai os dados do formulário e repassa para o `serviceEnterprise.ServiceUpdateCollectingDataEnterprise(dados)`. O **Service** faz o POST/PATCH. A `action` apenas recebe a confirmação e avisa a tela.
 
 ## As 4 Camadas do Sistema
 Para manter o código fácil de dar manutenção, separamos as responsabilidades:
@@ -91,7 +91,7 @@ apps/web/
 │   ├── public/                 → Componentes da área pública
 │   │   ├── forms/              → Formulários (login, register, qrcode, forgot/reset password)
 │   │   ├── layout/             → Header público
-│   │   ├── qrcode/             → Estados do formulário QR Code (loading, error, submitted…)
+│   │   ├── qrcode/enterprise/  → Estados do formulário QR Code (loading, error, submitted…)
 │   │   └── shared/             → Peças comuns da área pública
 │   └── user/
 │       ├── layout/             → Estrutura base autenticada (Menu, Sidebar, Header)

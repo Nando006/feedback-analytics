@@ -41,12 +41,13 @@
 
 ## Base para Teste E2E
 
-> Os testes E2E já estão implementados no Playwright ([uc-08-configuracao-coleta-ia.spec.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/e2e/uc-08-configuracao-coleta-ia.spec.ts)).
-> Cada cenário abaixo possui a sua respectiva classificação e estratégia de execução mapeada no [Plano de Teste Estratégico](../testes/plano-estrategico.md).
+> Os testes E2E estão implementados no Playwright ([uc-08-configuracao-coleta-ia.spec.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/e2e/uc-08-configuracao-coleta-ia.spec.ts)). O spec contém um smoke de carregamento e dois testes de salvamento condicionais (com `test.skip()` quando o campo correspondente não está visível). Cada cenário abaixo possui a sua respectiva classificação e estratégia de execução mapeada no [Plano de Teste Estratégico](../testes/plano-estrategico.md).
 
 **Cenários a cobrir:**
 
-- **[CT-UC08-01]** ✅ *Coberto E2E* - Caminho feliz: gestor preenche os três campos (objetivo, objetivo analítico, resumo), salva e recebe toast de confirmação de sucesso.
-- **[CT-UC08-02]** 🔵 *Unidade já atende* - Caminho feliz — campos em branco: salvar com todos os campos vazios deve retornar sucesso sem exibir erro — campos vazios são permitidos.
-- **[CT-UC08-03]** 🟠 *Integração já atende* - Caminho feliz — atualização parcial: gestor edita apenas o resumo do negócio, salva e confirma que os demais campos permanecem inalterados.
-- **[CT-UC08-04]** ❌ *Cenário não coberto* - Exceção — erro ao salvar: simular falha de rede deve exibir toast de erro sem alterar os dados do formulário.
+- **[CT-UC08-01]** ✅ *Coberto E2E (smoke)* - Carregamento: a página de configuração de coleta carrega com o formulário visível. (Spec: `[CT-UC08-01] Página de configuração de coleta carrega com formulário visível`.)
+- **[CT-UC08-02]** ✅ *Coberto E2E (skip condicional)* - Caminho feliz — salvar objetivo: gestor preenche o objetivo da empresa, salva e recebe confirmação de sucesso. Contém `test.skip()` quando o campo de objetivo não está visível. (Spec: `[CT-UC08-02] Salvar objetivo da empresa persiste e exibe confirmação`.)
+- **[CT-UC08-03]** 🔵 *Unidade já atende* - Caminho feliz — campos em branco: salvar com todos os campos vazios deve retornar sucesso sem exibir erro — campos vazios são permitidos.
+- **[CT-UC08-04]** ✅ *Coberto E2E (skip condicional)* - Caminho feliz — salvar resumo do negócio: gestor preenche o resumo do negócio, salva e recebe confirmação de sucesso. Contém `test.skip()` quando o campo de resumo não está visível. (Spec: `[CT-UC08-04] Resumo do negócio pode ser preenchido e salvo`.)
+- **[CT-UC08-05]** 🟠 *Integração já atende* - Caminho feliz — atualização parcial: gestor edita apenas o resumo do negócio, salva e confirma que os demais campos permanecem inalterados.
+- **[CT-UC08-06]** ❌ *Cenário não coberto* - Exceção — erro ao salvar: simular falha de rede deve exibir toast de erro sem alterar os dados do formulário.

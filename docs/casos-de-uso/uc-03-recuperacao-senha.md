@@ -42,12 +42,11 @@
 
 ## Base para Teste E2E
 
-> O arquivo de testes E2E do Playwright para este UC foi removido devido à necessidade de recebimento de e-mail em tempo real e restrições de rate limit de e-mail do Supabase em testes automatizados.
-> Cada cenário abaixo possui a sua respectiva classificação e estratégia de execução mapeada no [Plano de Teste Estratégico](../testes/plano-estrategico.md).
+> **Este UC não possui cobertura E2E no Playwright.** Não existe arquivo `uc-03-*.spec.ts` em `apps/web/e2e/` — o fluxo depende de recebimento de e-mail em tempo real e esbarra no rate limit de e-mail do Supabase em testes automatizados. Os cenários abaixo descrevem o comportamento esperado e a estratégia de cobertura por outros meios (unidade/manual), mapeada no [Plano de Teste Estratégico](../testes/plano-estrategico.md).
 
 **Cenários a cobrir:**
 
-- **[CT-UC03-01]** ⚠️ *Skipped Intencional* - Caminho feliz: gestor informa e-mail válido, recebe link, acessa a tela de redefinição, define nova senha e consegue fazer login com ela.
-- **[CT-UC03-02]** ⚠️ *Skipped Intencional* - Exceção — e-mail inexistente: informar e-mail não cadastrado deve exibir a mesma mensagem genérica de sucesso (sem revelar que não existe).
+- **[CT-UC03-01]** 📝 *Planejado / não implementado* - Caminho feliz: gestor informa e-mail válido, recebe link, acessa a tela de redefinição, define nova senha e consegue fazer login com ela. Sem cobertura E2E (depende de e-mail real).
+- **[CT-UC03-02]** 📝 *Planejado / não implementado* - Exceção — e-mail inexistente: informar e-mail não cadastrado deve exibir a mesma mensagem genérica de sucesso (sem revelar que não existe). Sem cobertura E2E.
 - **[CT-UC03-03]** ❌ *Cenário não coberto* - Exceção — link expirado: acessar link de redefinição já expirado deve exibir mensagem de link inválido com orientação.
 - **[CT-UC03-04]** 🔵 *Unidade já atende* - Exceção — senhas divergentes: digitar senhas diferentes nos dois campos deve bloquear o envio com mensagem de inconsistência.

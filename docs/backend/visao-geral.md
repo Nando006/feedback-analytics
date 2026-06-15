@@ -7,7 +7,7 @@ O `api-gateway` é o **Backend-for-Frontend (BFF)** do sistema. Ele é o único 
 ## Por Que Existe
 
 Centralizar o backend permite:
-- **Autenticação uniforme** — um único middleware valida o JWT Supabase para todos os endpoints
+- **Autenticação uniforme** — um único middleware valida a sessão Supabase (cookie HttpOnly) para todos os endpoints
 - **Isolamento do banco** — as queries ficam no backend; o frontend não precisa de acesso direto ao Supabase
 - **Orquestração da IA** — o Gateway prepara os dados, chama o `ia-analyze` e persiste os resultados sem expor a complexidade ao cliente
 
@@ -26,7 +26,7 @@ backends/api-gateway/
 
 ## Endpoints Disponíveis
 
-### Protegidos (JWT obrigatório)
+### Protegidos (sessão via cookie HttpOnly)
 
 | Método | Caminho | Descrição |
 |---|---|---|

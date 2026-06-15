@@ -20,6 +20,7 @@ Exemplos implementados:
 |---|---|
 | Dashboard | `DashboardSkeleton` |
 | Feedbacks | `FeedbacksAllSkeleton` |
+| Detalhe de feedback (`/user/feedbacks/:id`) | `FeedbackDetailsSkeleton` |
 | Insights (Report) | `InsightsReportSkeleton` |
 | Insights (Emocional) | `InsightsEmotionalSkeleton` |
 | Insights (Estatísticas) | `InsightsStatisticsSkeleton` |

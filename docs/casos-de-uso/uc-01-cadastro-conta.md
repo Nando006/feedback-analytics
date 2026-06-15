@@ -42,9 +42,10 @@
 
 **Cenários a cobrir:**
 
-- **[CT-UC01-01]** ⚠️ *Skipped Intencional* - Caminho feliz: preencher todos os campos válidos, enviar, receber e-mail de confirmação e ativar a conta pelo link.
-- **[CT-UC01-02]** ✅ *Coberto E2E* - Exceção — e-mail duplicado: tentar cadastrar com e-mail já existente deve seguir para a tela de sucesso normalmente, sem revelar que o e-mail já está em uso. O e-mail de confirmação não chegará e a tela de sucesso deve exibir orientação para esse caso.
-- **[CT-UC01-03]** 🔵 *Unidade já atende* - Exceção — documento inválido: inserir CPF ou CNPJ inválido (que não passa no cálculo matemático) deve bloquear o envio.
-- **[CT-UC01-04]** 🔵 *Unidade já atende* - Exceção — telefone inválido: inserir telefone fora do padrão BR deve bloquear o campo.
-- **[CT-UC01-05]** 🔵 *Unidade já atende* - Exceção — termos não aceitos: tentar enviar sem marcar os termos deve impedir o cadastro.
-- **[CT-UC01-06]** ❌ *Cenário não coberto* - Exceção — reenvio de e-mail: solicitar reenvio do e-mail de confirmação deve funcionar e exibir confirmação de envio.
+- **[CT-UC01-01]** 📝 *Planejado / não implementado* - Caminho feliz: preencher todos os campos válidos, enviar, receber e-mail de confirmação e ativar a conta pelo link. Não há teste E2E correspondente no spec (depende de recebimento de e-mail real).
+- **[CT-UC01-02]** ✅ *Coberto E2E* - Exceção — e-mail duplicado (prevenção de enumeração): tentar cadastrar com e-mail já existente deve **seguir para a tela de sucesso** normalmente, sem revelar que o e-mail já está em uso. (Spec: `[CT-UC01-02] Segue para a tela de sucesso ao tentar cadastrar com e-mail já existente`.)
+- **[CT-UC01-03]** ✅ *Coberto E2E* - Exceção — documento já cadastrado: tentar cadastrar com um CPF/CNPJ já existente na base deve exibir mensagem de erro de documento duplicado. (Spec: `[CT-UC01-03] Exibe erro ao tentar cadastrar com documento já existente`.)
+- **[CT-UC01-04]** 🔵 *Unidade já atende* - Exceção — documento inválido: inserir CPF ou CNPJ inválido (que não passa no cálculo matemático) deve bloquear o envio.
+- **[CT-UC01-05]** 🔵 *Unidade já atende* - Exceção — telefone inválido: inserir telefone fora do padrão BR deve bloquear o campo.
+- **[CT-UC01-06]** 🔵 *Unidade já atende* - Exceção — termos não aceitos: tentar enviar sem marcar os termos deve impedir o cadastro.
+- **[CT-UC01-07]** ❌ *Cenário não coberto* - Exceção — reenvio de e-mail: solicitar reenvio do e-mail de confirmação deve funcionar e exibir confirmação de envio.

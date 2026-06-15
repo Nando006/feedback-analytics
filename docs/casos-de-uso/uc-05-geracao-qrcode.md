@@ -35,14 +35,14 @@
 
 ## Base para Teste E2E
 
-> Os testes E2E já estão implementados no Playwright ([uc-05-geracao-qrcode.spec.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/e2e/uc-05-geracao-qrcode.spec.ts)).
-> Cada cenário abaixo possui a sua respectiva classificação e estratégia de execução mapeada no [Plano de Teste Estratégico](../testes/plano-estrategico.md).
+> **O E2E atual deste UC é apenas um smoke test de carregamento de página** ([uc-05-geracao-qrcode.spec.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/e2e/uc-05-geracao-qrcode.spec.ts)): verifica que a página `/user/qrcode/enterprise` carrega e exibe o QR Code ou o botão de controle. Os fluxos de **ação** (ativar/desativar, download, copiar link, compartilhar) **não estão cobertos por E2E**. Cada cenário abaixo possui a sua respectiva classificação e estratégia de execução mapeada no [Plano de Teste Estratégico](../testes/plano-estrategico.md).
 
 **Cenários a cobrir:**
 
-- **[CT-UC05-01]** ✅ *Coberto E2E* - Caminho feliz — ativar/desativar: gestor clica no botão de controle, deve exibir toast de confirmação e o estado visual do QR Code deve refletir a mudança imediatamente.
-- **[CT-UC05-02]** 🚫 *Não é possível testar com Playwright* - Caminho feliz — download: gestor clica em "Download", deve disparar o download de um arquivo `.png` com o nome da empresa no título.
-- **[CT-UC05-03]** ⚠️ *Skipped Intencional* - Caminho feliz — copiar link: gestor clica em "Copiar link", deve copiar a URL correta para a área de transferência e exibir o indicador visual de cópia por 2 segundos.
-- **[CT-UC05-04]** 🚫 *Não é possível testar com Playwright* - Caminho feliz — compartilhar: em ambiente com `navigator.share` disponível, clicar em "Compartilhar" deve invocar a API nativa com os dados corretos.
-- **[CT-UC05-05]** ⚠️ *Skipped Intencional* - Exceção — share API indisponível: em ambiente sem `navigator.share`, clicar em "Compartilhar" deve copiar o link para a área de transferência automaticamente.
-- **[CT-UC05-06]** ⚠️ *Skipped Intencional* - Exceção — QR desativado: acessar o link de formulário de uma empresa com QR Code desativado deve exibir tela de erro no formulário público.
+- **[CT-UC05-01]** ✅ *Coberto E2E (smoke)* - Carregamento: a página do QR Code carrega com os dados da empresa, exibindo o QR Code (canvas/img/svg) ou o botão de ativar/desativar. (Spec: `[CT-UC05-01] Página do QR Code carrega com dados da empresa`.) **Não** cobre o clique de ativar/desativar.
+- **[CT-UC05-02]** 📝 *Planejado / não implementado* - Caminho feliz — ativar/desativar: gestor clica no botão de controle, deve exibir toast de confirmação e o estado visual do QR Code deve refletir a mudança imediatamente.
+- **[CT-UC05-03]** 🚫 *Não é possível testar com Playwright* - Caminho feliz — download: gestor clica em "Download", deve disparar o download de um arquivo `.png` com o nome da empresa no título.
+- **[CT-UC05-04]** 📝 *Planejado / não implementado* - Caminho feliz — copiar link: gestor clica em "Copiar link", deve copiar a URL correta para a área de transferência e exibir o indicador visual de cópia por 2 segundos.
+- **[CT-UC05-05]** 🚫 *Não é possível testar com Playwright* - Caminho feliz — compartilhar: em ambiente com `navigator.share` disponível, clicar em "Compartilhar" deve invocar a API nativa com os dados corretos.
+- **[CT-UC05-06]** 📝 *Planejado / não implementado* - Exceção — share API indisponível: em ambiente sem `navigator.share`, clicar em "Compartilhar" deve copiar o link para a área de transferência automaticamente.
+- **[CT-UC05-07]** 📝 *Planejado / não implementado* - Exceção — QR desativado: acessar o link de formulário de uma empresa com QR Code desativado deve exibir tela de erro no formulário público.

@@ -14,8 +14,6 @@ Estes cenários foram desativados nos testes E2E do Playwright (`test.skip(true,
 | :--- | :--- | :--- | :--- |
 | **[CT-UC01-01]** | Confirmação de e-mail ao criar conta | [uc-01-cadastro-conta.spec.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/e2e/uc-01-cadastro-conta.spec.ts) | Exige acessar uma caixa de e-mails real para clicar no link de validação. |
 | **[CT-UC02-04]** | Login com conta criada mas pendente de confirmação | [uc-02-login.spec.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/e2e/uc-02-login.spec.ts) | Requer manter uma conta no banco de dados fixamente com e-mail não verificado. |
-| **[CT-UC03-01]** | Envio de link de recuperação para e-mail válido | [uc-03-recuperacao-senha.spec.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/e2e/uc-03-recuperacao-senha.spec.ts) | Requer validação manual na caixa de entrada do e-mail de destino. |
-| **[CT-UC03-02]** | Exibição de toast de sucesso de recuperação de senha | [uc-03-recuperacao-senha.spec.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/e2e/uc-03-recuperacao-senha.spec.ts) | O envio repetido dispara o rate-limit do Supabase Auth e quebra testes automatizados sequenciais. |
 | **[CT-UC11-05]** | Executar nova análise chamando a API de IA | [uc-11-insights-ia.spec.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/e2e/uc-11-insights-ia.spec.ts) | A requisição HTTP real para a API do Gemini foi interceptada e mockada para **não consumir créditos financeiros** da conta do projeto. |
 
 ---
@@ -46,6 +44,7 @@ Esta seção documenta a lista de cenários documentados na pasta `docs/casos-de
 *   **Mensagens de erro para campos em branco:** O formulário de login deve validar os campos obrigatórios inline no cliente sem fazer a requisição.
 
 ### [UC-03: Recuperação de Senha](file:///C:/Users/Fernando/Repositorios/feedback-analytics/docs/casos-de-uso/uc-03-recuperacao-senha.md)
+*   **Sem cobertura E2E:** O UC-03 não possui spec do Playwright (não há `uc-03-recuperacao-senha.spec.ts`). Os fluxos de envio de link de recuperação e de toast de sucesso (CT-UC03-01/02) dependem de caixa de e-mail real e de rate-limit do Supabase Auth, portanto não foram implementados como E2E.
 *   **Acesso via link expirado:** Não existe teste para a exibição da tela de erro ao tentar redefinir senha com token expirado.
 *   **Comparação de senhas divergentes:** Falta testar o bloqueio visual do formulário de redefinição se a confirmação de senha não bater com a nova senha digitada.
 

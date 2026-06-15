@@ -26,11 +26,11 @@ Cliente submete o formulário
 API Gateway calcula o fingerprint do dispositivo:
   MD5(User-Agent + IP do cliente + época do dia atual)
         ↓
-Verifica na tabela tracked_devices se esse fingerprint
+Verifica na tabela feedback se esse dispositivo (tracked_device_id)
 já enviou feedback para esse collection_point_id hoje
         ↓
   ┌── Já enviou → retorna HTTP 409 Conflict
-  │              (mensagem: device_already_submitted)
+  │              (mensagem: DEVICE_ALREADY_SUBMITTED)
   │
   └── Ainda não enviou → prossegue com a submissão
         ↓
@@ -80,7 +80,7 @@ Dispositivos marcados com `is_blocked = true` na tabela `tracked_devices` são p
 
 - O fingerprint é calculado via `MD5(userAgent | clientIP | dayEpoch)` — muda a cada dia automaticamente
 - O cálculo do MD5 é feito na **própria aplicação** (API Gateway, com o `crypto` do Node), assim como a verificação do limite diário. Existe uma função equivalente no banco — `generate_device_fingerprint` (e também `can_device_send_feedback` / `register_device_feedback`) — porém ela **não é invocada** pelo fluxo atual
-- A tabela `tracked_devices` armazena: fingerprint, collection_point_id, data de envio, `is_blocked`
+- A tabela `tracked_devices` armazena o dispositivo: fingerprint, `is_blocked`/`blocked_*`, `feedback_count` e datas (`last_feedback_at`, `created_at`) — **não** possui `collection_point_id`. O vínculo por ponto de coleta/dia é consultado na tabela `feedback` (filtrando por `tracked_device_id` + `collection_point_id` + `created_at` do dia)
 - O bloqueio diário (409) é por `collection_point_id` — o mesmo dispositivo em pontos diferentes passa normalmente
 - O bloqueio permanente (403) é absoluto — bloqueia qualquer submissão daquele dispositivo
 

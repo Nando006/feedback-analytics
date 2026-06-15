@@ -4,9 +4,9 @@
 
 No momento em que uma empresa conclui o cadastro, um **trigger no banco de dados** cria automaticamente 3 perguntas institucionais base:
 
-1. **Atendimento** — Como foi o atendimento recebido?
-2. **Qualidade** — Como você avalia a qualidade?
-3. **Custo-Benefício** — Como você avalia o custo-benefício?
+1. **Atendimento** — Como foi sua experiência em relação ao atendimento?
+2. **Qualidade** — O que você achou da qualidade do produto/serviço?
+3. **Custo-Benefício** — Como você avalia a relação entre o valor pago e a qualidade do produto/serviço?
 
 Essas perguntas ficam vinculadas ao QR Code geral da empresa e permitem que o gestor comece a coletar feedbacks **imediatamente após o cadastro**, sem precisar configurar nada antes.
 
@@ -44,9 +44,9 @@ Empresa finaliza o cadastro (Supabase auth.signUp)
 Trigger no banco dispara automaticamente
         ↓
 Função cria 3 perguntas base vinculadas à empresa:
-  - "Como foi o atendimento recebido?"
-  - "Como você avalia a qualidade?"
-  - "Como você avalia o custo-benefício?"
+  - "Como foi sua experiência em relação ao atendimento?"
+  - "O que você achou da qualidade do produto/serviço?"
+  - "Como você avalia a relação entre o valor pago e a qualidade do produto/serviço?"
         ↓
 Perguntas ficam associadas ao QR Code geral da empresa
         ↓
@@ -74,8 +74,8 @@ Tudo isso acontece **de forma invisível**, sem nenhuma intervenção manual do 
 - O trigger é executado no banco de dados (PostgreSQL/Supabase) logo após a inserção do registro da empresa
 - As 3 perguntas são criadas com status `ACTIVE` e vinculadas ao `enterprise_id` recém-criado
 - As perguntas base não são fixas ou imutáveis — o gestor pode editá-las, desativá-las ou adicionar novas
-- O sistema exige exatamente 3 perguntas ativas por ponto de coleta; as perguntas do onboarding satisfazem esse requisito de imediato
-- Itens de catálogo criados posteriormente herdam as perguntas da empresa se não tiverem perguntas próprias configuradas
+- O sistema aceita uma contagem variável de 0 a 3 perguntas ativas por ponto de coleta; as 3 perguntas do onboarding já deixam o escopo COMPANY pronto para uso de imediato
+- Itens de catálogo criados posteriormente não herdam as perguntas da empresa: a contagem é variável (0 a 3) e, sem perguntas próprias, o formulário daquele item exibe apenas nota + mensagem
 
 ---
 
