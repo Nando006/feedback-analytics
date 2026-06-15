@@ -7,7 +7,7 @@ export const menuData: MenuItem[] = [
     children: [
       { label: "Recebidos", to: "/user/feedbacks/all" },
       {
-        label: "Análises",
+        label: "Analisados",
         children: [
           { label: "Todos", to: "/user/feedbacks/analytics/all" },
           { label: "Positivos", to: "/user/feedbacks/analytics/positive" },

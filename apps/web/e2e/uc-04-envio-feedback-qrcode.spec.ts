@@ -26,7 +26,7 @@ test.describe('UC-04: Envio de feedback via QR Code', () => {
       await stars.nth(4).click();
     }
 
-    // 2. Botões Likert por questão (Ótima) — filter por texto exato
+    // 2. Botões Likert por questão e subperguntas (Ótima) — todos já renderizados.
     const otimaBtns = page.locator('button').filter({ hasText: 'Ótima' });
     const otimaCount = await otimaBtns.count();
     for (let i = 0; i < otimaCount; i++) {

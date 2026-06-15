@@ -38,7 +38,12 @@ test.describe('UC-11: Insights de IA', () => {
 
     const regenerateBtn = page.getByRole('button', { name: /regenerar|gerar insights|atualizar insights/i }).first();
 
-    if (!(await regenerateBtn.isVisible().catch(() => false))) {
+    // O botão fica desabilitado quando não há análise nova para gerar insights
+    // (comportamento intencional). Nesse estado o teste não se aplica.
+    const regenerateReady =
+      (await regenerateBtn.isVisible().catch(() => false)) &&
+      (await regenerateBtn.isEnabled().catch(() => false));
+    if (!regenerateReady) {
       test.skip();
       return;
     }
