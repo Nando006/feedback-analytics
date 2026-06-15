@@ -23,8 +23,8 @@ const SECTION_FEEDBACKS = 'Feedbacks';
 const SECTION_INSIGHTS = 'Insights';
 
 const CATALOG_CRUMB: RouteCrumb = {
-  label: 'Catálogo & perguntas',
-  to: '/user/edit/feedback-settings',
+  label: 'Catálogo',
+  to: '/user/edit/types-feedback',
 };
 
 const ROUTE_META: Record<string, RouteMeta> = {
@@ -75,34 +75,34 @@ const ROUTE_META: Record<string, RouteMeta> = {
 
   // Configuração da coleta
   '/user/edit/types-feedback': {
-    title: 'Tipos de coleta',
-    description: 'Ative produtos, serviços e/ou departamentos para coletar feedback.',
-    breadcrumb: [{ label: SECTION_CONFIG }, { label: 'Tipos de coleta' }],
+    title: 'Catálogo',
+    description: 'Ative produtos, serviços e/ou departamentos e configure o catálogo de cada um.',
+    breadcrumb: [{ label: SECTION_CONFIG }, { label: 'Catálogo' }],
   },
-  '/user/edit/feedback-settings': {
-    title: 'Catálogo & perguntas',
-    description: 'Gerencie os itens do catálogo e as perguntas de cada um.',
-    breadcrumb: [{ label: SECTION_CONFIG }, { label: 'Catálogo & perguntas' }],
+  '/user/edit/collecting-data-enterprise': {
+    title: 'Dados da empresa',
+    description: 'Contexto do seu negócio usado pela IA para analisar os feedbacks.',
+    breadcrumb: [{ label: SECTION_CONFIG }, { label: 'Dados da empresa' }],
   },
   '/user/edit/feedback-products': {
     title: 'Catálogo de Produtos',
-    description: 'Gerencie os produtos e configure as perguntas por item.',
+    description: 'Liste os produtos e abra cada um para configurar perguntas e QR Code.',
     breadcrumb: [{ label: SECTION_CONFIG }, CATALOG_CRUMB, { label: 'Produtos' }],
   },
   '/user/edit/feedback-services': {
     title: 'Catálogo de Serviços',
-    description: 'Gerencie os serviços e configure as perguntas por item.',
+    description: 'Liste os serviços e abra cada um para configurar perguntas e QR Code.',
     breadcrumb: [{ label: SECTION_CONFIG }, CATALOG_CRUMB, { label: 'Serviços' }],
   },
   '/user/edit/feedback-departments': {
     title: 'Catálogo de Departamentos',
-    description: 'Gerencie os departamentos e configure as perguntas por área.',
+    description: 'Liste os departamentos e abra cada um para configurar perguntas e QR Code.',
     breadcrumb: [{ label: SECTION_CONFIG }, CATALOG_CRUMB, { label: 'Departamentos' }],
   },
-  '/user/qrcode/enterprise': {
-    title: 'QR Codes',
-    description: 'Acesse, baixe e compartilhe o QR Code da sua empresa.',
-    breadcrumb: [{ label: SECTION_CONFIG }, { label: 'QR Codes' }],
+  '/user/edit/feedback-general': {
+    title: 'Feedback geral',
+    description: 'Perguntas e QR Code do feedback enviado direto para a empresa (sem catálogo).',
+    breadcrumb: [{ label: SECTION_CONFIG }, { label: 'Feedback geral' }],
   },
 
   // Clientes

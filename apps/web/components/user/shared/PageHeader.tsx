@@ -10,13 +10,13 @@ import type { PageHeaderProps } from './ui.types';
  * — em oposição ao header antigo, que mostrava o nome da empresa como título.
  * Título, descrição e trilha vêm do `routeMeta`; podem ser sobrescritos por prop.
  */
-export default function PageHeader({ title, description, actions }: PageHeaderProps) {
+export default function PageHeader({ title, description, breadcrumb, actions }: PageHeaderProps) {
   const { pathname } = useLocation();
   const meta = getRouteMeta(pathname);
 
   const resolvedTitle = title ?? meta.title;
   const resolvedDescription = description ?? meta.description;
-  const crumbs = meta.breadcrumb;
+  const crumbs = breadcrumb ?? meta.breadcrumb;
 
   return (
     <header className="font-work-sans mb-6 border-b border-(--quaternary-color)/12 pb-4">

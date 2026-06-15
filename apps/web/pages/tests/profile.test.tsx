@@ -36,14 +36,6 @@ vi.mock('components/user/shared/PageHeader', () => ({
   default: () => <div data-testid="page-header">PageHeader</div>,
 }));
 
-vi.mock('components/user/pages/profile/editCollectingData/formCollectingDataEnterprise', () => ({
-  default: () => <div data-testid="form-collecting-data-enterprise">FormCollectingDataEnterprise</div>,
-}));
-
-vi.mock('components/user/pages/profile/questionsDinamic/questionDinamicEnterprise', () => ({
-  default: () => <div data-testid="question-dinamic-enterprise">QuestionDinamicEnterprise</div>,
-}));
-
 // Mock do useRouteLoaderData e useNavigation
 const mockUseRouteLoaderData = vi.mocked(useRouteLoaderData);
 const mockUseNavigation = vi.mocked(useNavigation);

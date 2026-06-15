@@ -8,17 +8,19 @@ const SectionQrHeader = memo(function SectionQrHeader({
   qrLoading,
   qrError,
   onToggleQr,
+  title = 'QR Code para Feedback',
+  subjectLabel = 'Empresa:',
 }: SectionQrHeaderProps) {
   return (
     <CardSimple type="header">
       <div>
-        <h1 className="mb-2 text-3xl font-bold text-(--text-primary)">QR Code para Feedback</h1>
+        <h1 className="mb-2 text-3xl font-bold text-(--text-primary)">{title}</h1>
         <p className="text-(--text-tertiary)">
           Gere e compartilhe seu QR Code personalizado para coletar feedback dos
           seus clientes
         </p>
         <div className="mt-2 text-sm text-(--text-tertiary)">
-          <span className="font-medium text-(--text-secondary)">Empresa:</span>{' '}
+          <span className="font-medium text-(--text-secondary)">{subjectLabel}</span>{' '}
           {enterpriseName || 'Sua Empresa'}
         </div>
 

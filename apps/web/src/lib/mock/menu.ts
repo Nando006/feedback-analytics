@@ -27,9 +27,9 @@ export const menuData: MenuItem[] = [
   {
     label: "Configuração da coleta",
     children: [
-      { label: "Tipos de coleta", to: "/user/edit/types-feedback" },
-      { label: "Catálogo & perguntas", to: "/user/edit/feedback-settings" },
-      { label: "QR Codes", to: "/user/qrcode/enterprise" },
+      { label: "Dados da empresa", to: "/user/edit/collecting-data-enterprise" },
+      { label: "Feedback geral", to: "/user/edit/feedback-general" },
+      { label: "Catálogo", to: "/user/edit/types-feedback" },
     ],
   },
   { label: "Clientes", to: "/user/edit/customers" },
