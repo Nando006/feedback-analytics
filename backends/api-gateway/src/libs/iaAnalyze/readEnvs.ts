@@ -13,9 +13,12 @@ const DEFAULT_REMOTE_TIMEOUT_MS = 110_000;
  *
  * Só é utilizada se a variável de ambiente IA_ANALYZE_REMOTE_PREVIEW_ALIAS_URL não estiver definida
  * e o ambiente Vercel for 'preview'.
+ *
+ * IMPORTANTE: deve corresponder ao alias fixo atribuído no workflow de deploy
+ * (.github/workflows/deploy-ia-analyze.yml -> "vercel alias set ... feedback-analytics-ia-homolog.vercel.app").
  */
 const DEFAULT_PREVIEW_IA_ANALYZE_ALIAS_URL =
-  'https://feedback-analytics-service-ia-analysis-homolog.vercel.app';
+  'https://feedback-analytics-ia-homolog.vercel.app';
 
 /**
  * Lê o modo de execução da análise IA a partir das variáveis de ambiente.
