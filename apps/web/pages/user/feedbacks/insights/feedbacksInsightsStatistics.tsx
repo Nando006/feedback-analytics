@@ -4,39 +4,45 @@ import InsightsStatisticsErrorState from 'components/user/pages/feedbacksInsight
 import InsightsStatisticsEmptyState from 'components/user/pages/feedbacksInsightsStatistics/InsightsStatisticsEmptyState';
 import InsightsStatisticsSentimentSection from 'components/user/pages/feedbacksInsightsStatistics/InsightsStatisticsSentimentSection';
 import InsightsStatisticsThemesSection from 'components/user/pages/feedbacksInsightsStatistics/InsightsStatisticsThemesSection';
+import PageHeader from 'components/user/shared/PageHeader';
+import { useScopedFeedbackAnalysis } from 'src/lib/hooks/useScopedFeedbackAnalysis';
 
 export default function FeedbacksInsightsStatistics() {
-  const { summary, error } =
+  const initialData =
     useLoaderData<Awaited<ReturnType<typeof LoaderFeedbacksInsightsStatistics>>>();
+  const { summary, error } = useScopedFeedbackAnalysis(initialData);
 
-  if (error) {
-    return <InsightsStatisticsErrorState error={error} />;
-  }
-
-  if (!summary || summary.totalAnalyzed === 0) {
-    return <InsightsStatisticsEmptyState />;
-  }
-
-  const total = summary.totalAnalyzed || 1;
-
+  const total = summary?.totalAnalyzed || 1;
   const positivePct = Math.round(
-    (summary.sentiments.positive / total) * 100,
+    ((summary?.sentiments.positive ?? 0) / total) * 100,
   );
-  const neutralPct = Math.round((summary.sentiments.neutral / total) * 100);
+  const neutralPct = Math.round(
+    ((summary?.sentiments.neutral ?? 0) / total) * 100,
+  );
   const negativePct = Math.round(
-    (summary.sentiments.negative / total) * 100,
+    ((summary?.sentiments.negative ?? 0) / total) * 100,
   );
 
   return (
     <div className="font-work-sans space-y-6">
-      <InsightsStatisticsSentimentSection
-        summary={summary}
-        positivePct={positivePct}
-        neutralPct={neutralPct}
-        negativePct={negativePct}
-      />
+      <PageHeader />
 
-      <InsightsStatisticsThemesSection summary={summary} />
+      {error ? (
+        <InsightsStatisticsErrorState error={error} />
+      ) : !summary || summary.totalAnalyzed === 0 ? (
+        <InsightsStatisticsEmptyState />
+      ) : (
+        <>
+          <InsightsStatisticsSentimentSection
+            summary={summary}
+            positivePct={positivePct}
+            neutralPct={neutralPct}
+            negativePct={negativePct}
+          />
+
+          <InsightsStatisticsThemesSection summary={summary} />
+        </>
+      )}
     </div>
   );
 }

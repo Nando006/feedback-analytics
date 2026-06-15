@@ -32,6 +32,6 @@ export const menuData: MenuItem[] = [
       { label: "Catálogo", to: "/user/edit/types-feedback" },
     ],
   },
-  { label: "Clientes", to: "/user/edit/customers" },
-  { label: "Perfil", to: "/user/profile" },
+  // { label: "Clientes", to: "/user/edit/customers" },
+  // { label: "Perfil", to: "/user/profile" },
 ];

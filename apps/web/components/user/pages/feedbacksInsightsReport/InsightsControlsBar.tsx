@@ -1,15 +1,12 @@
 import { useInsightsControls } from 'src/lib/context/insightsControls';
 import InsightsHeaderControls from './InsightsHeaderControls';
-import type { InsightScopeOption, InsightsControlsBarProps } from './ui.types';
+import type { InsightScopeOption } from './ui.types';
 
 /**
- * Versão conectada dos controles de Insights: lê o contexto e renderiza o
- * seletor de escopo (+ item) e, opcionalmente, os botões de análise.
- *
- * Vive DENTRO das telas que dependem de escopo (Insights e Dashboard), em vez
- * de no header global — onde apareciam mesmo em telas sem relação com insights.
+ * Versão conectada do seletor de escopo: lê o contexto e renderiza o seletor de
+ * escopo (+ item). As ações de IA (Analisar/Gerar) vivem no InsightsActionsPanel.
  */
-export default function InsightsControlsBar({ showActions = true }: InsightsControlsBarProps) {
+export default function InsightsControlsBar() {
   const {
     scope,
     setScope,
@@ -17,11 +14,6 @@ export default function InsightsControlsBar({ showActions = true }: InsightsCont
     setCatalogItemId,
     catalogItemOptions,
     availableScopes,
-    canAnalyze,
-    analyzeRaw,
-    regenerateInsights,
-    isAnalyzingRaw,
-    isRegeneratingInsights,
   } = useInsightsControls();
 
   const handleScopeChange = (next: InsightScopeOption) => {
@@ -36,18 +28,12 @@ export default function InsightsControlsBar({ showActions = true }: InsightsCont
 
   return (
     <InsightsHeaderControls
-      showActions={showActions}
-      refreshing={isRegeneratingInsights}
-      analyzingRaw={isAnalyzingRaw}
-      canAnalyze={canAnalyze}
       availableScopes={availableScopes}
       selectedScope={scope}
       selectedCatalogItemId={catalogItemId}
       catalogItemOptions={catalogItemOptions}
       onScopeChange={handleScopeChange}
       onCatalogItemChange={setCatalogItemId}
-      onRefreshSelected={regenerateInsights}
-      onAnalyzeRaw={analyzeRaw}
     />
   );
 }

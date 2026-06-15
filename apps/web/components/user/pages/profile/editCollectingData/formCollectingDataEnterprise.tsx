@@ -174,6 +174,7 @@ export default function FormCollectingDataEnterprise() {
 
           {isLast ? (
             <button
+              key="save"
               type="submit"
               className="btn-primary font-poppins px-8 py-2.5 text-sm"
             >
@@ -181,6 +182,7 @@ export default function FormCollectingDataEnterprise() {
             </button>
           ) : (
             <button
+              key="next"
               type="button"
               onClick={() =>
                 setStep((current) => Math.min(STEPS.length - 1, current + 1))

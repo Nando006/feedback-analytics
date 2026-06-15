@@ -37,7 +37,7 @@ type CatalogItemRow = {
   kind: string | null;
 };
 
-type FeedbackStatsRow = { rating: number };
+type FeedbackStatsRow = { id: string; rating: number };
 
 type FeedbackListRow = {
   id: string;
@@ -452,7 +452,7 @@ export async function getFeedbacksStatsController(req: Request, res: Response) {
 
     let statsQuery = supabase
       .from('feedback')
-      .select('rating')
+      .select('id, rating')
       .eq('enterprise_id', enterprise.id);
 
     if (filteredCollectionPointIds) {
@@ -476,6 +476,30 @@ export async function getFeedbacksStatsController(req: Request, res: Response) {
       5: statsRows.filter((f) => f.rating === 5).length,
     };
 
+    // Quantos desses feedbacks (no mesmo escopo) já têm análise da IA + quando
+    // foi a análise mais recente (usado para travar o "Gerar insights").
+    let totalAnalyzed = 0;
+    let latestAnalysisAt: string | null = null;
+    if (totalFeedbacks > 0) {
+      const feedbackIds = statsRows.map((f) => f.id);
+      const { data: analysisRows, error: analysisError } = await supabase
+        .from('feedback_analysis')
+        .select('feedback_id, created_at')
+        .in('feedback_id', feedbackIds);
+
+      if (analysisError) return sendTypedError(res, 500, API_ERROR_FAILED_TO_FETCH_STATS);
+
+      const rows = (analysisRows ?? []) as { feedback_id: string; created_at: string }[];
+      totalAnalyzed = new Set(rows.map((r) => r.feedback_id)).size;
+      for (const r of rows) {
+        if (r.created_at && (latestAnalysisAt === null || r.created_at > latestAnalysisAt)) {
+          latestAnalysisAt = r.created_at;
+        }
+      }
+    }
+
+    const pendingCount = totalFeedbacks - totalAnalyzed;
+
     return res.json({
       totalFeedbacks,
       averageRating: Math.round(averageRating * 10) / 10,
@@ -485,6 +509,9 @@ export async function getFeedbacksStatsController(req: Request, res: Response) {
         neutral: ratingDistribution[3],
         negative: ratingDistribution[1] + ratingDistribution[2],
       },
+      totalAnalyzed,
+      pendingCount,
+      latestAnalysisAt,
     });
   } catch (error) {
     console.error('Erro ao buscar estatísticas:', error);

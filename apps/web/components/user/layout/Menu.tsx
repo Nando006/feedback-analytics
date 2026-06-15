@@ -2,33 +2,7 @@ import { NavLink, useLocation } from 'react-router-dom';
 import { FaAlignLeft, FaBuffer, FaChevronRight } from 'react-icons/fa6';
 import type { MenuItem } from './ui.types';
 import { menuData } from 'src/lib/mock/menu';
-
-function normalizePath(pathname: string): string {
-  if (!pathname) return '';
-  return pathname.length > 1 ? pathname.replace(/\/+$/, '') : pathname;
-}
-
-function isMatch(targetPath: string | undefined, currentPathname: string): boolean {
-  if (!targetPath || !currentPathname) {
-    return false;
-  }
-
-  const target = normalizePath(targetPath);
-  const current = normalizePath(currentPathname);
-
-  return current === target || current.startsWith(`${target}/`);
-}
-
-/** Uma seção (item com filhos) está ativa quando algum descendente casa com a rota atual. */
-function hasActiveDescendant(item: MenuItem, currentPathname: string): boolean {
-  if (isMatch(item.to, currentPathname)) {
-    return true;
-  }
-  if (Array.isArray(item.children)) {
-    return item.children.some((child) => hasActiveDescendant(child, currentPathname));
-  }
-  return false;
-}
+import { hasActiveDescendant, isMatch } from 'src/lib/utils/navMatch';
 
 function Item({
   item,

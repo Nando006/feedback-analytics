@@ -13,3 +13,19 @@ export type PageHeaderProps = {
   breadcrumb?: RouteCrumb[];
   actions?: ReactNode;
 };
+
+/**
+ * Props da navegação horizontal de submenus da seção (SectionTabs).
+ * Usado em: components/user/shared/SectionTabs.tsx.
+ */
+export type SectionTabsProps = {
+  className?: string;
+};
+
+/**
+ * Props do indicador de escopo ativo (ScopeBadge).
+ * Usado em: components/user/shared/ScopeBadge.tsx.
+ */
+export type ScopeBadgeProps = {
+  className?: string;
+};

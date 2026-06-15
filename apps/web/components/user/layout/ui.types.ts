@@ -5,14 +5,19 @@ import type { EnterpriseContext } from 'lib/interfaces/entities/enterprise.entit
  * Usado em: components/user/layout/Header.tsx.
  */
 export interface HeaderProps {
-  isOverlayMode: boolean;
   isSidebarOpen: boolean;
   onToggleSidebar: () => void;
-  onSetOverlay: () => void;
-  onSetPush: () => void;
   enterprise: EnterpriseContext;
   onSignOut: () => void;
   isSigningOut?: boolean;
+}
+
+/**
+ * Props da navegação primária horizontal (seções de topo) no header.
+ * Usado em: components/user/layout/HeaderNav.tsx.
+ */
+export interface HeaderNavProps {
+  className?: string;
 }
 
 /**
@@ -30,7 +35,6 @@ export interface MenuItem {
  * Usado em: components/user/layout/Sidebar.tsx.
  */
 export interface SidebarProps {
-  isOverlayMode: boolean;
   isOpen: boolean;
   onOpen?: () => void;
   onClose?: () => void;

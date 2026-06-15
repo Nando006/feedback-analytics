@@ -1,5 +1,4 @@
 import ErrorPage from "components/user/shared/handling/errorPage";
-import type { ShouldRevalidateFunctionArgs } from "react-router-dom";
 import Dashboard from "pages/user/dashboard";
 import EditCustomer from "pages/user/edit/editCustomers";
 import FeedbacksAll from "pages/user/feedbacks/feedbacksAll";
@@ -32,7 +31,6 @@ import EditCompanyData from "pages/user/edit/editCompanyData";
 import EditFeedbackGeneral from "pages/user/edit/editFeedbackGeneral";
 import EditCatalogItem from "pages/user/edit/editCatalogItem";
 import { ActionProfile } from "./actions/actionProfile";
-import { ActionQrCodeCatalog } from "./actions/actionQrCodeCatalog";
 import { ActionLogout } from "./actions/actionLogout";
 import { ActionFeedbackCatalogPage } from "./actions/actionFeedbackCatalogPage";
 import { ActionFeedbackGeneralPage } from "./actions/actionFeedbackGeneralPage";
@@ -42,21 +40,6 @@ import { LoaderQrCodeDepartments } from "./loaders/loaderQrCodeDepartments";
 import { LoaderFeedbackGeneral } from "./loaders/loaderFeedbackGeneral";
 import { LoaderCatalogItem } from "./loaders/loaderCatalogItem";
 
-function shouldRevalidateUserRoute({
-  formMethod,
-  formAction,
-  defaultShouldRevalidate,
-}: ShouldRevalidateFunctionArgs) {
-  const isPost = String(formMethod ?? "").toUpperCase() === "POST";
-  const actionPath = String(formAction ?? "");
-
-  if (isPost && actionPath.includes("/user/qrcode/")) {
-    return false;
-  }
-
-  return defaultShouldRevalidate;
-}
-
 export function RouteUser() {
   return (
     <Route
@@ -65,7 +48,6 @@ export function RouteUser() {
       errorElement={<ErrorPage />}
       element={<LayoutUser />}
       loader={LoaderUserProtected}
-      shouldRevalidate={shouldRevalidateUserRoute}
       action={ActionLogout}
     >
       <Route
@@ -81,18 +63,6 @@ export function RouteUser() {
       <Route
         path="qrcode/enterprise"
         loader={() => redirect("/user/edit/feedback-general")}
-      />
-      <Route
-        path="qrcode/products"
-        action={ActionQrCodeCatalog}
-      />
-      <Route
-        path="qrcode/services"
-        action={ActionQrCodeCatalog}
-      />
-      <Route
-        path="qrcode/departments"
-        action={ActionQrCodeCatalog}
       />
       <Route
         path="feedbacks/all"
