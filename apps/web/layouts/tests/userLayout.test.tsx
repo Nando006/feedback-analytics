@@ -28,6 +28,14 @@ vi.mock('components/user/layout/Sidebar', () => ({
   default: () => <aside data-testid="layout-sidebar">Sidebar</aside>,
 }));
 
+vi.mock('components/user/shared/SectionTabs', () => ({
+  default: () => <nav data-testid="section-tabs">SectionTabs</nav>,
+}));
+
+vi.mock('components/user/layout/InsightsActionBar', () => ({
+  default: () => <div data-testid="insights-action-bar">InsightsActionBar</div>,
+}));
+
 import LayoutUser from '../user';
 import { useFetcher, useLoaderData, useNavigation } from 'react-router-dom';
 
@@ -86,9 +94,6 @@ describe('[Unidade] LayoutUser', () => {
   it.each([
     ['/user/profile', 'Profile skeleton'],
     ['/user/qrcode/enterprise', 'QrCode Enterprise skeleton'],
-    ['/user/qrcode/products', 'QrCode Products skeleton'],
-    ['/user/qrcode/services', 'QrCode Services skeleton'],
-    ['/user/qrcode/departments', 'QrCode Departments skeleton'],
     ['/user/feedbacks/all', 'Feedbacks All skeleton'],
     ['/user/feedbacks/123', 'Feedback Details skeleton'],
     ['/user/feedbacks/analytics/all', 'Feedbacks Analytics All skeleton'],

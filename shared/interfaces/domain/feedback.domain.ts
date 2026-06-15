@@ -123,6 +123,12 @@ export interface FeedbackStats {
   averageRating: number;
   ratingDistribution: RatingDistribution;
   sentimentBreakdown: SentimentBreakdown;
+  /** Feedbacks (no escopo) que já têm análise da IA. */
+  totalAnalyzed?: number;
+  /** Feedbacks (no escopo) ainda não analisados (totalFeedbacks - totalAnalyzed). */
+  pendingCount?: number;
+  /** Timestamp (ISO) da análise mais recente no escopo; null se nenhuma. */
+  latestAnalysisAt?: string | null;
 }
 
 /**

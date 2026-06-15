@@ -23,13 +23,3 @@ export type CardSimpleProps = {
   description?: string;
   defaultOpen?: boolean;
 };
-
-/**
- * Props do cartão de perfil com ação de logout.
- * Usado em: components/user/shared/cards/cardProfile.tsx.
- */
-export type CardProfileProps = {
-  fullName?: string;
-  onSignOut: () => void;
-  isSigningOut?: boolean;
-};

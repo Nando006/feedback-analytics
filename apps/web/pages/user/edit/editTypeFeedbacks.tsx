@@ -1,12 +1,10 @@
 import { useEffect } from 'react';
-import { useActionData, useNavigation, useRouteLoaderData } from 'react-router-dom';
+import { useActionData, useNavigation } from 'react-router-dom';
 import CardSimple from 'components/user/shared/cards/cardSimple';
 import FormTypesFeedback from 'components/user/pages/profile/editTypesFeedback/formTypesFeedback';
 import { useToast } from 'components/public/forms/messages/useToast';
 import type { ActionData } from 'lib/interfaces/contracts/action-data.contract';
-import Header from 'components/user/shared/header';
-import type { AuthUser } from 'lib/interfaces/entities/auth-user.entity';
-import type { CollectingDataEnterprise, Enterprise } from 'lib/interfaces/entities/enterprise.entity';
+import PageHeader from 'components/user/shared/PageHeader';
 
 const HOW_IT_WORKS = [
   {
@@ -38,12 +36,6 @@ export default function EditTypeFeedbacks() {
   const isSaving =
     navigation.state === 'submitting' &&
     navigation.formAction?.includes('/user/edit/types-feedback');
-  const { user, enterprise } = useRouteLoaderData('user') as {
-    user: AuthUser['user'];
-    enterprise: Enterprise;
-    collecting: CollectingDataEnterprise | null;
-  };
-
   useEffect(() => {
     if (!actionData) return;
 
@@ -56,13 +48,7 @@ export default function EditTypeFeedbacks() {
 
   return (
     <div className="font-work-sans space-y-6 pb-8">
-      <Header
-        description="Defina quais tipos de feedback sua empresa coleta. Cada tipo gera um QR Code independente."
-        prevLink="/user/profile"
-        prevLabelLink="Ver perfil"
-        enterprise={enterprise}
-        user={user}
-      />
+      <PageHeader />
 
       {/* Como funciona */}
       <CardSimple type="header">

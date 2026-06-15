@@ -26,17 +26,12 @@ export interface InsightsReportHeaderSectionProps {
  * Usado em: components/user/pages/feedbacksInsightsReport/InsightsHeaderControls.tsx.
  */
 export interface InsightsHeaderControlsProps {
-  refreshing: boolean;
-  analyzingRaw: boolean;
-  canAnalyze: boolean;
   availableScopes: InsightScopeOption[];
   selectedScope: InsightScopeOption;
   selectedCatalogItemId: string;
   catalogItemOptions: InsightsCatalogItemOption[];
   onScopeChange: (scope: InsightScopeOption) => void;
   onCatalogItemChange: (id: string) => void;
-  onRefreshSelected: () => void;
-  onAnalyzeRaw: () => void;
 }
 
 /**

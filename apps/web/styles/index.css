@@ -170,6 +170,12 @@
   font-family: var(--font-button);
 }
 
+/* Botões clicáveis mostram a mãozinha no hover (o Tailwind v4 não aplica isso
+   por padrão). Desabilitados mantêm seu cursor (disabled:cursor-not-allowed). */
+button:not(:disabled) {
+  cursor: pointer;
+}
+
 /* Removendo o botão nativo de mostrar senha no Chrome, Edge, Opera */
 input[type="password"]::-ms-reveal,
 input[type="password"]::-ms-clear,

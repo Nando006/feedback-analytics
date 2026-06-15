@@ -1,10 +1,5 @@
 import type { ChangeEvent, Dispatch, SetStateAction } from 'react';
-import type {
-  CatalogItemInput,
-  CompanyFeedbackQuestionInput,
-} from 'lib/interfaces/entities/enterprise.entity';
-import type { QrCodeCatalogLoadItem } from 'src/routes/load/loadQrCodeCatalog';
-import type { QrCatalogQuestionInput } from 'src/services/serviceCollectionPoints';
+import type { CompanyFeedbackQuestionInput } from 'lib/interfaces/entities/enterprise.entity';
 
 /**
  * Props do campo de principais produtos/serviços.
@@ -13,43 +8,6 @@ import type { QrCatalogQuestionInput } from 'src/services/serviceCollectionPoint
 export interface FieldMainProductsProps {
   value: string;
   onChange: (value: string) => void;
-}
-
-/**
- * Props do campo dinâmico de itens de catálogo por categoria.
- * Usado em: components/user/pages/profile/editCollectingData/fields/fieldCatalogItems.tsx.
- */
-export interface FieldCatalogItemsProps {
-  title: string;
-  description: string;
-  emptyLabel: string;
-  items: CatalogItemInput[];
-  onChange: Dispatch<SetStateAction<CatalogItemInput[]>>;
-  qrItems?: QrCodeCatalogLoadItem[];
-  savingQuestionsItemId?: string | null;
-  onSaveQuestions?: (catalogItemId: string, questions: QrCatalogQuestionInput[]) => void;
-  togglePendingItemId?: string | null;
-  onToggle?: (catalogItemId: string, isActive: boolean) => void;
-}
-
-/**
- * Props da linha individual de item do catálogo.
- * Usado em: components/user/pages/profile/editCollectingData/fields/fieldCatalogItems.tsx.
- */
-export interface CatalogItemRowProps {
-  index: number;
-  item: CatalogItemInput;
-  onRemove: (index: number) => void;
-  onChangeField: (
-    index: number,
-    field: 'name' | 'description',
-    value: string,
-  ) => void;
-  qrItem?: QrCodeCatalogLoadItem;
-  isSavingQuestions?: boolean;
-  onSaveQuestions?: (catalogItemId: string, questions: QrCatalogQuestionInput[]) => void;
-  isPendingToggle?: boolean;
-  onToggle?: (catalogItemId: string, isActive: boolean) => void;
 }
 
 /**
@@ -70,18 +28,6 @@ export interface FieldUsesCompanyProductsProps {
 export interface FieldCompanyFeedbackQuestionsProps {
   questions: CompanyFeedbackQuestionInput[];
   onChange: Dispatch<SetStateAction<CompanyFeedbackQuestionInput[]>>;
-}
-
-export interface QuestionAccordionProps {
-  qrItem: QrCodeCatalogLoadItem;
-  isSaving: boolean;
-  onSave: (catalogItemId: string, questions: QrCatalogQuestionInput[]) => void;
-}
-
-export interface QrSectionProps {
-  qrItem: QrCodeCatalogLoadItem;
-  isPending: boolean;
-  onToggle: (catalogItemId: string, isActive: boolean) => void;
 }
 
 /**

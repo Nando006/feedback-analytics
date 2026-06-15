@@ -52,11 +52,11 @@ export async function ActionFeedbackInsightsReport({
 
   try {
     if (intent === INTENT_FEEDBACK_ANALYZE_RAW) {
-      await ServiceRunRawFeedbackAnalysis({ scope_type, catalog_item_id });
-    } else {
-      await ServiceRunFeedbackIAAnalysis({ scope_type, catalog_item_id });
+      const result = await ServiceRunRawFeedbackAnalysis({ scope_type, catalog_item_id });
+      return { ok: true, analyzedCount: result.analyzedCount };
     }
 
+    await ServiceRunFeedbackIAAnalysis({ scope_type, catalog_item_id });
     return { ok: true };
   } catch (error) {
     const typedError = error as HttpActionError;

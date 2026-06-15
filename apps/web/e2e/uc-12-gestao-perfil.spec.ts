@@ -33,51 +33,28 @@ test.describe('UC-12: Gestão de perfil', () => {
     await expect(page).toHaveURL(/\/user\/qrcode\/enterprise/, { timeout: 10_000 });
   });
 
-  test('[CT-UC12-04] Link para configuração do catálogo está presente no perfil', async ({ page }) => {
-    await page.goto('/user/profile');
+  test('[CT-UC12-04] Configuração do catálogo é acessível', async ({ page }) => {
+    // O catálogo não fica mais no perfil; é acessível pelo menu
+    // (Configuração da coleta → Catálogo). Validamos que a tela responde na rota.
+    await page.goto('/user/edit/types-feedback');
+    await expect(page).toHaveURL(/\/user\/edit\/types-feedback/, { timeout: 10_000 });
     await expect(page.getByRole('main')).toBeVisible();
-
-    const catalogLink = page
-      .getByRole('link', { name: /cat.logo|configura..es do cat.logo/i })
-      .first();
-
-    if (!(await catalogLink.isVisible().catch(() => false))) {
-      test.skip();
-      return;
-    }
-
-    await catalogLink.click();
-    await expect(page).toHaveURL(/\/user\/edit\/(types-feedback|feedback-settings)/, { timeout: 10_000 });
   });
 
   test('[CT-UC12-06] Logout redireciona para página de login', async ({ page }) => {
     await page.goto('/user/dashboard');
     await expect(page.getByRole('main')).toBeVisible();
 
-    const logoutBtn = page.getByRole('button', { name: /sair|logout/i }).first();
-    const logoutLink = page.getByRole('link', { name: /sair|logout/i }).first();
-
-    const btnVisible = await logoutBtn.isVisible().catch(() => false);
-    const linkVisible = await logoutLink.isVisible().catch(() => false);
-
-    if (!btnVisible && !linkVisible) {
-      // Tenta via menu/dropdown
-      const menuBtn = page.locator('[aria-label*="menu"], [data-menu-trigger], button[aria-haspopup]').first();
-      if (await menuBtn.isVisible().catch(() => false)) {
-        await menuBtn.click();
-      } else {
-        test.skip();
-        return;
-      }
+    // Logout fica dentro do menu de conta (avatar com aria-haspopup="menu"),
+    // como item de menu (role="menuitem"). Abre o dropdown e clica em "Sair".
+    const accountTrigger = page.locator('button[aria-haspopup="menu"]').first();
+    if (!(await accountTrigger.isVisible().catch(() => false))) {
+      test.skip();
+      return;
     }
+    await accountTrigger.click();
 
-    if (btnVisible) {
-      await logoutBtn.click();
-    } else if (linkVisible) {
-      await logoutLink.click();
-    } else {
-      await page.getByRole('button', { name: /sair|logout/i }).first().click();
-    }
+    await page.getByRole('menuitem', { name: /sair|logout/i }).first().click();
 
     await expect(page).toHaveURL(/\/login/, { timeout: 10_000 });
   });

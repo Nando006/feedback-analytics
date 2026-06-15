@@ -16,7 +16,7 @@ Esta pasta registra **o que ainda queremos construir** no Feedback Analytics. Ca
 |---|---|---|---|---|
 | [01](./01-metricas-por-periodo-e-comparacao.md) | Métricas por período + comparação entre intervalos | 🟡 Planejado | Médio | Índice em `feedback.created_at` |
 | [02](./02-feedback-por-audio.md) | Feedback por áudio (configurável) no formulário público | 🟡 Planejado | Alto | Supabase Storage; decisão de transcrição |
-| [03](./03-reorganizacao-das-telas-de-configuracao.md) | Reorganização das telas de configuração (catálogo, perguntas, QR) | 🟡 Planejado | Médio-Alto | — (pode começar já) |
+| [03](./03-reorganizacao-das-telas-de-configuracao.md) | Reorganização das telas de configuração — [análise](./03-analise-atual-das-telas.md) · [plano](./03-plano-de-reorganizacao.md) | 🔵 Em planejamento | Médio-Alto | — (frente prioritária) |
 | [04](./04-preview-do-formulario.md) | Preview ao vivo do formulário na tela de configuração | 🟡 Planejado | Médio | — (anda junto com o item 03) |
 
 **Legenda de status:** 🟡 Planejado · 🔵 Em andamento · ✅ Entregue · ⏸️ Pausado
