@@ -281,7 +281,7 @@ function CatalogItemConfig() {
             method="post"
             action={detailPath}
             onSubmit={handleSaveData}
-            className="space-y-4"
+            className="w-full space-y-4"
           >
             <input type="hidden" name="intent" value={config.saveIntent} />
             <input
@@ -308,12 +308,12 @@ function CatalogItemConfig() {
               <label className="mb-1 block text-[13px] text-(--text-secondary)">
                 Descrição (opcional)
               </label>
-              <input
-                type="text"
+              <textarea
                 value={description}
                 onChange={(event) => setDescription(event.target.value)}
                 placeholder="Detalhe opcional"
-                className="w-full rounded-lg border border-(--primary-color)/20 bg-(--bg-tertiary) px-3.5 py-2.5 text-[15px] text-(--text-primary) outline-none transition-all placeholder:text-(--text-tertiary) focus:border-(--primary-color)"
+                rows={4}
+                className="w-full resize-y rounded-lg border border-(--primary-color)/20 bg-(--bg-tertiary) px-3.5 py-2.5 text-[15px] leading-relaxed text-(--text-primary) outline-none transition-all placeholder:text-(--text-tertiary) focus:border-(--primary-color)"
               />
             </div>
 
