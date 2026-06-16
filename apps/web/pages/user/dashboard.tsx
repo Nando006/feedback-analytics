@@ -13,6 +13,7 @@ import SectionMetric from 'components/user/pages/dashboard/SectionMetric';
 import SectionEvaluationDistribution from 'components/user/pages/dashboard/SectionEvaluationDistribution';
 import SectionSatisfactionRadar from 'components/user/pages/dashboard/SectionSatisfactionRadar';
 import SectionLowestQuestions from 'components/user/pages/dashboard/SectionLowestQuestions';
+import DashboardScopedSkeleton from 'components/user/pages/dashboard/DashboardScopedSkeleton';
 import InsightsReportContent from 'components/user/pages/feedbacksInsightsReport/InsightsReportContent';
 import { useToast } from 'components/public/forms/messages/useToast';
 import { useInsightsControls } from 'src/lib/context/insightsControls';
@@ -51,10 +52,17 @@ export default function Dashboard() {
     dashboardLoaderData?.stats ?? null,
   );
   const [questions, setQuestions] = useState<QuestionMetric[]>([]);
+  const [scopedLoading, setScopedLoading] = useState(false);
+  // O 1º fetch reaproveita o seed do loader (escopo Empresa) — só mostramos o
+  // skeleton nas TROCAS de escopo seguintes, para não piscar no carregamento inicial.
+  const firstScopedFetchRef = useRef(true);
   const error = dashboardLoaderData?.dashboardError ?? null;
 
   // Métricas seguem o escopo selecionado no header (Geral = só o QR da empresa).
   const fetchScopedData = useCallback(async () => {
+    const showSkeleton = !firstScopedFetchRef.current;
+    if (showSkeleton) setScopedLoading(true);
+
     const catalogParam =
       scope !== 'COMPANY' ? catalogItemId || undefined : undefined;
 
@@ -71,6 +79,8 @@ export default function Dashboard() {
 
     setStats(statsData);
     setQuestions(questionsData?.questions ?? []);
+    firstScopedFetchRef.current = false;
+    setScopedLoading(false);
   }, [scope, catalogItemId]);
 
   useEffect(() => {
@@ -122,19 +132,25 @@ export default function Dashboard() {
         </div>
       ) : null}
 
-      <SectionMetric
-        totalFeedbacks={totalFeedbacks}
-        averageRating={averageRating}
-        positive={positive}
-        negative={negative}
-      />
+      {scopedLoading ? (
+        <DashboardScopedSkeleton />
+      ) : (
+        <>
+          <SectionMetric
+            totalFeedbacks={totalFeedbacks}
+            averageRating={averageRating}
+            positive={positive}
+            negative={negative}
+          />
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <SectionEvaluationDistribution stats={stats} />
-        <SectionSatisfactionRadar stats={stats} />
-      </div>
+          <div className="grid gap-6 lg:grid-cols-2">
+            <SectionEvaluationDistribution stats={stats} />
+            <SectionSatisfactionRadar stats={stats} />
+          </div>
 
-      <SectionLowestQuestions questions={questions} />
+          <SectionLowestQuestions questions={questions} />
+        </>
+      )}
 
       <section className="relative overflow-hidden rounded-2xl border border-(--quaternary-color)/10 bg-linear-to-br from-(--bg-secondary) to-(--sixth-color) p-6 glass-card">
         <div className="flex items-start justify-between gap-3">

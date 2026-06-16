@@ -6,12 +6,13 @@ import InsightsStatisticsSentimentSection from 'components/user/pages/feedbacksI
 import InsightsStatisticsThemesSection from 'components/user/pages/feedbacksInsightsStatistics/InsightsStatisticsThemesSection';
 import InsightsStatisticsAspectsSection from 'components/user/pages/feedbacksInsightsStatistics/InsightsStatisticsAspectsSection';
 import PageHeader from 'components/user/shared/PageHeader';
+import InsightsStatisticsSkeleton from 'components/user/pages/feedbacks/insights/InsightsStatisticsSkeleton';
 import { useScopedFeedbackAnalysis } from 'src/lib/hooks/useScopedFeedbackAnalysis';
 
 export default function FeedbacksInsightsStatistics() {
   const initialData =
     useLoaderData<Awaited<ReturnType<typeof LoaderFeedbacksInsightsStatistics>>>();
-  const { summary, error } = useScopedFeedbackAnalysis(initialData);
+  const { summary, loading, error } = useScopedFeedbackAnalysis(initialData);
 
   const total = summary?.totalAnalyzed || 1;
   const positivePct = Math.round(
@@ -28,7 +29,9 @@ export default function FeedbacksInsightsStatistics() {
     <div className="font-work-sans space-y-6">
       <PageHeader />
 
-      {error ? (
+      {loading ? (
+        <InsightsStatisticsSkeleton />
+      ) : error ? (
         <InsightsStatisticsErrorState error={error} />
       ) : !summary || summary.totalAnalyzed === 0 ? (
         <InsightsStatisticsEmptyState />

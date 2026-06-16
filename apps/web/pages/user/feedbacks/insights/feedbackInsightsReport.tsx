@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useInsightsControls } from 'src/lib/context/insightsControls';
 import { useScopedInsightsReport } from 'src/lib/hooks/useScopedInsightsReport';
 import { climateFromNss, shouldShowNss } from 'src/lib/utils/statistics';
-import InsightsReportLoadingState from 'components/user/pages/feedbacksInsightsReport/InsightsReportLoadingState';
+import InsightsReportSkeleton from 'components/user/pages/feedbacks/insights/InsightsReportSkeleton';
 import InsightsReportErrorState from 'components/user/pages/feedbacksInsightsReport/InsightsReportErrorState';
 import InsightsReportHeaderSection from 'components/user/pages/feedbacksInsightsReport/InsightsReportHeaderSection';
 import InsightsReportMoodSection from 'components/user/pages/feedbacksInsightsReport/InsightsReportMoodSection';
@@ -28,7 +28,7 @@ export default function FeedbacksInsightsReport() {
     : 'Para analisar os feedbacks, preencha as informações da empresa em Editar > Configuração de Coleta de Dados.';
 
   if (loading && !report && !summary && !fetchError) {
-    return <InsightsReportLoadingState />;
+    return <InsightsReportSkeleton />;
   }
 
   const updatedLabel =

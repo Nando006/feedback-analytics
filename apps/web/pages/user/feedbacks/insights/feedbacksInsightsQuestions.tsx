@@ -3,17 +3,20 @@ import type { LoaderFeedbacksInsightsQuestions } from 'src/routes/loaders/loader
 import PageHeader from 'components/user/shared/PageHeader';
 import { useScopedFeedbackQuestions } from 'src/lib/hooks/useScopedFeedbackQuestions';
 import InsightsQuestionsSection from 'components/user/pages/feedbacksInsightsQuestions/InsightsQuestionsSection';
+import InsightsQuestionsSkeleton from 'components/user/pages/feedbacks/insights/InsightsQuestionsSkeleton';
 
 export default function FeedbacksInsightsQuestions() {
   const initialData =
     useLoaderData<Awaited<ReturnType<typeof LoaderFeedbacksInsightsQuestions>>>();
-  const { questions, error } = useScopedFeedbackQuestions(initialData);
+  const { questions, loading, error } = useScopedFeedbackQuestions(initialData);
 
   return (
     <div className="font-work-sans space-y-6">
       <PageHeader />
 
-      {error ? (
+      {loading ? (
+        <InsightsQuestionsSkeleton />
+      ) : error ? (
         <div className="flex h-64 items-center justify-center">
           <div className="w-full max-w-2xl rounded-2xl border border-(--negative)/30 bg-(--negative)/10 p-6 text-center text-(--text-primary) glass-card">
             {error}

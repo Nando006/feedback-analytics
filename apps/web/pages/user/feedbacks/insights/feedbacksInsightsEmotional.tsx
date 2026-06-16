@@ -7,12 +7,13 @@ import InsightsEmotionalThermometerSection from 'components/user/pages/feedbacks
 import InsightsEmotionalClustersSection from 'components/user/pages/feedbacksInsightsEmotional/InsightsEmotionalClustersSection';
 import type { EmotionalCluster } from 'components/user/pages/feedbacksInsightsEmotional/ui.types';
 import PageHeader from 'components/user/shared/PageHeader';
+import InsightsEmotionalSkeleton from 'components/user/pages/feedbacks/insights/InsightsEmotionalSkeleton';
 import { useScopedFeedbackAnalysis } from 'src/lib/hooks/useScopedFeedbackAnalysis';
 
 export default function FeedbacksInsigthsEmotional() {
   const initialData =
     useLoaderData<Awaited<ReturnType<typeof LoaderFeedbacksInsightsEmotional>>>();
-  const { items, summary, error } = useScopedFeedbackAnalysis(initialData);
+  const { items, summary, loading, error } = useScopedFeedbackAnalysis(initialData);
 
   const clusters = useMemo<EmotionalCluster[]>(() => {
     if (!items.length) return [];
@@ -92,7 +93,9 @@ export default function FeedbacksInsigthsEmotional() {
     <div className="font-work-sans space-y-6">
       <PageHeader />
 
-      {error ? (
+      {loading ? (
+        <InsightsEmotionalSkeleton />
+      ) : error ? (
         <InsightsEmotionalErrorState error={error} />
       ) : !summary || summary.totalAnalyzed === 0 ? (
         <InsightsEmotionalEmptyState />

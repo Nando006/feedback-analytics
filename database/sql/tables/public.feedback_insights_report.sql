@@ -102,6 +102,14 @@ BEGIN
 END
 $$;
 
+-- Remove a unique legada por empresa (`UNIQUE (enterprise_id)`, uma linha por
+-- empresa). Ela é incompatível com os relatórios segmentados por escopo: ao
+-- tentar salvar um segundo relatório (ex.: de um item) quando já existe o da
+-- empresa, o INSERT batia em "feedback_insights_report_enterprise_id_key". A
+-- unicidade correta é a composta (enterprise_id, scope_type, catalog_item_id).
+ALTER TABLE "public"."feedback_insights_report"
+  DROP CONSTRAINT IF EXISTS "feedback_insights_report_enterprise_id_key";
+
 CREATE UNIQUE INDEX IF NOT EXISTS "uq_feedback_insights_context"
   ON "public"."feedback_insights_report" ("enterprise_id", "scope_type", "catalog_item_id") NULLS NOT DISTINCT;
 

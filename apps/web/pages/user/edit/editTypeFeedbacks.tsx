@@ -5,6 +5,7 @@ import FormTypesFeedback from 'components/user/pages/profile/editTypesFeedback/f
 import { useToast } from 'components/public/forms/messages/useToast';
 import type { ActionData } from 'lib/interfaces/contracts/action-data.contract';
 import PageHeader from 'components/user/shared/PageHeader';
+import HelpHint from 'components/user/shared/HelpHint';
 
 const HOW_IT_WORKS = [
   {
@@ -83,8 +84,9 @@ export default function EditTypeFeedbacks() {
       {/* Tipos de feedback */}
       <div className="space-y-3">
         <div className="px-1">
-          <h2 className="font-montserrat text-lg font-semibold text-(--text-primary)">
+          <h2 className="flex items-center gap-1.5 font-montserrat text-lg font-semibold text-(--text-primary)">
             Selecione os tipos da sua empresa
+            <HelpHint topic="catalogHub" />
           </h2>
           <p className="mt-0.5 text-sm text-(--text-tertiary)">
             Ative os tipos que sua empresa utiliza. Após salvar, o link para configurar o catálogo aparece automaticamente.

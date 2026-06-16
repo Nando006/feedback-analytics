@@ -6,6 +6,7 @@ import type { EnterpriseContext } from 'lib/interfaces/entities/enterprise.entit
 import type { LoaderFeedbackGeneral } from 'src/routes/loaders/loaderFeedbackGeneral';
 import { INTENT_QR_DISABLE, INTENT_QR_ENABLE } from 'src/lib/constants/routes/intents';
 import PageHeader from 'components/user/shared/PageHeader';
+import HelpHint from 'components/user/shared/HelpHint';
 import QuestionDinamicEnterprise from 'components/user/pages/profile/questionsDinamic/questionDinamicEnterprise';
 import SectionQrHeader from 'components/user/pages/qrcodeEnterprise/SectionQrHeader';
 import SectionQrInstructions from 'components/user/pages/qrcodeEnterprise/SectionQrInstructions';
@@ -122,8 +123,9 @@ export default function EditFeedbackGeneral() {
       {/* Perguntas do feedback geral (escopo empresa) */}
       <section className="space-y-3">
         <div className="px-1">
-          <h2 className="font-montserrat text-lg font-semibold text-(--text-primary)">
+          <h2 className="flex items-center gap-1.5 font-montserrat text-lg font-semibold text-(--text-primary)">
             Perguntas do feedback geral
+            <HelpHint topic="generalFeedback" />
           </h2>
           <p className="mt-0.5 text-sm text-(--text-tertiary)">
             Aparecem no formulário do QR Code geral da empresa (até 3 perguntas, com subperguntas

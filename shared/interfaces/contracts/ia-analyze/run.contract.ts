@@ -47,4 +47,12 @@ export interface IaAnalyzeRegenerateInsightsRequest {
 export interface IaAnalyzeRegenerateInsightsResponse {
   globalInsights: IaAnalyzeInsights | null;
   contexts: IaAnalyzeContext[];
+  /**
+   * `true` somente quando um relatório foi DE FATO persistido para o escopo
+   * pedido (escopo informado: existe relatório salvo para scope_type+item;
+   * sem escopo: ao menos um relatório foi salvo). Evita o "falso sucesso":
+   * permite ao front avisar honestamente quando nada foi gerado (ex.: escopo
+   * sem feedbacks com texto analisados suficientes).
+   */
+  reportGenerated: boolean;
 }

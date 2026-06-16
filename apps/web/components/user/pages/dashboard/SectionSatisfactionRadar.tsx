@@ -1,4 +1,5 @@
 import ConfidenceBadge from 'components/user/shared/ConfidenceBadge';
+import MetricHelp from 'components/user/shared/MetricHelp';
 import { formatNss, shouldShowNss } from 'src/lib/utils/statistics';
 import type { SectionSatisfactionRadarProps } from './ui.types';
 
@@ -27,11 +28,9 @@ export default function SectionSatisfactionRadar({ stats }: SectionSatisfactionR
         <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3">
           {typeof stats.netSatisfaction === 'number' && (
             <div className="rounded-xl border border-(--quaternary-color)/12 bg-(--seventh-color) px-3 py-2.5">
-              <p
-                className="text-xs text-(--text-tertiary)"
-                title="% de notas boas (4 e 5) menos % de notas ruins (1 e 2). Varia de -100 a +100."
-              >
+              <p className="flex items-center gap-1 text-xs text-(--text-tertiary)">
                 Saldo de satisfação
+                <MetricHelp term="netSatisfaction" />
               </p>
               <p className="text-lg font-semibold text-(--text-primary)">
                 {formatNss(stats.netSatisfaction)}
@@ -40,11 +39,9 @@ export default function SectionSatisfactionRadar({ stats }: SectionSatisfactionR
           )}
           {stats.csat && (
             <div className="rounded-xl border border-(--quaternary-color)/12 bg-(--seventh-color) px-3 py-2.5">
-              <p
-                className="text-xs text-(--text-tertiary)"
-                title="Quantos clientes deram nota 4 ou 5 (% de avaliações satisfeitas)."
-              >
+              <p className="flex items-center gap-1 text-xs text-(--text-tertiary)">
                 Clientes satisfeitos
+                <MetricHelp term="csat" />
               </p>
               <p className="text-lg font-semibold text-(--text-primary)">
                 {stats.csat.pct.toFixed(0)}%
@@ -53,11 +50,9 @@ export default function SectionSatisfactionRadar({ stats }: SectionSatisfactionR
           )}
           {showAiNss && (
             <div className="rounded-xl border border-(--quaternary-color)/12 bg-(--seventh-color) px-3 py-2.5">
-              <p
-                className="text-xs text-(--text-tertiary)"
-                title="Comentários positivos menos negativos (lidos pela IA). Varia de -100 a +100."
-              >
+              <p className="flex items-center gap-1 text-xs text-(--text-tertiary)">
                 Saldo de sentimento (IA)
+                <MetricHelp term="netSentiment" />
               </p>
               <p className="text-lg font-semibold text-(--text-primary)">
                 {formatNss(ai!.netSentimentScore)}

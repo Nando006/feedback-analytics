@@ -9,6 +9,7 @@ import type { ActionData } from "lib/interfaces/contracts/action-data.contract";
 import type { QrCodeCatalogLoadData } from "src/routes/load/loadQrCodeCatalog";
 import { CATALOG_KINDS } from "src/lib/constants/catalog";
 import { useToast } from "components/public/forms/messages/useToast";
+import HelpHint from "components/user/shared/HelpHint";
 import { FaChevronRight, FaPlus, FaTrashCan } from "react-icons/fa6";
 import type { CatalogItemsListProps } from "./ui.types";
 
@@ -133,6 +134,20 @@ export default function CatalogItemsList({ kindSlug }: CatalogItemsListProps) {
           </button>
         </div>
       </div>
+
+      {/* Legenda dos controles da lista (uma vez, não por item) */}
+      {items.length > 0 && (
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 px-1 text-[11px] text-(--text-tertiary)">
+          <span className="inline-flex items-center gap-1">
+            Status do QR
+            <HelpHint topic="itemQrStatus" />
+          </span>
+          <span className="inline-flex items-center gap-1">
+            Remover item
+            <HelpHint topic="removeCatalogItem" />
+          </span>
+        </div>
+      )}
 
       {/* Lista de itens */}
       {items.length === 0 ? (

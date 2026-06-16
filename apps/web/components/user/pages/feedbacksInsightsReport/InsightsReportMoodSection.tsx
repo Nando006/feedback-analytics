@@ -1,5 +1,6 @@
 import type { MoodTone, InsightsReportMoodSectionProps } from './ui.types';
 import ConfidenceBadge from 'components/user/shared/ConfidenceBadge';
+import MetricHelp from 'components/user/shared/MetricHelp';
 import { formatNss } from 'src/lib/utils/statistics';
 
 const toneColors: Record<MoodTone, { border: string; bg: string; text: string }> = {
@@ -37,19 +38,18 @@ export default function InsightsReportMoodSection({
       className={`font-work-sans flex flex-col gap-4 rounded-2xl border p-4 md:flex-row md:items-center md:justify-between ${tone.border} ${tone.bg}`}>
       <div className="space-y-1">
         <div className="flex flex-wrap items-center gap-2">
-          <span className={`text-xs uppercase tracking-wide ${tone.text}`}>
+          <span className={`inline-flex items-center gap-1 text-xs uppercase tracking-wide ${tone.text}`}>
             Clima emocional geral
+            <MetricHelp term="climate" />
           </span>
-          <ConfidenceBadge tier={confidenceTier} n={summary?.totalAnalyzed} />
+          <ConfidenceBadge tier={confidenceTier} n={summary?.totalAnalyzed} unit="analyzed" />
         </div>
         <div className={`flex items-baseline gap-2 text-xl font-semibold ${tone.text}`}>
           <span>{mood.label}</span>
           {showNss && typeof nss === 'number' && (
-            <span
-              className="text-sm font-medium opacity-80"
-              title="Comentários positivos menos negativos, de -100 a +100."
-            >
+            <span className="inline-flex items-center gap-1 text-sm font-medium opacity-80">
               Saldo de sentimento {formatNss(nss)}
+              <MetricHelp term="netSentiment" />
             </span>
           )}
         </div>

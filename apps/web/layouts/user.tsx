@@ -20,6 +20,7 @@ import FeedbacksAnalyticsNegativeSkeleton from 'components/user/pages/feedbacks/
 import InsightsReportSkeleton from 'components/user/pages/feedbacks/insights/InsightsReportSkeleton';
 import InsightsEmotionalSkeleton from 'components/user/pages/feedbacks/insights/InsightsEmotionalSkeleton';
 import InsightsStatisticsSkeleton from 'components/user/pages/feedbacks/insights/InsightsStatisticsSkeleton';
+import InsightsQuestionsSkeleton from 'components/user/pages/feedbacks/insights/InsightsQuestionsSkeleton';
 import EditCustomersSkeleton from 'components/user/pages/edit/EditCustomersSkeleton';
 import EditProfileSkeleton from 'components/user/pages/edit/EditProfileSkeleton';
 import EditCollectingDataSkeleton from 'components/user/pages/edit/EditCollectingDataSkeleton';
@@ -91,6 +92,27 @@ export default function User() {
     insightsState.setAvailableScopes(updated.availableScopes);
     insightsState.setCatalogItemOptions(updated.catalogItemOptions);
     insightsState.setCanAnalyze(updated.canAnalyze);
+
+    // Reconcilia a seleção atual com as novas opções: após editar o catálogo, o
+    // escopo (tipo desativado) ou o item (removido/renomeado de kind) pode ter
+    // sumido. Sem isto, a seleção aponta para algo inexistente e o escopo volta
+    // vazio — ou trava o gestor num escopo que nem aparece mais no seletor.
+    // Espelha a lógica de handleScopeChange (InsightsControlsBar).
+    if (!updated.availableScopes.includes(insightsState.scope)) {
+      insightsState.setScope('COMPANY');
+      insightsState.setCatalogItemId('');
+    } else if (insightsState.scope !== 'COMPANY') {
+      const itemStillValid = updated.catalogItemOptions.some(
+        (item) =>
+          item.id === insightsState.catalogItemId && item.kind === insightsState.scope,
+      );
+      if (!itemStillValid) {
+        const firstOfKind = updated.catalogItemOptions.find(
+          (item) => item.kind === insightsState.scope,
+        );
+        insightsState.setCatalogItemId(firstOfKind?.id ?? '');
+      }
+    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [collecting]);
 
@@ -171,9 +193,20 @@ export default function User() {
   useEffect(() => {
     if (insightsFetcher.state !== 'idle' || !shouldRevalidateInsightsRef.current) return;
     shouldRevalidateInsightsRef.current = false;
-    const data = insightsFetcher.data as { ok?: boolean; error?: string } | undefined;
+    const data = insightsFetcher.data as
+      | { ok?: boolean; error?: string; reportGenerated?: boolean }
+      | undefined;
     if (data?.ok) {
-      toast.success('Insights atualizados!', 'Relatório atualizado com os novos insights da IA');
+      // Só comemora se um relatório foi DE FATO gerado para o escopo. Caso
+      // contrário, evita o "falso sucesso" e orienta o gestor.
+      if (data.reportGenerated === false) {
+        toast.warning(
+          'Nenhum relatório gerado',
+          'Não há feedbacks com comentários analisados suficientes neste escopo para a IA gerar um relatório. Use "Analisar feedbacks" e tente novamente.',
+        );
+      } else {
+        toast.success('Insights atualizados!', 'Relatório atualizado com os novos insights da IA');
+      }
     } else if (data?.error) {
       toast.error('Erro na análise', data.error);
     }
@@ -200,6 +233,7 @@ export default function User() {
     if (pendingPathname === '/user/insights/reports') return <InsightsReportSkeleton />;
     if (pendingPathname === '/user/insights/emotional') return <InsightsEmotionalSkeleton />;
     if (pendingPathname === '/user/insights/statistics') return <InsightsStatisticsSkeleton />;
+    if (pendingPathname === '/user/insights/questions') return <InsightsQuestionsSkeleton />;
 
     if (pendingPathname === '/user/edit/customers') return <EditCustomersSkeleton />;
     if (pendingPathname === '/user/edit/profile') return <EditProfileSkeleton />;

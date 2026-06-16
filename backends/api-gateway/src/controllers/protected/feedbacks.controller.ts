@@ -1,5 +1,4 @@
 import type { Request, Response } from 'express';
-import type { SupabaseClient } from '@supabase/supabase-js';
 import {
   API_ERROR_ENTERPRISE_NOT_FOUND,
   API_ERROR_FAILED_TO_COUNT_FEEDBACKS,
@@ -10,6 +9,7 @@ import {
   API_ERROR_INTERNAL_SERVER_ERROR,
 } from '../../config/errors.js';
 import { normalizeFeedbackAnalysisRows } from '../../libs/iaAnalyze/normalize.js';
+import { resolveScopeCollectionPointIds } from '../../repositories/scope.repository.js';
 import { sendTypedError } from '../../utils/sendTypedError.js';
 import {
   ratingStats,
@@ -71,96 +71,6 @@ function parseInsightScopeType(rawValue: unknown) {
     return normalized;
   }
   return undefined;
-}
-
-type InsightScopeType = 'COMPANY' | 'PRODUCT' | 'SERVICE' | 'DEPARTMENT';
-
-/**
- * Resolve o escopo selecionado (header) para a lista de `collection_point` ids
- * que as métricas/análises devem considerar.
- *
- * Retorno:
- *  - `{ ids: null }`     => sem filtro de escopo (todos os feedbacks da empresa)
- *  - `{ ids: string[] }` => filtrar `feedback` por esses ids (`[]` => nenhum resultado)
- *  - `{ error: true }`   => falha de query (o chamador escolhe o código de erro)
- *
- * COMPANY (Geral) => apenas o ponto de coleta da empresa (`catalog_item_id IS NULL`).
- * Compartilhado por stats e analysis para manter o mesmo critério de escopo.
- */
-async function resolveScopeCollectionPointIds(params: {
-  supabase: SupabaseClient;
-  enterpriseId: string;
-  scopeType: InsightScopeType | undefined;
-  catalogItemId: string | null;
-}): Promise<{ error: true } | { error: false; ids: string[] | null }> {
-  const { supabase, enterpriseId, scopeType, catalogItemId } = params;
-
-  if (!scopeType && !catalogItemId) {
-    return { error: false, ids: null };
-  }
-
-  if (scopeType === 'COMPANY') {
-    if (catalogItemId) {
-      return { error: false, ids: [] };
-    }
-
-    const { data: companyPoints, error: companyCpError } = await supabase
-      .from('collection_points')
-      .select('id')
-      .eq('enterprise_id', enterpriseId)
-      .is('catalog_item_id', null);
-
-    if (companyCpError) return { error: true };
-    return { error: false, ids: ((companyPoints ?? []) as IdRow[]).map((cp) => cp.id) };
-  }
-
-  if (catalogItemId) {
-    if (scopeType) {
-      const { data: catalogItem, error: catalogItemError } = await supabase
-        .from('catalog_items')
-        .select('id')
-        .eq('enterprise_id', enterpriseId)
-        .eq('id', catalogItemId)
-        .eq('kind', scopeType)
-        .maybeSingle();
-
-      if (catalogItemError) return { error: true };
-      if (!catalogItem) return { error: false, ids: [] };
-    }
-
-    const { data: points, error: pointsError } = await supabase
-      .from('collection_points')
-      .select('id')
-      .eq('enterprise_id', enterpriseId)
-      .eq('catalog_item_id', catalogItemId);
-
-    if (pointsError) return { error: true };
-    return { error: false, ids: ((points ?? []) as IdRow[]).map((cp) => cp.id) };
-  }
-
-  // scopeType sem catalogItemId (ex.: todos os itens de um kind).
-  const { data: catalogItems, error: catalogItemsError } = await supabase
-    .from('catalog_items')
-    .select('id')
-    .eq('enterprise_id', enterpriseId)
-    .eq('kind', scopeType);
-
-  if (catalogItemsError) return { error: true };
-
-  const catalogIds = ((catalogItems ?? []) as IdRow[]).map((item) => item.id);
-
-  if (catalogIds.length === 0) {
-    return { error: false, ids: [] };
-  }
-
-  const { data: points, error: pointsError } = await supabase
-    .from('collection_points')
-    .select('id')
-    .eq('enterprise_id', enterpriseId)
-    .in('catalog_item_id', catalogIds);
-
-  if (pointsError) return { error: true };
-  return { error: false, ids: ((points ?? []) as IdRow[]).map((cp) => cp.id) };
 }
 
 export async function getFeedbacksController(req: Request, res: Response) {
@@ -831,6 +741,17 @@ export async function getFeedbacksAnalysisController(req: Request, res: Response
 
 type AnswerValueKey = 'PESSIMO' | 'RUIM' | 'MEDIANA' | 'BOA' | 'OTIMA';
 
+/**
+ * Estado de uma redação de pergunta/subpergunta nas métricas:
+ * - `current`: ativa e com o texto atual da config (aparece em "Atuais").
+ * - `deactivated`: a config ainda tem esta redação, mas está desativada (toggle off).
+ *   Reativar a traz de volta para "Atuais" com todo o histórico (id estável).
+ * - `past`: redação antiga (texto editado) ou pergunta removida da config.
+ */
+type QuestionMetricStatus = 'current' | 'deactivated' | 'past';
+
+type ConfigEntry = { text: string; isActive: boolean } | undefined;
+
 type QuestionAnswerAgg = {
   /** question_id ou subquestion_id (estável; a redação pode mudar com o tempo). */
   id: string;
@@ -1002,18 +923,14 @@ export async function getFeedbacksQuestionsController(req: Request, res: Respons
       }
     }
 
-    // Subperguntas agrupadas por pergunta-pai (todas as redações; cada uma com isCurrent).
-    // Uma subpergunta só é "atual" se o pai está ativo, ela está ativa e o texto bate.
+    // Subperguntas agrupadas por pergunta-pai (todas as redações; cada uma com status).
     const subsByQuestion = new Map<string, ReturnType<typeof buildSubMetric>[]>();
     for (const agg of subAgg.values()) {
       const parentId = subParentBySubId.get(agg.id);
       if (!parentId) continue;
-      const subCfg = currentSub.get(agg.id);
-      const parentCfg = currentQ.get(parentId);
-      const isCurrent =
-        parentCfg?.isActive === true && subCfg?.isActive === true && subCfg.text === agg.text;
+      const status = subMetricStatus(currentQ.get(parentId), currentSub.get(agg.id), agg.text);
       const list = subsByQuestion.get(parentId) ?? [];
-      list.push(buildSubMetric(agg, isCurrent));
+      list.push(buildSubMetric(agg, status));
       subsByQuestion.set(parentId, list);
     }
     for (const list of subsByQuestion.values()) {
@@ -1021,8 +938,8 @@ export async function getFeedbacksQuestionsController(req: Request, res: Respons
     }
 
     // Agrupa as entradas por question_id para eleger a redação que hospeda as
-    // subperguntas (a atual; senão a que casa com o texto configurado; senão a
-    // primeira) — evita duplicar as subperguntas entre redações.
+    // subperguntas (a redação "viva" — a que casa com o texto da config, seja
+    // atual ou desativada; senão a primeira) — evita duplicar entre redações.
     const entriesByQid = new Map<string, QuestionAnswerAgg[]>();
     for (const agg of questionAgg.values()) {
       const list = entriesByQid.get(agg.id) ?? [];
@@ -1033,15 +950,12 @@ export async function getFeedbacksQuestionsController(req: Request, res: Respons
     const questions = [...entriesByQid.entries()]
       .flatMap(([qid, aggs]) => {
         const cfg = currentQ.get(qid);
-        const host =
-          aggs.find((a) => cfg?.isActive === true && cfg.text === a.text) ??
-          aggs.find((a) => cfg?.text === a.text) ??
-          aggs[0];
+        const host = aggs.find((a) => cfg?.text === a.text) ?? aggs[0];
         return aggs.map((agg) => ({
           question_id: qid,
           text: agg.text,
           ...aggToMetricFields(agg),
-          isCurrent: cfg?.isActive === true && cfg.text === agg.text,
+          status: questionMetricStatus(cfg, agg.text),
           subquestions: agg === host ? (subsByQuestion.get(qid) ?? []) : [],
         }));
       })
@@ -1054,6 +968,24 @@ export async function getFeedbacksQuestionsController(req: Request, res: Respons
   }
 }
 
-function buildSubMetric(agg: QuestionAnswerAgg, isCurrent: boolean) {
-  return { subquestion_id: agg.id, text: agg.text, ...aggToMetricFields(agg), isCurrent };
+/** Estado da redação de uma pergunta vs a config atual (ver QuestionMetricStatus). */
+function questionMetricStatus(cfg: ConfigEntry, snapshot: string): QuestionMetricStatus {
+  if (cfg && cfg.text === snapshot) return cfg.isActive ? 'current' : 'deactivated';
+  return 'past';
+}
+
+/** Estado de uma subpergunta: "atual" só com pai ativo + subpergunta ativa + texto atual. */
+function subMetricStatus(
+  parentCfg: ConfigEntry,
+  subCfg: ConfigEntry,
+  snapshot: string,
+): QuestionMetricStatus {
+  if (subCfg && subCfg.text === snapshot) {
+    return parentCfg?.isActive === true && subCfg.isActive === true ? 'current' : 'deactivated';
+  }
+  return 'past';
+}
+
+function buildSubMetric(agg: QuestionAnswerAgg, status: QuestionMetricStatus) {
+  return { subquestion_id: agg.id, text: agg.text, ...aggToMetricFields(agg), status };
 }
