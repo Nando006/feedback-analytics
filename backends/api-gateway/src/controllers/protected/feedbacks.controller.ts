@@ -11,6 +11,15 @@ import {
 } from '../../config/errors.js';
 import { normalizeFeedbackAnalysisRows } from '../../libs/iaAnalyze/normalize.js';
 import { sendTypedError } from '../../utils/sendTypedError.js';
+import {
+  ratingStats,
+  csatTopTwoBox,
+  netSatisfaction,
+  netSentimentScore,
+  confidenceTier,
+  wilsonInterval,
+  wilsonLowerBound,
+} from '../../libs/statistics/index.js';
 
 type FeedbackQuestionAnswerRow = {
   feedback_id: string;
@@ -476,34 +485,49 @@ export async function getFeedbacksStatsController(req: Request, res: Response) {
       5: statsRows.filter((f) => f.rating === 5).length,
     };
 
-    // Quantos desses feedbacks (no mesmo escopo) já têm análise da IA + quando
-    // foi a análise mais recente (usado para travar o "Gerar insights").
+    // Quantos desses feedbacks (no mesmo escopo) já têm análise da IA, quando foi
+    // a análise mais recente (trava o "Gerar insights") e a distribuição de
+    // sentimento da IA (lente "texto") sobre o subconjunto analisado.
     let totalAnalyzed = 0;
     let latestAnalysisAt: string | null = null;
+    const aiCounts = { positive: 0, neutral: 0, negative: 0 };
     if (totalFeedbacks > 0) {
       const feedbackIds = statsRows.map((f) => f.id);
       const { data: analysisRows, error: analysisError } = await supabase
         .from('feedback_analysis')
-        .select('feedback_id, created_at')
+        .select('feedback_id, created_at, sentiment')
         .in('feedback_id', feedbackIds);
 
       if (analysisError) return sendTypedError(res, 500, API_ERROR_FAILED_TO_FETCH_STATS);
 
-      const rows = (analysisRows ?? []) as { feedback_id: string; created_at: string }[];
+      const rows = (analysisRows ?? []) as {
+        feedback_id: string;
+        created_at: string;
+        sentiment: 'positive' | 'neutral' | 'negative';
+      }[];
       totalAnalyzed = new Set(rows.map((r) => r.feedback_id)).size;
       for (const r of rows) {
         if (r.created_at && (latestAnalysisAt === null || r.created_at > latestAnalysisAt)) {
           latestAnalysisAt = r.created_at;
+        }
+        if (r.sentiment === 'positive' || r.sentiment === 'neutral' || r.sentiment === 'negative') {
+          aiCounts[r.sentiment]++;
         }
       }
     }
 
     const pendingCount = totalFeedbacks - totalAnalyzed;
 
+    // Lente SATISFAÇÃO (estrelas): média+IC t, Net Satisfaction e CSAT Top-2-Box.
+    const satisfaction = ratingStats(ratingDistribution);
+    const top2 = ratingDistribution[4] + ratingDistribution[5];
+    const bottom2 = ratingDistribution[1] + ratingDistribution[2];
+
     return res.json({
       totalFeedbacks,
       averageRating: Math.round(averageRating * 10) / 10,
       ratingDistribution,
+      // Distribuição por estrela (lente satisfação; mantida por compatibilidade).
       sentimentBreakdown: {
         positive: ratingDistribution[4] + ratingDistribution[5],
         neutral: ratingDistribution[3],
@@ -512,6 +536,23 @@ export async function getFeedbacksStatsController(req: Request, res: Response) {
       totalAnalyzed,
       pendingCount,
       latestAnalysisAt,
+      // Lente SATISFAÇÃO (estrelas)
+      starMean: satisfaction.mean,
+      starMeanCI: satisfaction.ci,
+      netSatisfaction: netSatisfaction(top2, bottom2, totalFeedbacks),
+      csat: csatTopTwoBox(ratingDistribution),
+      confidenceTier: confidenceTier(totalFeedbacks),
+      // Lente SENTIMENTO (IA/texto) sobre o subconjunto analisado
+      aiSentiment:
+        totalAnalyzed > 0
+          ? {
+              positive: aiCounts.positive,
+              neutral: aiCounts.neutral,
+              negative: aiCounts.negative,
+              netSentimentScore: netSentimentScore(aiCounts.positive, aiCounts.negative, totalAnalyzed),
+              confidenceTier: confidenceTier(totalAnalyzed),
+            }
+          : undefined,
     });
   } catch (error) {
     console.error('Erro ao buscar estatísticas:', error);
@@ -652,7 +693,10 @@ export async function getFeedbacksAnalysisController(req: Request, res: Response
         feedback_analysis:feedback_analysis (
           sentiment,
           categories,
-          keywords
+          keywords,
+          aspects,
+          sentiment_score,
+          confidence
         )
       `,
       )
@@ -670,19 +714,37 @@ export async function getFeedbacksAnalysisController(req: Request, res: Response
     const itemsRaw = normalizeFeedbackAnalysisRows(data);
     if (itemsRaw.length === 0) return res.json(emptyResult);
 
-    const items = itemsRaw.map((row) => ({
-      id: row.id,
-      message: row.message,
-      rating: row.rating,
-      created_at: row.created_at,
-      sentiment: row.feedback_analysis.sentiment,
-      categories: row.feedback_analysis.categories ?? [],
-      keywords: row.feedback_analysis.keywords ?? [],
-    }));
+    const items = itemsRaw.map((row) => {
+      const sentiment = row.feedback_analysis.sentiment;
+      const rating = row.rating;
+      const starBucket =
+        rating == null ? null : rating >= 4 ? 'positive' : rating === 3 ? 'neutral' : 'negative';
+      const discrepancy: 'silent_detractor' | 'rating_misuse' | null =
+        starBucket === 'positive' && sentiment === 'negative'
+          ? 'silent_detractor'
+          : starBucket === 'negative' && sentiment === 'positive'
+            ? 'rating_misuse'
+            : null;
+      return {
+        id: row.id,
+        message: row.message,
+        rating,
+        created_at: row.created_at,
+        sentiment,
+        categories: row.feedback_analysis.categories ?? [],
+        keywords: row.feedback_analysis.keywords ?? [],
+        discrepancy,
+        aspects: Array.isArray(row.feedback_analysis.aspects) ? row.feedback_analysis.aspects : [],
+        sentiment_score: row.feedback_analysis.sentiment_score ?? null,
+        confidence: row.feedback_analysis.confidence ?? null,
+      };
+    });
 
     const sentiments = { positive: 0, neutral: 0, negative: 0 };
     const categoryCounts: Record<string, number> = {};
     const keywordCounts: Record<string, number> = {};
+    type AspectBucket = { positive: number; neutral: number; negative: number };
+    const aspectCounts: Record<string, AspectBucket> = {};
 
     for (const item of items) {
       sentiments[item.sentiment]++;
@@ -694,15 +756,71 @@ export async function getFeedbacksAnalysisController(req: Request, res: Response
         const key = keyword.trim().toLowerCase();
         if (key) keywordCounts[key] = (keywordCounts[key] ?? 0) + 1;
       }
+      for (const aspect of item.aspects) {
+        const key = aspect.aspect.trim().toLowerCase();
+        if (!key) continue;
+        const bucket = (aspectCounts[key] ??= { positive: 0, neutral: 0, negative: 0 });
+        bucket[aspect.sentiment]++;
+      }
     }
+
+    const totalAnalyzed = items.length;
+
+    // Ranqueia termos pelo limite inferior de Wilson (justo p/ amostra pequena),
+    // mantendo a contagem crua e anexando proporção + IC.
+    const rankTerms = (counts: Record<string, number>) =>
+      Object.entries(counts)
+        .map(([name, count]) => ({
+          name,
+          count,
+          proportion: totalAnalyzed > 0 ? count / totalAnalyzed : 0,
+          ci: wilsonInterval(count, totalAnalyzed),
+        }))
+        .sort(
+          (a, b) =>
+            wilsonLowerBound(b.count, totalAnalyzed) - wilsonLowerBound(a.count, totalAnalyzed) ||
+            b.count - a.count,
+        )
+        .slice(0, 10);
+
+    // Aspectos (ABSA) agregados, ranqueados por IMPACTO (volume × |NSS|), com
+    // gate de menção mínima para não destacar aspecto de amostra ínfima.
+    const MIN_ASPECT_MENTIONS = 3;
+    const aspectSentiments = Object.entries(aspectCounts)
+      .map(([aspect, bucket]) => {
+        const count = bucket.positive + bucket.neutral + bucket.negative;
+        return {
+          aspect,
+          positive: bucket.positive,
+          neutral: bucket.neutral,
+          negative: bucket.negative,
+          count,
+          netSentimentScore: netSentimentScore(bucket.positive, bucket.negative, count),
+          ci: wilsonInterval(bucket.positive, count),
+        };
+      })
+      .filter((a) => a.count >= MIN_ASPECT_MENTIONS)
+      .sort(
+        (a, b) =>
+          b.count * Math.abs(b.netSentimentScore) - a.count * Math.abs(a.netSentimentScore),
+      )
+      .slice(0, 12);
 
     return res.json({
       items,
       summary: {
-        totalAnalyzed: items.length,
+        totalAnalyzed,
         sentiments,
-        topCategories: Object.entries(categoryCounts).map(([name, count]) => ({ name, count })).sort((a, b) => b.count - a.count).slice(0, 10),
-        topKeywords: Object.entries(keywordCounts).map(([name, count]) => ({ name, count })).sort((a, b) => b.count - a.count).slice(0, 10),
+        topCategories: rankTerms(categoryCounts),
+        topKeywords: rankTerms(keywordCounts),
+        netSentimentScore: netSentimentScore(sentiments.positive, sentiments.negative, totalAnalyzed),
+        sentimentCIs: {
+          positive: wilsonInterval(sentiments.positive, totalAnalyzed),
+          neutral: wilsonInterval(sentiments.neutral, totalAnalyzed),
+          negative: wilsonInterval(sentiments.negative, totalAnalyzed),
+        },
+        confidenceTier: confidenceTier(totalAnalyzed),
+        aspectSentiments,
       },
     });
   } catch (error) {

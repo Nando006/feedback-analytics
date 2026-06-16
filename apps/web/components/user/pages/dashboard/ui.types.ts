@@ -32,7 +32,6 @@ export interface EvaluationDistributionProps {
  * Usado em: components/user/pages/dashboard/SectionSatisfactionRadar.tsx.
  */
 export interface SectionSatisfactionRadarProps {
-  positive: number;
-  neutral: number;
-  negative: number;
+  /** Estatísticas do escopo (indicadores de satisfação + sentimento IA). */
+  stats?: DashboardStats | null;
 }

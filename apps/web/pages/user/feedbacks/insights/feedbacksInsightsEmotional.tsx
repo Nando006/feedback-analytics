@@ -63,6 +63,17 @@ export default function FeedbacksInsigthsEmotional() {
       });
     }
 
+    const divergent = items.filter((i) => i.discrepancy != null).slice(0, 5);
+    if (divergent.length > 0) {
+      clustersOut.push({
+        title: 'Divergências (nota × texto)',
+        description:
+          'A nota em estrelas e o tom do comentário não combinam — ex.: nota alta mas comentário negativo (cliente insatisfeito que mesmo assim deu nota boa) ou nota baixa com comentário positivo.',
+        tone: 'negative',
+        items: divergent,
+      });
+    }
+
     return clustersOut;
   }, [items]);
 

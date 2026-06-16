@@ -1,5 +1,6 @@
 import { PROMPT_HEADER } from './prompts/promptHeader.js';
 import { getScopeInstructions } from './prompts/scopeInstructions.js';
+import { getTaxonomyLabels } from './categoryTaxonomy.js';
 import type {
   BuildIaPromptByScopeParams,
   PromptExpectedSchema,
@@ -26,6 +27,12 @@ export function buildIaPromptByScope(params: BuildIaPromptByScopeParams): string
       {
         feedback_id: 'uuid-do-feedback',
         sentiment: 'positive',
+        sentiment_score: 0.8,
+        confidence: 0.9,
+        aspects: [
+          { aspect: 'atendimento', sentiment: 'positive', sentiment_score: 0.9 },
+          { aspect: 'preco', sentiment: 'negative', sentiment_score: -0.5 },
+        ],
         categories: ['atendimento', 'experiencia'],
         keywords: ['agilidade', 'cordialidade'],
       },
@@ -71,6 +78,7 @@ export function buildIaPromptByScope(params: BuildIaPromptByScopeParams): string
     '',
     `Escopo atual da analise: ${scopeType}`,
     ...scopeInstructions.map((line) => `- ${line}`),
+    `Categorias preferenciais para "categories" (use estas quando aplicavel; senao crie uma curta): ${getTaxonomyLabels(scopeType).join(', ')}.`,
     '',
     'Estrutura exata de resposta (NAO altere as chaves):',
     JSON.stringify(expectedSchemaExample, null, 2),

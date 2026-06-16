@@ -31,6 +31,11 @@ BEGIN
 END
 $$;
 
+-- Colunas do Tier 2 (ABSA + intensidade graduada + confiança). Idempotente.
+ALTER TABLE "public"."feedback_analysis" ADD COLUMN IF NOT EXISTS "aspects" jsonb;
+ALTER TABLE "public"."feedback_analysis" ADD COLUMN IF NOT EXISTS "sentiment_score" numeric;
+ALTER TABLE "public"."feedback_analysis" ADD COLUMN IF NOT EXISTS "confidence" numeric;
+
 ALTER TABLE "public"."feedback_analysis" ENABLE ROW LEVEL SECURITY;
 
 -- Policies

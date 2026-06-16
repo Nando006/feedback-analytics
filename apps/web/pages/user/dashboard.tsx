@@ -74,7 +74,6 @@ export default function Dashboard() {
   const totalFeedbacks = stats?.totalFeedbacks ?? 0;
   const averageRating = stats?.averageRating ?? 0;
   const positive = stats?.sentimentBreakdown.positive ?? 0;
-  const neutral = stats?.sentimentBreakdown.neutral ?? 0;
   const negative = stats?.sentimentBreakdown.negative ?? 0;
 
   return (
@@ -120,11 +119,7 @@ export default function Dashboard() {
 
       <div className="grid gap-6 lg:grid-cols-2">
         <SectionEvaluationDistribution stats={stats} />
-        <SectionSatisfactionRadar
-          positive={positive}
-          neutral={neutral}
-          negative={negative}
-        />
+        <SectionSatisfactionRadar stats={stats} />
       </div>
 
       <section className="relative overflow-hidden rounded-2xl border border-(--quaternary-color)/10 bg-linear-to-br from-(--bg-secondary) to-(--sixth-color) p-6 glass-card">

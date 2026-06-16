@@ -121,6 +121,9 @@ export async function analyzeRawFeedbacks(params: {
       sentiment: item.sentiment,
       categories: Array.isArray(item.categories) ? item.categories : [],
       keywords: Array.isArray(item.keywords) ? item.keywords : [],
+      aspects: Array.isArray(item.aspects) ? item.aspects : [],
+      sentiment_score: typeof item.sentiment_score === 'number' ? item.sentiment_score : null,
+      confidence: typeof item.confidence === 'number' ? item.confidence : null,
     }));
 
   if (rowsToInsert.length === 0) {
