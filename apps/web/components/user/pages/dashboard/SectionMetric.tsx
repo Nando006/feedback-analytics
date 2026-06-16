@@ -13,12 +13,6 @@ export default function SectionMetric({ totalFeedbacks, averageRating, positive,
   return (
     <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
       <MetricCard
-        title="Feedbacks recebidos"
-        value={FormatToCurrencyReal(totalFeedbacks)}
-        helper="Total acumulado no workspace"
-        icon={FaComments}
-      />
-      <MetricCard
         title="Média de satisfação"
         value={FormatToCurrencyReal(averageRating, {
           minimumFractionDigits: 1,
@@ -26,6 +20,12 @@ export default function SectionMetric({ totalFeedbacks, averageRating, positive,
         })}
         helper="Avaliação média em estrelas"
         icon={FaStar}
+      />
+      <MetricCard
+        title="Feedbacks recebidos"
+        value={FormatToCurrencyReal(totalFeedbacks)}
+        helper="Total acumulado no workspace"
+        icon={FaComments}
       />
       <MetricCard
         title="Feedbacks positivos"
