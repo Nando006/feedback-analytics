@@ -45,9 +45,12 @@ export type IaApiClient = {
 };
 
 /**
- * Shape minimo esperado do SDK de IA para leitura do texto bruto.
+ * Shape minimo esperado do SDK de IA para leitura do texto bruto e do motivo de
+ * encerramento (finishReason). 'MAX_TOKENS' indica resposta TRUNCADA — JSON
+ * incompleto que nao deve ser parseado.
  * Serve para proteger cast e lidar com variacao de retorno da biblioteca.
  */
 export type AiResponseShape = {
   text?: string | (() => string);
+  candidates?: Array<{ finishReason?: string }>;
 };
