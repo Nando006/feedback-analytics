@@ -42,6 +42,51 @@
   animation: fadeIn 0.3s ease-out forwards;
 }
 
+/* Mini QR Code "animado" do atalho de compartilhar (dashboard): uma linha de
+   leitura desliza de cima a baixo sobre o código, simulando um scan. */
+@keyframes qrScan {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(520%);
+    opacity: 0;
+  }
+}
+
+.qr-anim__scan {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 20%;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    color-mix(in srgb, var(--primary-color) 60%, transparent),
+    transparent
+  );
+  animation: qrScan 2.4s ease-in-out infinite;
+}
+
+.group:hover .qr-anim__scan {
+  animation-duration: 1.4s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .qr-anim__scan {
+    animation: none;
+    opacity: 0;
+  }
+}
+
 /* Buttons */
 .btn-primary {
   display: inline-flex;
