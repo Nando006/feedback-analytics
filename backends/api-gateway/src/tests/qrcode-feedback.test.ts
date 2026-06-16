@@ -38,6 +38,15 @@ const VALID_PAYLOAD = {
   subanswers: [],
 };
 
+const CATALOG_ITEM_ID = '550e8400-e29b-41d4-a716-446655440003';
+
+const SINGLE_QUESTION = {
+  id: Q1_ID,
+  question_order: 1,
+  question_text: 'Pergunta 1',
+  subquestions: [],
+};
+
 describe('[Integração] POST /api/public/qrcode/feedback', () => {
   let mockSupabase: ReturnType<typeof makeMockSupabase>;
 
@@ -183,6 +192,143 @@ describe('[Integração] POST /api/public/qrcode/feedback', () => {
     const res = await request(app)
       .post('/api/public/qrcode/feedback')
       .send(VALID_PAYLOAD);
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({ ok: true });
+  });
+
+  it('[CT-UC04-05] aceita 1 pergunta no escopo do item (sem fallback para Geral)', async () => {
+    // enterprise encontrada
+    mockSupabase.queryBuilder.single.mockResolvedValueOnce({
+      data: { id: ENTERPRISE_ID },
+      error: null,
+    });
+
+    // collection_point de PRODUTO encontrado
+    mockSupabase.queryBuilder.maybeSingle.mockResolvedValueOnce({
+      data: {
+        id: COLLECTION_POINT_ID,
+        name: 'QR Produto',
+        catalog_item_id: CATALOG_ITEM_ID,
+        catalog_items: { kind: 'PRODUCT' },
+      },
+      error: null,
+    });
+
+    // apenas 1 pergunta ativa configurada para o produto
+    mockSupabase.queryBuilder.then.mockImplementationOnce((resolve: (v: unknown) => void) => {
+      const result = { data: [SINGLE_QUESTION], error: null };
+      resolve(result);
+      return Promise.resolve(result);
+    });
+
+    // device novo
+    mockSupabase.queryBuilder.maybeSingle.mockResolvedValueOnce({
+      data: null,
+      error: null,
+    });
+
+    // criação do device
+    mockSupabase.queryBuilder.single.mockResolvedValueOnce({
+      data: {
+        id: 'new-device-id',
+        feedback_count: 0,
+        last_feedback_at: null,
+        is_blocked: false,
+        customer_id: null,
+      },
+      error: null,
+    });
+
+    // feedback insert + answers insert + device update
+    for (let i = 0; i < 3; i += 1) {
+      mockSupabase.queryBuilder.then.mockImplementationOnce((resolve: (v: unknown) => void) => {
+        const result = { data: null, error: null };
+        resolve(result);
+        return Promise.resolve(result);
+      });
+    }
+
+    const res = await request(app)
+      .post('/api/public/qrcode/feedback')
+      .send({
+        enterprise_id: ENTERPRISE_ID,
+        collection_point_id: COLLECTION_POINT_ID,
+        catalog_item_id: CATALOG_ITEM_ID,
+        channel: 'QRCODE',
+        rating: 4,
+        message: 'Produto muito bom!',
+        answers: [{ question_id: Q1_ID, answer_value: 'BOA' }],
+        subanswers: [],
+      });
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({ ok: true });
+  });
+
+  it('[CT-UC04-06] aceita 0 perguntas (apenas nota + mensagem)', async () => {
+    // enterprise encontrada
+    mockSupabase.queryBuilder.single.mockResolvedValueOnce({
+      data: { id: ENTERPRISE_ID },
+      error: null,
+    });
+
+    // collection_point Geral (sem item) encontrado
+    mockSupabase.queryBuilder.maybeSingle.mockResolvedValueOnce({
+      data: {
+        id: COLLECTION_POINT_ID,
+        name: 'QR Geral',
+        catalog_item_id: null,
+        catalog_items: null,
+      },
+      error: null,
+    });
+
+    // nenhuma pergunta configurada
+    mockSupabase.queryBuilder.then.mockImplementationOnce((resolve: (v: unknown) => void) => {
+      const result = { data: [], error: null };
+      resolve(result);
+      return Promise.resolve(result);
+    });
+
+    // device novo
+    mockSupabase.queryBuilder.maybeSingle.mockResolvedValueOnce({
+      data: null,
+      error: null,
+    });
+
+    // criação do device
+    mockSupabase.queryBuilder.single.mockResolvedValueOnce({
+      data: {
+        id: 'new-device-id',
+        feedback_count: 0,
+        last_feedback_at: null,
+        is_blocked: false,
+        customer_id: null,
+      },
+      error: null,
+    });
+
+    // feedback insert + device update (sem insert de respostas, pois não há respostas)
+    for (let i = 0; i < 2; i += 1) {
+      mockSupabase.queryBuilder.then.mockImplementationOnce((resolve: (v: unknown) => void) => {
+        const result = { data: null, error: null };
+        resolve(result);
+        return Promise.resolve(result);
+      });
+    }
+
+    const res = await request(app)
+      .post('/api/public/qrcode/feedback')
+      .send({
+        enterprise_id: ENTERPRISE_ID,
+        collection_point_id: COLLECTION_POINT_ID,
+        channel: 'QRCODE',
+        rating: 5,
+        message: 'Atendimento excelente!',
+        answers: [],
+        subanswers: [],
+      });
 
     expect(res.status).toBe(200);
     expect(res.body).toEqual({ ok: true });

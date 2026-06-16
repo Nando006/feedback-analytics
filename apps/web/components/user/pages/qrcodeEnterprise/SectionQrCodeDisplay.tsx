@@ -1,5 +1,6 @@
 import { memo } from 'react';
 import CardSimple from 'components/user/shared/cards/cardSimple';
+import HelpHint from 'components/user/shared/HelpHint';
 import { FaCopy, FaDownload, FaShare } from 'react-icons/fa';
 import type { SectionQrCodeDisplayProps } from './ui.types';
 
@@ -29,7 +30,10 @@ const SectionQrCodeDisplay = memo(function SectionQrCodeDisplay({
               </div>
 
               <div className="mt-4 text-center">
-                <p className="mb-1 text-xs text-(--text-tertiary)">Link do formulário:</p>
+                <p className="mb-1 inline-flex items-center gap-1 text-xs text-(--text-tertiary)">
+                  Link do formulário:
+                  <HelpHint topic="formLink" />
+                </p>
                 <p className="break-all rounded-lg border border-(--quaternary-color)/14 bg-(--seventh-color) px-3 py-1 font-mono text-xs text-(--text-secondary)">
                   {feedbackUrl}
                 </p>

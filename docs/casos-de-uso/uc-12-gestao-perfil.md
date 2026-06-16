@@ -66,10 +66,16 @@ A tela de perfil concentra quatro seções:
 
 **Cenários a cobrir:**
 
-- **[CT-UC12-01]** ❌ *Cenário não coberto* - Caminho feliz — nome: gestor edita o nome, salva e confirma que o novo nome aparece no perfil.
-- **[CT-UC12-02]** ⚠️ *Skipped Intencional* - Caminho feliz — e-mail: gestor informa novo e-mail válido e recebe a mensagem de sucesso (a confirmação nos dois e-mails é feita fora do app).
-- **[CT-UC12-03]** ⚠️ *Skipped Intencional* - Caminho feliz — telefone: gestor informa novo número, recebe o SMS, insere o código de 6 dígitos e o telefone é atualizado.
-- **[CT-UC12-04]** ⚠️ *Skipped Intencional* - Caminho feliz — cancelar telefone: durante o modo de edição ou verificação, clicar em "Cancelar" deve voltar ao modo de visualização sem alterar o número.
-- **[CT-UC12-05]** 🔵 *Unidade já atende* - Exceção — nome vazio: tentar salvar com campo de nome vazio deve bloquear o envio.
-- **[CT-UC12-06]** 🔵 *Unidade já atende* - Exceção — telefone inválido: informar número fora do padrão `+55 DDD NÚMERO` deve bloquear o formulário antes de enviar o SMS.
-- **[CT-UC12-07]** ⚠️ *Skipped Intencional* - Exceção — código inválido: inserir código errado na verificação deve exibir toast de erro sem sair do modo de verificação.
+- **[CT-UC12-01]** ✅ *Coberto E2E* - Carregamento: a página de perfil carrega com os dados da empresa (perfil/empresa/nome/e-mail). (Spec: `[CT-UC12-01] Página de perfil carrega com dados da empresa`.)
+- **[CT-UC12-02]** ✅ *Coberto E2E* - E-mail exibido: o e-mail do usuário autenticado é exibido no perfil. (Spec: `[CT-UC12-02] E-mail do usuário autenticado é exibido no perfil`.)
+- **[CT-UC12-03]** ✅ *Coberto E2E (skip condicional)* - Link para QR Code: o link para o QR Code da empresa está presente no perfil e navega para `/user/qrcode/enterprise`. Contém `test.skip()` quando o link não está visível. (Spec: `[CT-UC12-03] Link para QR Code da empresa está presente no perfil`.)
+- **[CT-UC12-04]** ✅ *Coberto E2E (skip condicional)* - Link para catálogo: o link para a configuração do catálogo está presente no perfil e navega para a rota de edição. Contém `test.skip()` quando o link não está visível. (Spec: `[CT-UC12-04] Link para configuração do catálogo está presente no perfil`.)
+- **[CT-UC12-06]** ✅ *Coberto E2E* - Logout: o logout redireciona para a página de login. (Spec: `[CT-UC12-06] Logout redireciona para página de login`.)
+- **[CT-UC12-07]** ✅ *Coberto E2E* - Rota protegida: usuário não autenticado é redirecionado para o login ao acessar rota protegida. (Spec: `[CT-UC12-07] Usuário não autenticado é redirecionado para login ao acessar rota protegida`.)
+- **[CT-UC12-08]** 📝 *Planejado / não implementado* - Caminho feliz — nome: gestor edita o nome, salva e confirma que o novo nome aparece no perfil.
+- **[CT-UC12-09]** 📝 *Planejado / não implementado* - Caminho feliz — e-mail: gestor informa novo e-mail válido e recebe a mensagem de sucesso (a confirmação nos dois e-mails é feita fora do app).
+- **[CT-UC12-10]** 📝 *Planejado / não implementado* - Caminho feliz — telefone: gestor informa novo número, recebe o SMS, insere o código de 6 dígitos e o telefone é atualizado.
+- **[CT-UC12-11]** 📝 *Planejado / não implementado* - Caminho feliz — cancelar telefone: durante o modo de edição ou verificação, clicar em "Cancelar" deve voltar ao modo de visualização sem alterar o número.
+- **[CT-UC12-12]** 🔵 *Unidade já atende* - Exceção — nome vazio: tentar salvar com campo de nome vazio deve bloquear o envio.
+- **[CT-UC12-13]** 🔵 *Unidade já atende* - Exceção — telefone inválido: informar número fora do padrão `+55 DDD NÚMERO` deve bloquear o formulário antes de enviar o SMS.
+- **[CT-UC12-14]** 📝 *Planejado / não implementado* - Exceção — código inválido: inserir código errado na verificação deve exibir toast de erro sem sair do modo de verificação.

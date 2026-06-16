@@ -1,12 +1,11 @@
 import { useEffect } from 'react';
-import { useActionData, useNavigation, useRouteLoaderData } from 'react-router-dom';
+import { useActionData, useNavigation } from 'react-router-dom';
 import CardSimple from 'components/user/shared/cards/cardSimple';
 import FormTypesFeedback from 'components/user/pages/profile/editTypesFeedback/formTypesFeedback';
 import { useToast } from 'components/public/forms/messages/useToast';
 import type { ActionData } from 'lib/interfaces/contracts/action-data.contract';
-import Header from 'components/user/shared/header';
-import type { AuthUser } from 'lib/interfaces/entities/auth-user.entity';
-import type { CollectingDataEnterprise, Enterprise } from 'lib/interfaces/entities/enterprise.entity';
+import PageHeader from 'components/user/shared/PageHeader';
+import HelpHint from 'components/user/shared/HelpHint';
 
 const HOW_IT_WORKS = [
   {
@@ -38,12 +37,6 @@ export default function EditTypeFeedbacks() {
   const isSaving =
     navigation.state === 'submitting' &&
     navigation.formAction?.includes('/user/edit/types-feedback');
-  const { user, enterprise } = useRouteLoaderData('user') as {
-    user: AuthUser['user'];
-    enterprise: Enterprise;
-    collecting: CollectingDataEnterprise | null;
-  };
-
   useEffect(() => {
     if (!actionData) return;
 
@@ -56,13 +49,7 @@ export default function EditTypeFeedbacks() {
 
   return (
     <div className="font-work-sans space-y-6 pb-8">
-      <Header
-        description="Defina quais tipos de feedback sua empresa coleta. Cada tipo gera um QR Code independente."
-        prevLink="/user/profile"
-        prevLabelLink="Ver perfil"
-        enterprise={enterprise}
-        user={user}
-      />
+      <PageHeader />
 
       {/* Como funciona */}
       <CardSimple type="header">
@@ -97,8 +84,9 @@ export default function EditTypeFeedbacks() {
       {/* Tipos de feedback */}
       <div className="space-y-3">
         <div className="px-1">
-          <h2 className="font-montserrat text-lg font-semibold text-(--text-primary)">
+          <h2 className="flex items-center gap-1.5 font-montserrat text-lg font-semibold text-(--text-primary)">
             Selecione os tipos da sua empresa
+            <HelpHint topic="catalogHub" />
           </h2>
           <p className="mt-0.5 text-sm text-(--text-tertiary)">
             Ative os tipos que sua empresa utiliza. Após salvar, o link para configurar o catálogo aparece automaticamente.

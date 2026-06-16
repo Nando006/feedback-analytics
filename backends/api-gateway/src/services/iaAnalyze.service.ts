@@ -61,7 +61,15 @@ export async function analyzeRawFeedbacks(params: {
       ? Math.min(options.limit, 100)
       : 50;
 
-  const feedbacksForAnalysis = await fetchFeedbacksForAnalysis({ supabase, enterpriseId, limit });
+  // Busca já restrita ao escopo pedido: a janela de `limit` vale DENTRO do escopo
+  // (evita "fome de escopo") e o filtro em memória abaixo só refina.
+  const feedbacksForAnalysis = await fetchFeedbacksForAnalysis({
+    supabase,
+    enterpriseId,
+    limit,
+    scopeType: options?.scope_type,
+    catalogItemId: options?.catalog_item_id?.trim() || null,
+  });
   const feedbacksForExecution = applyExecutionFilter(feedbacksForAnalysis, options);
 
   if (feedbacksForExecution.length === 0) {
@@ -121,6 +129,9 @@ export async function analyzeRawFeedbacks(params: {
       sentiment: item.sentiment,
       categories: Array.isArray(item.categories) ? item.categories : [],
       keywords: Array.isArray(item.keywords) ? item.keywords : [],
+      aspects: Array.isArray(item.aspects) ? item.aspects : [],
+      sentiment_score: typeof item.sentiment_score === 'number' ? item.sentiment_score : null,
+      confidence: typeof item.confidence === 'number' ? item.confidence : null,
     }));
 
   if (rowsToInsert.length === 0) {
@@ -167,11 +178,18 @@ export async function regenerateFeedbackInsights(params: {
     );
   }
 
-  const analyzedFeedbacks = await fetchAlreadyAnalyzedFeedbacks({ supabase, enterpriseId });
+  // Busca já restrita ao escopo pedido: assim a janela de linhas vale DENTRO do
+  // escopo e o filtro em memória abaixo só refina (defesa em profundidade).
+  const analyzedFeedbacks = await fetchAlreadyAnalyzedFeedbacks({
+    supabase,
+    enterpriseId,
+    scopeType: options?.scope_type,
+    catalogItemId: options?.catalog_item_id?.trim() || null,
+  });
   const feedbacksForExecution = applyExecutionFilter(analyzedFeedbacks, options);
 
   if (feedbacksForExecution.length === 0) {
-    return { globalInsights: null, contexts: [] };
+    return { globalInsights: null, contexts: [], reportGenerated: false };
   }
 
   if (feedbacksForExecution.length < MIN_FEEDBACKS_FOR_RELEVANT_ANALYSIS) {
@@ -186,7 +204,7 @@ export async function regenerateFeedbackInsights(params: {
   const analysisBatches = buildAnalysisBatches(feedbacksForExecution, options);
 
   if (analysisBatches.length === 0) {
-    return { globalInsights: null, contexts: [] };
+    return { globalInsights: null, contexts: [], reportGenerated: false };
   }
 
   const remotePayload: IaAnalyzeRemoteRunRequest = {
@@ -207,7 +225,24 @@ export async function regenerateFeedbackInsights(params: {
       (ctx) => ctx.scope_type === 'COMPANY' && ctx.catalog_item_id === null && ctx.globalInsights,
     )?.globalInsights ?? insightsContexts[0]?.globalInsights ?? null;
 
-  await upsertFeedbackInsightsReports({ supabase, enterpriseId, contexts: insightsContexts });
+  const persistedContexts = await upsertFeedbackInsightsReports({
+    supabase,
+    enterpriseId,
+    contexts: insightsContexts,
+  });
 
-  return { globalInsights, contexts: insightsContexts };
+  // "Gerou de verdade?" — com escopo pedido, exige um relatório salvo para
+  // aquele scope_type+item; sem escopo, basta ter salvo algo. Isso é o que o
+  // front usa para não dar "falso sucesso".
+  const requestedItemId = options?.catalog_item_id?.trim() || null;
+  const requestedScope = options?.scope_type;
+  const reportGenerated = requestedScope
+    ? persistedContexts.some(
+        (ctx) =>
+          ctx.scope_type === requestedScope &&
+          (ctx.catalog_item_id ?? null) === requestedItemId,
+      )
+    : persistedContexts.length > 0;
+
+  return { globalInsights, contexts: insightsContexts, reportGenerated };
 }

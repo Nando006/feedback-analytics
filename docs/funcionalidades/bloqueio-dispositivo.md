@@ -40,7 +40,7 @@ API calcula o fingerprint do dispositivo
         ↓
 Consulta tabela tracked_devices pelo fingerprint
         ↓
-  ┌── is_blocked = true → retorna HTTP 403 (device_blocked)
+  ┌── is_blocked = true → retorna HTTP 403 (DEVICE_BLOCKED)
   │
   └── is_blocked = false → verifica limite diário normalmente
 ```

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Link,
   useLoaderData,
@@ -11,20 +11,27 @@ import {
 } from 'react-icons/fa';
 import SectionMetric from 'components/user/pages/dashboard/SectionMetric';
 import SectionEvaluationDistribution from 'components/user/pages/dashboard/SectionEvaluationDistribution';
-import SectionLatestFeedbacks from 'components/user/pages/dashboard/SectionLatestFeedbacks';
-import SectionCollectingStrategy from 'components/user/pages/dashboard/SectionCollectingStrategy';
 import SectionSatisfactionRadar from 'components/user/pages/dashboard/SectionSatisfactionRadar';
+import SectionLowestQuestions from 'components/user/pages/dashboard/SectionLowestQuestions';
+import DashboardScopedSkeleton from 'components/user/pages/dashboard/DashboardScopedSkeleton';
+import InsightsReportContent from 'components/user/pages/feedbacksInsightsReport/InsightsReportContent';
 import { useToast } from 'components/public/forms/messages/useToast';
+import { useInsightsControls } from 'src/lib/context/insightsControls';
+import { useScopedInsightsReport } from 'src/lib/hooks/useScopedInsightsReport';
+import {
+  ServiceGetFeedbackStats,
+  ServiceGetFeedbackQuestions,
+} from 'src/services/serviceFeedbacks';
+import type { FeedbackStats, QuestionMetric } from 'lib/interfaces/domain/feedback.domain';
 import type { DashboardLoaderData, UserLoaderData } from './ui.types';
 
-
-const LATEST_LIMIT = 5;
 
 export default function Dashboard() {
   const userLoaderData = useRouteLoaderData<UserLoaderData>('user');
   const dashboardLoaderData = useLoaderData<DashboardLoaderData>();
   const [searchParams, setSearchParams] = useSearchParams();
   const toast = useToast();
+  const { scope, catalogItemId } = useInsightsControls();
 
   const toastShownRef = useRef(false);
 
@@ -41,10 +48,47 @@ export default function Dashboard() {
   }, [searchParams, setSearchParams, toast]);
   const user = userLoaderData?.user;
   const enterprise = userLoaderData?.enterprise;
-  const collecting = userLoaderData?.collecting ?? null;
-  const stats = dashboardLoaderData?.stats ?? null;
-  const latestFeedbacks = dashboardLoaderData?.latestFeedbacks ?? [];
+  const [stats, setStats] = useState<FeedbackStats | null>(
+    dashboardLoaderData?.stats ?? null,
+  );
+  const [questions, setQuestions] = useState<QuestionMetric[]>([]);
+  const [scopedLoading, setScopedLoading] = useState(false);
+  // O 1º fetch reaproveita o seed do loader (escopo Empresa) — só mostramos o
+  // skeleton nas TROCAS de escopo seguintes, para não piscar no carregamento inicial.
+  const firstScopedFetchRef = useRef(true);
   const error = dashboardLoaderData?.dashboardError ?? null;
+
+  // Métricas seguem o escopo selecionado no header (Geral = só o QR da empresa).
+  const fetchScopedData = useCallback(async () => {
+    const showSkeleton = !firstScopedFetchRef.current;
+    if (showSkeleton) setScopedLoading(true);
+
+    const catalogParam =
+      scope !== 'COMPANY' ? catalogItemId || undefined : undefined;
+
+    const [statsData, questionsData] = await Promise.all([
+      ServiceGetFeedbackStats({
+        scope_type: scope,
+        catalog_item_id: catalogParam,
+      }).catch(() => null),
+      ServiceGetFeedbackQuestions({
+        scope_type: scope,
+        catalog_item_id: catalogParam,
+      }).catch(() => null),
+    ]);
+
+    setStats(statsData);
+    setQuestions(questionsData?.questions ?? []);
+    firstScopedFetchRef.current = false;
+    setScopedLoading(false);
+  }, [scope, catalogItemId]);
+
+  useEffect(() => {
+    fetchScopedData();
+  }, [fetchScopedData]);
+
+  // Relatório de insights (resumo + recomendações), também filtrado por escopo.
+  const { report, loading: reportLoading } = useScopedInsightsReport();
 
   const displayName =
     user?.user_metadata?.full_name || enterprise?.full_name || user?.email || 'Dashboard';
@@ -52,7 +96,6 @@ export default function Dashboard() {
   const totalFeedbacks = stats?.totalFeedbacks ?? 0;
   const averageRating = stats?.averageRating ?? 0;
   const positive = stats?.sentimentBreakdown.positive ?? 0;
-  const neutral = stats?.sentimentBreakdown.neutral ?? 0;
   const negative = stats?.sentimentBreakdown.negative ?? 0;
 
   return (
@@ -64,8 +107,7 @@ export default function Dashboard() {
             Olá, {displayName}
           </h1>
           <p className="text-sm text-(--text-secondary) md:text-base">
-            Acompanhe o desempenho dos seus feedbacks, veja tendências e monitore como os
-            clientes estão interagindo com a sua empresa.
+            Acompanhe as métricas e os insights dos seus feedbacks no escopo selecionado.
           </p>
         </div>
         <div className="flex flex-col gap-3 md:items-end">
@@ -90,33 +132,56 @@ export default function Dashboard() {
         </div>
       ) : null}
 
-      <SectionMetric
-        totalFeedbacks={totalFeedbacks}
-        averageRating={averageRating}
-        positive={positive}
-        negative={negative}
-      />
-
-      <div className="grid gap-6 xl:grid-cols-3">
-        <div className="space-y-6 xl:col-span-2">
-          <SectionEvaluationDistribution stats={stats} />
-
-          <SectionLatestFeedbacks
-            latestFeedbacks={latestFeedbacks}
-            latestLimit={LATEST_LIMIT}
-          />
-        </div>
-
-        <div className="space-y-6">
-          <SectionCollectingStrategy collecting={collecting} />
-
-          <SectionSatisfactionRadar
+      {scopedLoading ? (
+        <DashboardScopedSkeleton />
+      ) : (
+        <>
+          <SectionMetric
+            totalFeedbacks={totalFeedbacks}
+            averageRating={averageRating}
             positive={positive}
-            neutral={neutral}
             negative={negative}
           />
+
+          <div className="grid gap-6 lg:grid-cols-2">
+            <SectionEvaluationDistribution stats={stats} />
+            <SectionSatisfactionRadar stats={stats} />
+          </div>
+
+          <SectionLowestQuestions questions={questions} />
+        </>
+      )}
+
+      <section className="relative overflow-hidden rounded-2xl border border-(--quaternary-color)/10 bg-linear-to-br from-(--bg-secondary) to-(--sixth-color) p-6 glass-card">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <h2 className="font-montserrat text-lg font-semibold text-(--text-primary)">
+              Relatório de Insights
+            </h2>
+            <p className="mt-1 text-sm text-(--text-tertiary)">
+              Resumo e recomendações da IA para o escopo selecionado.
+            </p>
+          </div>
+          <Link
+            to="/user/insights/reports"
+            className="inline-flex shrink-0 items-center gap-2 text-sm text-(--text-secondary) transition-colors hover:text-(--text-primary)">
+            Ver completo
+            <FaArrowRight className="text-xs" />
+          </Link>
         </div>
-      </div>
+
+        <div className="mt-4">
+          {reportLoading && !report ? (
+            <p className="text-sm text-(--text-tertiary)">Carregando relatório…</p>
+          ) : (
+            <InsightsReportContent report={report} />
+          )}
+        </div>
+
+        {reportLoading && report && (
+          <div className="pointer-events-none absolute inset-0 rounded-2xl border border-(--quaternary-color)/12 bg-(--bg-primary)/30 backdrop-blur-[1px]" />
+        )}
+      </section>
     </div>
   );
 }

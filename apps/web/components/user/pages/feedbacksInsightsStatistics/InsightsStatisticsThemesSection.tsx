@@ -1,13 +1,18 @@
 import type { InsightsStatisticsThemesSectionProps } from './ui.types';
+import MetricHelp from 'components/user/shared/MetricHelp';
 
 export default function InsightsStatisticsThemesSection({
   summary,
 }: InsightsStatisticsThemesSectionProps) {
   return (
     <div className="font-work-sans relative overflow-hidden rounded-2xl border border-(--quaternary-color)/10 bg-gradient-to-br from-(--bg-secondary) to-(--sixth-color) p-6 glass-card">
-      <h3 className="mb-4 text-base font-semibold text-[var(--text-primary)] font-montserrat">
+      <h3 className="mb-1 flex items-center gap-1.5 text-base font-semibold text-[var(--text-primary)] font-montserrat">
         Principais categorias e temas
+        <MetricHelp term="themes" />
       </h3>
+      <p className="mb-4 text-xs text-[var(--text-tertiary)]">
+        Ordenado por relevância (junta quantidade e consistência), não só pelo número de menções.
+      </p>
 
       {summary.topCategories.length === 0 ? (
         <div className="text-sm text-[var(--text-tertiary)]">
@@ -25,7 +30,12 @@ export default function InsightsStatisticsThemesSection({
                   key={cat.name}
                   className="flex justify-between text-[var(--text-secondary)]">
                   <span>{cat.name}</span>
-                  <span className="text-[var(--text-tertiary)]">{cat.count}x</span>
+                  <span className="text-[var(--text-tertiary)]">
+                    {cat.count}x
+                    {typeof cat.proportion === 'number'
+                      ? ` · ${Math.round(cat.proportion * 100)}%`
+                      : ''}
+                  </span>
                 </li>
               ))}
             </ul>
@@ -46,7 +56,12 @@ export default function InsightsStatisticsThemesSection({
                     key={kw.name}
                     className="flex justify-between text-[var(--text-secondary)]">
                     <span>{kw.name}</span>
-                    <span className="text-[var(--text-tertiary)]">{kw.count}x</span>
+                    <span className="text-[var(--text-tertiary)]">
+                      {kw.count}x
+                      {typeof kw.proportion === 'number'
+                        ? ` · ${Math.round(kw.proportion * 100)}%`
+                        : ''}
+                    </span>
                   </li>
                 ))}
               </ul>

@@ -77,15 +77,17 @@ Caso o provedor LLM externo esteja indisponível ou retorne uma resposta inváli
 
 Isso garante que uma instabilidade do provedor externo não corrompa o painel com dados vazios.
 
+> Observação: o saneamento de termos (remoção das palavras das perguntas e de *stopwords*) roda **sempre** no pós-processamento das keywords devolvidas pelo LLM — não é um caminho de exceção. O fallback a partir da própria mensagem só entra em ação quando a lista saneada fica vazia.
+
 ---
 
 ## Detalhes Técnicos
 
 - O contexto de negócio da empresa (`collecting_data`) é injetado no prompt para personalizar as análises
 - O processamento é **assíncrono** — não bloqueia a interface do cliente durante a coleta
-- Limite padrão: 50 feedbacks por execução (máx. 100), com mínimo de 5 para análise relevante
+- Limite padrão: 50 feedbacks por execução (máx. 100), com mínimo de 10 para análise relevante
 - Os resultados são persistidos em `feedback_analysis` (por feedback) e `feedback_insights_report` (por escopo)
-- O provedor LLM é configurável via variável de ambiente `IA_ANALYZE_REMOTE_URL`, sem acoplamento a fornecedor específico
+- O serviço usa o Google Gemini (`@google/genai`, modelo `gemini-2.5-flash` fixo no código), configurável via `GEMINI_API_KEY`; trocar de provedor exige alteração de código. A variável `IA_ANALYZE_REMOTE_URL` apenas aponta a URL do próprio serviço `ia-analyze`, não troca de fornecedor
 
 ---
 

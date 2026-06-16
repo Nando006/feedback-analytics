@@ -26,6 +26,13 @@ export type BuildIaPromptByScopeParams = {
 export type PromptExpectedFeedbackItem = {
   feedback_id: string;
   sentiment: 'positive' | 'neutral' | 'negative';
+  sentiment_score: number;
+  confidence: number;
+  aspects: Array<{
+    aspect: string;
+    sentiment: 'positive' | 'neutral' | 'negative';
+    sentiment_score: number;
+  }>;
   categories: string[];
   keywords: string[];
 };

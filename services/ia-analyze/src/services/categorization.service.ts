@@ -3,7 +3,9 @@ import {
   buildForbiddenTerms,
   sanitizeTermList,
 } from '../lib/termProcessing.js';
+import { canonicalizeCategories } from '../lib/categoryTaxonomy.js';
 import type { IaAnalyzeFeedbackInput } from '../../../../shared/interfaces/contracts/ia-analyze/input.contract.js';
+import type { IaAnalyzeScopeType } from '../../../../shared/interfaces/contracts/ia-analyze/scope.contract.js';
 
 /**
  * Essa função ela extraí categorias que realmente fazem sentido ser extraídas
@@ -19,6 +21,7 @@ export function extractCategories(
   feedback: IaAnalyzeFeedbackInput,
   rawCategories: string[],
   fallbackKeywords: string[],
+  scopeType: IaAnalyzeScopeType,
 ): string[] {
   const messageNormalized = normalizeForComparison(feedback.message ?? '');
   const forbiddenTerms = buildForbiddenTerms(feedback);
@@ -30,9 +33,7 @@ export function extractCategories(
     maxCount: 4,
   });
 
-  if (categories.length === 0) {
-    return fallbackKeywords.slice(0, 2);
-  }
-
-  return categories;
+  // Mapeia para a taxonomia fixa do escopo (canônicos + emergentes).
+  const base = categories.length === 0 ? fallbackKeywords.slice(0, 2) : categories;
+  return canonicalizeCategories(scopeType, base);
 }

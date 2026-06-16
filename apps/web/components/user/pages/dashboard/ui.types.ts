@@ -1,5 +1,5 @@
 import type { LoaderUserDashboard } from 'src/routes/loaders/loaderUserDashboard';
-import type { LoaderUserProtected } from 'src/routes/loaders/loaderUserProtected';
+import type { QuestionMetric } from 'lib/interfaces/domain/feedback.domain';
 
 /**
  * Props da seção de métricas principais do dashboard.
@@ -10,23 +10,6 @@ export interface SectionMetricProps {
   averageRating: number;
   positive: number;
   negative: number;
-}
-
-/**
- * Tipo auxiliar dos feedbacks recentes retornados pelo loader do dashboard.
- * Usado em: components/user/pages/dashboard/SectionLatestFeedbacks.tsx.
- */
-export type LatestFeedbacks = Awaited<
-  ReturnType<typeof LoaderUserDashboard>
->['latestFeedbacks'];
-
-/**
- * Props da seção de feedbacks recentes.
- * Usado em: components/user/pages/dashboard/SectionLatestFeedbacks.tsx.
- */
-export interface LatestFeedbacksProps {
-  latestFeedbacks: LatestFeedbacks;
-  latestLimit: number;
 }
 
 /**
@@ -50,23 +33,14 @@ export interface EvaluationDistributionProps {
  * Usado em: components/user/pages/dashboard/SectionSatisfactionRadar.tsx.
  */
 export interface SectionSatisfactionRadarProps {
-  positive: number;
-  neutral: number;
-  negative: number;
+  /** Estatísticas do escopo (indicadores de satisfação + sentimento IA). */
+  stats?: DashboardStats | null;
 }
 
 /**
- * Tipo auxiliar de dados de coleta vindos do loader protegido.
- * Usado em: components/user/pages/dashboard/SectionCollectingStrategy.tsx.
+ * Props do card "Perguntas com menor nota" (atalho para a aba Perguntas).
+ * Usado em: components/user/pages/dashboard/SectionLowestQuestions.tsx.
  */
-export type CollectingData = Awaited<
-  ReturnType<typeof LoaderUserProtected>
->['collecting'];
-
-/**
- * Props da seção de estratégia de coleta.
- * Usado em: components/user/pages/dashboard/SectionCollectingStrategy.tsx.
- */
-export interface SectionCollectingStrategyProps {
-  collecting: CollectingData | null;
+export interface SectionLowestQuestionsProps {
+  questions: QuestionMetric[];
 }

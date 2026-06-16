@@ -1,13 +1,11 @@
 import ErrorPage from "components/user/shared/handling/errorPage";
-import type { ShouldRevalidateFunctionArgs } from "react-router-dom";
 import Dashboard from "pages/user/dashboard";
 import EditCustomer from "pages/user/edit/editCustomers";
 import FeedbacksAll from "pages/user/feedbacks/feedbacksAll";
 import Feedbacks from "pages/user/feedbacks/feedbacks";
-import QRCodeEnterprise from "pages/user/qrcodes/qrcodeEnterprise";
 import FeedbacksInsightsReport from "pages/user/feedbacks/insights/feedbackInsightsReport";
 import LayoutUser from "layouts/user";
-import { Route } from "react-router-dom";
+import { Route, redirect } from "react-router-dom";
 import { LoaderUserProtected } from "src/routes/loaders/loaderUserProtected";
 import { LoaderUserDashboard } from "src/routes/loaders/loaderUserDashboard";
 import { LoaderFeedbacksAll } from "src/routes/loaders/loaderFeedbacksAll";
@@ -16,10 +14,11 @@ import { LoaderFeedbacksAnalyticsPositive } from "src/routes/loaders/loaderFeedb
 import { LoaderFeedbacksAnalyticsNegative } from "src/routes/loaders/loaderFeedbacksAnalyticsNegative";
 import { LoaderFeedbacksInsightsStatistics } from "src/routes/loaders/loaderFeedbacksInsightsStatistics";
 import { LoaderFeedbacksInsightsEmotional } from "./loaders/loaderFeedbacksInsightsEmotional";
-import { LoaderQrCodeEnterprise } from "./loaders/loaderQrCodeEnterprise";
+import { LoaderFeedbacksInsightsQuestions } from "./loaders/loaderFeedbacksInsightsQuestions";
 import Profile from "pages/user/profile";
 import FeedbacksInsightsEmotional from "pages/user/feedbacks/insights/feedbacksInsightsEmotional";
 import FeedbacksInsightsStatistics from "pages/user/feedbacks/insights/feedbacksInsightsStatistics";
+import FeedbacksInsightsQuestions from "pages/user/feedbacks/insights/feedbacksInsightsQuestions";
 import FeedbacksAnalyticsPositive from "pages/user/feedbacks/analytics/feedbacksAnalyticsPositive";
 import FeedbacksAnalyticsNegative from "pages/user/feedbacks/analytics/feedbacksAnalyticsNegative";
 import FeedbacksAnalyticsAll from "pages/user/feedbacks/analytics/feedbacksAnalyticsAll";
@@ -27,34 +26,21 @@ import { ActionCollectingData } from "./actions/actionCollectingData";
 import { ActionTypesFeedback } from "./actions/actionTypesFeedback";
 import { ActionFeedbackInsightsReport } from "./actions/actionFeedbackInsightsReport";
 import EditTypeFeedbacks from "pages/user/edit/editTypeFeedbacks";
-import EditFeedbackSettings from "pages/user/edit/editFeedbackSettings";
 import EditFeedbackProducts from "pages/user/edit/editFeedbackProducts";
 import EditFeedbackServices from "pages/user/edit/editFeedbackServices";
 import EditFeedbackDepartments from "pages/user/edit/editFeedbackDepartments";
+import EditCompanyData from "pages/user/edit/editCompanyData";
+import EditFeedbackGeneral from "pages/user/edit/editFeedbackGeneral";
+import EditCatalogItem from "pages/user/edit/editCatalogItem";
 import { ActionProfile } from "./actions/actionProfile";
-import { ActionQrCodeEnterprise } from "./actions/actionQrCodeEnterprise";
-import { ActionQrCodeCatalog } from "./actions/actionQrCodeCatalog";
 import { ActionLogout } from "./actions/actionLogout";
-import { ActionFeedbackSettings } from "./actions/actionFeedbackSettings";
 import { ActionFeedbackCatalogPage } from "./actions/actionFeedbackCatalogPage";
+import { ActionFeedbackGeneralPage } from "./actions/actionFeedbackGeneralPage";
 import { LoaderQrCodeProducts } from "./loaders/loaderQrCodeProducts";
 import { LoaderQrCodeServices } from "./loaders/loaderQrCodeServices";
 import { LoaderQrCodeDepartments } from "./loaders/loaderQrCodeDepartments";
-
-function shouldRevalidateUserRoute({
-  formMethod,
-  formAction,
-  defaultShouldRevalidate,
-}: ShouldRevalidateFunctionArgs) {
-  const isPost = String(formMethod ?? "").toUpperCase() === "POST";
-  const actionPath = String(formAction ?? "");
-
-  if (isPost && actionPath.includes("/user/qrcode/")) {
-    return false;
-  }
-
-  return defaultShouldRevalidate;
-}
+import { LoaderFeedbackGeneral } from "./loaders/loaderFeedbackGeneral";
+import { LoaderCatalogItem } from "./loaders/loaderCatalogItem";
 
 export function RouteUser() {
   return (
@@ -64,7 +50,6 @@ export function RouteUser() {
       errorElement={<ErrorPage />}
       element={<LayoutUser />}
       loader={LoaderUserProtected}
-      shouldRevalidate={shouldRevalidateUserRoute}
       action={ActionLogout}
     >
       <Route
@@ -79,21 +64,7 @@ export function RouteUser() {
       />
       <Route
         path="qrcode/enterprise"
-        loader={LoaderQrCodeEnterprise}
-        action={ActionQrCodeEnterprise}
-        element={<QRCodeEnterprise />}
-      />
-      <Route
-        path="qrcode/products"
-        action={ActionQrCodeCatalog}
-      />
-      <Route
-        path="qrcode/services"
-        action={ActionQrCodeCatalog}
-      />
-      <Route
-        path="qrcode/departments"
-        action={ActionQrCodeCatalog}
+        loader={() => redirect("/user/edit/feedback-general")}
       />
       <Route
         path="feedbacks/all"
@@ -131,9 +102,15 @@ export function RouteUser() {
         loader={LoaderFeedbacksInsightsStatistics}
         element={<FeedbacksInsightsStatistics />}
       />
+      <Route
+        path="insights/questions"
+        loader={LoaderFeedbacksInsightsQuestions}
+        element={<FeedbacksInsightsQuestions />}
+      />
       <Route path="edit/customers" element={<EditCustomer />} />
       <Route
         path="edit/collecting-data-enterprise"
+        element={<EditCompanyData />}
         action={ActionCollectingData}
       />
       <Route
@@ -143,8 +120,7 @@ export function RouteUser() {
       />
       <Route
         path="edit/feedback-settings"
-        element={<EditFeedbackSettings />}
-        action={ActionFeedbackSettings}
+        loader={() => redirect("/user/edit/types-feedback")}
       />
       <Route
         path="edit/feedback-products"
@@ -163,6 +139,18 @@ export function RouteUser() {
         loader={LoaderQrCodeDepartments}
         element={<EditFeedbackDepartments />}
         action={ActionFeedbackCatalogPage}
+      />
+      <Route
+        path="edit/feedback/:kind/:itemId"
+        loader={LoaderCatalogItem}
+        element={<EditCatalogItem />}
+        action={ActionFeedbackCatalogPage}
+      />
+      <Route
+        path="edit/feedback-general"
+        loader={LoaderFeedbackGeneral}
+        element={<EditFeedbackGeneral />}
+        action={ActionFeedbackGeneralPage}
       />
     </Route>
   );

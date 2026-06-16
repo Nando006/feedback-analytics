@@ -34,6 +34,8 @@ O CI automático (lint, testes, build) roda em push e Pull Requests nas branches
 | Deploy API Gateway | `deploy-api.yml` | `workflow_dispatch` manual | Deploy do backend (`backends/api-gateway`) na Vercel |
 | Deploy IA Analyze | `deploy-ia-analyze.yml` | `workflow_dispatch` manual | Deploy do serviço de IA (`services/ia-analyze`) na Vercel |
 
+> **Nota:** apenas os workflows em `.github/workflows/` na raiz são executados pelo GitHub Actions. Os arquivos em `services/ia-analyze/.github/workflows/` (`ci.yml`, `deploy-web.yml`) são legados/inertes e não rodam.
+
 ---
 
 ## Por que foi construído assim
@@ -177,8 +179,10 @@ Se o PR vier de qualquer outra branch, o job falha e o merge é bloqueado pelo G
 
 | Branch | Comando Vercel | Resultado |
 |---|---|---|
-| `homolog` | `vercel deploy --yes --token ...` | URL de preview dinâmica |
+| `homolog` | `vercel deploy --yes --token ...` | Deploy de preview com alias fixo `feedback-analytics-web-homolog.vercel.app` |
 | `main` | `vercel deploy --yes --prod --token ...` | Deploy em produção |
+
+Em `homolog`, após fixar o alias estável o workflow instala o Playwright (`chromium`), roda os testes E2E (`npm run test:e2e`) contra esse alias e publica o `playwright-report` como artefato.
 
 **Secrets utilizados:** `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID_WEB`
 
@@ -194,13 +198,15 @@ Se o PR vier de qualquer outra branch, o job falha e o merge é bloqueado pelo G
 
 **Dependências instaladas:** `shared` + `backends/api-gateway`
 
+**Bundle:** antes do deploy, uma etapa de `esbuild` empacota `backends/api-gateway/index.ts` em `backends/api-gateway/_bundle.cjs` (o `src` apontado pelo `vercel.json`).
+
 **Config Vercel:** `--local-config backends/api-gateway/vercel.json`
 
 **Comportamento por branch:**
 
 | Branch | Comando Vercel | Resultado |
 |---|---|---|
-| `homolog` | `vercel deploy --yes --token ...` | URL de preview dinâmica |
+| `homolog` | `vercel deploy --yes --token ...` | Deploy de preview com alias fixo `feedback-analytics-api-homolog.vercel.app` |
 | `main` | `vercel deploy --yes --prod --token ...` | Deploy em produção |
 
 **Secrets utilizados:** `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID_API_GATEWAY`
@@ -223,7 +229,7 @@ Se o PR vier de qualquer outra branch, o job falha e o merge é bloqueado pelo G
 
 | Branch | Comando Vercel | Resultado |
 |---|---|---|
-| `homolog` | `vercel deploy --yes --token ...` | URL de preview dinâmica |
+| `homolog` | `vercel deploy --yes --token ...` | Deploy de preview com alias fixo `feedback-analytics-ia-homolog.vercel.app` |
 | `main` | `vercel deploy --yes --prod --token ...` | Deploy em produção |
 
 **Secrets utilizados:** `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID_IA_ANALYZE`

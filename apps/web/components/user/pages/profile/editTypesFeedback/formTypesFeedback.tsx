@@ -1,6 +1,7 @@
 import type { CollectingDataEnterprise } from 'lib/interfaces/entities/enterprise.entity';
 import { useCallback, useState } from 'react';
 import { Form, Link, useRouteLoaderData } from 'react-router-dom';
+import HelpHint from 'components/user/shared/HelpHint';
 
 const FEEDBACK_TYPES = [
   {
@@ -106,6 +107,12 @@ export default function FormTypesFeedback() {
     }
   }, []);
 
+  // Trava o Salvar até algum toggle divergir do estado salvo. Compara com o loader
+  // (que revalida após o submit), então volta a desabilitar sozinho ao salvar.
+  const isDirty = FEEDBACK_TYPES.some(
+    (type) => localState[type.name] !== (collecting?.[type.savedKey] ?? false),
+  );
+
   return (
     <Form method="post" onSubmit={handleSubmit} className="space-y-6">
       {FEEDBACK_TYPES.map((type) => {
@@ -137,6 +144,7 @@ export default function FormTypesFeedback() {
                 <div>
                   <div className="flex items-center gap-2">
                     <h3 className="text-sm font-semibold text-(--text-primary)">{type.title}</h3>
+                    <HelpHint topic="feedbackTypeToggle" />
                     {savedEnabled && (
                       <span className="rounded-full bg-(--positive)/15 px-2 py-0.5 text-xs font-semibold text-(--positive)">
                         Ativo
@@ -223,7 +231,8 @@ export default function FormTypesFeedback() {
       <div className="flex items-center justify-end gap-3 border-t border-(--quaternary-color)/10 pt-4">
         <button
           type="submit"
-          className="btn-primary font-poppins group flex items-center gap-2 px-8 py-3"
+          disabled={!isDirty}
+          className="btn-primary font-poppins group flex items-center gap-2 px-8 py-3 disabled:cursor-not-allowed disabled:opacity-60"
         >
           <span>Salvar Alterações</span>
           <svg

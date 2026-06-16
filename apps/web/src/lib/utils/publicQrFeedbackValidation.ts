@@ -3,7 +3,7 @@ import type {
   FeedbackQuestionAnswerInput,
   FeedbackSubquestionAnswerInput,
 } from 'lib/interfaces/contracts/qrcode/question.contract';
-import { REQUIRED_QUESTION_COUNT } from './publicQrFeedbackForm';
+import { MAX_QUESTION_COUNT } from './publicQrFeedbackForm';
 
 export const MAX_SUBANSWER_COUNT = 9;
 
@@ -13,7 +13,7 @@ export const PUBLIC_QR_FEEDBACK_ERRORS = {
   missingMessage: 'Por favor, escreva seu feedback.',
   questionsNotConfigured:
     'Perguntas de feedback ainda não configuradas para este QR Code.',
-  missingAnswers: `Responda as ${REQUIRED_QUESTION_COUNT} perguntas antes de enviar.`,
+  missingAnswers: 'Responda todas as perguntas antes de enviar.',
   missingSubanswers: 'Responda todas as subperguntas antes de enviar.',
 } as const;
 
@@ -66,7 +66,9 @@ export function parsePublicQrAnswersInput(
 
   try {
     const parsed = JSON.parse(raw) as unknown;
-    if (!Array.isArray(parsed) || parsed.length !== REQUIRED_QUESTION_COUNT) {
+    // Contagem variável: aceita de 0 a MAX_QUESTION_COUNT respostas. O controller
+    // valida que batem exatamente com as perguntas ativas do escopo.
+    if (!Array.isArray(parsed) || parsed.length > MAX_QUESTION_COUNT) {
       return null;
     }
 
@@ -99,12 +101,12 @@ export function parsePublicQrAnswersInput(
           Boolean(entry?.question_id) && Boolean(entry?.answer_value),
       );
 
-    if (normalized.length !== REQUIRED_QUESTION_COUNT) {
+    if (normalized.length !== parsed.length) {
       return null;
     }
 
     const questionIds = normalized.map((entry) => entry.question_id);
-    if (new Set(questionIds).size !== REQUIRED_QUESTION_COUNT) {
+    if (new Set(questionIds).size !== normalized.length) {
       return null;
     }
 

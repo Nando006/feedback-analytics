@@ -6,10 +6,14 @@ import InsightsEmotionalEmptyState from 'components/user/pages/feedbacksInsights
 import InsightsEmotionalThermometerSection from 'components/user/pages/feedbacksInsightsEmotional/InsightsEmotionalThermometerSection';
 import InsightsEmotionalClustersSection from 'components/user/pages/feedbacksInsightsEmotional/InsightsEmotionalClustersSection';
 import type { EmotionalCluster } from 'components/user/pages/feedbacksInsightsEmotional/ui.types';
+import PageHeader from 'components/user/shared/PageHeader';
+import InsightsEmotionalSkeleton from 'components/user/pages/feedbacks/insights/InsightsEmotionalSkeleton';
+import { useScopedFeedbackAnalysis } from 'src/lib/hooks/useScopedFeedbackAnalysis';
 
 export default function FeedbacksInsigthsEmotional() {
-  const { items, summary, error } =
+  const initialData =
     useLoaderData<Awaited<ReturnType<typeof LoaderFeedbacksInsightsEmotional>>>();
+  const { items, summary, loading, error } = useScopedFeedbackAnalysis(initialData);
 
   const clusters = useMemo<EmotionalCluster[]>(() => {
     if (!items.length) return [];
@@ -60,36 +64,53 @@ export default function FeedbacksInsigthsEmotional() {
       });
     }
 
+    const divergent = items.filter((i) => i.discrepancy != null).slice(0, 5);
+    if (divergent.length > 0) {
+      clustersOut.push({
+        title: 'Divergências (nota × texto)',
+        description:
+          'A nota em estrelas e o tom do comentário não combinam — ex.: nota alta mas comentário negativo (cliente insatisfeito que mesmo assim deu nota boa) ou nota baixa com comentário positivo.',
+        tone: 'negative',
+        items: divergent,
+      });
+    }
+
     return clustersOut;
   }, [items]);
 
-  if (error) {
-    return <InsightsEmotionalErrorState error={error} />;
-  }
-
-  if (!summary || summary.totalAnalyzed === 0) {
-    return <InsightsEmotionalEmptyState />;
-  }
-
-  const total = summary.totalAnalyzed;
-  const positivePct = Math.round(
-    (summary.sentiments.positive / total) * 100,
-  );
-  const neutralPct = Math.round((summary.sentiments.neutral / total) * 100);
-  const negativePct = Math.round(
-    (summary.sentiments.negative / total) * 100,
-  );
+  const total = summary?.totalAnalyzed ?? 0;
+  const positivePct = total
+    ? Math.round((summary!.sentiments.positive / total) * 100)
+    : 0;
+  const neutralPct = total
+    ? Math.round((summary!.sentiments.neutral / total) * 100)
+    : 0;
+  const negativePct = total
+    ? Math.round((summary!.sentiments.negative / total) * 100)
+    : 0;
 
   return (
     <div className="font-work-sans space-y-6">
-      <InsightsEmotionalThermometerSection
-        summary={summary}
-        positivePct={positivePct}
-        neutralPct={neutralPct}
-        negativePct={negativePct}
-      />
+      <PageHeader />
 
-      <InsightsEmotionalClustersSection clusters={clusters} />
+      {loading ? (
+        <InsightsEmotionalSkeleton />
+      ) : error ? (
+        <InsightsEmotionalErrorState error={error} />
+      ) : !summary || summary.totalAnalyzed === 0 ? (
+        <InsightsEmotionalEmptyState />
+      ) : (
+        <>
+          <InsightsEmotionalThermometerSection
+            summary={summary}
+            positivePct={positivePct}
+            neutralPct={neutralPct}
+            negativePct={negativePct}
+          />
+
+          <InsightsEmotionalClustersSection clusters={clusters} />
+        </>
+      )}
     </div>
   );
 }

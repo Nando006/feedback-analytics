@@ -8,6 +8,10 @@ export interface SectionQrHeaderProps {
   qrLoading: boolean;
   qrError: string | null;
   onToggleQr: () => void;
+  /** Título do cartão (padrão: "QR Code para Feedback"). */
+  title?: string;
+  /** Rótulo do sujeito (padrão: "Empresa:"); use "Item:" em escopo de catálogo. */
+  subjectLabel?: string;
 }
 
 /**

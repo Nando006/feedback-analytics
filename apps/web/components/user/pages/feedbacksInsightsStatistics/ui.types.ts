@@ -1,4 +1,5 @@
 import type { LoaderFeedbacksInsightsStatistics } from 'src/routes/loaders/loaderFeedbacksInsightsStatistics';
+import type { AspectSentiment } from 'lib/interfaces/domain/feedback.domain';
 
 /**
  * Props do estado de erro da tela de insights estatísticos.
@@ -33,4 +34,12 @@ export interface InsightsStatisticsSentimentSectionProps {
  */
 export interface InsightsStatisticsThemesSectionProps {
   summary: NonNullable<Summary>;
+}
+
+/**
+ * Props da seção de aspectos (ABSA) por impacto.
+ * Usado em: components/user/pages/feedbacksInsightsStatistics/InsightsStatisticsAspectsSection.tsx.
+ */
+export interface InsightsStatisticsAspectsSectionProps {
+  aspects: AspectSentiment[] | undefined;
 }

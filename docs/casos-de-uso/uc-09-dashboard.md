@@ -39,8 +39,11 @@
 
 **Cenários a cobrir:**
 
-- **[CT-UC09-01]** ✅ *Coberto E2E* - Caminho feliz: gestor autenticado acessa o dashboard e visualiza os 4 cards de métricas, gráficos e os últimos 5 feedbacks com dados reais.
-- **[CT-UC09-02]** ✅ *Coberto E2E* - Caminho feliz — toast de login: acessar o dashboard com `?login=success` na URL deve exibir o toast de boas-vindas e remover o parâmetro da URL.
-- **[CT-UC09-03]** ✅ *Coberto E2E* - Exceção — sem feedbacks: empresa sem feedbacks deve exibir o dashboard com zeros e a mensagem de lista vazia, sem erros.
-- **[CT-UC09-04]** ❌ *Cenário não coberto* - Exceção — erro de carregamento: simular falha na API de estatísticas deve exibir a mensagem de erro inline no topo, sem redirecionar.
-- **[CT-UC09-05]** ✅ *Coberto E2E* - Exceção — sessão expirada: acessar o dashboard com sessão inválida deve redirecionar para `/login`.
+- **[CT-UC09-01]** ✅ *Coberto E2E* - Caminho feliz: gestor autenticado acessa o dashboard e visualiza a saudação personalizada ("Olá, ..."). (Spec: `[CT-UC09-01] Dashboard carrega e exibe saudação personalizada`.)
+- **[CT-UC09-02]** ✅ *Coberto E2E* - Métrica de total: o dashboard exibe a métrica de total de feedbacks. (Spec: `[CT-UC09-02] Dashboard exibe métrica de total de feedbacks`.)
+- **[CT-UC09-03]** ✅ *Coberto E2E* - Distribuição de sentimentos: o dashboard exibe a distribuição de sentimentos (positivo/neutro/negativo). (Spec: `[CT-UC09-03] Dashboard exibe distribuição de sentimentos`.)
+- **[CT-UC09-04]** ✅ *Coberto E2E* - Últimos feedbacks: o dashboard exibe a seção de últimos feedbacks (ou o estado "sem feedbacks"). (Spec: `[CT-UC09-04] Dashboard exibe seção de últimos feedbacks`.)
+- **[CT-UC09-05]** ✅ *Coberto E2E* - Navegação: clicar em "Ver feedbacks" navega para a listagem completa (`/user/feedbacks/all`). (Spec: `[CT-UC09-05] Clique em "Ver feedbacks" navega para listagem completa`.)
+- **[CT-UC09-06]** 📝 *Planejado / não implementado* - Caminho feliz — toast de login: acessar o dashboard com `?login=success` na URL deve exibir o toast de boas-vindas e remover o parâmetro da URL.
+- **[CT-UC09-07]** ❌ *Cenário não coberto* - Exceção — erro de carregamento: simular falha na API de estatísticas deve exibir a mensagem de erro inline no topo, sem redirecionar.
+- **[CT-UC09-08]** 📝 *Planejado / não implementado* - Exceção — sessão expirada: acessar o dashboard com sessão inválida deve redirecionar para `/login`. (Coberto de forma análoga em UC-12 via rota protegida.)

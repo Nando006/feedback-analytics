@@ -2,7 +2,7 @@
 
 ## O Que É
 
-O `ia-analyze` é um **serviço Serverless independente** responsável por uma única coisa: receber lotes de feedbacks, chamar o **provedor LLM externo configurável** e retornar análises estruturadas.
+O `ia-analyze` é um **serviço Serverless independente** responsável por uma única coisa: receber lotes de feedbacks, chamar o **Google Gemini** (SDK `@google/genai`, modelo `gemini-2.5-flash`) e retornar análises estruturadas.
 
 Ele não tem banco de dados, não autentica usuários e não conhece a lógica de negócio do sistema. É um processador puro de texto.
 
@@ -51,7 +51,7 @@ O valor deve ser idêntico ao configurado no API Gateway via variável de ambien
 
 - **Runtime:** Node.js 20+ com TypeScript (ESM)
 - **Framework:** Express
-- **Modelo de IA:** Provedor LLM externo configurável via `GEMINI_API_KEY` (atualmente Google Gemini)
+- **Modelo de IA:** Google Gemini (`@google/genai`, modelo `gemini-2.5-flash` fixo no código), configurável via `GEMINI_API_KEY`. Trocar de provedor exige alteração de código (`gemini.provider.ts`) — não é fornecedor-agnóstico.
 - **Testes:** Vitest
 - **Deploy:** Vercel (serverless)
 

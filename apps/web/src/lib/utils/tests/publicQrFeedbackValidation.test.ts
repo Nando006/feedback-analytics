@@ -81,13 +81,42 @@ describe('[Unidade] publicQrFeedbackValidation', () => {
     ]);
   });
 
-  it('retorna null no parse de answers quando payload é inválido', () => {
+  it('parseia answers com contagem variável (1 pergunta ativa)', () => {
     const parsed = parsePublicQrAnswersInput(
       JSON.stringify([
         {
           question_id: 'aaaaaaa1-aaaa-4aaa-8aaa-aaaaaaaaaaa1',
-          answer_value: 'BOA',
+          answer_value: 'boa',
         },
+      ]),
+    );
+
+    expect(parsed).toEqual([
+      {
+        question_id: 'aaaaaaa1-aaaa-4aaa-8aaa-aaaaaaaaaaa1',
+        answer_value: 'BOA',
+      },
+    ]);
+  });
+
+  it('retorna null no parse de answers quando excede o máximo (mais de 3)', () => {
+    const parsed = parsePublicQrAnswersInput(
+      JSON.stringify([
+        { question_id: 'aaaaaaa1-aaaa-4aaa-8aaa-aaaaaaaaaaa1', answer_value: 'BOA' },
+        { question_id: 'aaaaaaa2-aaaa-4aaa-8aaa-aaaaaaaaaaa2', answer_value: 'OTIMA' },
+        { question_id: 'aaaaaaa3-aaaa-4aaa-8aaa-aaaaaaaaaaa3', answer_value: 'MEDIANA' },
+        { question_id: 'aaaaaaa4-aaaa-4aaa-8aaa-aaaaaaaaaaa4', answer_value: 'RUIM' },
+      ]),
+    );
+
+    expect(parsed).toBeNull();
+  });
+
+  it('retorna null no parse de answers com IDs duplicados', () => {
+    const parsed = parsePublicQrAnswersInput(
+      JSON.stringify([
+        { question_id: 'aaaaaaa1-aaaa-4aaa-8aaa-aaaaaaaaaaa1', answer_value: 'BOA' },
+        { question_id: 'aaaaaaa1-aaaa-4aaa-8aaa-aaaaaaaaaaa1', answer_value: 'OTIMA' },
       ]),
     );
 

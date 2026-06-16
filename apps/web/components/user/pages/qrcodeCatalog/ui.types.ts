@@ -1,22 +1,8 @@
-import type { QrCodeCatalogLoadData } from 'src/routes/load/loadQrCodeCatalog';
-import type {
-  QrCatalogQuestion,
-  QrCatalogQuestionInput,
-} from 'src/services/serviceCollectionPoints';
-
-/**
- * Props da página de QR Code por catálogo.
- * Usado em: components/user/pages/qrcodeCatalog/QrCodeCatalogPage.tsx.
- */
-export interface QrCodeCatalogPageProps {
-  title: string;
-  subtitle: string;
-  data: QrCodeCatalogLoadData;
-}
+import type { QrCatalogQuestion } from 'src/services/serviceCollectionPoints';
 
 /**
  * Payload de retorno da action de ativação/desativação de QR por item.
- * Usado em: components/user/pages/qrcodeCatalog/QrCodeCatalogPage.tsx.
+ * Usado em: pages/user/edit/editCatalogItem.tsx.
  */
 export interface QrCatalogActionResponse {
   ok?: boolean;
@@ -26,29 +12,4 @@ export interface QrCatalogActionResponse {
   questions?: QrCatalogQuestion[];
   questionsSaved?: boolean;
   error?: string;
-}
-
-/**
- * Props do preview visual do QR Code.
- * Usado em: components/user/pages/qrcodeCatalog/QrCodeCatalogPage.tsx.
- */
-export interface QrPreviewImageProps {
-  src: string;
-  alt: string;
-}
-
-/**
- * Props do card de item do catálogo com QR.
- * Usado em: components/user/pages/qrcodeCatalog/QrCodeCatalogPage.tsx.
- */
-export interface QrCatalogItemCardProps {
-  item: QrCodeCatalogLoadData['items'][number];
-  enterpriseId: string;
-  isPending: boolean;
-  isSavingQuestions: boolean;
-  onToggle: (catalogItemId: string, isActive: boolean) => void;
-  onSaveQuestions: (
-    catalogItemId: string,
-    questions: QrCatalogQuestionInput[],
-  ) => void;
 }

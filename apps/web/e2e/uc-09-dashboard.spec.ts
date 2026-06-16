@@ -23,9 +23,10 @@ test.describe('UC-09: Dashboard', () => {
     ).toBeVisible();
   });
 
-  test('[CT-UC09-04] Dashboard exibe seção de últimos feedbacks', async ({ page }) => {
+  test('[CT-UC09-04] Dashboard exibe seção de relatório de insights', async ({ page }) => {
+    // A antiga seção "últimos feedbacks" foi substituída pelo Relatório de Insights.
     await expect(
-      page.getByText(/ltimos feedbacks|feedbacks recentes|sem feedbacks/i).first(),
+      page.getByText(/relat.rio de insights/i).first(),
     ).toBeVisible();
   });
 

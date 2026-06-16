@@ -19,8 +19,9 @@ export default function FormNameUser({
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isDirty },
     getValues,
+    reset,
   } = useForm<NameFormValues>({
     resolver: zodResolver(nameSchema),
     mode: 'onSubmit',
@@ -33,10 +34,11 @@ export default function FormNameUser({
 
     if (actionData.ok) {
       toast.success('Nome atualizado!', 'Dados salvos com sucesso');
+      reset(getValues()); // salvou: zera o "dirty" sem precisar recarregar.
     } else {
       toast.error('Erro ao salvar dados', actionData.message || 'Tente novamente em instantes');
     }
-  }, [actionData, toast]);
+  }, [actionData, toast, reset, getValues]);
 
   const onSubmit = () => {
     const v = getValues();
@@ -75,7 +77,8 @@ export default function FormNameUser({
 
       <div className="flex justify-end">
         <button
-          className="btn-primary font-poppins px-6 py-2.5 text-sm font-medium rounded-lg transition-all hover:shadow-lg"
+          disabled={!isDirty}
+          className="btn-primary font-poppins px-6 py-2.5 text-sm font-medium rounded-lg transition-all hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60"
           type="submit">
           Salvar alterações
         </button>

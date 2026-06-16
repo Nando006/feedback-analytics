@@ -46,16 +46,17 @@ Crie um arquivo `.env` em cada serviço com as variáveis abaixo.
 ```env
 VITE_SUPABASE_URL=https://seu-projeto.supabase.co
 VITE_SUPABASE_ANON_KEY=sua_anon_key_aqui
-VITE_API_GATEWAY_URL=http://localhost:3000
+VITE_API_BASE_URL=http://localhost:3000   # em produção/preview na Vercel pode ficar vazio (derivação por hostname)
 ```
 
 ### `backends/api-gateway/.env`
 
 ```env
-SUPABASE_URL=https://seu-projeto.supabase.co
-SUPABASE_SERVICE_ROLE_KEY=sua_service_role_key_aqui
-IA_ANALYZE_INTERNAL_TOKEN=um_token_secreto_compartilhado
-IA_ANALYZE_URL=http://localhost:4100
+VITE_SUPABASE_URL=https://seu-projeto.supabase.co
+VITE_SUPABASE_ANON_KEY=sua_anon_key_aqui
+IA_ANALYZE_EXECUTION_MODE=local
+IA_ANALYZE_REMOTE_TOKEN=um_token_secreto_compartilhado
+IA_ANALYZE_REMOTE_URL=http://localhost:4100
 PORT=3000
 ```
 
@@ -68,21 +69,16 @@ PORT=4100
 ```
 
 :::warning Token Compartilhado
-O `IA_ANALYZE_INTERNAL_TOKEN` deve ser **idêntico** no API Gateway e no IA Analyze. Ele autentica a comunicação interna entre os serviços. Use uma string longa e aleatória (mínimo 32 caracteres).
+O token interno tem **nomes diferentes nos dois lados**: no API Gateway é `IA_ANALYZE_REMOTE_TOKEN`, no IA Analyze é `IA_ANALYZE_INTERNAL_TOKEN`. Ambos devem ter o **mesmo valor** — o Gateway o envia no header `x-ia-analyze-token` e o serviço valida. Use uma string longa e aleatória (mínimo 32 caracteres).
 :::
 
 ---
 
 ## Passo 4 — Configure o Banco de Dados
 
-Aplique as migrations no Supabase:
+O schema do banco está versionado em `database/sql/` como arquivos DDL organizados por tipo de objeto (`tables/`, `policies/`, `triggers/`, `functions/`). Aplique esses scripts no seu projeto Supabase (via SQL Editor ou Supabase CLI). Consulte `database/sql/README.md` para a estrutura e `database/sql/DESCRICOES.md` para a descrição de cada objeto.
 
-```bash
-# Via Supabase CLI
-supabase db push
-```
-
-As tabelas criadas são:
+As principais tabelas são:
 
 | Tabela | Para quê |
 |---|---|

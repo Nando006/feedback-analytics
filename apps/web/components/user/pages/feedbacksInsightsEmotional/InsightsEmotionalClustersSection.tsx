@@ -1,14 +1,16 @@
 import type { InsightsEmotionalClustersSectionProps } from './ui.types';
 
 import { sentimentLabel } from 'src/lib/utils/sentiment';
+import MetricHelp from 'components/user/shared/MetricHelp';
 
 export default function InsightsEmotionalClustersSection({
   clusters,
 }: InsightsEmotionalClustersSectionProps) {
   return (
     <div className="font-work-sans relative overflow-hidden rounded-2xl border border-(--quaternary-color)/10 bg-gradient-to-br from-(--bg-secondary) to-(--sixth-color) p-6 glass-card space-y-6">
-      <h3 className="text-base font-montserrat font-semibold text-[var(--text-primary)]">
+      <h3 className="flex items-center gap-1.5 text-base font-montserrat font-semibold text-[var(--text-primary)]">
         Momentos emocionais que mais se repetem
+        <MetricHelp term="emotionalMoments" />
       </h3>
       <p className="mb-2 max-w-2xl text-sm text-[var(--text-tertiary)]">
         Explore exemplos reais de feedbacks que representam emoções mais fortes

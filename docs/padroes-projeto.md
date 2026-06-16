@@ -135,10 +135,11 @@ return { ok: false, error: 'update_failed', message: 'Mensagem para o usuário' 
 |---|---|---|
 | `VITE_SUPABASE_URL` | Frontend | Sim |
 | `VITE_SUPABASE_ANON_KEY` | Frontend | Sim |
-| `VITE_API_GATEWAY_URL` | Frontend | Sim |
-| `SUPABASE_URL` | API Gateway | Sim |
-| `SUPABASE_SERVICE_ROLE_KEY` | API Gateway | Sim |
-| `IA_ANALYZE_INTERNAL_TOKEN` | Gateway + IA Analyze | Não |
-| `IA_ANALYZE_URL` | API Gateway | Sim |
+| `VITE_API_BASE_URL` | Frontend | Sim |
+| `VITE_SUPABASE_URL` | API Gateway | Sim |
+| `VITE_SUPABASE_ANON_KEY` | API Gateway | Sim |
+| `IA_ANALYZE_REMOTE_TOKEN` | API Gateway | Não |
+| `IA_ANALYZE_INTERNAL_TOKEN` | IA Analyze | Não |
+| `IA_ANALYZE_REMOTE_URL` | API Gateway | Sim |
 | `GEMINI_API_KEY` | IA Analyze | Sim |
 | `PORT` | Gateway (3000) / IA (4100) | Não |

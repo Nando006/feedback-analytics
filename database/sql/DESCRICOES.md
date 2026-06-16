@@ -16,6 +16,9 @@
 - `public.feedback_analysis`: resultado analítico do feedback (sentimento, categorias e palavras-chave).
 - `public.feedback_insights_report`: relatório consolidado de insights e recomendações por empresa.
 
+## Views
+- `public.enterprise_public`: view pública (apenas `id` e `name`) que resolve o nome de exibição da empresa a partir de `auth.users.raw_user_meta_data->>'full_name'` (a tabela `public.enterprise` não tem coluna `name`). Caminho crítico do formulário público de coleta (QR Code), lido sem login pelo papel `anon`.
+
 ## Funções (public)
 - `can_device_send_feedback`: valida se um dispositivo ainda pode enviar feedback no limite diário.
 - `clean_user_metadata_before_change`: higieniza metadados do usuário antes de update e normaliza telefone.

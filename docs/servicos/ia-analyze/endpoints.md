@@ -160,6 +160,8 @@ Content-Type: application/json
 }
 ```
 
+> **Nota:** `keywords` e `categorias` são sempre retornadas **normalizadas** — minúsculas, sem acento e sem pontuação (ex.: `"Atendimento Ágil"` vira `"atendimento agil"`).
+
 ---
 
 ## Erros
@@ -169,7 +171,7 @@ Content-Type: application/json
 | `400` | `invalid_payload` | `enterprise_context` ou `batches` ausentes no body |
 | `401` | `unauthorized_internal_request` | Header `x-ia-analyze-token` ausente ou incorreto |
 | `500` | `missing_gemini_api_key` | `GEMINI_API_KEY` não configurado no ambiente |
-| `502` | `failed_ia_request` | Falha HTTP ao chamar o provedor LLM |
+| `502` | `failed_ia_request` | Falha ao chamar o provedor LLM (erro do SDK, credencial ou rede) |
 | `502` | `invalid_ai_response` | Provedor LLM retornou resposta não parseável como JSON |
 
 **Formato de todos os erros:**

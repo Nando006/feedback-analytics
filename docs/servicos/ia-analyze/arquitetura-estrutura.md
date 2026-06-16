@@ -10,7 +10,7 @@ O processamento ocorre de forma sequencial através das camadas do sistema, gara
 1. **Rotas (`routes/`):** Recebem o lote de feedbacks enviado pelo API Gateway e direcionam para o controlador.
 2. **Controllers (`controllers/`):** Validam a autorização interna (garantindo que a requisição veio do Gateway) e a estrutura do payload recebido.
 3. **Service Principal (`services/iaAnalyze.service.ts`):** Orquestra o processo. Combina os feedbacks com as regras e o contexto de negócio da empresa.
-4. **Providers (`providers/gemini.provider.ts`):** Prepara o prompt final e realiza a chamada HTTP para a API do provedor LLM externo.
+4. **Providers (`providers/gemini.provider.ts`):** Prepara o prompt final e chama o Google Gemini (SDK `@google/genai`, modelo `gemini-2.5-flash`). O provider é específico do Gemini: trocar de provedor exige alterar este arquivo — o serviço não é fornecedor-agnóstico.
 
 ### Fluxo de Volta (Processando a resposta)
 5. O **Provider** recebe a resposta bruta da Inteligência Artificial (que está sujeita a "alucinações" ou fuga do formato).
@@ -72,13 +72,13 @@ Garante que cada termo:
 ### `buildForbiddenTerms`
 
 Constrói o `Set` de termos proibidos a partir do feedback:
-- Tokens do nome da empresa
-- Tokens do nome do item de catálogo
-- Marcadores de sentimento em português (`positivo`, `negativo`, `neutro`, etc.)
+- Rótulos genéricos de respostas estruturadas (`STRUCTURED_ANSWER_LABELS`: `pessimo`, `ruim`, `mediana`, `boa`, `otima`)
+- `answer_value` e `question_text_snapshot` de cada resposta dinâmica (`dynamic_answers`)
+- `answer_value` e `subquestion_text_snapshot` de cada subresposta dinâmica (`dynamic_subanswers`)
 
 ### `tokenizeRelevantWords`
 
-Quebra uma string em palavras relevantes removendo stop words e palavras com menos de 3 caracteres. Usado como **fallback de keywords** quando o modelo não retorna nenhuma keyword válida.
+Quebra uma string em palavras relevantes removendo stop words e palavras com menos de 4 caracteres. Usado como **fallback de keywords** quando o modelo não retorna nenhuma keyword válida.
 
 ---
 
@@ -119,9 +119,14 @@ services/ia-analyze/
 │   ├── iaApiClient.types.ts
 │   ├── sentimentAnalysis.types.ts
 │   └── termProcessing.types.ts
-└── __tests__/
-    ├── iaAnalyzePromptBuilders.test.ts
-    └── sentimentAnalysis.test.ts
+└── src/tests/
+    ├── lib/
+    │   └── termProcessing.test.ts
+    ├── routes/
+    │   ├── analyze.test.ts
+    │   └── health.test.ts
+    └── services/
+        └── sentiment.test.ts
 ```
 
 ---

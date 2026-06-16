@@ -115,6 +115,21 @@ export interface SentimentBreakdown {
 }
 
 /**
+ * Intervalo de confiança / limites. A UNIDADE depende do campo (fração, % ou nota).
+ * Usado em: métricas estatísticas de FeedbackStats / FeedbackAnalysisSummary / TopTerm.
+ */
+export interface Interval {
+  lower: number;
+  upper: number;
+}
+
+/**
+ * Camada de confiança derivada do tamanho da amostra (n):
+ * insufficient (<10) · low (10–29) · moderate (30–99) · good (100+).
+ */
+export type ConfidenceTier = 'insufficient' | 'low' | 'moderate' | 'good';
+
+/**
  * Indicadores agregados para visão geral dos feedbacks.
  * Usado em: src/services/serviceFeedbacks.ts, src/routes/load/loadFeedbackStats.ts e components/user/pages/feedbacks/ui.types.ts.
  */
@@ -123,6 +138,31 @@ export interface FeedbackStats {
   averageRating: number;
   ratingDistribution: RatingDistribution;
   sentimentBreakdown: SentimentBreakdown;
+  /** Feedbacks (no escopo) que já têm análise da IA. */
+  totalAnalyzed?: number;
+  /** Feedbacks (no escopo) ainda não analisados (totalFeedbacks - totalAnalyzed). */
+  pendingCount?: number;
+  /** Timestamp (ISO) da análise mais recente no escopo; null se nenhuma. */
+  latestAnalysisAt?: string | null;
+  /** Lente SATISFAÇÃO (estrelas): média de notas (1-5). */
+  starMean?: number;
+  /** IC t da média de notas, em unidade de nota [1,5]. */
+  starMeanCI?: Interval;
+  /** Net Satisfaction = %(4-5) − %(1-2) → [-100,100]. */
+  netSatisfaction?: number;
+  /** CSAT Top-2-Box: % de notas 4-5, com IC de Wilson (em %). */
+  csat?: { pct: number; ci: Interval };
+  /** Camada de confiança pela quantidade de feedbacks no escopo. */
+  confidenceTier?: ConfidenceTier;
+  /** Lente SENTIMENTO (IA/texto) sobre o subconjunto analisado. */
+  aiSentiment?: {
+    positive: number;
+    neutral: number;
+    negative: number;
+    /** Net Sentiment Score = (pos-neg)/analisados × 100 → [-100,100]. */
+    netSentimentScore: number;
+    confidenceTier: ConfidenceTier;
+  };
 }
 
 /**
@@ -157,6 +197,17 @@ export type FeedbackInsightScopeType = IaAnalyzeScopeType;
 export type FeedbackSentiment = 'positive' | 'neutral' | 'negative';
 
 /**
+ * Aspecto (ABSA) extraído do texto, com seu próprio sentimento.
+ * Usado em: FeedbackAnalysisItem (composição) e telas de Insights.
+ */
+export interface FeedbackAspect {
+  aspect: string;
+  sentiment: FeedbackSentiment;
+  /** Intensidade graduada do aspecto em [-1, 1] (opcional). */
+  sentiment_score?: number | null;
+}
+
+/**
  * Item de feedback enriquecido com análise semântica.
  * Usado em: src/routes/load/loadFeedbackAnalysis.ts e components/user/pages/feedbacksInsightsEmotional/ui.types.ts.
  */
@@ -168,6 +219,18 @@ export interface FeedbackAnalysisItem {
   sentiment: FeedbackSentiment;
   categories: string[];
   keywords: string[];
+  /**
+   * Divergência entre a nota (estrela) e o sentimento do texto (IA):
+   * 'silent_detractor' = nota alta + texto negativo; 'rating_misuse' = nota
+   * baixa + texto positivo; null = sem divergência.
+   */
+  discrepancy?: 'silent_detractor' | 'rating_misuse' | null;
+  /** Sentimento por aspecto (ABSA) extraído do texto. */
+  aspects?: FeedbackAspect[];
+  /** Intensidade graduada do sentimento geral em [-1, 1]. */
+  sentiment_score?: number | null;
+  /** Confiança da classificação em [0, 1]. */
+  confidence?: number | null;
 }
 
 /**
@@ -177,6 +240,10 @@ export interface FeedbackAnalysisItem {
 export interface TopTerm {
   name: string;
   count: number;
+  /** Proporção do termo sobre o total analisado (0..1). */
+  proportion?: number;
+  /** IC de Wilson da proporção (em fração 0..1). */
+  ci?: Interval;
 }
 
 /**
@@ -188,6 +255,34 @@ export interface FeedbackAnalysisSummary {
   sentiments: SentimentBreakdown;
   topCategories: TopTerm[];
   topKeywords: TopTerm[];
+  /** Net Sentiment Score = (pos-neg)/analisados × 100 → [-100,100]. */
+  netSentimentScore?: number;
+  /** IC de Wilson por classe de sentimento (em fração 0..1). */
+  sentimentCIs?: {
+    positive: Interval;
+    neutral: Interval;
+    negative: Interval;
+  };
+  /** Camada de confiança pela quantidade de feedbacks analisados. */
+  confidenceTier?: ConfidenceTier;
+  /** Sentimento agregado por aspecto (ABSA), ranqueado por impacto. */
+  aspectSentiments?: AspectSentiment[];
+}
+
+/**
+ * Sentimento agregado de um aspecto (ABSA) no escopo.
+ * Usado em: FeedbackAnalysisSummary e a seção "Aspectos que mais impactam".
+ */
+export interface AspectSentiment {
+  aspect: string;
+  positive: number;
+  neutral: number;
+  negative: number;
+  count: number;
+  /** Net Sentiment Score do aspecto → [-100,100]. */
+  netSentimentScore: number;
+  /** IC de Wilson da proporção positiva do aspecto (fração 0..1). */
+  ci?: Interval;
 }
 
 /**
@@ -198,6 +293,78 @@ export interface FeedbackAnalysisResponse {
   items: FeedbackAnalysisItem[];
   summary: FeedbackAnalysisSummary;
 }
+
+/**
+ * Distribuição de respostas de uma pergunta por rótulo (PÉSSIMO→ÓTIMA).
+ * Usado em: QuestionMetric / SubquestionMetric (mini-distribuição).
+ */
+export interface QuestionDistribution {
+  PESSIMO: number;
+  RUIM: number;
+  MEDIANA: number;
+  BOA: number;
+  OTIMA: number;
+}
+
+/**
+ * Estado de uma redação de pergunta/subpergunta nas métricas:
+ * - `current`: ativa e com o texto atual da config → seção "Perguntas atuais".
+ * - `deactivated`: a config ainda tem esta redação, mas está desativada (toggle off).
+ *   Reativar traz de volta para "atuais" com todo o histórico → seção "Desativadas".
+ * - `past`: redação antiga (texto editado) ou pergunta removida → seção "Antigas".
+ */
+export type QuestionMetricStatus = 'current' | 'deactivated' | 'past';
+
+/**
+ * Métrica agregada de UMA subpergunta no escopo.
+ * Usado em: QuestionMetric.subquestions e a aba "Perguntas".
+ */
+export interface SubquestionMetric {
+  subquestion_id: string;
+  text: string;
+  count: number;
+  /** Nota média (1–5). */
+  mean: number;
+  /** Faixa provável da média (IC t, unidade de nota). */
+  ci: Interval;
+  /** % de respostas boas (BOA+ÓTIMA). */
+  satisfiedPct: number;
+  distribution: QuestionDistribution;
+  confidenceTier: ConfidenceTier;
+  /** Estado da redação (atual / desativada / antiga). Ver QuestionMetricStatus. */
+  status: QuestionMetricStatus;
+}
+
+/**
+ * Métrica agregada de UMA pergunta no escopo, com subperguntas aninhadas.
+ * Usado em: FeedbackQuestionsResponse e a aba "Perguntas".
+ */
+export interface QuestionMetric {
+  question_id: string;
+  text: string;
+  count: number;
+  mean: number;
+  ci: Interval;
+  satisfiedPct: number;
+  distribution: QuestionDistribution;
+  confidenceTier: ConfidenceTier;
+  subquestions: SubquestionMetric[];
+  /** Estado da redação (atual / desativada / antiga). Ver QuestionMetricStatus. */
+  status: QuestionMetricStatus;
+}
+
+/**
+ * Resposta do endpoint de métricas por pergunta (ordenado pior→melhor).
+ * Usado em: src/services/serviceFeedbacks.ts e a aba "Perguntas".
+ */
+export interface FeedbackQuestionsResponse {
+  questions: QuestionMetric[];
+}
+
+export type FeedbackQuestionsOptions = {
+  scope_type?: FeedbackInsightScopeType;
+  catalog_item_id?: string;
+};
 
 export type FeedbackAnalysisOptions = {
   sentiment?: FeedbackSentiment;
@@ -218,6 +385,15 @@ export interface FeedbackInsightsReport {
 }
 
 export type FeedbackInsightsReportOptions = {
+  scope_type?: FeedbackInsightScopeType;
+  catalog_item_id?: string;
+};
+
+/**
+ * Filtro de escopo para as métricas do dashboard (stats).
+ * COMPANY (Geral) considera apenas o QR da empresa (catalog_item_id NULL).
+ */
+export type FeedbackStatsOptions = {
   scope_type?: FeedbackInsightScopeType;
   catalog_item_id?: string;
 };

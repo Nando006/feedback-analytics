@@ -44,15 +44,17 @@
 
 ## Base para Teste E2E
 
-> Os testes E2E já estão implementados no Playwright ([uc-11-insights-ia.spec.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/e2e/uc-11-insights-ia.spec.ts)).
-> Cada cenário abaixo possui a sua respectiva classificação e estratégia de execução mapeada no [Plano de Teste Estratégico](../testes/plano-estrategico.md).
+> Os testes E2E estão implementados no Playwright ([uc-11-insights-ia.spec.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/e2e/uc-11-insights-ia.spec.ts)). O spec contém dois smokes de carregamento da página de relatório e um teste do botão de regenerar (condicional, com `test.skip()` quando o botão não está visível e com a chamada à API de IA mockada para não consumir créditos). Cada cenário abaixo possui a sua respectiva classificação e estratégia de execução mapeada no [Plano de Teste Estratégico](../testes/plano-estrategico.md).
 
 **Cenários a cobrir:**
 
-- **[CT-UC11-01]** ✅ *Coberto E2E* - Caminho feliz — analisar feedbacks: gestor com contexto preenchido e mínimo de 10 feedbacks clica em "Analisar feedbacks" — deve processar e atualizar o clima emocional automaticamente.
-- **[CT-UC11-02]** ✅ *Coberto E2E* - Caminho feliz — gerar insights: após análise, clicar em "Gerar insights" deve atualizar o relatório com resumo e recomendações da IA.
-- **[CT-UC11-03]** ⚠️ *Skipped Intencional* - Caminho feliz — escopo por produto: selecionar escopo "Produto" e um item de catálogo, gerar análise e confirmar que o relatório reflete aquele item específico.
-- **[CT-UC11-04]** 🔵 *Unidade já atende* - Caminho feliz — navegação entre abas: após gerar relatório, navegar para "Análise Emocional" e "Estatísticas" deve exibir os dados correspondentes.
-- **[CT-UC11-05]** ✅ *Coberto E2E* - Exceção — contexto incompleto: acessar insights sem preencher todos os campos de contexto deve exibir os botões desabilitados e a mensagem de bloqueio com link para configuração.
-- **[CT-UC11-06]** ⚠️ *Skipped Intencional* - Exceção — item não selecionado: selecionar escopo "Produto" sem escolher item deve manter os botões desabilitados.
-- **[CT-UC11-07]** ⚠️ *Skipped Intencional* - Exceção — volume insuficiente: tentar analisar com menos de 10 feedbacks deve retornar mensagem de volume mínimo insuficiente.
+- **[CT-UC11-01]** ✅ *Coberto E2E (smoke)* - Carregamento do relatório: a página `/user/insights/reports` carrega exibindo o sumário/insights ou o estado vazio. (Spec: `[CT-UC11-01] Página de relatório de insights carrega com sumário ou estado vazio`.) **Não** dispara a análise.
+- **[CT-UC11-02]** ✅ *Coberto E2E (smoke)* - Sentimentos e keywords: a página de insights exibe a análise de sentimentos e palavras-chave (ou o estado vazio). (Spec: `[CT-UC11-02] Página de insights exibe análise de sentimentos e keywords`.)
+- **[CT-UC11-05]** ✅ *Coberto E2E (skip condicional)* - Regenerar insights: clicar no botão de regenerar/gerar insights deve solicitar nova análise (chamada de IA mockada) e exibir feedback de processamento. Contém `test.skip()` quando o botão não está visível. (Spec: `[CT-UC11-05] Botão de regenerar insights solicita nova análise`.)
+- **[CT-UC11-03]** 📝 *Planejado / não implementado* - Caminho feliz — analisar feedbacks: gestor com contexto preenchido e mínimo de 10 feedbacks clica em "Analisar feedbacks" — deve processar e atualizar o clima emocional automaticamente.
+- **[CT-UC11-04]** 📝 *Planejado / não implementado* - Caminho feliz — gerar insights: após análise, clicar em "Gerar insights" deve atualizar o relatório com resumo e recomendações da IA.
+- **[CT-UC11-06]** 📝 *Planejado / não implementado* - Caminho feliz — escopo por produto: selecionar escopo "Produto" e um item de catálogo, gerar análise e confirmar que o relatório reflete aquele item específico.
+- **[CT-UC11-07]** 🔵 *Unidade já atende* - Caminho feliz — navegação entre abas: após gerar relatório, navegar para "Análise Emocional" e "Estatísticas" deve exibir os dados correspondentes.
+- **[CT-UC11-08]** 📝 *Planejado / não implementado* - Exceção — contexto incompleto: acessar insights sem preencher todos os campos de contexto deve exibir os botões desabilitados e a mensagem de bloqueio com link para configuração.
+- **[CT-UC11-09]** 📝 *Planejado / não implementado* - Exceção — item não selecionado: selecionar escopo "Produto" sem escolher item deve manter os botões desabilitados.
+- **[CT-UC11-10]** 📝 *Planejado / não implementado* - Exceção — volume insuficiente: tentar analisar com menos de 10 feedbacks deve retornar a mensagem "É necessário no mínimo 10 feedbacks".

@@ -42,16 +42,16 @@
 
 ## Base para Teste E2E
 
-> Os testes E2E já estão implementados no Playwright ([uc-10-listagem-feedbacks.spec.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/e2e/uc-10-listagem-feedbacks.spec.ts)).
-> Cada cenário abaixo possui a sua respectiva classificação e estratégia de execução mapeada no [Plano de Teste Estratégico](../testes/plano-estrategico.md).
+> **O E2E atual deste UC é apenas um smoke test de carregamento de página** ([uc-10-listagem-feedbacks.spec.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/e2e/uc-10-listagem-feedbacks.spec.ts)): verifica que a página `/user/feedbacks/all` carrega a lista de feedbacks ou exibe o estado vazio. Os fluxos de **ação** (filtros, busca, paginação, modal de detalhes) **não estão cobertos por E2E**. Cada cenário abaixo possui a sua respectiva classificação e estratégia de execução mapeada no [Plano de Teste Estratégico](../testes/plano-estrategico.md).
 
 **Cenários a cobrir:**
 
-- **[CT-UC10-01]** ✅ *Coberto E2E* - Caminho feliz: gestor acessa a lista, vê feedbacks paginados e clica em um para abrir o modal de detalhes com todas as seções (ponto de coleta, perguntas, dispositivo, cliente).
-- **[CT-UC10-02]** ⚠️ *Skipped Intencional* - Caminho feliz — filtro por nota: selecionar nota 5 deve exibir apenas feedbacks com aquela avaliação.
-- **[CT-UC10-03]** ⚠️ *Skipped Intencional* - Caminho feliz — filtro por categoria: selecionar "Produto" deve exibir apenas feedbacks de pontos de coleta do tipo produto.
-- **[CT-UC10-04]** ⚠️ *Skipped Intencional* - Caminho feliz — busca textual: digitar um termo deve filtrar feedbacks que contenham aquele texto na mensagem (com debounce de ~450ms antes da requisição).
-- **[CT-UC10-05]** ⚠️ *Skipped Intencional* - Caminho feliz — filtro por item: digitar um nome de item deve filtrar feedbacks daquele produto/serviço/departamento.
-- **[CT-UC10-06]** ⚠️ *Skipped Intencional* - Caminho feliz — paginação: mudar de página deve carregar o próximo conjunto de feedbacks mantendo os filtros ativos.
-- **[CT-UC10-07]** ⚠️ *Skipped Intencional* - Exceção — filtro sem resultado: aplicar filtro que não retorna feedbacks deve exibir o empty state de "ajuste os filtros".
-- **[CT-UC10-08]** ⚠️ *Skipped Intencional* - Exceção — sem feedbacks: empresa sem histórico deve exibir o empty state de "nenhum feedback recebido".
+- **[CT-UC10-01]** ✅ *Coberto E2E (smoke)* - Carregamento: a listagem carrega os feedbacks paginados ou exibe o estado vazio. (Spec: `[CT-UC10-01] Listagem carrega feedbacks ou exibe estado vazio`.) **Não** cobre abrir o modal de detalhes nem aplicar filtros.
+- **[CT-UC10-02]** 📝 *Planejado / não implementado* - Caminho feliz — modal de detalhes: clicar em um feedback deve abrir o modal com todas as seções (ponto de coleta, perguntas, dispositivo, cliente).
+- **[CT-UC10-03]** 📝 *Planejado / não implementado* - Caminho feliz — filtro por nota: selecionar nota 5 deve exibir apenas feedbacks com aquela avaliação.
+- **[CT-UC10-04]** 📝 *Planejado / não implementado* - Caminho feliz — filtro por categoria: selecionar "Produto" deve exibir apenas feedbacks de pontos de coleta do tipo produto.
+- **[CT-UC10-05]** 📝 *Planejado / não implementado* - Caminho feliz — busca textual: digitar um termo deve filtrar feedbacks que contenham aquele texto na mensagem (com debounce de ~450ms antes da requisição).
+- **[CT-UC10-06]** 📝 *Planejado / não implementado* - Caminho feliz — filtro por item: digitar um nome de item deve filtrar feedbacks daquele produto/serviço/departamento.
+- **[CT-UC10-07]** 📝 *Planejado / não implementado* - Caminho feliz — paginação: mudar de página deve carregar o próximo conjunto de feedbacks mantendo os filtros ativos.
+- **[CT-UC10-08]** 📝 *Planejado / não implementado* - Exceção — filtro sem resultado: aplicar filtro que não retorna feedbacks deve exibir o empty state de "ajuste os filtros".
+- **[CT-UC10-09]** 📝 *Planejado / não implementado* - Exceção — sem feedbacks: empresa sem histórico deve exibir o empty state de "nenhum feedback recebido" (o smoke CT-UC10-01 já aceita este estado como válido).

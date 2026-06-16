@@ -15,6 +15,26 @@ type HttpActionError = Error & {
   code?: string;
 };
 
+/**
+ * Códigos/situações em que o serviço de IA (microserviço remoto) está
+ * indisponível, inalcançável ou demorou demais — gateway responde 502/503/504.
+ * O usuário precisa de uma mensagem clara em vez de um "502 Bad Gateway" cru.
+ */
+const IA_SERVICE_UNAVAILABLE_CODES = new Set<string>([
+  'failed_remote_ia_analyze_request',
+  'remote_ia_analyze_error',
+  'invalid_remote_ia_analyze_response_shape',
+  'missing_ia_analyze_remote_url',
+  'missing_gemini_api_key',
+  'failed_ia_request',
+  'invalid_ai_response',
+]);
+
+function isIaServiceUnavailable(error: HttpActionError): boolean {
+  if (error.code && IA_SERVICE_UNAVAILABLE_CODES.has(error.code)) return true;
+  return error.status === 502 || error.status === 503 || error.status === 504;
+}
+
 function parseScopeType(value: FormDataEntryValue | null): IaAnalyzeScopeType | undefined {
   const normalized = String(value ?? '').trim().toUpperCase();
 
@@ -52,12 +72,12 @@ export async function ActionFeedbackInsightsReport({
 
   try {
     if (intent === INTENT_FEEDBACK_ANALYZE_RAW) {
-      await ServiceRunRawFeedbackAnalysis({ scope_type, catalog_item_id });
-    } else {
-      await ServiceRunFeedbackIAAnalysis({ scope_type, catalog_item_id });
+      const result = await ServiceRunRawFeedbackAnalysis({ scope_type, catalog_item_id });
+      return { ok: true, analyzedCount: result.analyzedCount };
     }
 
-    return { ok: true };
+    const result = await ServiceRunFeedbackIAAnalysis({ scope_type, catalog_item_id });
+    return { ok: true, reportGenerated: result.reportGenerated };
   } catch (error) {
     const typedError = error as HttpActionError;
 
@@ -74,6 +94,14 @@ export async function ActionFeedbackInsightsReport({
         errorCode: 'collecting_data_required_for_analysis',
         error:
           'Para analisar os feedbacks, preencha as informações da empresa em Editar > Configuração de Coleta de Dados.',
+      };
+    }
+
+    if (isIaServiceUnavailable(typedError)) {
+      return {
+        errorCode: 'ia_service_unavailable',
+        error:
+          'O serviço de análise por IA está indisponível ou demorou demais para responder. Tente novamente em alguns instantes.',
       };
     }
 

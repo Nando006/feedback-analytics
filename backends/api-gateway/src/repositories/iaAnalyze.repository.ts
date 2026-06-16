@@ -7,10 +7,12 @@ import type {
   IaAnalyzeFeedbackInput,
 } from '../../../../shared/interfaces/contracts/ia-analyze/input.contract.js';
 import type {
+  IaAnalyzeScopeType,
   IaAnalyzeSentiment,
 } from '../../../../shared/interfaces/contracts/ia-analyze/scope.contract.js';
 import { IaAnalyzeServiceError } from '../libs/iaAnalyze/errors.js';
 import { normalizeScopeType } from '../libs/iaAnalyze/normalize.js';
+import { resolveScopeCollectionPointIds } from './scope.repository.js';
 import type { CollectingDataContext, FeedbackAnalysisInsertRow, RawCatalogItemRow, RawFeedbackQuestionAnswerRow, RawFeedbackRow, RawFeedbackSubquestionAnswerRow } from '../types/iaAnalyze.types.js';
 
 /**
@@ -48,10 +50,37 @@ export async function fetchFeedbacksForAnalysis(params: {
   supabase: SupabaseClient;
   enterpriseId: string;
   limit: number;
+  scopeType?: IaAnalyzeScopeType;
+  catalogItemId?: string | null;
 }): Promise<IaAnalyzeFeedbackInput[]> {
-  const { supabase, enterpriseId, limit } = params;
+  const { supabase, enterpriseId, limit, scopeType, catalogItemId = null } = params;
 
-  const { data: feedbacks, error: feedbackError } = await supabase
+  // Resolve o escopo pedido para ids de collection_point, para que a janela de
+  // `limit` linhas valha DENTRO do escopo (e não nas mais recentes da empresa
+  // inteira). Mesmo critério de escopo de stats/analysis/regeneração.
+  const scopeResolution = await resolveScopeCollectionPointIds({
+    supabase,
+    enterpriseId,
+    scopeType,
+    catalogItemId,
+  });
+
+  if (scopeResolution.error) {
+    throw new IaAnalyzeServiceError(
+      'Failed to resolve scope for feedbacks',
+      500,
+      'failed_to_fetch_feedbacks_for_ia',
+    );
+  }
+
+  const scopedCollectionPointIds = scopeResolution.ids;
+
+  // Escopo válido porém sem nenhum ponto de coleta => não há o que analisar.
+  if (scopedCollectionPointIds && scopedCollectionPointIds.length === 0) {
+    return [];
+  }
+
+  let feedbackQuery = supabase
     .from('feedback')
     .select(
       `
@@ -68,7 +97,13 @@ export async function fetchFeedbacksForAnalysis(params: {
       )
     `,
     )
-    .eq('enterprise_id', enterpriseId)
+    .eq('enterprise_id', enterpriseId);
+
+  if (scopedCollectionPointIds) {
+    feedbackQuery = feedbackQuery.in('collection_point_id', scopedCollectionPointIds);
+  }
+
+  const { data: feedbacks, error: feedbackError } = await feedbackQuery
     .order('created_at', { ascending: false })
     .limit(limit);
 
@@ -425,17 +460,22 @@ export async function insertFeedbackAnalysisRows(params: {
  *
  * Etapas principais:
  * 1. Para cada contexto, verifica se há dados relevantes (resumo ou recomendações).
- * 2. Faz upsert segmentado por escopo e item de catálogo (ou legado, se necessário).
+ * 2. Faz upsert por escopo via unicidade composta (enterprise_id, scope_type, catalog_item_id).
  * 3. Loga erro no console se falhar, mas não interrompe o loop.
  *
- * Útil para garantir que os insights globais e segmentados da IA estejam sempre atualizados no banco, sem duplicidade.
+ * Retorna os contextos efetivamente persistidos (usado para detectar o "falso
+ * sucesso" quando nada relevante foi gerado para o escopo pedido).
  */
 export async function upsertFeedbackInsightsReports(params: {
   supabase: SupabaseClient;
   enterpriseId: string;
   contexts: IaAnalyzeContext[];
-}): Promise<void> {
+}): Promise<IaAnalyzeContext[]> {
   const { supabase, enterpriseId, contexts } = params;
+
+  // Contextos que realmente viraram linha salva — usado para detectar o
+  // "falso sucesso" (quando nada relevante foi gerado para o escopo).
+  const persisted: IaAnalyzeContext[] = [];
 
   for (const context of contexts) {
     const summary = context.globalInsights?.summary?.trim() || null;
@@ -466,54 +506,68 @@ export async function upsertFeedbackInsightsReports(params: {
         onConflict: 'enterprise_id,scope_type,catalog_item_id',
       });
 
-    if (!scopedUpsertError) {
+    if (scopedUpsertError) {
+      console.error('Falha ao salvar feedback_insights_report', scopedUpsertError);
       continue;
     }
 
-    if (context.scope_type !== 'COMPANY' || context.catalog_item_id !== null) {
-      console.error('Falha ao salvar feedback_insights_report segmentado', scopedUpsertError);
-      continue;
-    }
-
-    const legacyPayload = {
-      enterprise_id: enterpriseId,
-      summary,
-      recommendations,
-      updated_at: new Date().toISOString(),
-    };
-
-    const { error: legacyUpsertError } = await supabase
-      .from('feedback_insights_report')
-      .upsert(legacyPayload, {
-        onConflict: 'enterprise_id',
-      });
-
-    if (legacyUpsertError) {
-      console.error('Falha ao salvar feedback_insights_report legado', legacyUpsertError);
-    }
+    persisted.push(context);
   }
+
+  return persisted;
 }
 
 /**
  * Busca feedbacks que já possuem análise IA salva, retornando todos os dados necessários para exibição ou reprocessamento.
  *
  * Etapas principais:
- * 1. Busca feedbacks que possuem relação com feedback_analysis (join interno).
- * 2. Busca dados de ponto de coleta, item de catálogo, respostas e subrespostas dinâmicas.
- * 3. Monta o objeto IaAnalyzeFeedbackInput para cada feedback analisado.
+ * 1. Resolve o escopo pedido (scope_type/catalog_item_id) para ids de ponto de coleta.
+ * 2. Busca feedbacks que possuem relação com feedback_analysis (join interno),
+ *    já restritos ao escopo — a janela de `limit` vale DENTRO do escopo.
+ * 3. Busca dados de ponto de coleta, item de catálogo, respostas e subrespostas dinâmicas.
+ * 4. Monta o objeto IaAnalyzeFeedbackInput para cada feedback analisado.
  *
  * Lança erro se alguma query falhar.
  *
  * Útil para exibir apenas feedbacks já analisados ou para reprocessamento/relatórios.
+ * Restringir a busca ao escopo evita que um escopo específico cujos feedbacks
+ * analisados caem fora das 100 linhas mais recentes da empresa fique sem relatório.
  */
 export async function fetchAlreadyAnalyzedFeedbacks(params: {
   supabase: SupabaseClient;
   enterpriseId: string;
+  scopeType?: IaAnalyzeScopeType;
+  catalogItemId?: string | null;
   limit?: number;
 }): Promise<IaAnalyzeFeedbackInput[]> {
-  const { supabase, enterpriseId, limit = 100 } = params;
+  const { supabase, enterpriseId, scopeType, catalogItemId = null, limit = 100 } = params;
 
-  const { data: feedbacks, error: feedbackError } = await supabase
+  // Resolve o escopo pedido para ids de collection_point, para que a janela de
+  // `limit` linhas valha DENTRO do escopo (e não nas linhas mais recentes da
+  // empresa inteira). Mantém o mesmo critério de escopo de stats/analysis.
+  const scopeResolution = await resolveScopeCollectionPointIds({
+    supabase,
+    enterpriseId,
+    scopeType,
+    catalogItemId,
+  });
+
+  if (scopeResolution.error) {
+    throw new IaAnalyzeServiceError(
+      'Failed to resolve scope for analyzed feedbacks',
+      500,
+      'failed_to_fetch_analyzed_feedbacks',
+    );
+  }
+
+  const scopedCollectionPointIds = scopeResolution.ids;
+
+  // Escopo válido porém sem nenhum ponto de coleta => não há o que buscar.
+  if (scopedCollectionPointIds && scopedCollectionPointIds.length === 0) {
+    return [];
+  }
+
+  let feedbackQuery = supabase
     .from('feedback')
     .select(
       `
@@ -531,7 +585,13 @@ export async function fetchAlreadyAnalyzedFeedbacks(params: {
       feedback_analysis!inner(feedback_id)
     `,
     )
-    .eq('enterprise_id', enterpriseId)
+    .eq('enterprise_id', enterpriseId);
+
+  if (scopedCollectionPointIds) {
+    feedbackQuery = feedbackQuery.in('collection_point_id', scopedCollectionPointIds);
+  }
+
+  const { data: feedbacks, error: feedbackError } = await feedbackQuery
     .order('created_at', { ascending: false })
     .limit(limit);
 

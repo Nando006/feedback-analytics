@@ -68,9 +68,9 @@ O painel usa um **seletor radial animado** para escolher qual escopo visualizar:
 | Escopo | Cor | Disponível quando |
 |---|---|---|
 | Empresa | Indigo | Sempre |
-| Produto | Verde | `uses_company_products = true` |
-| Serviço | Âmbar | `uses_company_services = true` |
-| Departamento | Rosa | `uses_company_departments = true` |
+| Produto | Verde | `uses_company_products = true` **e** ≥ 1 item cadastrado |
+| Serviço | Âmbar | `uses_company_services = true` **e** ≥ 1 item cadastrado |
+| Departamento | Rosa | `uses_company_departments = true` **e** ≥ 1 item cadastrado |
 
 Cada escopo tem seu próprio relatório independente.
 
@@ -116,7 +116,7 @@ Cada escopo tem seu próprio relatório independente.
 
 ## Detalhes Técnicos
 
-- Mínimo de **5 feedbacks** para iniciar análise relevante (retorna 422 se insuficiente)
+- Mínimo de **10 feedbacks** para iniciar análise relevante (retorna 422 se insuficiente)
 - `collecting_data` da empresa deve estar preenchido — objetivo e resumo são usados no prompt da IA
 - Os dois botões ficam desabilitados enquanto uma operação está em andamento (sem duplo disparo)
 - O processamento ocorre em batches de até 50 feedbacks por execução (máx. 100)

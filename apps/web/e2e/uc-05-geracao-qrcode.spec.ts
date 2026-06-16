@@ -2,12 +2,12 @@ import { test, expect } from '@playwright/test';
 
 test.describe('UC-05: Geração de QR Code da empresa', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/user/qrcode/enterprise');
+    await page.goto('/user/edit/feedback-general');
     await expect(page.getByRole('main')).toBeVisible();
   });
 
-  test('[CT-UC05-01] Página do QR Code carrega com dados da empresa', async ({ page }) => {
-    await expect(page).toHaveURL(/\/user\/qrcode\/enterprise/);
+  test('[CT-UC05-01] Tela de Feedback geral carrega com o QR Code da empresa', async ({ page }) => {
+    await expect(page).toHaveURL(/\/user\/edit\/feedback-general/);
     // Verifica que há conteúdo de QR Code (canvas, img ou svg)
     const qrElement = page.locator('canvas, img[alt*="QR"], svg[data-qr]').first();
     const hasQrElement = await qrElement.isVisible().catch(() => false);

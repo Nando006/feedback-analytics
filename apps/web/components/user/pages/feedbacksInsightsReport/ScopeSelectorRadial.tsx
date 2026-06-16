@@ -1,40 +1,14 @@
 import { useState } from 'react';
-import { FaBuilding, FaBox, FaWrench, FaUserGroup } from 'react-icons/fa6';
-import type { IconType } from 'react-icons';
 import type { InsightScopeOption, ScopeSelectorRadialProps } from './ui.types';
+import { SCOPE_CONFIG } from 'src/lib/constants/insightsScopes';
 
-const SCOPE_CONFIG: Record<
-  InsightScopeOption,
-  { label: string; Icon: IconType; color: string }
-> = {
-  COMPANY: {
-    label: 'Empresa',
-    Icon: FaBuilding,
-    color: '#6366f1',
-  },
-  PRODUCT: {
-    label: 'Produto',
-    Icon: FaBox,
-    color: '#10b981',
-  },
-  SERVICE: {
-    label: 'Serviço',
-    Icon: FaWrench,
-    color: '#f59e0b',
-  },
-  DEPARTMENT: {
-    label: 'Departamento',
-    Icon: FaUserGroup,
-    color: '#ec4899',
-  },
-};
-
-// Posições em leque descendente (header está no topo → abre para baixo)
+// Leque descendente para a DIREITA (o gatilho fica encostado à esquerda da
+// barra; abrir para a esquerda jogaria os círculos para fora da tela).
 const SUB_POSITIONS = [
-  { x: -62, y: 50 },
-  { x: -20, y: 62 },
-  { x: 22, y: 62 },
-  { x: 64, y: 50 },
+  { x: 0, y: 52 },
+  { x: 44, y: 62 },
+  { x: 90, y: 60 },
+  { x: 132, y: 46 },
 ];
 
 export function ScopeSelectorRadial({
@@ -60,7 +34,7 @@ export function ScopeSelectorRadial({
         title={selectedLabel}
         style={{
           position: 'relative',
-          zIndex: 98,
+          zIndex: 31,
           width: 36,
           height: 36,
           borderRadius: '50%',
@@ -117,7 +91,7 @@ export function ScopeSelectorRadial({
               alignItems: 'center',
               justifyContent: 'center',
               cursor: 'pointer',
-              zIndex: 99,
+              zIndex: 32,
               transition: open
                 ? `transform 0.35s cubic-bezier(0.37,1.95,0.66,0.56) ${delay}, opacity 0.25s ease ${delay}, box-shadow 0.2s ease`
                 : `transform 0.25s ease ${delay}, opacity 0.2s ease ${delay}`,
@@ -140,7 +114,7 @@ export function ScopeSelectorRadial({
           style={{
             position: 'fixed',
             inset: 0,
-            zIndex: 97,
+            zIndex: 30,
           }}
         />
       )}

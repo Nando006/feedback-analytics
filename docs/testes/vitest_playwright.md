@@ -31,7 +31,7 @@ O **Playwright** é utilizado para realizar testes **End-to-End (E2E)** no front
 ### Por que escolhemos o Playwright?
 
 1. **Multinavegador Nativo:**
-   Permite testar a aplicação simultaneamente em três grandes motores de renderização: **Chromium** (Chrome, Edge), **Firefox** e **WebKit** (Safari). Isso garante consistência visual e funcional entre diferentes navegadores.
+   O Playwright suporta nativamente três grandes motores de renderização: **Chromium** (Chrome, Edge), **Firefox** e **WebKit** (Safari), o que permite ampliar a cobertura entre navegadores quando necessário. Atualmente, porém, o projeto está configurado (`apps/web/playwright.config.ts`) para executar a suíte E2E apenas em **Chromium** (Desktop Chrome).
 
 2. **Fim dos Testes Intermitentes (Flaky Tests):**
    Um dos maiores problemas em testes E2E é a instabilidade (testes que passam uma hora e falham na outra por lentidão na rede). O Playwright resolve isso com **Auto-Waiting** (espera automática): ele aguarda os elementos estarem visíveis, clicáveis e estáveis antes de interagir com eles.

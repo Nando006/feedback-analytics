@@ -25,27 +25,22 @@ function HeaderSelect({
   );
 }
 
+/**
+ * Seletor de escopo (+ item de catálogo) do header. As ações de IA
+ * (Analisar feedbacks / Gerar insights) ficam no InsightsActionsPanel.
+ */
 export default function InsightsHeaderControls({
-  refreshing,
-  analyzingRaw,
-  canAnalyze,
   availableScopes,
   selectedScope,
   selectedCatalogItemId,
   catalogItemOptions,
   onScopeChange,
   onCatalogItemChange,
-  onRefreshSelected,
-  onAnalyzeRaw,
 }: InsightsHeaderControlsProps) {
   const itemSelectionEnabled = selectedScope !== 'COMPANY';
-  const filteredCatalogItems = catalogItemOptions.filter((item) => item.kind === selectedScope);
-  const missingRequiredItem =
-    itemSelectionEnabled &&
-    (selectedCatalogItemId.trim().length === 0 || filteredCatalogItems.length === 0);
-
-  const isProcessing = refreshing || analyzingRaw;
-  const analysisDisabled = isProcessing || missingRequiredItem || !canAnalyze;
+  const filteredCatalogItems = catalogItemOptions.filter(
+    (item) => item.kind === selectedScope,
+  );
 
   return (
     <div className="flex items-center gap-3">
@@ -65,24 +60,6 @@ export default function InsightsHeaderControls({
           ))}
         </HeaderSelect>
       )}
-
-      <button
-        type="button"
-        onClick={onAnalyzeRaw}
-        disabled={analysisDisabled}
-        className="btn-secondary font-poppins h-8 px-3 text-xs disabled:opacity-60"
-      >
-        {analyzingRaw ? 'Analisando...' : 'Analisar feedbacks'}
-      </button>
-
-      <button
-        type="button"
-        onClick={onRefreshSelected}
-        disabled={analysisDisabled}
-        className="btn-secondary font-poppins h-8 px-3 text-xs disabled:opacity-60"
-      >
-        {refreshing ? 'Gerando...' : 'Gerar insights'}
-      </button>
     </div>
   );
 }

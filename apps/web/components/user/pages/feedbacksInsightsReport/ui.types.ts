@@ -1,4 +1,8 @@
-import type { FeedbackAnalysisSummary } from 'lib/interfaces/domain/feedback.domain';
+import type {
+  ConfidenceTier,
+  FeedbackAnalysisSummary,
+  FeedbackInsightsReport,
+} from 'lib/interfaces/domain/feedback.domain';
 
 export type InsightScopeOption = 'COMPANY' | 'PRODUCT' | 'SERVICE' | 'DEPARTMENT';
 
@@ -23,17 +27,12 @@ export interface InsightsReportHeaderSectionProps {
  * Usado em: components/user/pages/feedbacksInsightsReport/InsightsHeaderControls.tsx.
  */
 export interface InsightsHeaderControlsProps {
-  refreshing: boolean;
-  analyzingRaw: boolean;
-  canAnalyze: boolean;
   availableScopes: InsightScopeOption[];
   selectedScope: InsightScopeOption;
   selectedCatalogItemId: string;
   catalogItemOptions: InsightsCatalogItemOption[];
   onScopeChange: (scope: InsightScopeOption) => void;
   onCatalogItemChange: (id: string) => void;
-  onRefreshSelected: () => void;
-  onAnalyzeRaw: () => void;
 }
 
 /**
@@ -72,6 +71,20 @@ export interface InsightsReportMoodSectionProps {
   positivePct: number;
   neutralPct: number;
   negativePct: number;
+  /** Net Sentiment Score (-100..100) do escopo; null/undefined quando sem dados. */
+  nss?: number;
+  /** Camada de confiança pela quantidade de feedbacks analisados. */
+  confidenceTier?: ConfidenceTier;
+  /** Exibir o número do NSS (só com amostra suficiente). */
+  showNss?: boolean;
+}
+
+/**
+ * Props do conteúdo (resumo + recomendações) do relatório de insights.
+ * Usado em: components/user/pages/feedbacksInsightsReport/InsightsReportContent.tsx.
+ */
+export interface InsightsReportContentProps {
+  report: FeedbackInsightsReport | null;
 }
 
 /**

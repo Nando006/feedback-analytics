@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import {
@@ -215,9 +215,19 @@ export default function FormLogin() {
   const actionData = useActionData() as ActionData | undefined;
   const toast = useToast();
   const navigation = useNavigation();
-  const isSubmitting =
-    navigation.state === 'submitting' &&
-    (navigation.formAction?.includes('/login') ?? false);
+  // O loading do botão precisa cobrir TODO o fluxo de login: a autenticação (action
+  // /login) E o carregamento da rota de destino (loaders do dashboard) até o redirect
+  // concluir. Antes a condição só cobria a fase 'submitting' e o botão voltava a
+  // "Entrar" durante o 'loading' do redirect — em produção (loaders mais lentos)
+  // parecia ter encerrado, mas a navegação ainda estava em andamento.
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Só volta a "Entrar" quando a navegação termina SEM sair da página (ex.: erro de
+  // login, que mantém o usuário em /login). No sucesso, o redirect desmonta este
+  // form, então o loading persiste naturalmente até o dashboard aparecer.
+  useEffect(() => {
+    if (navigation.state === 'idle') setIsSubmitting(false);
+  }, [navigation.state]);
 
   const {
     register,
@@ -238,6 +248,7 @@ export default function FormLogin() {
   }, [actionData, toast]);
 
   const onSubmit = (data: LoginFormValues) => {
+    setIsSubmitting(true);
     const formData = new FormData();
     formData.set('email', data.email);
     formData.set('password', data.password);

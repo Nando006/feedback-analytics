@@ -19,8 +19,8 @@ O frontend (`apps/web`) é uma aplicação **React 19** com duas áreas distinta
 | **@hookform/resolvers** | 5.x | Integração do React Hook Form com schemas Zod |
 | **Zod** | 4.x | Validação e parsing de schemas |
 | **Tailwind CSS** | 4.x | Estilização utilitária |
-| **Supabase JS** | 2.x | Client do Supabase (auth, queries) |
-| **@supabase/ssr** | 0.6.x | Adaptador SSR para gerenciamento de sessão |
+| **Supabase JS** | 2.x | Client do Supabase no frontend (`createClient`) — usado essencialmente para `signOut` |
+| **@supabase/ssr** | 0.6.x | Consta no `package.json`, mas **não é importado** em `apps/web` (usado apenas no backend) |
 | **React Icons** | 5.x | Biblioteca de ícones |
 | **TypeScript** | 5.8.x | Tipagem estática |
 
@@ -63,6 +63,7 @@ O frontend (`apps/web`) é uma aplicação **React 19** com duas áreas distinta
 | `/forgot-password` | Recuperação de senha |
 | `/auth/reset-password` | Redefinição de senha |
 | `/auth/success` | Confirmação de autenticação (e-mail verificado) |
+| `/auth/link-expired` | Link de ativação/confirmação expirado |
 | `/feedback/qrcode` | Formulário público de coleta via QR Code |
 
 ### Área Protegida (`/user/*`)
@@ -104,7 +105,7 @@ O frontend usa exclusivamente o padrão **loader/action do React Router v7**.
 
 ## Autenticação
 
-O `@supabase/ssr` gerencia a sessão. O loader raiz `LoaderUserProtected` verifica a sessão antes de renderizar qualquer página protegida e redireciona para `/login` caso inválida.
+O frontend cria o client com `@supabase/supabase-js` (via `createClient`). A sessão usada nas chamadas à API vive em cookies httpOnly definidos pela API (o backend é quem a gerencia). O loader raiz `LoaderUserProtected` verifica a sessão antes de renderizar qualquer página protegida e redireciona para `/login` caso inválida.
 
 ---
 
