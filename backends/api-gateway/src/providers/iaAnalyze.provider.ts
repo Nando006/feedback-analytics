@@ -92,10 +92,13 @@ async function postAnalysisToService(
  *
  * Etapas principais:
  * 1. Tenta enviar a requisição para o serviço IA principal (URL configurada).
- * 2. Se falhar e fallback estiver habilitado, tenta novamente usando o serviço local.
+ * 2. Se falhar e o fallback estiver habilitado, tenta novamente usando o serviço local.
  * 3. Lança erro se ambos falharem.
  *
- * Útil para garantir resiliência: se o serviço remoto estiver indisponível, tenta rodar localmente sem interromper o fluxo.
+ * O fallback para `localhost` só faz sentido em desenvolvimento: num ambiente
+ * serverless (Vercel) não existe IA em localhost, então tentar isso apenas mascara
+ * o erro REAL do remoto (vira um 502 de localhost recusado). Por isso o fallback
+ * é ignorado quando `VERCEL=1`, deixando o erro de conectividade real aparecer.
  */
 export async function runIaAnalyzeAnalysis(
   requestBody: IaAnalyzeRemoteRunRequest,
@@ -105,8 +108,11 @@ export async function runIaAnalyzeAnalysis(
   try {
     return await postAnalysisToService(primaryBaseUrl, requestBody);
   } catch (error) {
+    const isServerless = process.env.VERCEL === '1';
     const canFallbackToLocal =
-      readFallbackEnabled() && primaryBaseUrl !== DEFAULT_LOCAL_IA_ANALYZE_URL;
+      !isServerless &&
+      readFallbackEnabled() &&
+      primaryBaseUrl !== DEFAULT_LOCAL_IA_ANALYZE_URL;
 
     if (!canFallbackToLocal) {
       throw error;
