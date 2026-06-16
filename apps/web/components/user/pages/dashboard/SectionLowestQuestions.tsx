@@ -14,8 +14,8 @@ function meanTone(mean: number): string {
  * para a análise completa. Oculto quando não há respostas de perguntas.
  */
 export default function SectionLowestQuestions({ questions }: SectionLowestQuestionsProps) {
-  // Só perguntas ATUAIS — não faz sentido sugerir ação sobre redação antiga/removida.
-  const current = questions.filter((q) => q.isCurrent);
+  // Só perguntas ATUAIS — não faz sentido sugerir ação sobre redação desativada/antiga.
+  const current = questions.filter((q) => q.status === 'current');
   if (current.length === 0) return null;
 
   const worst = [...current].sort((a, b) => a.mean - b.mean).slice(0, 3);
@@ -49,7 +49,7 @@ export default function SectionLowestQuestions({ questions }: SectionLowestQuest
             <div className="min-w-0">
               <p className="truncate text-sm text-(--text-primary)">{q.text}</p>
               <div className="mt-1">
-                <ConfidenceBadge tier={q.confidenceTier} n={q.count} />
+                <ConfidenceBadge tier={q.confidenceTier} n={q.count} unit="respostas" />
               </div>
             </div>
             <span className={`shrink-0 text-lg font-semibold ${meanTone(q.mean)}`}>

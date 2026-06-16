@@ -57,6 +57,11 @@ export default function SimpleEditableField({
     }
   }, [actionData, toast, successMessage, errorMessage, value]);
 
+  // Trava o Salvar até o valor mudar (e enquanto envia). Reseta sozinho após salvar,
+  // pois o inputValue volta a refletir `value`.
+  const saveDisabled =
+    isSubmitting || inputValue.trim() === (value ?? '').trim();
+
   const handleEdit = () => {
     setInputValue(value || '');
     setIsEditing(true);
@@ -151,8 +156,8 @@ export default function SimpleEditableField({
           <div className="flex items-center gap-2 pt-2">
             <button
               type="submit"
-              disabled={isSubmitting}
-              className={`px-4 py-2 bg-(--primary-color) text-white rounded-lg text-sm font-medium hover:shadow-md transition-all flex items-center gap-2 ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}
+              disabled={saveDisabled}
+              className={`px-4 py-2 bg-(--primary-color) text-white rounded-lg text-sm font-medium hover:shadow-md transition-all flex items-center gap-2 ${saveDisabled ? 'opacity-70 cursor-not-allowed' : ''}`}
             >
               {isSubmitting ? (
                 <>

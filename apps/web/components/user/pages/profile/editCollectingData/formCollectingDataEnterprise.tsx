@@ -3,6 +3,8 @@ import type { ActionData } from "lib/interfaces/contracts/action-data.contract";
 import { useEffect, useState } from "react";
 import { useFetcher, useRouteLoaderData } from "react-router-dom";
 import { useToast } from "components/public/forms/messages/useToast";
+import { useDirtyTracker } from "src/lib/hooks/useDirtyTracker";
+import HelpHint from "components/user/shared/HelpHint";
 import { FaCheck, FaChevronLeft, FaChevronRight } from "react-icons/fa6";
 
 const STEPS = [
@@ -50,6 +52,9 @@ export default function FormCollectingDataEnterprise() {
   }));
   const [step, setStep] = useState(0);
 
+  // Trava o botão Salvar até existir alteração nos textos de contexto.
+  const { isDirty, markPristine } = useDirtyTracker(values);
+
   useEffect(() => {
     const data = fetcher.data as ActionData | undefined;
     if (!data) return;
@@ -59,13 +64,14 @@ export default function FormCollectingDataEnterprise() {
         "Configurações salvas!",
         "Dados de coleta atualizados com sucesso",
       );
+      markPristine();
     } else {
       toast.error(
         "Erro ao salvar configurações",
         data.message || "Tente novamente em instantes",
       );
     }
-  }, [fetcher.data, toast]);
+  }, [fetcher.data, toast, markPristine]);
 
   const handleSubmit = () => {
     if (document.activeElement instanceof HTMLElement) {
@@ -135,8 +141,9 @@ export default function FormCollectingDataEnterprise() {
         {STEPS.map((stepItem, index) => (
           <div key={stepItem.key} className={index === step ? "block" : "hidden"}>
             <div className="mb-1 flex items-center justify-between gap-3">
-              <h3 className="font-montserrat text-lg font-semibold text-(--text-primary)">
+              <h3 className="flex items-center gap-1.5 font-montserrat text-lg font-semibold text-(--text-primary)">
                 {stepItem.title}
+                <HelpHint topic="aiContextFields" />
               </h3>
               <span className="shrink-0 text-xs text-(--text-tertiary)">
                 Passo {index + 1} de {STEPS.length}
@@ -176,7 +183,8 @@ export default function FormCollectingDataEnterprise() {
             <button
               key="save"
               type="submit"
-              className="btn-primary font-poppins px-8 py-2.5 text-sm"
+              disabled={!isDirty || isSaving}
+              className="btn-primary font-poppins px-8 py-2.5 text-sm disabled:cursor-not-allowed disabled:opacity-60"
             >
               Salvar Alterações
             </button>

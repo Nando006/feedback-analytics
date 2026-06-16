@@ -1,5 +1,6 @@
 import { memo } from 'react';
 import CardSimple from 'components/user/shared/cards/cardSimple';
+import HelpHint from 'components/user/shared/HelpHint';
 import type { SectionQrHeaderProps } from './ui.types';
 
 const SectionQrHeader = memo(function SectionQrHeader({
@@ -14,7 +15,10 @@ const SectionQrHeader = memo(function SectionQrHeader({
   return (
     <CardSimple type="header">
       <div>
-        <h1 className="mb-2 text-3xl font-bold text-(--text-primary)">{title}</h1>
+        <h1 className="mb-2 flex items-center gap-2 text-3xl font-bold text-(--text-primary)">
+          {title}
+          <HelpHint topic="qrCodePurpose" />
+        </h1>
         <p className="text-(--text-tertiary)">
           Gere e compartilhe seu QR Code personalizado para coletar feedback dos
           seus clientes
@@ -43,8 +47,9 @@ const SectionQrHeader = memo(function SectionQrHeader({
           {qrError ? (
             <span className="text-xs text-rose-300">{qrError}</span>
           ) : (
-            <span className="text-xs text-(--text-tertiary)">
+            <span className="inline-flex items-center gap-1 text-xs text-(--text-tertiary)">
               Status: {qrLoading ? 'Carregando…' : qrActive ? 'Ativo' : 'Inativo'}
+              <HelpHint topic="qrCollectionToggle" />
             </span>
           )}
         </div>

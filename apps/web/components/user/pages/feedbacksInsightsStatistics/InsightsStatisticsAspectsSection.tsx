@@ -1,4 +1,5 @@
 import type { InsightsStatisticsAspectsSectionProps } from './ui.types';
+import MetricHelp from 'components/user/shared/MetricHelp';
 import { formatNss } from 'src/lib/utils/statistics';
 
 function toneClass(nss: number): string {
@@ -18,8 +19,9 @@ export default function InsightsStatisticsAspectsSection({
 
   return (
     <div className="font-work-sans relative overflow-hidden rounded-2xl border border-(--quaternary-color)/10 bg-gradient-to-br from-(--bg-secondary) to-(--sixth-color) p-6 glass-card">
-      <h3 className="mb-1 text-base font-semibold text-[var(--text-primary)] font-montserrat">
+      <h3 className="mb-1 flex items-center gap-1.5 text-base font-semibold text-[var(--text-primary)] font-montserrat">
         Assuntos que mais impactam
+        <MetricHelp term="aspects" />
       </h3>
       <p className="mb-4 text-xs text-[var(--text-tertiary)]">
         Assuntos citados nos comentários, ordenados por impacto (quantidade × intensidade).

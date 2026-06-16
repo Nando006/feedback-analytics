@@ -307,6 +307,15 @@ export interface QuestionDistribution {
 }
 
 /**
+ * Estado de uma redação de pergunta/subpergunta nas métricas:
+ * - `current`: ativa e com o texto atual da config → seção "Perguntas atuais".
+ * - `deactivated`: a config ainda tem esta redação, mas está desativada (toggle off).
+ *   Reativar traz de volta para "atuais" com todo o histórico → seção "Desativadas".
+ * - `past`: redação antiga (texto editado) ou pergunta removida → seção "Antigas".
+ */
+export type QuestionMetricStatus = 'current' | 'deactivated' | 'past';
+
+/**
  * Métrica agregada de UMA subpergunta no escopo.
  * Usado em: QuestionMetric.subquestions e a aba "Perguntas".
  */
@@ -322,11 +331,8 @@ export interface SubquestionMetric {
   satisfiedPct: number;
   distribution: QuestionDistribution;
   confidenceTier: ConfidenceTier;
-  /**
-   * `true` quando esta redação corresponde à subpergunta ativa atual (pai ativo +
-   * subpergunta ativa + texto igual ao configurado). `false` = redação antiga/retirada.
-   */
-  isCurrent: boolean;
+  /** Estado da redação (atual / desativada / antiga). Ver QuestionMetricStatus. */
+  status: QuestionMetricStatus;
 }
 
 /**
@@ -343,12 +349,8 @@ export interface QuestionMetric {
   distribution: QuestionDistribution;
   confidenceTier: ConfidenceTier;
   subquestions: SubquestionMetric[];
-  /**
-   * `true` quando esta redação corresponde à pergunta ativa atual (ativa + texto igual
-   * ao configurado). `false` = redação antiga (texto editado) ou pergunta removida —
-   * exibida na seção "Perguntas antigas" e ignorada pelo card do Dashboard.
-   */
-  isCurrent: boolean;
+  /** Estado da redação (atual / desativada / antiga). Ver QuestionMetricStatus. */
+  status: QuestionMetricStatus;
 }
 
 /**

@@ -94,3 +94,28 @@ export function climateFromNss(
       'Comentários positivos e negativos estão equilibrados.',
   };
 }
+
+/**
+ * O QUE o `n` da confiança está contando — deixa explícito se a amostra é granular
+ * (respostas de UMA pergunta) ou geral (feedbacks do escopo / analisados pela IA),
+ * evitando a confusão entre, ex., "21 respostas a esta pergunta" e "20 analisados".
+ */
+export type ConfidenceSampleUnit = 'feedbacks' | 'respostas' | 'analyzed';
+
+/** Sufixo curto exibido no selo: "21 feedbacks" / "21 respostas" / "20 analisados pela IA". */
+export function confidenceCountSuffix(n: number, unit: ConfidenceSampleUnit): string {
+  if (unit === 'respostas') return `${n} resposta${n === 1 ? '' : 's'}`;
+  if (unit === 'analyzed') return `${n} analisado${n === 1 ? '' : 's'} pela IA`;
+  return `${n} feedback${n === 1 ? '' : 's'}`;
+}
+
+/** Frase do modal que explica a origem da amostra daquele resultado. */
+export function confidenceSampleSentence(n: number, unit: ConfidenceSampleUnit): string {
+  if (unit === 'respostas') {
+    return `Esta pergunta recebeu ${n} resposta${n === 1 ? '' : 's'} — a confiança é calculada só com base nelas.`;
+  }
+  if (unit === 'analyzed') {
+    return `A IA analisou ${n} feedback${n === 1 ? '' : 's'} para este resultado (pode ser menor que o total, pois feedbacks novos ainda não foram analisados).`;
+  }
+  return `Este resultado considera ${n} feedback${n === 1 ? '' : 's'} recebido${n === 1 ? '' : 's'}.`;
+}

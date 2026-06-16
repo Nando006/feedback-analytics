@@ -19,8 +19,9 @@ export default function FormEmailUser({
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isDirty },
     getValues,
+    reset,
   } = useForm<FormEmailUserValues>({
     resolver: zodResolver(emailUpdateSchema),
     mode: 'onSubmit',
@@ -33,10 +34,11 @@ export default function FormEmailUser({
 
     if (actionData.ok) {
       toast.success('Email atualizado!', 'Confirme a mudança nos dois emails');
+      reset(getValues()); // salvou: zera o "dirty" sem precisar recarregar.
     } else {
       toast.error('Erro ao atualizar email', actionData.message || 'Tente novamente em instantes');
     }
-  }, [actionData, toast]);
+  }, [actionData, toast, reset, getValues]);
 
   const onSubmit = () => {
     const v = getValues();
@@ -81,7 +83,8 @@ export default function FormEmailUser({
 
       <div className="flex justify-end">
         <button
-          className="btn-primary font-poppins px-6 py-2.5 text-sm font-medium rounded-lg transition-all hover:shadow-lg"
+          disabled={!isDirty}
+          className="btn-primary font-poppins px-6 py-2.5 text-sm font-medium rounded-lg transition-all hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60"
           type="submit">
           Salvar alterações
         </button>

@@ -3,7 +3,9 @@ import type { ActionData } from "lib/interfaces/contracts/action-data.contract";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useFetcher } from "react-router-dom";
 import { useToast } from "components/public/forms/messages/useToast";
+import { useDirtyTracker } from "src/lib/hooks/useDirtyTracker";
 import FeedbackFormPreview from "components/user/pages/profile/preview/feedbackFormPreview";
+import HelpHint from "components/user/shared/HelpHint";
 import {
   FaCheck,
   FaEye,
@@ -193,19 +195,24 @@ export default function QuestionsEditor({
   >(() => computeVisibleSubCounts(padQuestions(initialQuestions)));
   const payloadInputRef = useRef<HTMLInputElement | null>(null);
 
+  // Trava o botão Salvar até existir alteração; reabilita só quando o estado muda.
+  const { isDirty, markPristine } = useDirtyTracker(questions);
+  const isSubmitting = fetcher.state !== "idle";
+
   useEffect(() => {
     const data = fetcher.data as (ActionData & { error?: string }) | undefined;
     if (!data) return;
 
     if (data.ok) {
       toast.success(successTitle, data.message || successMessage);
+      markPristine(); // salvou: o estado atual vira a nova linha de base.
     } else {
       toast.error(
         "Erro ao salvar",
         data.message || data.error || "Tente novamente em instantes.",
       );
     }
-  }, [fetcher.data, toast, successTitle, successMessage]);
+  }, [fetcher.data, toast, successTitle, successMessage, markPristine]);
 
   const setQuestionActive = useCallback((qi: number, value: boolean) => {
     setQuestions((prev) => {
@@ -381,33 +388,36 @@ export default function QuestionsEditor({
   return (
     <div className="relative space-y-4">
       {/* Alternância edição / prévia */}
-      <div className="inline-flex rounded-lg border border-(--quaternary-color)/14 bg-(--bg-secondary) p-1">
-        <button
-          type="button"
-          onClick={() => setShowPreview(false)}
-          aria-pressed={!showPreview}
-          className={`flex items-center gap-1.5 rounded-md px-4 py-1.5 text-[13px] font-semibold transition-colors ${
-            showPreview
-              ? "text-(--text-secondary) hover:text-(--text-primary)"
-              : "bg-(--primary-color) text-(--bg-primary)"
-          }`}
-        >
-          <FaPenToSquare aria-hidden className="text-[0.7rem]" />
-          Editar
-        </button>
-        <button
-          type="button"
-          onClick={() => setShowPreview(true)}
-          aria-pressed={showPreview}
-          className={`flex items-center gap-1.5 rounded-md px-4 py-1.5 text-[13px] font-semibold transition-colors ${
-            showPreview
-              ? "bg-(--primary-color) text-(--bg-primary)"
-              : "text-(--text-secondary) hover:text-(--text-primary)"
-          }`}
-        >
-          <FaEye aria-hidden className="text-[0.7rem]" />
-          Prévia
-        </button>
+      <div className="flex items-center gap-1.5">
+        <div className="inline-flex rounded-lg border border-(--quaternary-color)/14 bg-(--bg-secondary) p-1">
+          <button
+            type="button"
+            onClick={() => setShowPreview(false)}
+            aria-pressed={!showPreview}
+            className={`flex items-center gap-1.5 rounded-md px-4 py-1.5 text-[13px] font-semibold transition-colors ${
+              showPreview
+                ? "text-(--text-secondary) hover:text-(--text-primary)"
+                : "bg-(--primary-color) text-(--bg-primary)"
+            }`}
+          >
+            <FaPenToSquare aria-hidden className="text-[0.7rem]" />
+            Editar
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowPreview(true)}
+            aria-pressed={showPreview}
+            className={`flex items-center gap-1.5 rounded-md px-4 py-1.5 text-[13px] font-semibold transition-colors ${
+              showPreview
+                ? "bg-(--primary-color) text-(--bg-primary)"
+                : "text-(--text-secondary) hover:text-(--text-primary)"
+            }`}
+          >
+            <FaEye aria-hidden className="text-[0.7rem]" />
+            Prévia
+          </button>
+        </div>
+        <HelpHint topic="preview" />
       </div>
 
       {showPreview ? (
@@ -464,19 +474,23 @@ export default function QuestionsEditor({
                     {allowVariableQuestionCount &&
                       questionIndex > 0 &&
                       isLastQuestion && (
-                        <button
-                          type="button"
-                          onClick={() => removeLastQuestion(visibleQCount)}
-                          className="flex items-center gap-1 text-[13px] text-(--text-tertiary) transition-colors hover:text-(--negative)"
-                        >
-                          <FaTrashCan aria-hidden className="text-[0.7rem]" />
-                          Remover
-                        </button>
+                        <div className="flex items-center gap-1">
+                          <button
+                            type="button"
+                            onClick={() => removeLastQuestion(visibleQCount)}
+                            className="flex items-center gap-1 text-[13px] text-(--text-tertiary) transition-colors hover:text-(--negative)"
+                          >
+                            <FaTrashCan aria-hidden className="text-[0.7rem]" />
+                            Remover
+                          </button>
+                          <HelpHint topic="removeQuestion" />
+                        </div>
                       )}
                     <div className="flex items-center gap-2">
                       <span className="text-[13px] text-(--text-secondary)">
                         Ativa
                       </span>
+                      <HelpHint topic="questionActiveToggle" />
                       {renderToggle(
                         question.is_active !== false,
                         () =>
@@ -501,17 +515,17 @@ export default function QuestionsEditor({
                       placeholder="Escreva a pergunta principal (20–150 caracteres)"
                       className="w-full rounded-lg border border-(--primary-color)/20 bg-(--bg-tertiary) px-3.5 py-2.5 text-[15px] text-(--text-primary) outline-none transition-all placeholder:text-(--text-tertiary) focus:border-(--primary-color)"
                     />
-                    {renderCounter(
-                      questionTextLength,
-                      !requireAllThree,
-                      "mb-3.5 mt-1",
-                    )}
+                    <div className="mb-3.5 mt-1 flex items-center justify-end gap-1.5">
+                      {renderCounter(questionTextLength, !requireAllThree)}
+                      <HelpHint topic="questionLength" />
+                    </div>
 
                     {/* Subquestions */}
                     {visibleSubs > 0 && (
                       <div className="mb-3 space-y-2.5">
-                        <p className="text-xs font-semibold uppercase tracking-wider text-(--text-secondary)">
+                        <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-(--text-secondary)">
                           Subperguntas
+                          <HelpHint topic="subquestions" />
                         </p>
                         {(question.subquestions ?? [])
                           .slice(0, visibleSubs)
@@ -642,7 +656,8 @@ export default function QuestionsEditor({
 
           <button
             type="submit"
-            className="btn-primary font-poppins px-6 py-3 text-sm"
+            disabled={!isDirty || isSubmitting}
+            className="btn-primary font-poppins px-6 py-3 text-sm disabled:cursor-not-allowed disabled:opacity-60"
           >
             {submitLabel}
           </button>

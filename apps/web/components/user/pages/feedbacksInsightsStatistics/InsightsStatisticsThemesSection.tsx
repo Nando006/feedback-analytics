@@ -1,12 +1,14 @@
 import type { InsightsStatisticsThemesSectionProps } from './ui.types';
+import MetricHelp from 'components/user/shared/MetricHelp';
 
 export default function InsightsStatisticsThemesSection({
   summary,
 }: InsightsStatisticsThemesSectionProps) {
   return (
     <div className="font-work-sans relative overflow-hidden rounded-2xl border border-(--quaternary-color)/10 bg-gradient-to-br from-(--bg-secondary) to-(--sixth-color) p-6 glass-card">
-      <h3 className="mb-1 text-base font-semibold text-[var(--text-primary)] font-montserrat">
+      <h3 className="mb-1 flex items-center gap-1.5 text-base font-semibold text-[var(--text-primary)] font-montserrat">
         Principais categorias e temas
+        <MetricHelp term="themes" />
       </h3>
       <p className="mb-4 text-xs text-[var(--text-tertiary)]">
         Ordenado por relevância (junta quantidade e consistência), não só pelo número de menções.

@@ -22,9 +22,11 @@ import {
 } from "src/lib/constants/routes/intents";
 import { getCatalogKindBySlug } from "src/lib/constants/catalog";
 import { getQrCodeUrl } from "src/lib/utils/qrcode";
+import { useDirtyTracker } from "src/lib/hooks/useDirtyTracker";
 import { useToast } from "components/public/forms/messages/useToast";
 import PageHeader from "components/user/shared/PageHeader";
 import CardSimple from "components/user/shared/cards/cardSimple";
+import HelpHint from "components/user/shared/HelpHint";
 import QuestionsEditor from "components/user/pages/profile/questionsDinamic/questionsEditor";
 import SectionQrHeader from "components/user/pages/qrcodeEnterprise/SectionQrHeader";
 import SectionQrInstructions from "components/user/pages/qrcodeEnterprise/SectionQrInstructions";
@@ -66,6 +68,11 @@ function CatalogItemConfig() {
 
   const [name, setName] = useState(item?.name ?? "");
   const [description, setDescription] = useState(item?.description ?? "");
+  // Trava o "Salvar dados do item" até nome/descrição mudarem.
+  const { isDirty: dataDirty, markPristine: markDataPristine } = useDirtyTracker({
+    name,
+    description,
+  });
   const [qrActive, setQrActive] = useState<boolean>(qrItem?.active ?? false);
   const [collectionPointId, setCollectionPointId] = useState<string | null>(
     qrItem?.collection_point_id ?? null,
@@ -80,13 +87,14 @@ function CatalogItemConfig() {
     if (!data) return;
     if (data.ok) {
       toast.success("Dados salvos!", data.message || "Dados do item atualizados.");
+      markDataPristine();
     } else {
       toast.error(
         "Erro ao salvar",
         data.message || "Tente novamente em instantes.",
       );
     }
-  }, [dataFetcher.data, toast]);
+  }, [dataFetcher.data, toast, markDataPristine]);
 
   useEffect(() => {
     if (qrFetcher.state !== "idle" || !qrFetcher.data) return;
@@ -269,8 +277,9 @@ function CatalogItemConfig() {
       {/* Dados do item */}
       <section className="space-y-3">
         <div className="px-1">
-          <h2 className="font-montserrat text-lg font-semibold text-(--text-primary)">
+          <h2 className="flex items-center gap-1.5 font-montserrat text-lg font-semibold text-(--text-primary)">
             Dados do {config.singular}
+            <HelpHint topic="itemScope" />
           </h2>
           <p className="mt-0.5 text-sm text-(--text-tertiary)">
             Nome e descrição usados na identificação do item.
@@ -319,7 +328,7 @@ function CatalogItemConfig() {
 
             <button
               type="submit"
-              disabled={dataSaving}
+              disabled={dataSaving || !dataDirty}
               className="btn-primary font-poppins px-6 py-3 text-sm disabled:cursor-not-allowed disabled:opacity-60"
             >
               {dataSaving ? "Salvando..." : "Salvar dados do item"}
@@ -331,12 +340,14 @@ function CatalogItemConfig() {
       {/* Perguntas do item */}
       <section className="space-y-3">
         <div className="px-1">
-          <h2 className="font-montserrat text-lg font-semibold text-(--text-primary)">
+          <h2 className="flex items-center gap-1.5 font-montserrat text-lg font-semibold text-(--text-primary)">
             Perguntas de avaliação
+            <HelpHint topic="evaluationQuestions" />
           </h2>
           <p className="mt-0.5 text-sm text-(--text-tertiary)">
             Até 3 perguntas (com subperguntas opcionais) exibidas no QR Code deste
-            item. Deixe em branco para usar apenas a nota.
+            item. Deixe em branco para usar apenas a nota.{" "}
+            <HelpHint topic="starsOnly" className="ml-0.5" />
           </p>
         </div>
         <QuestionsEditor

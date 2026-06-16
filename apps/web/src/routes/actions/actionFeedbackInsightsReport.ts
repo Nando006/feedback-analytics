@@ -56,8 +56,8 @@ export async function ActionFeedbackInsightsReport({
       return { ok: true, analyzedCount: result.analyzedCount };
     }
 
-    await ServiceRunFeedbackIAAnalysis({ scope_type, catalog_item_id });
-    return { ok: true };
+    const result = await ServiceRunFeedbackIAAnalysis({ scope_type, catalog_item_id });
+    return { ok: true, reportGenerated: result.reportGenerated };
   } catch (error) {
     const typedError = error as HttpActionError;
 
