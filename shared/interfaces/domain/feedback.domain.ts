@@ -115,6 +115,21 @@ export interface SentimentBreakdown {
 }
 
 /**
+ * Intervalo de confiança / limites. A UNIDADE depende do campo (fração, % ou nota).
+ * Usado em: métricas estatísticas de FeedbackStats / FeedbackAnalysisSummary / TopTerm.
+ */
+export interface Interval {
+  lower: number;
+  upper: number;
+}
+
+/**
+ * Camada de confiança derivada do tamanho da amostra (n):
+ * insufficient (<10) · low (10–29) · moderate (30–99) · good (100+).
+ */
+export type ConfidenceTier = 'insufficient' | 'low' | 'moderate' | 'good';
+
+/**
  * Indicadores agregados para visão geral dos feedbacks.
  * Usado em: src/services/serviceFeedbacks.ts, src/routes/load/loadFeedbackStats.ts e components/user/pages/feedbacks/ui.types.ts.
  */
@@ -129,6 +144,25 @@ export interface FeedbackStats {
   pendingCount?: number;
   /** Timestamp (ISO) da análise mais recente no escopo; null se nenhuma. */
   latestAnalysisAt?: string | null;
+  /** Lente SATISFAÇÃO (estrelas): média de notas (1-5). */
+  starMean?: number;
+  /** IC t da média de notas, em unidade de nota [1,5]. */
+  starMeanCI?: Interval;
+  /** Net Satisfaction = %(4-5) − %(1-2) → [-100,100]. */
+  netSatisfaction?: number;
+  /** CSAT Top-2-Box: % de notas 4-5, com IC de Wilson (em %). */
+  csat?: { pct: number; ci: Interval };
+  /** Camada de confiança pela quantidade de feedbacks no escopo. */
+  confidenceTier?: ConfidenceTier;
+  /** Lente SENTIMENTO (IA/texto) sobre o subconjunto analisado. */
+  aiSentiment?: {
+    positive: number;
+    neutral: number;
+    negative: number;
+    /** Net Sentiment Score = (pos-neg)/analisados × 100 → [-100,100]. */
+    netSentimentScore: number;
+    confidenceTier: ConfidenceTier;
+  };
 }
 
 /**
@@ -163,6 +197,17 @@ export type FeedbackInsightScopeType = IaAnalyzeScopeType;
 export type FeedbackSentiment = 'positive' | 'neutral' | 'negative';
 
 /**
+ * Aspecto (ABSA) extraído do texto, com seu próprio sentimento.
+ * Usado em: FeedbackAnalysisItem (composição) e telas de Insights.
+ */
+export interface FeedbackAspect {
+  aspect: string;
+  sentiment: FeedbackSentiment;
+  /** Intensidade graduada do aspecto em [-1, 1] (opcional). */
+  sentiment_score?: number | null;
+}
+
+/**
  * Item de feedback enriquecido com análise semântica.
  * Usado em: src/routes/load/loadFeedbackAnalysis.ts e components/user/pages/feedbacksInsightsEmotional/ui.types.ts.
  */
@@ -174,6 +219,18 @@ export interface FeedbackAnalysisItem {
   sentiment: FeedbackSentiment;
   categories: string[];
   keywords: string[];
+  /**
+   * Divergência entre a nota (estrela) e o sentimento do texto (IA):
+   * 'silent_detractor' = nota alta + texto negativo; 'rating_misuse' = nota
+   * baixa + texto positivo; null = sem divergência.
+   */
+  discrepancy?: 'silent_detractor' | 'rating_misuse' | null;
+  /** Sentimento por aspecto (ABSA) extraído do texto. */
+  aspects?: FeedbackAspect[];
+  /** Intensidade graduada do sentimento geral em [-1, 1]. */
+  sentiment_score?: number | null;
+  /** Confiança da classificação em [0, 1]. */
+  confidence?: number | null;
 }
 
 /**
@@ -183,6 +240,10 @@ export interface FeedbackAnalysisItem {
 export interface TopTerm {
   name: string;
   count: number;
+  /** Proporção do termo sobre o total analisado (0..1). */
+  proportion?: number;
+  /** IC de Wilson da proporção (em fração 0..1). */
+  ci?: Interval;
 }
 
 /**
@@ -194,6 +255,34 @@ export interface FeedbackAnalysisSummary {
   sentiments: SentimentBreakdown;
   topCategories: TopTerm[];
   topKeywords: TopTerm[];
+  /** Net Sentiment Score = (pos-neg)/analisados × 100 → [-100,100]. */
+  netSentimentScore?: number;
+  /** IC de Wilson por classe de sentimento (em fração 0..1). */
+  sentimentCIs?: {
+    positive: Interval;
+    neutral: Interval;
+    negative: Interval;
+  };
+  /** Camada de confiança pela quantidade de feedbacks analisados. */
+  confidenceTier?: ConfidenceTier;
+  /** Sentimento agregado por aspecto (ABSA), ranqueado por impacto. */
+  aspectSentiments?: AspectSentiment[];
+}
+
+/**
+ * Sentimento agregado de um aspecto (ABSA) no escopo.
+ * Usado em: FeedbackAnalysisSummary e a seção "Aspectos que mais impactam".
+ */
+export interface AspectSentiment {
+  aspect: string;
+  positive: number;
+  neutral: number;
+  negative: number;
+  count: number;
+  /** Net Sentiment Score do aspecto → [-100,100]. */
+  netSentimentScore: number;
+  /** IC de Wilson da proporção positiva do aspecto (fração 0..1). */
+  ci?: Interval;
 }
 
 /**

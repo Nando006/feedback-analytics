@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import type { RouteCrumb } from 'src/lib/constants/routes/routeMeta';
+import type { ConfidenceTier } from 'lib/interfaces/domain/feedback.domain';
 
 /**
  * Props do cabeçalho padrão das telas logadas (PageHeader).
@@ -27,5 +28,16 @@ export type SectionTabsProps = {
  * Usado em: components/user/shared/ScopeBadge.tsx.
  */
 export type ScopeBadgeProps = {
+  className?: string;
+};
+
+/**
+ * Props do selo de confiança da amostra (ConfidenceBadge).
+ * Usado em: components/user/shared/ConfidenceBadge.tsx.
+ */
+export type ConfidenceBadgeProps = {
+  tier?: ConfidenceTier;
+  /** Tamanho da amostra (n) exibido ao lado do rótulo, quando informado. */
+  n?: number;
   className?: string;
 };

@@ -1,16 +1,19 @@
 import { FaFrown, FaMeh, FaSmile } from 'react-icons/fa';
 import FormatToCurrencyReal from 'src/lib/utils/FormatToReal';
+import ConfidenceBadge from 'components/user/shared/ConfidenceBadge';
+import { formatNss, formatInterval, shouldShowNss } from 'src/lib/utils/statistics';
 import type { SectionSatisfactionRadarProps } from './ui.types';
 
 export default function SectionSatisfactionRadar({
   positive,
   neutral,
   negative,
+  stats,
 }: SectionSatisfactionRadarProps) {
   const sentimentRows = [
     {
       key: 'positive',
-      label: 'Positivos',
+      label: 'Notas 4–5',
       value: positive,
       Icon: FaSmile,
       iconClassName: 'bg-(--positive)/12 text-(--positive)',
@@ -19,7 +22,7 @@ export default function SectionSatisfactionRadar({
     },
     {
       key: 'neutral',
-      label: 'Neutros',
+      label: 'Nota 3',
       value: neutral,
       Icon: FaMeh,
       iconClassName: 'bg-(--neutral)/12 text-(--neutral)',
@@ -28,7 +31,7 @@ export default function SectionSatisfactionRadar({
     },
     {
       key: 'negative',
-      label: 'Negativos',
+      label: 'Notas 1–2',
       value: negative,
       Icon: FaFrown,
       iconClassName: 'bg-(--negative)/12 text-(--negative)',
@@ -37,16 +40,66 @@ export default function SectionSatisfactionRadar({
     },
   ] as const;
 
+  const ai = stats?.aiSentiment;
+  const showAiNss = ai != null && shouldShowNss(ai.confidenceTier);
+
   return (
     <section className="font-work-sans rounded-2xl border border-(--quaternary-color)/10 bg-linear-to-br from-(--bg-secondary) to-(--sixth-color) p-6">
-      <header className="flex items-center justify-between gap-3">
+      <header className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="font-montserrat text-lg font-semibold text-(--text-primary)">Radar de satisfação</h2>
+          <h2 className="font-montserrat text-lg font-semibold text-(--text-primary)">Satisfação e sentimento</h2>
           <p className="text-sm text-(--text-tertiary)">
-            Panorama resumido dos sentimentos capturados
+            Satisfação pelas notas e sentimento (IA) do texto
           </p>
         </div>
+        <ConfidenceBadge tier={stats?.confidenceTier} n={stats?.totalFeedbacks} />
       </header>
+
+      {stats && (
+        <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3">
+          {typeof stats.starMean === 'number' && (
+            <div className="rounded-xl border border-(--quaternary-color)/12 bg-(--seventh-color) px-3 py-2.5">
+              <p className="text-xs text-(--text-tertiary)">Média (estrelas)</p>
+              <p className="text-lg font-semibold text-(--text-primary)">
+                {stats.starMean.toFixed(1)}
+              </p>
+              {stats.starMeanCI && (
+                <p className="text-[10px] text-(--text-tertiary)">
+                  IC95% {formatInterval(stats.starMeanCI, 1)}
+                </p>
+              )}
+            </div>
+          )}
+          {typeof stats.netSatisfaction === 'number' && (
+            <div className="rounded-xl border border-(--quaternary-color)/12 bg-(--seventh-color) px-3 py-2.5">
+              <p className="text-xs text-(--text-tertiary)" title="%(notas 4-5) − %(notas 1-2)">
+                Net Satisfaction
+              </p>
+              <p className="text-lg font-semibold text-(--text-primary)">
+                {formatNss(stats.netSatisfaction)}
+              </p>
+            </div>
+          )}
+          {stats.csat && (
+            <div className="rounded-xl border border-(--quaternary-color)/12 bg-(--seventh-color) px-3 py-2.5">
+              <p className="text-xs text-(--text-tertiary)" title="% de notas 4-5 (Top-2-Box)">CSAT</p>
+              <p className="text-lg font-semibold text-(--text-primary)">
+                {stats.csat.pct.toFixed(0)}%
+              </p>
+            </div>
+          )}
+          {showAiNss && (
+            <div className="rounded-xl border border-(--quaternary-color)/12 bg-(--seventh-color) px-3 py-2.5">
+              <p className="text-xs text-(--text-tertiary)" title="Net Sentiment Score do texto (IA), -100 a +100">
+                NSS (IA)
+              </p>
+              <p className="text-lg font-semibold text-(--text-primary)">
+                {formatNss(ai!.netSentimentScore)}
+              </p>
+            </div>
+          )}
+        </div>
+      )}
 
       <div className="mt-6 space-y-4">
         {sentimentRows.map((row) => (
@@ -59,7 +112,7 @@ export default function SectionSatisfactionRadar({
               </div>
               <div>
                 <p className="font-medium text-(--text-primary)">{row.label}</p>
-                <p className="text-xs text-(--text-tertiary)">Sentimentos mapeados no período</p>
+                <p className="text-xs text-(--text-tertiary)">Avaliações por nota</p>
               </div>
             </div>
             <span className={`text-lg font-semibold ${row.valueClassName}`}>

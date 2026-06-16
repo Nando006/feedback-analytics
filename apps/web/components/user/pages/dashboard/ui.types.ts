@@ -35,4 +35,6 @@ export interface SectionSatisfactionRadarProps {
   positive: number;
   neutral: number;
   negative: number;
+  /** Estatísticas do escopo (lentes satisfação + sentimento IA). */
+  stats?: DashboardStats | null;
 }

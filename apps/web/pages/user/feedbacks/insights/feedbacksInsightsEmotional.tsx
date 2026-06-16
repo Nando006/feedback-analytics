@@ -63,6 +63,17 @@ export default function FeedbacksInsigthsEmotional() {
       });
     }
 
+    const divergent = items.filter((i) => i.discrepancy != null).slice(0, 5);
+    if (divergent.length > 0) {
+      clustersOut.push({
+        title: 'Divergências (nota × texto)',
+        description:
+          'A nota em estrelas e o sentimento do texto discordam — ex.: nota alta com texto negativo (detrator silencioso) ou nota baixa com texto positivo.',
+        tone: 'negative',
+        items: divergent,
+      });
+    }
+
     return clustersOut;
   }, [items]);
 

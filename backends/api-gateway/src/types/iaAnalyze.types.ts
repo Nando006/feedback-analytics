@@ -7,6 +7,9 @@ import type {
 import type {
   IaAnalyzeSentiment,
 } from '../../../../shared/interfaces/contracts/ia-analyze/scope.contract.js';
+import type {
+  AspectAnalysis,
+} from '../../../../shared/interfaces/contracts/ia-analyze/remote.contract.js';
 
 /**
  * Define o modo de execução da análise IA.
@@ -52,6 +55,9 @@ export type FeedbackAnalysis = {
   sentiment: 'positive' | 'neutral' | 'negative';
   categories: string[] | null;
   keywords: string[] | null;
+  aspects?: AspectAnalysis[] | null;
+  sentiment_score?: number | null;
+  confidence?: number | null;
 };
 
 /**
@@ -109,6 +115,9 @@ export type FeedbackAnalysisInsertRow = {
   sentiment: IaAnalyzeSentiment;
   categories: string[];
   keywords: string[];
+  aspects?: AspectAnalysis[];
+  sentiment_score?: number | null;
+  confidence?: number | null;
 };
 
 export type RawFeedbackRow = {

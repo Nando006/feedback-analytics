@@ -2,6 +2,12 @@ import { createIaApiClient, IaApiClientError } from '../providers/gemini.provide
 import { canProcessAnalyzedItem } from './sentimentAnalysis.service.js';
 import { extractKeywords } from './keywordExtraction.service.js';
 import { extractCategories } from './categorization.service.js';
+import {
+  extractAspects,
+  clampScore,
+  normalizeConfidence,
+  scoreFromSentiment,
+} from './aspectExtraction.service.js';
 import { buildBatchContext } from './globalInsights.service.js';
 import type {
   IaAnalyzeRemoteFeedbackAnalysis,
@@ -108,12 +114,19 @@ export async function runIaAnalyzeService(
 
       const keywords = extractKeywords(sourceFeedback, rawKeywords);
       const categories = extractCategories(sourceFeedback, rawCategories, keywords);
+      const aspects = extractAspects(sourceFeedback, item.aspects);
+      const sentiment_score =
+        clampScore(item.sentiment_score) ?? scoreFromSentiment(item.sentiment);
+      const confidence = normalizeConfidence(item.confidence);
 
       analysesByFeedbackId.set(item.feedback_id, {
         feedback_id: item.feedback_id,
         sentiment: item.sentiment,
         categories,
         keywords,
+        sentiment_score,
+        confidence,
+        aspects,
       });
     });
   }

@@ -124,6 +124,7 @@ export default function Dashboard() {
           positive={positive}
           neutral={neutral}
           negative={negative}
+          stats={stats}
         />
       </div>
 

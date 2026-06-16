@@ -26,6 +26,12 @@ export function buildIaPromptByScope(params: BuildIaPromptByScopeParams): string
       {
         feedback_id: 'uuid-do-feedback',
         sentiment: 'positive',
+        sentiment_score: 0.8,
+        confidence: 0.9,
+        aspects: [
+          { aspect: 'atendimento', sentiment: 'positive', sentiment_score: 0.9 },
+          { aspect: 'preco', sentiment: 'negative', sentiment_score: -0.5 },
+        ],
         categories: ['atendimento', 'experiencia'],
         keywords: ['agilidade', 'cordialidade'],
       },

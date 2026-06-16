@@ -1,4 +1,5 @@
 import type {
+  ConfidenceTier,
   FeedbackAnalysisSummary,
   FeedbackInsightsReport,
 } from 'lib/interfaces/domain/feedback.domain';
@@ -70,6 +71,12 @@ export interface InsightsReportMoodSectionProps {
   positivePct: number;
   neutralPct: number;
   negativePct: number;
+  /** Net Sentiment Score (-100..100) do escopo; null/undefined quando sem dados. */
+  nss?: number;
+  /** Camada de confiança pela quantidade de feedbacks analisados. */
+  confidenceTier?: ConfidenceTier;
+  /** Exibir o número do NSS (só com amostra suficiente). */
+  showNss?: boolean;
 }
 
 /**

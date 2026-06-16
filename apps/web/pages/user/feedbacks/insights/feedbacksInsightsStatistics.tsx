@@ -4,6 +4,7 @@ import InsightsStatisticsErrorState from 'components/user/pages/feedbacksInsight
 import InsightsStatisticsEmptyState from 'components/user/pages/feedbacksInsightsStatistics/InsightsStatisticsEmptyState';
 import InsightsStatisticsSentimentSection from 'components/user/pages/feedbacksInsightsStatistics/InsightsStatisticsSentimentSection';
 import InsightsStatisticsThemesSection from 'components/user/pages/feedbacksInsightsStatistics/InsightsStatisticsThemesSection';
+import InsightsStatisticsAspectsSection from 'components/user/pages/feedbacksInsightsStatistics/InsightsStatisticsAspectsSection';
 import PageHeader from 'components/user/shared/PageHeader';
 import { useScopedFeedbackAnalysis } from 'src/lib/hooks/useScopedFeedbackAnalysis';
 
@@ -41,6 +42,8 @@ export default function FeedbacksInsightsStatistics() {
           />
 
           <InsightsStatisticsThemesSection summary={summary} />
+
+          <InsightsStatisticsAspectsSection aspects={summary.aspectSentiments} />
         </>
       )}
     </div>
