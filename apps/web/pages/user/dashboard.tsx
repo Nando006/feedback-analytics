@@ -10,6 +10,7 @@ import {
   FaArrowRight,
 } from 'react-icons/fa';
 import SectionMetric from 'components/user/pages/dashboard/SectionMetric';
+import ShareQrCard from 'components/user/pages/dashboard/ShareQrCard';
 import SectionEvaluationDistribution from 'components/user/pages/dashboard/SectionEvaluationDistribution';
 import SectionSatisfactionRadar from 'components/user/pages/dashboard/SectionSatisfactionRadar';
 import SectionLowestQuestions from 'components/user/pages/dashboard/SectionLowestQuestions';
@@ -18,6 +19,7 @@ import InsightsReportContent from 'components/user/pages/feedbacksInsightsReport
 import { useToast } from 'components/public/forms/messages/useToast';
 import { useInsightsControls } from 'src/lib/context/insightsControls';
 import { useScopedInsightsReport } from 'src/lib/hooks/useScopedInsightsReport';
+import { getCatalogKindByKind } from 'src/lib/constants/catalog';
 import {
   ServiceGetFeedbackStats,
   ServiceGetFeedbackQuestions,
@@ -90,6 +92,17 @@ export default function Dashboard() {
   // Relatório de insights (resumo + recomendações), também filtrado por escopo.
   const { report, loading: reportLoading } = useScopedInsightsReport();
 
+  // O link de compartilhar segue o escopo selecionado no header: empresa → QR
+  // geral; produto/serviço/departamento com item escolhido → QR do item; tipo
+  // selecionado sem item → catálogo do tipo, para o gestor escolher o item.
+  const shareFormPath = (() => {
+    if (scope === 'COMPANY') return '/user/qrcode/enterprise';
+    const config = getCatalogKindByKind(scope);
+    if (!config) return '/user/qrcode/enterprise';
+    if (!catalogItemId) return config.listPath;
+    return `/user/edit/feedback/${config.slug}/${catalogItemId}`;
+  })();
+
   const displayName =
     user?.user_metadata?.full_name || enterprise?.full_name || user?.email || 'Dashboard';
 
@@ -97,32 +110,35 @@ export default function Dashboard() {
   const averageRating = stats?.averageRating ?? 0;
   const positive = stats?.sentimentBreakdown.positive ?? 0;
   const negative = stats?.sentimentBreakdown.negative ?? 0;
+  const pendingCount = stats?.pendingCount ?? 0;
 
   return (
     <div className="font-work-sans space-y-6">
       <CardSimple type="header">
         <div className="flex-1 space-y-2">
-          <p className="text-sm uppercase tracking-wide text-(--text-tertiary)">Visão Geral</p>
-          <h1 className="font-montserrat text-3xl font-semibold text-(--text-primary) md:text-4xl">
+          <p className="text-xs uppercase tracking-wide text-(--text-tertiary)">Visão geral</p>
+          <h1 className="font-montserrat text-xl font-semibold text-(--text-primary) md:text-2xl">
             Olá, {displayName}
           </h1>
-          <p className="text-sm text-(--text-secondary) md:text-base">
-            Acompanhe as métricas e os insights dos seus feedbacks no escopo selecionado.
+          <p className="flex items-center gap-1.5 text-sm text-(--text-secondary)">
+            {pendingCount > 0 && (
+              <span className="inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-(--primary-color)" />
+            )}
+            {totalFeedbacks === 0
+              ? 'Compartilhe o formulário pelo QR Code para começar a coletar feedbacks.'
+              : pendingCount > 0
+                ? `${pendingCount} ${pendingCount === 1 ? 'feedback aguardando' : 'feedbacks aguardando'} análise neste escopo.`
+                : 'Tudo em dia — nenhum feedback aguardando análise neste escopo.'}
           </p>
-        </div>
-        <div className="flex flex-col gap-3 md:items-end">
           <Link
             to="/user/feedbacks/all"
-            className="btn-primary font-poppins inline-flex items-center gap-2 px-5 py-3 text-sm font-semibold">
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-(--text-secondary) transition-colors hover:text-(--text-primary)">
             Ver feedbacks
-            <FaArrowRight className="text-xs" />
+            <FaArrowRight className="text-[0.6rem]" />
           </Link>
-          <Link
-            to="/user/qrcode/enterprise"
-            className="inline-flex items-center gap-2 text-sm text-(--text-secondary) transition-colors hover:text-(--text-primary)">
-            Compartilhar formulário de feedback
-            <FaArrowRight className="text-xs" />
-          </Link>
+        </div>
+        <div className="md:self-center">
+          <ShareQrCard to={shareFormPath} />
         </div>
       </CardSimple>
 

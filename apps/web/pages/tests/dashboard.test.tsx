@@ -128,13 +128,14 @@ describe('[Unidade] Dashboard Page', () => {
       </MemoryRouter>,
     );
 
-    expect(
-      screen.getByText('Acompanhe as métricas e os insights dos seus feedbacks no escopo selecionado.'),
-    ).toBeInTheDocument();
-
     await waitFor(() => {
       expect(screen.getByText('Olá, Usuário Teste')).toBeInTheDocument();
     });
+
+    // Sem feedbacks pendentes (pendingCount ausente) → linha de status "em dia".
+    expect(
+      screen.getByText('Tudo em dia — nenhum feedback aguardando análise neste escopo.'),
+    ).toBeInTheDocument();
   });
 
   it('exibe métricas principais após carregar estatísticas', async () => {

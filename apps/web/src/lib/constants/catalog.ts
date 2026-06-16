@@ -91,3 +91,12 @@ export function getCatalogKindBySlug(
   if (!slug) return null;
   return CATALOG_KINDS[slug as CatalogKindSlug] ?? null;
 }
+
+export function getCatalogKindByKind(
+  kind: CatalogItemKind | undefined,
+): CatalogKindConfig | null {
+  if (!kind) return null;
+  return (
+    Object.values(CATALOG_KINDS).find((config) => config.kind === kind) ?? null
+  );
+}
