@@ -37,17 +37,66 @@ export function buildEnterpriseContext(params: {
   };
 }
 
+const DEFAULT_MAX_FEEDBACKS_PER_BATCH = 20;
+
 /**
- * Agrupa os feedbacks em lotes (batches) para análise IA, conforme escopo e item de catálogo.
+ * Máximo de feedbacks em UMA chamada ao Gemini (configurável via
+ * IA_MAX_FEEDBACKS_PER_BATCH). Limita o tamanho da SAÍDA — o modelo emite um
+ * objeto JSON por feedback, então lotes grandes estouram o teto de tokens de
+ * saída e truncam o JSON (→ erro de parse → 502). Lotes menores mantêm a saída
+ * pequena e previsível.
+ */
+function readMaxFeedbacksPerBatch(): number {
+  const parsed = Number(String(process.env.IA_MAX_FEEDBACKS_PER_BATCH ?? '').trim());
+  if (Number.isFinite(parsed) && parsed > 0) {
+    return Math.floor(parsed);
+  }
+  return DEFAULT_MAX_FEEDBACKS_PER_BATCH;
+}
+
+/**
+ * Quebra cada lote (um por escopo) em sub-lotes de no máximo N feedbacks, para a
+ * IA emitir um JSON pequeno por chamada. Ex.: um escopo com 100 feedbacks vira 5
+ * chamadas de 20. Preserva escopo/item de cada sub-lote.
+ */
+function chunkBatchesBySize(batches: AnalysisBatch[]): AnalysisBatch[] {
+  const maxPerBatch = readMaxFeedbacksPerBatch();
+
+  return batches.flatMap((batch) => {
+    if (batch.feedbacks.length <= maxPerBatch) {
+      return [batch];
+    }
+
+    const chunks: AnalysisBatch[] = [];
+    for (let start = 0; start < batch.feedbacks.length; start += maxPerBatch) {
+      chunks.push({
+        ...batch,
+        feedbacks: batch.feedbacks.slice(start, start + maxPerBatch),
+      });
+    }
+    return chunks;
+  });
+}
+
+/**
+ * Agrupa os feedbacks em lotes (batches) para análise IA, conforme escopo e item de catálogo,
+ * e depois sub-divide cada lote por TAMANHO (chunkBatchesBySize) para não estourar a saída da IA.
  *
  * - Separa feedbacks da empresa (COMPANY) dos feedbacks de itens específicos (produtos, serviços, etc).
  * - Cada lote contém feedbacks do mesmo tipo e item, otimizando a análise por contexto.
  * - Permite filtrar por escopo e/ou item de catálogo, se informado nas opções.
- * - Retorna um array de batches prontos para serem enviados à IA.
+ * - Retorna um array de batches prontos para serem enviados à IA (já fatiados por tamanho).
  *
  * Útil para garantir que cada análise IA receba apenas feedbacks do mesmo contexto, evitando mistura de dados.
  */
 export function buildAnalysisBatches(
+  feedbacks: IaAnalyzeFeedbackInput[],
+  options?: IaAnalyzeRunRequest,
+): AnalysisBatch[] {
+  return chunkBatchesBySize(buildScopeBatches(feedbacks, options));
+}
+
+function buildScopeBatches(
   feedbacks: IaAnalyzeFeedbackInput[],
   options?: IaAnalyzeRunRequest,
 ): AnalysisBatch[] {
