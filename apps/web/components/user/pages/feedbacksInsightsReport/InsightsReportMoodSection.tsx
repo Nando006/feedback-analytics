@@ -45,8 +45,11 @@ export default function InsightsReportMoodSection({
         <div className={`flex items-baseline gap-2 text-xl font-semibold ${tone.text}`}>
           <span>{mood.label}</span>
           {showNss && typeof nss === 'number' && (
-            <span className="text-sm font-medium opacity-80" title="Net Sentiment Score (-100 a +100)">
-              NSS {formatNss(nss)}
+            <span
+              className="text-sm font-medium opacity-80"
+              title="Comentários positivos menos negativos, de -100 a +100."
+            >
+              Saldo de sentimento {formatNss(nss)}
             </span>
           )}
         </div>

@@ -113,7 +113,7 @@ export async function runIaAnalyzeService(
       const rawCategories = Array.isArray(item.categories) ? item.categories : [];
 
       const keywords = extractKeywords(sourceFeedback, rawKeywords);
-      const categories = extractCategories(sourceFeedback, rawCategories, keywords);
+      const categories = extractCategories(sourceFeedback, rawCategories, keywords, batch.scope_type);
       const aspects = extractAspects(sourceFeedback, item.aspects);
       const sentiment_score =
         clampScore(item.sentiment_score) ?? scoreFromSentiment(item.sentiment);

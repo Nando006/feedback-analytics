@@ -1,5 +1,5 @@
 import type { InsightsStatisticsAspectsSectionProps } from './ui.types';
-import { formatNss, formatFractionIntervalPct } from 'src/lib/utils/statistics';
+import { formatNss } from 'src/lib/utils/statistics';
 
 function toneClass(nss: number): string {
   if (nss > 5) return 'text-(--positive)';
@@ -8,8 +8,8 @@ function toneClass(nss: number): string {
 }
 
 /**
- * Aspectos (ABSA) extraídos do texto, ranqueados por impacto (volume ×
- * intensidade). Os de NSS negativo são as "principais dores".
+ * Aspectos citados no texto, ordenados por impacto (quantidade × intensidade).
+ * Os de saldo negativo são as "principais dores".
  */
 export default function InsightsStatisticsAspectsSection({
   aspects,
@@ -19,11 +19,11 @@ export default function InsightsStatisticsAspectsSection({
   return (
     <div className="font-work-sans relative overflow-hidden rounded-2xl border border-(--quaternary-color)/10 bg-gradient-to-br from-(--bg-secondary) to-(--sixth-color) p-6 glass-card">
       <h3 className="mb-1 text-base font-semibold text-[var(--text-primary)] font-montserrat">
-        Aspectos que mais impactam
+        Assuntos que mais impactam
       </h3>
       <p className="mb-4 text-xs text-[var(--text-tertiary)]">
-        Aspectos citados no texto, ordenados por impacto (volume × intensidade). NSS
-        negativo = principais dores.
+        Assuntos citados nos comentários, ordenados por impacto (quantidade × intensidade).
+        Saldo negativo = principais reclamações.
       </p>
 
       <ul className="space-y-2">
@@ -35,15 +35,14 @@ export default function InsightsStatisticsAspectsSection({
             <div className="min-w-0">
               <span className="block truncate text-sm text-(--text-primary)">{a.aspect}</span>
               <span className="text-[11px] text-(--text-tertiary)">
-                {a.count} menç. · {a.positive}+ / {a.neutral}~ / {a.negative}−
-                {a.ci ? ` · IC95% pos ${formatFractionIntervalPct(a.ci)}` : ''}
+                {a.count} menções · {a.positive} positivas / {a.neutral} neutras / {a.negative} negativas
               </span>
             </div>
             <span
               className={`shrink-0 text-sm font-semibold ${toneClass(a.netSentimentScore)}`}
-              title="Net Sentiment Score do aspecto (-100 a +100)"
+              title="Comentários positivos menos negativos sobre este assunto (-100 a +100)."
             >
-              NSS {formatNss(a.netSentimentScore)}
+              Saldo {formatNss(a.netSentimentScore)}
             </span>
           </li>
         ))}

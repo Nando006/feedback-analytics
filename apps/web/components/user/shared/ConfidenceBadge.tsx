@@ -15,13 +15,13 @@ export default function ConfidenceBadge({ tier, n, className = '' }: ConfidenceB
       className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-medium ${CONFIDENCE_TIER_TONE[tier]} ${className}`}
       title={
         typeof n === 'number'
-          ? `Confiabilidade da amostra (n=${n})`
-          : 'Confiabilidade da amostra'
+          ? `Confiabilidade do resultado, baseada em ${n} feedback(s) analisado(s)`
+          : 'Confiabilidade do resultado'
       }
     >
       <span className="h-1.5 w-1.5 rounded-full bg-current" />
       {CONFIDENCE_TIER_LABEL[tier]}
-      {typeof n === 'number' ? ` · n=${n}` : ''}
+      {typeof n === 'number' ? ` · ${n} feedback${n === 1 ? '' : 's'}` : ''}
     </span>
   );
 }

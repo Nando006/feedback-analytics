@@ -9,7 +9,7 @@ export default function InsightsStatisticsThemesSection({
         Principais categorias e temas
       </h3>
       <p className="mb-4 text-xs text-[var(--text-tertiary)]">
-        Ordenado por confiança (limite inferior de Wilson), não apenas por frequência.
+        Ordenado por relevância (junta quantidade e consistência), não só pelo número de menções.
       </p>
 
       {summary.topCategories.length === 0 ? (

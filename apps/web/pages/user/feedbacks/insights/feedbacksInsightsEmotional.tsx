@@ -68,7 +68,7 @@ export default function FeedbacksInsigthsEmotional() {
       clustersOut.push({
         title: 'Divergências (nota × texto)',
         description:
-          'A nota em estrelas e o sentimento do texto discordam — ex.: nota alta com texto negativo (detrator silencioso) ou nota baixa com texto positivo.',
+          'A nota em estrelas e o tom do comentário não combinam — ex.: nota alta mas comentário negativo (cliente insatisfeito que mesmo assim deu nota boa) ou nota baixa com comentário positivo.',
         tone: 'negative',
         items: divergent,
       });

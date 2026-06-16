@@ -23,9 +23,9 @@ export default function InsightsStatisticsSentimentSection({
           {shouldShowNss(summary.confidenceTier) && typeof summary.netSentimentScore === 'number' && (
             <span
               className="rounded-full bg-(--seventh-color) px-2.5 py-1 text-xs font-semibold text-(--text-secondary)"
-              title="Net Sentiment Score = (positivos − negativos) / analisados (-100 a +100)"
+              title="Comentários positivos menos negativos, de -100 a +100."
             >
-              NSS {formatNss(summary.netSentimentScore)}
+              Saldo de sentimento {formatNss(summary.netSentimentScore)}
             </span>
           )}
           <ConfidenceBadge tier={summary.confidenceTier} n={summary.totalAnalyzed} />
@@ -53,7 +53,7 @@ export default function InsightsStatisticsSentimentSection({
             </div>
             {cis && (
               <div className="text-[10px] text-(--text-tertiary)">
-                IC95% {formatFractionIntervalPct(cis.positive)}
+                faixa provável {formatFractionIntervalPct(cis.positive)}
               </div>
             )}
           </div>
@@ -66,7 +66,7 @@ export default function InsightsStatisticsSentimentSection({
             </div>
             {cis && (
               <div className="text-[10px] text-(--text-tertiary)">
-                IC95% {formatFractionIntervalPct(cis.neutral)}
+                faixa provável {formatFractionIntervalPct(cis.neutral)}
               </div>
             )}
           </div>
@@ -79,7 +79,7 @@ export default function InsightsStatisticsSentimentSection({
             </div>
             {cis && (
               <div className="text-[10px] text-(--text-tertiary)">
-                IC95% {formatFractionIntervalPct(cis.negative)}
+                faixa provável {formatFractionIntervalPct(cis.negative)}
               </div>
             )}
           </div>

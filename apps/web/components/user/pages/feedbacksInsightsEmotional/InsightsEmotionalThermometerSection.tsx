@@ -18,9 +18,9 @@ export default function InsightsEmotionalThermometerSection({
           {shouldShowNss(summary.confidenceTier) && typeof summary.netSentimentScore === 'number' && (
             <span
               className="rounded-full bg-(--seventh-color) px-2.5 py-1 text-xs font-semibold text-(--text-secondary)"
-              title="Net Sentiment Score = (positivos − negativos) / analisados (-100 a +100)"
+              title="Comentários positivos menos negativos, de -100 a +100."
             >
-              NSS {formatNss(summary.netSentimentScore)}
+              Saldo de sentimento {formatNss(summary.netSentimentScore)}
             </span>
           )}
           <ConfidenceBadge tier={summary.confidenceTier} n={summary.totalAnalyzed} />

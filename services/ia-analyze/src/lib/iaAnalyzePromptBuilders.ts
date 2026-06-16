@@ -1,5 +1,6 @@
 import { PROMPT_HEADER } from './prompts/promptHeader.js';
 import { getScopeInstructions } from './prompts/scopeInstructions.js';
+import { getTaxonomyLabels } from './categoryTaxonomy.js';
 import type {
   BuildIaPromptByScopeParams,
   PromptExpectedSchema,
@@ -77,6 +78,7 @@ export function buildIaPromptByScope(params: BuildIaPromptByScopeParams): string
     '',
     `Escopo atual da analise: ${scopeType}`,
     ...scopeInstructions.map((line) => `- ${line}`),
+    `Categorias preferenciais para "categories" (use estas quando aplicavel; senao crie uma curta): ${getTaxonomyLabels(scopeType).join(', ')}.`,
     '',
     'Estrutura exata de resposta (NAO altere as chaves):',
     JSON.stringify(expectedSchemaExample, null, 2),

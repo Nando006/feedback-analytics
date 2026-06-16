@@ -27,9 +27,9 @@ export function formatInterval(ci: Interval, decimals = 1, suffix = ''): string 
 
 export const CONFIDENCE_TIER_LABEL: Record<ConfidenceTier, string> = {
   insufficient: 'Dados insuficientes',
-  low: 'Baixa confiança',
-  moderate: 'Confiança moderada',
-  good: 'Boa confiança',
+  low: 'Confiança baixa',
+  moderate: 'Confiança média',
+  good: 'Confiança alta',
 };
 
 /** Classes utilitárias (borda/fundo/texto) por camada de confiança. */
@@ -76,7 +76,7 @@ export function climateFromNss(
       label: 'Clima Positivo',
       tone: 'positive',
       description:
-        'O sentimento líquido (positivos − negativos) está favorável no escopo selecionado.',
+        'Há mais comentários positivos do que negativos no escopo selecionado.',
     };
   }
   if (nss < -5) {
@@ -84,13 +84,13 @@ export function climateFromNss(
       label: 'Clima de Atenção',
       tone: 'negative',
       description:
-        'O sentimento líquido está negativo: há pontos críticos que pedem ação.',
+        'Há mais comentários negativos do que positivos: pontos que pedem ação.',
     };
   }
   return {
     label: 'Clima Neutro',
     tone: 'neutral',
     description:
-      'Positivos e negativos se equilibram; sentimento líquido próximo de zero.',
+      'Comentários positivos e negativos estão equilibrados.',
   };
 }
