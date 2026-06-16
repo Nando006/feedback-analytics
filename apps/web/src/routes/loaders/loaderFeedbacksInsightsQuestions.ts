@@ -5,7 +5,10 @@ export async function LoaderFeedbacksInsightsQuestions(
   _args: LoaderFunctionArgs,
 ) {
   void _args;
-  const data = await loadFeedbackQuestionsData();
+  // Semeia no escopo Empresa (o hook pula o 1º fetch quando o escopo é Empresa).
+  // Sem o scope_type explícito, o backend trataria "sem escopo" como TODOS os
+  // feedbacks, vazando perguntas de produto/serviço para a visão Empresa.
+  const data = await loadFeedbackQuestionsData({ scope_type: 'COMPANY' });
 
   return {
     ...data,
