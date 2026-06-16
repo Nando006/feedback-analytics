@@ -5,8 +5,15 @@ import { normalizeBaseUrl } from './normalize.js';
  * Timeout padrão (em milissegundos) para requisições ao serviço IA remoto.
  *
  * Usado quando a variável de ambiente IA_ANALYZE_REMOTE_TIMEOUT_MS não está definida ou é inválida.
+ *
+ * IMPORTANTE: deve ficar com FOLGA abaixo do maxDuration do gateway no Vercel
+ * (300s — ver backends/api-gateway/vercel.json) — o gateway ainda faz consultas
+ * de banco antes/depois da chamada à IA. Com 280s, um abort por lentidão devolve
+ * a mensagem clara "demorou demais" (502 tipado) ANTES de o Vercel matar a função
+ * no maxDuration (que viraria um 502/504 de infra, opaco). A análise real costuma
+ * levar ~20-30s; a folga acomoda picos de latência do Gemini.
  */
-const DEFAULT_REMOTE_TIMEOUT_MS = 110_000;
+const DEFAULT_REMOTE_TIMEOUT_MS = 280_000;
 
 /**
  * URL padrão usada como alias para o serviço IA remoto em ambientes de preview (deploy temporário).
@@ -66,7 +73,7 @@ export function readRemoteToken(): string | null {
  * Lê o timeout (em ms) para requisições ao serviço IA remoto.
  *
  * - Busca IA_ANALYZE_REMOTE_TIMEOUT_MS.
- * - Se não definido ou inválido, retorna valor padrão (20_000 ms).
+ * - Se não definido ou inválido, retorna o valor padrão (DEFAULT_REMOTE_TIMEOUT_MS).
  *
  * Útil para evitar travamentos em chamadas remotas muito demoradas.
  */
