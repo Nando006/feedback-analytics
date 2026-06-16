@@ -14,8 +14,12 @@ import type {
   IaAnalyzeRemoteRunRequest,
   IaAnalyzeRemoteRunResponse,
 } from '../../../../shared/interfaces/contracts/ia-analyze/remote.contract.js';
-import type { IaAnalyzeFeedbackInput } from '../../../../shared/interfaces/contracts/ia-analyze/input.contract.js';
+import type {
+  IaAnalyzeFeedbackInput,
+  IaAnalyzeRemoteBatchInput,
+} from '../../../../shared/interfaces/contracts/ia-analyze/input.contract.js';
 import type { IaAnalyzeContext } from '../../../../shared/interfaces/contracts/ia-analyze/analysis.contract.js';
+import type { ParsedIaResponse } from '../../types/iaApiClient.types.js';
 
 /**
  * Classe de erro customizada para o serviço de análise IA.
@@ -35,16 +39,67 @@ export class IaAnalyzeServiceError extends Error {
   }
 }
 
+const DEFAULT_GEMINI_CONCURRENCY = 3;
+
+/**
+ * Quantas chamadas ao Gemini podem estar em voo ao mesmo tempo (configurável via
+ * IA_GEMINI_CONCURRENCY). Com os lotes fatiados por tamanho, o número de chamadas
+ * cresce — limitar a concorrência evita estourar o rate limit do Gemini (→ 429).
+ */
+function readGeminiConcurrency(): number {
+  const parsed = Number(String(process.env.IA_GEMINI_CONCURRENCY ?? '').trim());
+  if (Number.isFinite(parsed) && parsed > 0) {
+    return Math.floor(parsed);
+  }
+  return DEFAULT_GEMINI_CONCURRENCY;
+}
+
+/**
+ * Executa `task` sobre cada item com no máximo `limit` chamadas em paralelo
+ * (semáforo simples), preservando a ordem dos resultados. Substitui o
+ * `Promise.all` sem limite, que disparava todas as chamadas ao Gemini de uma vez.
+ */
+async function mapWithConcurrency<T, R>(
+  items: T[],
+  limit: number,
+  task: (item: T, index: number) => Promise<R>,
+): Promise<R[]> {
+  const results = new Array<R>(items.length);
+  let cursor = 0;
+
+  const worker = async (): Promise<void> => {
+    for (;;) {
+      const index = cursor;
+      cursor += 1;
+      if (index >= items.length) return;
+      results[index] = await task(items[index], index);
+    }
+  };
+
+  const workerCount = Math.max(1, Math.min(limit, items.length));
+  await Promise.all(Array.from({ length: workerCount }, () => worker()));
+
+  return results;
+}
+
+/** Resultado de processar um lote: concluído, vazio (ignorado) ou falho. */
+type BatchOutcome =
+  | { status: 'done'; batch: IaAnalyzeRemoteBatchInput; parsed: ParsedIaResponse }
+  | { status: 'empty' }
+  | { status: 'failed'; error: unknown };
+
 /**
  * Função principal que executa o fluxo de análise de feedbacks por IA.
  *
  * - Recebe uma requisição com lotes de feedbacks.
- * - Para cada lote, chama o modelo de IA para analisar os feedbacks.
+ * - Para cada lote, chama o modelo de IA com CONCORRÊNCIA LIMITADA (não dispara
+ *   todas de uma vez), evitando rate limit.
  * - Extrai e organiza sentimentos, categorias e palavras-chave de cada feedback.
  * - Monta o contexto de análise de cada lote.
  * - Retorna o resultado consolidado com todas as análises e contextos.
  *
- * Lança erros customizados em caso de falha de API ou resposta inválida.
+ * É RESILIENTE: um lote que falha não derruba os demais (sucesso parcial). Só
+ * lança erro se TODOS os lotes com conteúdo falharem.
  */
 export async function runIaAnalyzeService(
   request: IaAnalyzeRemoteRunRequest,
@@ -64,35 +119,55 @@ export async function runIaAnalyzeService(
   const analysesByFeedbackId = new Map<string, IaAnalyzeRemoteFeedbackAnalysis>();
   const contexts: IaAnalyzeContext[] = [];
 
-  const batchResults = await Promise.all(
-    batches.map(async (batch) => {
+  const concurrency = readGeminiConcurrency();
+
+  const outcomes = await mapWithConcurrency(
+    batches,
+    concurrency,
+    async (batch): Promise<BatchOutcome> => {
       if (!Array.isArray(batch.feedbacks) || batch.feedbacks.length === 0) {
-        return null;
+        return { status: 'empty' };
       }
 
-      let parsed: Awaited<ReturnType<typeof iaApiClient.analyzeBatch>>;
-
       try {
-        parsed = await iaApiClient.analyzeBatch({
+        const parsed = await iaApiClient.analyzeBatch({
           scopeType: batch.scope_type,
           enterpriseContext: request.enterprise_context,
           feedbacks: batch.feedbacks,
         });
+        return { status: 'done', batch, parsed };
       } catch (error) {
-        if (error instanceof IaApiClientError && error.code === 'failed_ia_request') {
-          throw new IaAnalyzeServiceError('Failed to call model API', 502, 'failed_ia_request');
-        }
-
-        throw new IaAnalyzeServiceError('Invalid AI response JSON', 502, 'invalid_ai_response');
+        console.error(
+          `[ia-analyze] lote falhou (scope=${batch.scope_type}, item=${batch.catalog_item_id ?? 'null'}):`,
+          error,
+        );
+        return { status: 'failed', error };
       }
-
-      return { batch, parsed };
-    }),
+    },
   );
 
-  for (const result of batchResults) {
-    if (!result) continue;
+  const succeeded = outcomes.filter(
+    (outcome): outcome is Extract<BatchOutcome, { status: 'done' }> => outcome.status === 'done',
+  );
+  const failed = outcomes.filter(
+    (outcome): outcome is Extract<BatchOutcome, { status: 'failed' }> => outcome.status === 'failed',
+  );
+  const nonEmptyBatchCount = batches.filter(
+    (batch) => Array.isArray(batch.feedbacks) && batch.feedbacks.length > 0,
+  ).length;
 
+  // Se TODOS os lotes com conteúdo falharam, propaga o erro (não devolve vazio
+  // silencioso). Se ao menos um deu certo, segue com sucesso PARCIAL: os lotes
+  // que falharam ficam de fora e podem ser reprocessados numa próxima execução.
+  if (nonEmptyBatchCount > 0 && succeeded.length === 0) {
+    const firstError = failed[0]?.error;
+    if (firstError instanceof IaApiClientError && firstError.code === 'failed_ia_request') {
+      throw new IaAnalyzeServiceError('Failed to call model API', 502, 'failed_ia_request');
+    }
+    throw new IaAnalyzeServiceError('Invalid AI response JSON', 502, 'invalid_ai_response');
+  }
+
+  for (const result of succeeded) {
     const { batch, parsed } = result;
 
     contexts.push(buildBatchContext(batch, parsed?.global_insights));
