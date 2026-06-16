@@ -294,6 +294,76 @@ export interface FeedbackAnalysisResponse {
   summary: FeedbackAnalysisSummary;
 }
 
+/**
+ * Distribuição de respostas de uma pergunta por rótulo (PÉSSIMO→ÓTIMA).
+ * Usado em: QuestionMetric / SubquestionMetric (mini-distribuição).
+ */
+export interface QuestionDistribution {
+  PESSIMO: number;
+  RUIM: number;
+  MEDIANA: number;
+  BOA: number;
+  OTIMA: number;
+}
+
+/**
+ * Métrica agregada de UMA subpergunta no escopo.
+ * Usado em: QuestionMetric.subquestions e a aba "Perguntas".
+ */
+export interface SubquestionMetric {
+  subquestion_id: string;
+  text: string;
+  count: number;
+  /** Nota média (1–5). */
+  mean: number;
+  /** Faixa provável da média (IC t, unidade de nota). */
+  ci: Interval;
+  /** % de respostas boas (BOA+ÓTIMA). */
+  satisfiedPct: number;
+  distribution: QuestionDistribution;
+  confidenceTier: ConfidenceTier;
+  /**
+   * `true` quando esta redação corresponde à subpergunta ativa atual (pai ativo +
+   * subpergunta ativa + texto igual ao configurado). `false` = redação antiga/retirada.
+   */
+  isCurrent: boolean;
+}
+
+/**
+ * Métrica agregada de UMA pergunta no escopo, com subperguntas aninhadas.
+ * Usado em: FeedbackQuestionsResponse e a aba "Perguntas".
+ */
+export interface QuestionMetric {
+  question_id: string;
+  text: string;
+  count: number;
+  mean: number;
+  ci: Interval;
+  satisfiedPct: number;
+  distribution: QuestionDistribution;
+  confidenceTier: ConfidenceTier;
+  subquestions: SubquestionMetric[];
+  /**
+   * `true` quando esta redação corresponde à pergunta ativa atual (ativa + texto igual
+   * ao configurado). `false` = redação antiga (texto editado) ou pergunta removida —
+   * exibida na seção "Perguntas antigas" e ignorada pelo card do Dashboard.
+   */
+  isCurrent: boolean;
+}
+
+/**
+ * Resposta do endpoint de métricas por pergunta (ordenado pior→melhor).
+ * Usado em: src/services/serviceFeedbacks.ts e a aba "Perguntas".
+ */
+export interface FeedbackQuestionsResponse {
+  questions: QuestionMetric[];
+}
+
+export type FeedbackQuestionsOptions = {
+  scope_type?: FeedbackInsightScopeType;
+  catalog_item_id?: string;
+};
+
 export type FeedbackAnalysisOptions = {
   sentiment?: FeedbackSentiment;
   scope_type?: FeedbackInsightScopeType;

@@ -383,27 +383,17 @@ export async function upsertCatalogQuestionsController(req: Request, res: Respon
     return sendTypedError(res, 400, API_ERROR_INVALID_PAYLOAD, { reason: 'ordered_questions_not_3' });
   }
 
-  const hasAnyQuestionText = orderedQuestions.some((question) => question.question_text.length > 0);
-
-  if (!hasAnyQuestionText) {
-    const { error: clearError } = await supabase
-      .from('questions_of_feedbacks')
-      .delete()
-      .eq('enterprise_id', enterprise.id)
-      .eq('scope_type', catalogKind)
-      .eq('catalog_item_id', catalogItem.id);
-
-    if (clearError) return sendTypedError(res, 500, API_ERROR_UPDATE_FAILED);
-
-    return res.json({ catalog_item_id: catalogItem.id, questions: [] });
-  }
-
   // Contagem variável: o gestor pode configurar 1, 2 ou 3 perguntas. Cada slot
   // (question_order) é tratado individualmente — não exigimos as 3 preenchidas.
+  // Esvaziar todos os slots cai no caso "sem texto" abaixo, que desativa cada um
+  // (soft-delete) preservando o histórico de respostas.
   for (const question of orderedQuestions) {
     const hasText = hasValidQuestionLength(question.question_text);
 
-    // Slot sem texto válido: remove a pergunta (e subperguntas) daquele order, se existir.
+    // Slot sem texto válido: desativa a pergunta (e suas subperguntas) daquele order,
+    // se existir. Soft-delete — a linha permanece (a leitura do editor filtra is_active,
+    // então o slot volta vazio) e as respostas históricas são preservadas (a FK é
+    // ON DELETE CASCADE; apagar perderia o histórico).
     if (!hasText) {
       const { data: existingRows, error: findExistingError } = await supabase
         .from('questions_of_feedbacks')
@@ -418,19 +408,21 @@ export async function upsertCatalogQuestionsController(req: Request, res: Respon
       const existingId = existingRows?.[0]?.id as string | undefined;
 
       if (existingId) {
-        const { error: deleteSubError } = await supabase
+        const nowIso = new Date().toISOString();
+
+        const { error: deactivateSubError } = await supabase
           .from('feedback_question_subquestions')
-          .delete()
+          .update({ is_active: false, updated_at: nowIso })
           .eq('question_id', existingId);
 
-        if (deleteSubError) return sendTypedError(res, 500, API_ERROR_UPDATE_FAILED);
+        if (deactivateSubError) return sendTypedError(res, 500, API_ERROR_UPDATE_FAILED);
 
-        const { error: deleteQuestionError } = await supabase
+        const { error: deactivateQuestionError } = await supabase
           .from('questions_of_feedbacks')
-          .delete()
+          .update({ is_active: false, updated_at: nowIso })
           .eq('id', existingId);
 
-        if (deleteQuestionError) return sendTypedError(res, 500, API_ERROR_UPDATE_FAILED);
+        if (deactivateQuestionError) return sendTypedError(res, 500, API_ERROR_UPDATE_FAILED);
       }
 
       continue;
@@ -476,13 +468,15 @@ export async function upsertCatalogQuestionsController(req: Request, res: Respon
       const subquestion = question.subquestionsByOrder.get(subquestionOrder);
 
       if (!subquestion || subquestion.subquestion_text.length === 0) {
-        const { error: deleteSubquestionError } = await supabase
+        // Soft-delete da subpergunta esvaziada (preserva respostas; o read do editor
+        // filtra is_active e o formulário público também).
+        const { error: deactivateSubquestionError } = await supabase
           .from('feedback_question_subquestions')
-          .delete()
+          .update({ is_active: false, updated_at: new Date().toISOString() })
           .eq('question_id', questionId)
           .eq('subquestion_order', subquestionOrder);
 
-        if (deleteSubquestionError) return sendTypedError(res, 500, API_ERROR_UPDATE_FAILED);
+        if (deactivateSubquestionError) return sendTypedError(res, 500, API_ERROR_UPDATE_FAILED);
         continue;
       }
 

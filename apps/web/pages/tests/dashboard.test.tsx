@@ -6,6 +6,7 @@ const mocks = vi.hoisted(() => ({
   useLoaderData: vi.fn(),
   useRouteLoaderData: vi.fn(),
   getFeedbackStats: vi.fn(),
+  getFeedbackQuestions: vi.fn(),
   useInsightsControls: vi.fn(),
   useScopedInsightsReport: vi.fn(),
 }));
@@ -23,6 +24,7 @@ vi.mock('react-router-dom', async () => {
 
 vi.mock('src/services/serviceFeedbacks', () => ({
   ServiceGetFeedbackStats: mocks.getFeedbackStats,
+  ServiceGetFeedbackQuestions: mocks.getFeedbackQuestions,
 }));
 
 vi.mock('src/lib/context/insightsControls', () => ({
@@ -100,6 +102,7 @@ describe('[Unidade] Dashboard Page', () => {
       loaderData as ReturnType<typeof useRouteLoaderData>,
     );
     mocks.getFeedbackStats.mockResolvedValue(feedbackStats);
+    mocks.getFeedbackQuestions.mockResolvedValue({ questions: [] });
     mocks.useInsightsControls.mockReturnValue({
       scope: 'COMPANY',
       catalogItemId: '',
