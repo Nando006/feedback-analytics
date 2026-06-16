@@ -38,11 +38,14 @@ export async function getCatalogQuestionsSnapshot(params: {
     return { error: false, snapshotByCatalogItem };
   }
 
+  // Apenas perguntas ATIVAS alimentam o editor. Perguntas desativadas (soft-delete)
+  // permanecem no banco com o histórico de respostas, mas o slot volta vazio aqui.
   const { data: questionRows, error: questionRowsError } = await supabase
     .from('questions_of_feedbacks')
     .select('id, catalog_item_id, question_order, question_text, is_active')
     .eq('enterprise_id', enterpriseId)
     .eq('scope_type', kind)
+    .eq('is_active', true)
     .in('catalog_item_id', catalogItemIds)
     .order('question_order', { ascending: true });
 
@@ -67,6 +70,7 @@ export async function getCatalogQuestionsSnapshot(params: {
     const { data: subquestionRows, error: subquestionRowsError } = await supabase
       .from('feedback_question_subquestions')
       .select('id, question_id, subquestion_order, subquestion_text, is_active')
+      .eq('is_active', true)
       .in('question_id', questionIds)
       .order('subquestion_order', { ascending: true });
 

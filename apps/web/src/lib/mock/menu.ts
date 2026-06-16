@@ -22,6 +22,7 @@ export const menuData: MenuItem[] = [
       { label: "Relatórios", to: "/user/insights/reports" },
       { label: "Emocional", to: "/user/insights/emotional" },
       { label: "Estatísticas", to: "/user/insights/statistics" },
+      { label: "Perguntas", to: "/user/insights/questions" },
     ],
   },
   {

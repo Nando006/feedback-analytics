@@ -14,9 +14,11 @@ import { LoaderFeedbacksAnalyticsPositive } from "src/routes/loaders/loaderFeedb
 import { LoaderFeedbacksAnalyticsNegative } from "src/routes/loaders/loaderFeedbacksAnalyticsNegative";
 import { LoaderFeedbacksInsightsStatistics } from "src/routes/loaders/loaderFeedbacksInsightsStatistics";
 import { LoaderFeedbacksInsightsEmotional } from "./loaders/loaderFeedbacksInsightsEmotional";
+import { LoaderFeedbacksInsightsQuestions } from "./loaders/loaderFeedbacksInsightsQuestions";
 import Profile from "pages/user/profile";
 import FeedbacksInsightsEmotional from "pages/user/feedbacks/insights/feedbacksInsightsEmotional";
 import FeedbacksInsightsStatistics from "pages/user/feedbacks/insights/feedbacksInsightsStatistics";
+import FeedbacksInsightsQuestions from "pages/user/feedbacks/insights/feedbacksInsightsQuestions";
 import FeedbacksAnalyticsPositive from "pages/user/feedbacks/analytics/feedbacksAnalyticsPositive";
 import FeedbacksAnalyticsNegative from "pages/user/feedbacks/analytics/feedbacksAnalyticsNegative";
 import FeedbacksAnalyticsAll from "pages/user/feedbacks/analytics/feedbacksAnalyticsAll";
@@ -99,6 +101,11 @@ export function RouteUser() {
         path="insights/statistics"
         loader={LoaderFeedbacksInsightsStatistics}
         element={<FeedbacksInsightsStatistics />}
+      />
+      <Route
+        path="insights/questions"
+        loader={LoaderFeedbacksInsightsQuestions}
+        element={<FeedbacksInsightsQuestions />}
       />
       <Route path="edit/customers" element={<EditCustomer />} />
       <Route

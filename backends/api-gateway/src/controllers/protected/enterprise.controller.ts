@@ -342,8 +342,16 @@ async function syncCompanyFeedbackQuestions(params: {
       const subquestion = item.subquestionsByOrder.get(subquestionOrder);
 
       if (!subquestion) {
-        const { error: deleteError } = await supabase.from('feedback_question_subquestions').delete().eq('question_id', questionId).eq('subquestion_order', subquestionOrder);
-        if (deleteError) return { error: true as const };
+        // Soft-delete: não apagamos a subpergunta (preserva o histórico de respostas,
+        // que é ON DELETE CASCADE). Apenas desativamos — o texto é mantido (a coluna tem
+        // CHECK de 20–150 chars, então não pode ser zerado) e o editor a mostra como
+        // subpergunta desativada (toggle "Ativa" off); o formulário público a esconde.
+        const { error: deactivateError } = await supabase
+          .from('feedback_question_subquestions')
+          .update({ is_active: false, updated_at: new Date().toISOString() })
+          .eq('question_id', questionId)
+          .eq('subquestion_order', subquestionOrder);
+        if (deactivateError) return { error: true as const };
         continue;
       }
 

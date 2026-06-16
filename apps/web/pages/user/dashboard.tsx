@@ -12,12 +12,16 @@ import {
 import SectionMetric from 'components/user/pages/dashboard/SectionMetric';
 import SectionEvaluationDistribution from 'components/user/pages/dashboard/SectionEvaluationDistribution';
 import SectionSatisfactionRadar from 'components/user/pages/dashboard/SectionSatisfactionRadar';
+import SectionLowestQuestions from 'components/user/pages/dashboard/SectionLowestQuestions';
 import InsightsReportContent from 'components/user/pages/feedbacksInsightsReport/InsightsReportContent';
 import { useToast } from 'components/public/forms/messages/useToast';
 import { useInsightsControls } from 'src/lib/context/insightsControls';
 import { useScopedInsightsReport } from 'src/lib/hooks/useScopedInsightsReport';
-import { ServiceGetFeedbackStats } from 'src/services/serviceFeedbacks';
-import type { FeedbackStats } from 'lib/interfaces/domain/feedback.domain';
+import {
+  ServiceGetFeedbackStats,
+  ServiceGetFeedbackQuestions,
+} from 'src/services/serviceFeedbacks';
+import type { FeedbackStats, QuestionMetric } from 'lib/interfaces/domain/feedback.domain';
 import type { DashboardLoaderData, UserLoaderData } from './ui.types';
 
 
@@ -46,24 +50,32 @@ export default function Dashboard() {
   const [stats, setStats] = useState<FeedbackStats | null>(
     dashboardLoaderData?.stats ?? null,
   );
+  const [questions, setQuestions] = useState<QuestionMetric[]>([]);
   const error = dashboardLoaderData?.dashboardError ?? null;
 
   // Métricas seguem o escopo selecionado no header (Geral = só o QR da empresa).
-  const fetchStats = useCallback(async () => {
+  const fetchScopedData = useCallback(async () => {
     const catalogParam =
       scope !== 'COMPANY' ? catalogItemId || undefined : undefined;
 
-    const data = await ServiceGetFeedbackStats({
-      scope_type: scope,
-      catalog_item_id: catalogParam,
-    }).catch(() => null);
+    const [statsData, questionsData] = await Promise.all([
+      ServiceGetFeedbackStats({
+        scope_type: scope,
+        catalog_item_id: catalogParam,
+      }).catch(() => null),
+      ServiceGetFeedbackQuestions({
+        scope_type: scope,
+        catalog_item_id: catalogParam,
+      }).catch(() => null),
+    ]);
 
-    setStats(data);
+    setStats(statsData);
+    setQuestions(questionsData?.questions ?? []);
   }, [scope, catalogItemId]);
 
   useEffect(() => {
-    fetchStats();
-  }, [fetchStats]);
+    fetchScopedData();
+  }, [fetchScopedData]);
 
   // Relatório de insights (resumo + recomendações), também filtrado por escopo.
   const { report, loading: reportLoading } = useScopedInsightsReport();
@@ -121,6 +133,8 @@ export default function Dashboard() {
         <SectionEvaluationDistribution stats={stats} />
         <SectionSatisfactionRadar stats={stats} />
       </div>
+
+      <SectionLowestQuestions questions={questions} />
 
       <section className="relative overflow-hidden rounded-2xl border border-(--quaternary-color)/10 bg-linear-to-br from-(--bg-secondary) to-(--sixth-color) p-6 glass-card">
         <div className="flex items-start justify-between gap-3">

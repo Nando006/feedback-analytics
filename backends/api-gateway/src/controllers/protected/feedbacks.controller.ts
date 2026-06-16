@@ -828,3 +828,232 @@ export async function getFeedbacksAnalysisController(req: Request, res: Response
     return sendTypedError(res, 500, API_ERROR_INTERNAL_SERVER_ERROR);
   }
 }
+
+type AnswerValueKey = 'PESSIMO' | 'RUIM' | 'MEDIANA' | 'BOA' | 'OTIMA';
+
+type QuestionAnswerAgg = {
+  /** question_id ou subquestion_id (estável; a redação pode mudar com o tempo). */
+  id: string;
+  /** Snapshot da redação exata respondida pelo cliente (já trimada). */
+  text: string;
+  counts: Record<number, number>;
+  distribution: Record<AnswerValueKey, number>;
+};
+
+/**
+ * Separador para a chave composta (id + redação). Cada redação distinta de uma
+ * mesma pergunta vira uma entrada própria — assim "Atuais" e "Antigas" não se misturam.
+ */
+const AGG_KEY_SEP = String.fromCharCode(1);
+
+function newAnswerAgg(id: string, text: string): QuestionAnswerAgg {
+  return {
+    id,
+    text,
+    counts: {},
+    distribution: { PESSIMO: 0, RUIM: 0, MEDIANA: 0, BOA: 0, OTIMA: 0 },
+  };
+}
+
+function addAnswerToAgg(
+  map: Map<string, QuestionAnswerAgg>,
+  id: string,
+  text: string,
+  answerValue: AnswerValueKey,
+  answerScore: number,
+) {
+  const key = `${id}${AGG_KEY_SEP}${text}`;
+  const acc = map.get(key) ?? newAnswerAgg(id, text);
+  acc.counts[answerScore] = (acc.counts[answerScore] ?? 0) + 1;
+  acc.distribution[answerValue] += 1;
+  map.set(key, acc);
+}
+
+function aggToMetricFields(agg: QuestionAnswerAgg) {
+  const rs = ratingStats(agg.counts);
+  return {
+    count: rs.n,
+    mean: rs.mean,
+    ci: rs.ci,
+    satisfiedPct: csatTopTwoBox(agg.counts).pct,
+    distribution: agg.distribution,
+    confidenceTier: confidenceTier(rs.n),
+  };
+}
+
+/**
+ * Métricas por pergunta/subpergunta (escala 1–5), agregadas no escopo: nota
+ * média + IC, % satisfeitos (BOA+ÓTIMA), distribuição e camada de confiança.
+ * Determinístico — só estatística sobre as respostas estruturadas. Ordenado
+ * pior→melhor (menor nota no topo).
+ */
+export async function getFeedbacksQuestionsController(req: Request, res: Response) {
+  const supabase = req.supabase!;
+  const user = req.user!;
+
+  const scopeType = parseInsightScopeType(req.query.scope_type);
+  const catalogItemId = String(req.query.catalog_item_id ?? '').trim() || null;
+
+  try {
+    const { data: enterprise, error: enterpriseError } = await supabase
+      .from('enterprise')
+      .select('id')
+      .eq('auth_user_id', user.id)
+      .single();
+
+    if (enterpriseError || !enterprise) {
+      return sendTypedError(res, 404, API_ERROR_ENTERPRISE_NOT_FOUND);
+    }
+
+    const scopeResolution = await resolveScopeCollectionPointIds({
+      supabase,
+      enterpriseId: enterprise.id,
+      scopeType,
+      catalogItemId,
+    });
+
+    if (scopeResolution.error) {
+      return sendTypedError(res, 500, API_ERROR_FAILED_TO_FETCH_STATS);
+    }
+
+    const filteredCollectionPointIds = scopeResolution.ids;
+    if (filteredCollectionPointIds && filteredCollectionPointIds.length === 0) {
+      return res.json({ questions: [] });
+    }
+
+    let feedbackQuery = supabase
+      .from('feedback')
+      .select('id')
+      .eq('enterprise_id', enterprise.id);
+    if (filteredCollectionPointIds) {
+      feedbackQuery = feedbackQuery.in('collection_point_id', filteredCollectionPointIds);
+    }
+
+    const { data: feedbackRows, error: feedbackError } = await feedbackQuery;
+    if (feedbackError) return sendTypedError(res, 500, API_ERROR_FAILED_TO_FETCH_STATS);
+
+    const feedbackIds = ((feedbackRows ?? []) as { id: string }[]).map((f) => f.id);
+    if (feedbackIds.length === 0) return res.json({ questions: [] });
+
+    // Respostas das perguntas → agrega por pergunta.
+    const { data: answerRows, error: answersError } = await supabase
+      .from('feedback_question_answers')
+      .select('question_id, question_text_snapshot, answer_value, answer_score')
+      .in('feedback_id', feedbackIds);
+    if (answersError) return sendTypedError(res, 500, API_ERROR_FAILED_TO_FETCH_STATS);
+
+    // Agrupa as respostas por (question_id + redação do snapshot): cada redação
+    // distinta vira uma entrada própria, para separar "atuais" de "antigas".
+    const questionAgg = new Map<string, QuestionAnswerAgg>();
+    for (const row of (answerRows ?? []) as {
+      question_id: string;
+      question_text_snapshot: string;
+      answer_value: AnswerValueKey;
+      answer_score: number;
+    }[]) {
+      addAnswerToAgg(questionAgg, row.question_id, String(row.question_text_snapshot ?? '').trim(), row.answer_value, row.answer_score);
+    }
+
+    // Respostas das subperguntas → agrega por (subquestion_id + redação).
+    const { data: subAnswerRows, error: subAnswersError } = await supabase
+      .from('feedback_subquestion_answers')
+      .select('subquestion_id, subquestion_text_snapshot, answer_value, answer_score')
+      .in('feedback_id', feedbackIds);
+    if (subAnswersError) return sendTypedError(res, 500, API_ERROR_FAILED_TO_FETCH_STATS);
+
+    const subAgg = new Map<string, QuestionAnswerAgg>();
+    for (const row of (subAnswerRows ?? []) as {
+      subquestion_id: string;
+      subquestion_text_snapshot: string;
+      answer_value: AnswerValueKey;
+      answer_score: number;
+    }[]) {
+      addAnswerToAgg(subAgg, row.subquestion_id, String(row.subquestion_text_snapshot ?? '').trim(), row.answer_value, row.answer_score);
+    }
+
+    // Config ATUAL das perguntas (texto + is_active) por id — base da classificação
+    // "atual" (ativa + texto igual ao configurado) vs "antiga" (editada/removida).
+    const currentQ = new Map<string, { text: string; isActive: boolean }>();
+    const questionIds = [...new Set([...questionAgg.values()].map((a) => a.id))];
+    if (questionIds.length > 0) {
+      const { data: qDefs, error: qDefsError } = await supabase
+        .from('questions_of_feedbacks')
+        .select('id, question_text, is_active')
+        .in('id', questionIds);
+      if (qDefsError) return sendTypedError(res, 500, API_ERROR_FAILED_TO_FETCH_STATS);
+      for (const def of (qDefs ?? []) as { id: string; question_text: string; is_active: boolean }[]) {
+        currentQ.set(def.id, { text: String(def.question_text ?? '').trim(), isActive: def.is_active === true });
+      }
+    }
+
+    // Config ATUAL das subperguntas (texto + is_active) + mapeamento subpergunta → pai.
+    const subParentBySubId = new Map<string, string>();
+    const currentSub = new Map<string, { text: string; isActive: boolean }>();
+    const subIds = [...new Set([...subAgg.values()].map((a) => a.id))];
+    if (subIds.length > 0) {
+      const { data: subDefs, error: subDefsError } = await supabase
+        .from('feedback_question_subquestions')
+        .select('id, question_id, subquestion_text, is_active')
+        .in('id', subIds);
+      if (subDefsError) return sendTypedError(res, 500, API_ERROR_FAILED_TO_FETCH_STATS);
+      for (const def of (subDefs ?? []) as { id: string; question_id: string; subquestion_text: string; is_active: boolean }[]) {
+        subParentBySubId.set(def.id, def.question_id);
+        currentSub.set(def.id, { text: String(def.subquestion_text ?? '').trim(), isActive: def.is_active === true });
+      }
+    }
+
+    // Subperguntas agrupadas por pergunta-pai (todas as redações; cada uma com isCurrent).
+    // Uma subpergunta só é "atual" se o pai está ativo, ela está ativa e o texto bate.
+    const subsByQuestion = new Map<string, ReturnType<typeof buildSubMetric>[]>();
+    for (const agg of subAgg.values()) {
+      const parentId = subParentBySubId.get(agg.id);
+      if (!parentId) continue;
+      const subCfg = currentSub.get(agg.id);
+      const parentCfg = currentQ.get(parentId);
+      const isCurrent =
+        parentCfg?.isActive === true && subCfg?.isActive === true && subCfg.text === agg.text;
+      const list = subsByQuestion.get(parentId) ?? [];
+      list.push(buildSubMetric(agg, isCurrent));
+      subsByQuestion.set(parentId, list);
+    }
+    for (const list of subsByQuestion.values()) {
+      list.sort((a, b) => a.mean - b.mean);
+    }
+
+    // Agrupa as entradas por question_id para eleger a redação que hospeda as
+    // subperguntas (a atual; senão a que casa com o texto configurado; senão a
+    // primeira) — evita duplicar as subperguntas entre redações.
+    const entriesByQid = new Map<string, QuestionAnswerAgg[]>();
+    for (const agg of questionAgg.values()) {
+      const list = entriesByQid.get(agg.id) ?? [];
+      list.push(agg);
+      entriesByQid.set(agg.id, list);
+    }
+
+    const questions = [...entriesByQid.entries()]
+      .flatMap(([qid, aggs]) => {
+        const cfg = currentQ.get(qid);
+        const host =
+          aggs.find((a) => cfg?.isActive === true && cfg.text === a.text) ??
+          aggs.find((a) => cfg?.text === a.text) ??
+          aggs[0];
+        return aggs.map((agg) => ({
+          question_id: qid,
+          text: agg.text,
+          ...aggToMetricFields(agg),
+          isCurrent: cfg?.isActive === true && cfg.text === agg.text,
+          subquestions: agg === host ? (subsByQuestion.get(qid) ?? []) : [],
+        }));
+      })
+      .sort((a, b) => a.mean - b.mean);
+
+    return res.json({ questions });
+  } catch (error) {
+    console.error('Erro ao buscar métricas por pergunta:', error);
+    return sendTypedError(res, 500, API_ERROR_INTERNAL_SERVER_ERROR);
+  }
+}
+
+function buildSubMetric(agg: QuestionAnswerAgg, isCurrent: boolean) {
+  return { subquestion_id: agg.id, text: agg.text, ...aggToMetricFields(agg), isCurrent };
+}
