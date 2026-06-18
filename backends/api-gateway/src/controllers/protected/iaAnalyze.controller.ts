@@ -13,6 +13,33 @@ import {
 } from '../../services/iaAnalyze.service.js';
 import { IaAnalyzeServiceError } from '../../libs/iaAnalyze/errors.js';
 import { parseScopeType } from '../../libs/iaAnalyze/parse.js';
+import { readExecutionMode } from '../../libs/iaAnalyze/readEnvs.js';
+import { resolvePrimaryBaseUrl } from '../../libs/iaAnalyze/resolvePrimaryBaseUrl.js';
+
+/**
+ * Loga, de forma estruturada, o contexto de uma falha no fluxo de IA. Inclui o
+ * código tipado, o modo de execução, a base URL resolvida e o tempo decorrido —
+ * o suficiente para, só pelos logs do Vercel, distinguir as causas de um 502:
+ * config remota ausente (baseUrl=localhost / mode=local), timeout do remoto
+ * (elapsedMs alto + failed_remote_ia_analyze_request) ou erro do próprio modelo.
+ */
+function logIaAnalyzeFailure(label: string, startedAt: number, error: unknown) {
+  const elapsedMs = Date.now() - startedAt;
+  const code = error instanceof IaAnalyzeServiceError ? error.code : 'unexpected_error';
+  const statusCode = error instanceof IaAnalyzeServiceError ? error.statusCode : 500;
+
+  let baseUrl = 'unresolved';
+  try {
+    baseUrl = resolvePrimaryBaseUrl();
+  } catch {
+    baseUrl = 'unresolved';
+  }
+
+  console.error(
+    `[ia-analyze:${label}] code=${code} status=${statusCode} mode=${readExecutionMode()} baseUrl=${baseUrl} elapsedMs=${elapsedMs}`,
+    error,
+  );
+}
 
 /**
  * Controller responsável por orquestrar a análise IA de feedbacks brutos via requisição HTTP.
@@ -37,6 +64,8 @@ export async function analyzeRawFeedbacksController(req: Request, res: Response)
       ? body.catalog_item_id.trim()
       : undefined;
 
+  const startedAt = Date.now();
+
   try {
     const result = await analyzeRawFeedbacks({
       supabase,
@@ -46,14 +75,12 @@ export async function analyzeRawFeedbacksController(req: Request, res: Response)
 
     return res.json(result satisfies IaAnalyzeRawRunResponse);
   } catch (error) {
+    logIaAnalyzeFailure('analyze-raw', startedAt, error);
+
     if (error instanceof IaAnalyzeServiceError) {
-      if (error.code === 'invalid_ai_response') {
-        console.error('Resposta invalida da IA no analyze-raw:', error);
-      }
       return sendTypedError(res, error.statusCode, error.code);
     }
 
-    console.error('Erro inesperado no endpoint analyze-raw:', error);
     return sendTypedError(res, 500, API_ERROR_INTERNAL_SERVER_ERROR);
   }
 }
@@ -79,6 +106,8 @@ export async function regenerateFeedbackInsightsController(req: Request, res: Re
       ? body.catalog_item_id.trim()
       : undefined;
 
+  const startedAt = Date.now();
+
   try {
     const result = await regenerateFeedbackInsights({
       supabase,
@@ -88,14 +117,12 @@ export async function regenerateFeedbackInsightsController(req: Request, res: Re
 
     return res.json(result satisfies IaAnalyzeRegenerateInsightsResponse);
   } catch (error) {
+    logIaAnalyzeFailure('regenerate-insights', startedAt, error);
+
     if (error instanceof IaAnalyzeServiceError) {
-      if (error.code === 'invalid_ai_response') {
-        console.error('Resposta invalida da IA no regenerate-insights:', error);
-      }
       return sendTypedError(res, error.statusCode, error.code);
     }
 
-    console.error('Erro inesperado no endpoint regenerate-insights:', error);
     return sendTypedError(res, 500, API_ERROR_INTERNAL_SERVER_ERROR);
   }
 }

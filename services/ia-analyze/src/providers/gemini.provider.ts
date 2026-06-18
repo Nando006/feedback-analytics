@@ -84,6 +84,20 @@ function parseSuggestedDelayMs(error: unknown): number | null {
   return null;
 }
 
+/**
+ * Resumo conciso do erro do SDK (status HTTP + mensagem) para logs de
+ * diagnóstico. Sem isto, um 429 (quota), um 503 (overloaded) e um 400/403
+ * (chave/modelo inválidos) ficam todos indistinguíveis sob 'failed_ia_request'.
+ */
+function describeError(error: unknown): string {
+  const status = getErrorStatus(error);
+  const rawMessage = String(
+    (error as { message?: unknown })?.message ?? error ?? 'erro desconhecido',
+  );
+  const message = rawMessage.replace(/\s+/g, ' ').trim().slice(0, 300);
+  return status !== null ? `status=${status} ${message}` : message;
+}
+
 /** Backoff exponencial com jitter, limitado a MAX_BACKOFF_MS. */
 function backoffDelayMs(attempt: number): number {
   const exponential = Math.min(BASE_BACKOFF_MS * 2 ** (attempt - 1), MAX_BACKOFF_MS);
@@ -131,11 +145,23 @@ export function createIaApiClient(apiKey: string): IaApiClient {
               parseSuggestedDelayMs(error) ?? backoffDelayMs(attempt),
               MAX_BACKOFF_MS,
             );
+            console.warn(
+              `[ia-analyze] Gemini tentativa ${attempt}/${MAX_ATTEMPTS} falhou (${describeError(error)}); novo retry em ${delay}ms`,
+            );
             await sleep(delay);
             continue;
           }
 
-          throw new IaApiClientError('Failed to call model API', 'failed_ia_request');
+          // Loga o motivo REAL (status + mensagem) antes de embrulhar no código
+          // tipado, para distinguir quota (429) de overload (503) de erro de
+          // requisição/credencial (400/401/403/404).
+          console.error(
+            `[ia-analyze] Gemini esgotou ${attempt} tentativa(s) — motivo: ${describeError(error)}`,
+          );
+          throw new IaApiClientError(
+            `Failed to call model API (${describeError(error)})`,
+            'failed_ia_request',
+          );
         }
       }
 

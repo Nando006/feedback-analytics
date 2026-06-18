@@ -34,5 +34,18 @@ export function resolvePrimaryBaseUrl(): string {
     return resolvedRemoteBaseUrl;
   }
 
+  // Em runtime serverless (Vercel) não existe IA em localhost. Cair no fallback
+  // local apenas mascara a configuração ausente como um 502 genérico de conexão
+  // recusada (failed_remote_ia_analyze_request, ao discar localhost:4100). Falha
+  // alto e claro para expor o env faltando (IA_ANALYZE_EXECUTION_MODE=remote +
+  // IA_ANALYZE_REMOTE_URL) em vez de virar um 502 confuso.
+  if (!resolvedRemoteBaseUrl && process.env.VERCEL === '1') {
+    throw new IaAnalyzeServiceError(
+      'Missing IA Analyze remote URL (serverless runtime requires IA_ANALYZE_REMOTE_URL)',
+      500,
+      'missing_ia_analyze_remote_url',
+    );
+  }
+
   return resolvedRemoteBaseUrl ?? DEFAULT_LOCAL_IA_ANALYZE_URL;
 }
