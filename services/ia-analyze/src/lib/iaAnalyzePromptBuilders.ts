@@ -6,6 +6,23 @@ import type {
   PromptExpectedSchema,
 } from '../../types/iaAnalyzePromptBuilders.types.js';
 
+// Limite de caracteres por mensagem de feedback embutida no prompt. O texto é
+// livre e sem teto na origem; uma única mensagem muito longa inflaria os tokens
+// de entrada (custo/latência) e poderia aproximar o lote do teto de tokens.
+// 2000 caracteres preservam o conteúdo útil de praticamente todo feedback real.
+const MAX_FEEDBACK_MESSAGE_CHARS = 2000;
+
+// Teto defensivo para respostas dinâmicas embutidas por feedback (o formulário
+// já limita a poucas perguntas; o slice protege contra dados inesperados).
+const MAX_DYNAMIC_ANSWERS = 20;
+
+function capFeedbackMessage(message: string): string {
+  if (message.length <= MAX_FEEDBACK_MESSAGE_CHARS) {
+    return message;
+  }
+  return `${message.slice(0, MAX_FEEDBACK_MESSAGE_CHARS)}… [truncado]`;
+}
+
 /**
  * Monta o prompt (texto) que será enviado ao modelo de IA para análise.
  *
@@ -13,7 +30,8 @@ import type {
  * - Insere instruções específicas do escopo e um exemplo do esquema esperado
  *   de resposta (para o modelo não alterar as chaves JSON).
  * - Constrói o payload com os feedbacks e sinais de contexto e o anexa
- *   ao prompt final.
+ *   ao prompt final. Mensagens longas são truncadas e respostas dinâmicas
+ *   limitadas para conter o tamanho do contexto enviado ao modelo.
  *
  * Retorna uma string pronta para ser usada na chamada à API do modelo.
  */
@@ -54,15 +72,15 @@ export function buildIaPromptByScope(params: BuildIaPromptByScopeParams): string
       id: feedback.id,
       created_at: feedback.created_at,
       scope_type: feedback.scope_type,
-      message_primary: feedback.message,
+      message_primary: capFeedbackMessage(feedback.message),
       context_signals: {
         rating_star: feedback.rating,
-        dynamic_answers: feedback.dynamic_answers.map((a) => ({
+        dynamic_answers: feedback.dynamic_answers.slice(0, MAX_DYNAMIC_ANSWERS).map((a) => ({
           question: a.question_text_snapshot,
           score: a.answer_score,
           label: a.answer_value,
         })),
-        dynamic_subanswers: feedback.dynamic_subanswers.map((a) => ({
+        dynamic_subanswers: feedback.dynamic_subanswers.slice(0, MAX_DYNAMIC_ANSWERS).map((a) => ({
           question: a.subquestion_text_snapshot,
           score: a.answer_score,
           label: a.answer_value,

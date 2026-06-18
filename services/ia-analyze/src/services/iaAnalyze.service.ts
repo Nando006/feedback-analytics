@@ -161,6 +161,16 @@ export async function runIaAnalyzeService(
   // que falharam ficam de fora e podem ser reprocessados numa próxima execução.
   if (nonEmptyBatchCount > 0 && succeeded.length === 0) {
     const firstError = failed[0]?.error;
+    // Agrega os códigos de falha de TODOS os lotes antes de propagar: assim o log
+    // de produção distingue 'failed_ia_request' (Gemini 429/503/timeout) de
+    // 'invalid_ai_response' (MAX_TOKENS / JSON inválido) sem precisar reproduzir.
+    const failureCodes = failed.map((outcome) =>
+      outcome.error instanceof IaApiClientError ? outcome.error.code : 'unknown',
+    );
+    console.error(
+      `[ia-analyze] todos os ${nonEmptyBatchCount} lote(s) com conteúdo falharam — códigos: ${failureCodes.join(', ')}`,
+    );
+
     if (firstError instanceof IaApiClientError && firstError.code === 'failed_ia_request') {
       throw new IaAnalyzeServiceError('Failed to call model API', 502, 'failed_ia_request');
     }

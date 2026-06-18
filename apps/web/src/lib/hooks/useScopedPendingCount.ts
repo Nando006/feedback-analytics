@@ -26,6 +26,13 @@ export function useScopedPendingCount(enabled: boolean): {
 
   const fetchCount = useCallback(async () => {
     setLoading(true);
+    // Zera os contadores do escopo anterior antes de aguardar a nova resposta:
+    // assim nenhum consumidor (ex.: gate de "Analisar feedbacks") avalia regras
+    // contra números defasados durante a troca de escopo.
+    setPendingCount(0);
+    setTotalFeedbacks(0);
+    setTotalAnalyzed(0);
+    setLatestAnalysisAt(null);
 
     const catalogParam =
       scope !== "COMPANY" ? catalogItemId || undefined : undefined;

@@ -29,7 +29,7 @@ export default function InsightsActionBar() {
     isAnalyzingRaw,
     isRegeneratingInsights,
   } = useInsightsControls();
-  const { pendingCount, totalFeedbacks, totalAnalyzed, latestAnalysisAt } =
+  const { pendingCount, totalFeedbacks, totalAnalyzed, latestAnalysisAt, loading } =
     useScopedPendingCount(isScopeRoute);
   const { report } = useScopedInsightsReport();
 
@@ -39,7 +39,12 @@ export default function InsightsActionBar() {
   const isProcessing = isAnalyzingRaw || isRegeneratingInsights;
   const belowMinimum = totalFeedbacks < MIN_FEEDBACKS_TO_ANALYZE;
   const nothingNew = pendingCount === 0;
-  const baseDisabled = isProcessing || missingItem || !canAnalyze;
+  // `loading`: enquanto as métricas do escopo recém-selecionado ainda estão em
+  // voo, totalFeedbacks/pendingCount ainda refletem o escopo ANTERIOR. Travar as
+  // ações nesse intervalo evita habilitar "Analisar"/"Gerar" com base em números
+  // defasados — o que deixava o botão clicável abaixo do mínimo real do novo
+  // escopo (ex.: Empresa com menos de 10 feedbacks).
+  const baseDisabled = loading || isProcessing || missingItem || !canAnalyze;
   const analyzeDisabled = baseDisabled || belowMinimum || nothingNew;
 
   const analyzeBlockedReason = belowMinimum
