@@ -7,11 +7,11 @@ A infraestrutura do projeto roda integralmente na **Vercel**, sem servidores ded
 | Domínio | Builder | Tipo de Deploy | `maxDuration` |
 |---|---|---|---|
 | `apps/web` | `@vercel/static-build` | Site estático via CDN | — |
-| `backends/api-gateway` | `@vercel/node` | Serverless Function | 120s |
+| `backends/api-gateway` | `@vercel/node` | Serverless Function | 300s |
 | `services/ia-analyze` | `@vercel/node` | Serverless Function | 300s |
 
 - **Frontend (`apps/web`):** arquivos estáticos (HTML, CSS, JS) gerados no build e servidos diretamente pela CDN da Vercel. Não há servidor — o React roda no navegador do usuário.
-- **API-Gateway:** função Node.js que acorda a cada requisição, consulta o banco (Supabase) e encerra. O timeout de 120s cobre com folga as operações de I/O e a orquestração das chamadas à IA.
+- **API-Gateway:** função Node.js que acorda a cada requisição, consulta o banco (Supabase) e encerra. O timeout de 300s cobre com folga as operações de I/O e a orquestração das chamadas à IA — que, em lotes grandes, encadeia várias chamadas ao LLM por requisição.
 - **IA-Analyze:** função Node.js de longa duração — recebe feedbacks, chama o LLM externo (pode levar 30–60s) e processa o resultado. Precisa de 300s de timeout, inviável de rodar no mesmo projeto do Gateway.
 
 > **Nota — bundle do Gateway:** antes do deploy, o `deploy-api.yml` roda uma etapa de esbuild que empacota `backends/api-gateway/index.ts` em `backends/api-gateway/_bundle.cjs`. É esse bundle que o `vercel.json` do Gateway aponta como `src`.
@@ -75,9 +75,10 @@ O sistema tem uma topologia **hub-and-spoke**: o API Gateway é o hub central. O
 
 1. A empresa clica em "Analisar feedbacks" no painel de insights
 2. O Gateway busca feedbacks não analisados (máx. 100), remove IDs já presentes em `feedback_analysis` e agrupa em **batches por escopo** (`COMPANY`, `PRODUCT`, `SERVICE`, `DEPARTMENT`)
-3. Envia o payload `{ enterprise_context, batches[] }` ao IA Analyze via HTTP com token interno
-4. O IA Analyze chama o **provedor LLM externo** por batch, processa e sanitiza sentimentos, keywords e categorias
-5. O Gateway persiste as análises em `feedback_analysis` e os insights em `feedback_insights_report`
+3. Em seguida, **sub-divide cada batch por TAMANHO** (`chunkBatchesBySize`): cada lote é fatiado em sub-lotes de no máx. ~20 feedbacks por chamada ao LLM (configurável via `IA_MAX_FEEDBACKS_PER_BATCH`), evitando que a saída JSON estoure o teto de tokens do modelo e seja truncada
+4. Envia o payload `{ enterprise_context, batches[] }` ao IA Analyze via HTTP com token interno
+5. O IA Analyze chama o **provedor LLM externo** por batch, processa e sanitiza sentimentos, keywords e categorias
+6. O Gateway persiste as análises em `feedback_analysis` e os insights em `feedback_insights_report`
 
 ---
 

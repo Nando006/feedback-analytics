@@ -36,6 +36,8 @@ erDiagram
 
 > Todas as tabelas possuem `enterprise_id` FK obrigatória (isolamento RLS multi-tenant), **exceto**: `feedback_question_subquestions`, `feedback_question_answers`, `feedback_subquestion_answers` e `feedback_analysis` — isolamento herdado via cascade da tabela pai.
 
+> **View `enterprise_public` (não é entidade física, por isso fora do `erDiagram`):** expõe apenas `id` e `name`, onde `name` deriva de `auth.users.raw_user_meta_data ->> 'full_name'` (a tabela `enterprise` não tem coluna `name`). Existe para o fluxo anônimo de coleta — o formulário público (QR Code) lê o nome da empresa sem login, via papel `anon`. Roda com os privilégios do OWNER (`security_invoker = off`), intencional e necessário, pois `anon` não tem policy de SELECT em `enterprise` nem acesso a `auth.users`.
+
 ---
 
 ## Grupos de Entidades
@@ -242,6 +244,9 @@ Análise individual gerada pela IA para um feedback específico. Relação 1:1 c
 | `sentiment` | text | Sentimento extraído pela IA |
 | `categories` | text[] | Categorias temáticas identificadas |
 | `keywords` | text[] | Palavras-chave relevantes extraídas |
+| `aspects` | jsonb | Sentimento por aspecto (ABSA) extraído do texto |
+| `sentiment_score` | numeric | Intensidade graduada do sentimento geral em `[-1, 1]` |
+| `confidence` | numeric | Confiança da classificação em `[0, 1]` |
 
 ---
 

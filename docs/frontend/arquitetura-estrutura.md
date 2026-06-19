@@ -78,6 +78,7 @@ apps/web/
 │   └── lib/
 │       ├── constants/          → Constantes de rotas e intents
 │       ├── context/            → Contextos React (ex: insightsControls)
+│       ├── hooks/              → Hooks de dados por escopo (useScopedFeedbackAnalysis, useScopedFeedbackQuestions, useScopedPendingCount…)
 │       ├── mock/               → Dados mock para desenvolvimento
 │       └── utils/              → Utilitários puros (formatação, validação, http)
 ├── pages/                      → Montagem das telas (composição de componentes)
@@ -95,7 +96,7 @@ apps/web/
 │   │   └── shared/             → Peças comuns da área pública
 │   └── user/
 │       ├── layout/             → Estrutura base autenticada (Menu, Sidebar, Header)
-│       ├── shared/             → Peças comuns (Cards, Avatares, Skeletons, Badge)
+│       ├── shared/             → Peças comuns (Cards, Avatares, Skeletons, Badge), wayfinding (PageHeader, SectionTabs), selos de confiança (ConfidenceBadge, ConfidenceInfoModal) e ajuda contextual (HelpPopover, HelpHint, MetricHelp)
 │       └── pages/              → Peças específicas de cada tela
 │           ├── dashboard/
 │           ├── edit/
@@ -107,6 +108,7 @@ apps/web/
 │           ├── feedbacksAnalyticsNegative/
 │           ├── feedbacksAnalyticsPositive/
 │           ├── feedbacksInsightsEmotional/
+│           ├── feedbacksInsightsQuestions/
 │           ├── feedbacksInsightsReport/
 │           ├── feedbacksInsightsStatistics/
 │           ├── profile/

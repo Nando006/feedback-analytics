@@ -104,6 +104,24 @@ Os feedbacks são agrupados pela função `buildAnalysisBatches`:
 
 Cada batch é enviado **separadamente** ao provedor LLM externo para manter o contexto coerente por escopo.
 
+##### Sub-batching por Tamanho
+
+Após agrupar por `(scope_type, catalog_item_id)`, `buildAnalysisBatches` chama `chunkBatchesBySize`, que **fatia cada lote** em sub-lotes de no máximo `IA_MAX_FEEDBACKS_PER_BATCH` feedbacks (**default 20**).
+
+- **Por quê:** o modelo emite um objeto JSON por feedback, então lotes grandes estouram o teto de tokens de **saída** do Gemini e truncam o JSON (→ erro de parse → `502`). Sub-lotes menores mantêm a saída pequena e previsível.
+- **Exemplo:** um escopo com 100 feedbacks vira 5 chamadas de 20 — cada sub-lote preserva o `scope_type`/`catalog_item_id` do lote original.
+
+---
+
+#### Janela por Escopo
+
+A busca de feedbacks para análise (`analyze-raw`) e para regeneração de insights é **restrita ao escopo** via `resolveScopeCollectionPointIds` **antes** de aplicar o `limit`.
+
+- O escopo pedido (`scope_type`/`catalog_item_id`) é resolvido para os `collection_point_id` correspondentes — `COMPANY` cobre os pontos com `catalog_item_id = null` — e a query filtra os feedbacks por esses ids (`fetchFeedbacksForAnalysis` e `fetchAlreadyAnalyzedFeedbacks`).
+- A janela das **N linhas mais recentes** (`order created_at desc` + `limit`) passa a valer **DENTRO do escopo**, e não nas linhas mais recentes da empresa inteira.
+- **Por que importa:** corrige escopos específicos que ficavam sem análise/relatório por caírem fora das ~100 linhas mais recentes da empresa.
+- Escopo válido porém **sem nenhum ponto de coleta** → a busca retorna lista vazia (nada a analisar).
+
 ---
 
 #### Persistência de Resultados
@@ -111,7 +129,16 @@ Cada batch é enviado **separadamente** ao provedor LLM externo para manter o co
 | O que persiste | Tabela | Operação |
 |---|---|---|
 | Análise por feedback | `feedback_analysis` | `INSERT` |
-| Insights globais por escopo | `feedback_insights_report` | `UPSERT` (chave: `enterprise_id + scope_type + catalog_item_id`) |
+| Insights globais por escopo | `feedback_insights_report` | `UPSERT` (`onConflict: enterprise_id,scope_type,catalog_item_id`) |
+
+O `UPSERT` de insights usa **exclusivamente** a unicidade composta `(enterprise_id, scope_type, catalog_item_id)`. Não há mais o fallback legado por `enterprise_id`-only (1 relatório por empresa), incompatível com relatórios por escopo.
+
+`upsertFeedbackInsightsReports` retorna os **contextos efetivamente persistidos** (só os que tinham conteúdo relevante viraram linha salva). A partir disso, a resposta de regeneração inclui **`reportGenerated: boolean`**:
+
+- Com escopo pedido (`scope_type`/`catalog_item_id`): `true` só quando há um relatório salvo para **aquele** `scope_type` + item.
+- Sem escopo: `true` quando ao menos um relatório foi persistido.
+
+Isso permite ao frontend detectar o **"falso sucesso"** — quando a chamada retorna `200` mas nada relevante foi gerado/salvo para o escopo.
 
 ---
 
@@ -132,9 +159,11 @@ TOTAL_ITEM_QUESTIONS = 3
 TOTAL_SUBQUESTIONS_PER_QUESTION = 3
 ```
 
-- Cada escopo (COMPANY, PRODUCT, SERVICE, DEPARTMENT) exige **exatamente 3 perguntas** ativas.
-- Cada pergunta aceita no máximo **3 subperguntas**. Subperguntas excedentes são silenciosamente truncadas no salvamento.
-- O payload de configuração deve conter exatamente 3 perguntas; qualquer contagem diferente resulta em erro `400 INVALID_PAYLOAD`.
+- Cada escopo (COMPANY, PRODUCT, SERVICE, DEPARTMENT) aceita **1 a 3 perguntas efetivas** — não há mais exigência de "exatamente 3 perguntas ativas". Cada slot (`question_order`) é tratado individualmente; o gestor pode configurar 1, 2 ou 3.
+- Cada pergunta aceita no máximo **3 subperguntas**.
+- **Esvaziar um slot** (pergunta sem texto válido) faz **soft-delete**: a linha em `questions_of_feedbacks` é marcada `is_active = false` (e suas subperguntas em `feedback_question_subquestions` também), em vez de ser excluída. A linha e o **histórico de respostas** são preservados — a FK é `ON DELETE CASCADE`, então apagar perderia o histórico.
+- O **editor lê apenas** perguntas/subperguntas com `is_active = true`; por isso um slot desativado volta vazio na interface, mas continua existindo no banco para fins de histórico.
+- O payload de configuração ainda chega com 3 slots ordenados (`question_order`); enviar uma contagem de slots diferente de 3 resulta em `400 INVALID_PAYLOAD` (`ordered_questions_not_3`).
 
 #### Itens de Catálogo
 
@@ -172,15 +201,15 @@ Onde `dayEpoch` é o timestamp UNIX do início do dia corrente (`00:00:00`). Iss
 
 Um dispositivo que enviou feedback para o mesmo ponto de coleta no mesmo dia recebe **`409 Conflict`**.
 
-#### Fallback de Questões
+#### Contagem Variável de Questões por Escopo
 
-Quando um feedback é coletado para um item de catálogo (PRODUCT/SERVICE/DEPARTMENT) e o item tem **menos de 3 perguntas ativas** configuradas, o sistema automaticamente usa as perguntas do escopo **COMPANY** como fallback. Se o escopo já for COMPANY, nenhum fallback é aplicado.
+O backend retorna **exatamente as perguntas ativas configuradas para o escopo resolvido (0 a 3)** — **não há fallback para o escopo COMPANY**. Um item de catálogo (PRODUCT/SERVICE/DEPARTMENT) sem perguntas ativas resulta em um formulário só com nota + mensagem (`questions` vazio). Tanto `enterprise.controller.ts` (coleta pública) quanto `qrcode.controller.ts` documentam explicitamente "sem fallback para Geral".
 
 #### Validação das Respostas
 
-O payload de coleta deve incluir **exatamente 3 respostas** (`answers[]`), uma por pergunta ativa — sem duplicatas de `question_id` e sem `question_id` que não esteja no conjunto das 3 perguntas buscadas. Qualquer desvio resulta em `400 INVALID_PAYLOAD`.
+O payload de coleta deve incluir **um número de respostas igual ao número de perguntas ativas do escopo** (`answers[]`, 0 a 3) — sem duplicatas de `question_id` e sem `question_id` que não esteja no conjunto das perguntas ativas buscadas. Qualquer desvio resulta em `400 INVALID_PAYLOAD`.
 
-Da mesma forma, o campo `subanswers[]` deve conter **exatamente o mesmo número de subperguntas ativas** combinadas das 3 perguntas, sem duplicatas de `subquestion_id`. Nenhum subanswer a mais ou a menos é aceito.
+Da mesma forma, o campo `subanswers[]` deve conter **exatamente o mesmo número de subperguntas ativas** combinadas das perguntas ativas do escopo, sem duplicatas de `subquestion_id`. Nenhum subanswer a mais ou a menos é aceito.
 
 #### Score de Respostas
 
@@ -222,7 +251,7 @@ A coluna `scope_type` em `feedback_insights_report` aceita:
 - `COMPANY` + `catalog_item_id = null` → insight geral da empresa
 - Qualquer outro + `catalog_item_id` → insight por item específico
 
-O upsert usa chave composta `(enterprise_id, scope_type, catalog_item_id)`.
+O upsert usa **somente** a chave composta `(enterprise_id, scope_type, catalog_item_id)` (índice único `uq_feedback_insights_context`, `NULLS NOT DISTINCT`). A unique legada `UNIQUE(enterprise_id)` — que limitava a 1 relatório por empresa — foi removida, pois é incompatível com relatórios por escopo.
 
 ---
 
@@ -234,6 +263,9 @@ O upsert usa chave composta `(enterprise_id, scope_type, catalog_item_id)`.
 | `422 insufficient_feedbacks_for_analysis` | Menos de 10 feedbacks após filtragem | Colete mais feedbacks ou remova filtros de escopo/item |
 | `422` no catálogo | Pergunta com texto inválido | Ajuste o texto para entre 20 e 150 caracteres |
 | `409` na coleta pública | Dispositivo já enviou feedback para este ponto hoje | Aguarde até o próximo dia ou use outro ponto de coleta |
+| `500 missing_ia_analyze_remote_url` | URL do IA Analyze remoto ausente em runtime serverless (modo `remote` ou `VERCEL=1`) | Defina `IA_ANALYZE_REMOTE_URL` (e `IA_ANALYZE_EXECUTION_MODE=remote`). Em serverless não há fallback para `localhost` — `resolvePrimaryBaseUrl` falha alto em vez de mascarar como `502` de conexão recusada |
+
+> **Timeout da chamada remota:** `DEFAULT_REMOTE_TIMEOUT_MS` é **280s** (`280_000`), alinhado ao `maxDuration` de 300s do `vercel.json`. Análises de muitos feedbacks são fatiadas por sub-batching (ver [Sub-batching por Tamanho](#sub-batching-por-tamanho)); ainda assim, se o IA Analyze não responder dentro da janela, o `AbortController` cancela o fetch e a chamada falha com `502 failed_remote_ia_analyze_request`.
 
 ---
 
