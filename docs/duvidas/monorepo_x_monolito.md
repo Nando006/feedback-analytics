@@ -28,7 +28,7 @@ Para resolver isso, evoluímos para uma **arquitetura Serverless**: cada serviç
 O Feedback Analytics hoje roda em Vercel Serverless Functions. Cada serviço pode ter configuração de timeout diferente.
 | Serviço | Arquivo | `maxDuration` necessário | Motivo |
 | :--- | :--- | :--- | :--- |
-| `api-gateway` | `backends/api-gateway/vercel.json` | 120s | Respostas rápidas (dashboard, login, feedbacks) |
+| `api-gateway` | `backends/api-gateway/vercel.json` | 300s | Respostas rápidas (dashboard, login, feedbacks) |
 | `ia-analyze` | `services/ia-analyze/vercel.json` | 300s | Chamadas ao LLM (Gemini) podem demorar 30–60s |
 
 Na arquitetura monolítica: Um único `vercel.json`, teria que escolher um `maxDuration`. Se escolher 30s, a análise da IA expira, se escolher 300s, o dashboard e o login ficam 10x mais lentos. Com o Monorepo Serverless podemos ter um `vercel.json` para cada serviço e configurar o `maxDuration` para cada um.
@@ -122,14 +122,14 @@ Os três domínios do projeto usam modelos de deploy distintos, cada um adequado
 | Domínio | Builder | Tipo | maxDuration |
 | :--- | :--- | :--- | :--- |
 | `apps/web` | `@vercel/static-build` | Site estático (SPA) | — |
-| `backends/api-gateway` | `@vercel/node` | Serverless Function | 120s |
+| `backends/api-gateway` | `@vercel/node` | Serverless Function | 300s |
 | `services/ia-analyze` | `@vercel/node` | Serverless Function | 300s |
 
 **`apps/web` — site estático**
 O frontend não é uma função — é um conjunto de arquivos estáticos (HTML, CSS, JavaScript) gerados uma única vez no momento do build e servidos direto pela CDN da Vercel. Não existe servidor, não existe tempo de execução, não existe `maxDuration`. O usuário baixa os arquivos e o React roda no próprio navegador dele.
 
 **`backends/api-gateway` — Serverless Function de curta duração**
-O Gateway é uma função Node.js que acorda a cada requisição, consulta o banco (Supabase), monta a resposta e encerra. A operação mais pesada é aguardar o banco responder — o que acontece em milissegundos. O timeout de 120s cobre com folga essas operações de I/O e a orquestração das chamadas à IA, mantendo o serviço responsivo.
+O Gateway é uma função Node.js que acorda a cada requisição, consulta o banco (Supabase), monta a resposta e encerra. A operação mais pesada é aguardar o banco responder — o que acontece em milissegundos. O timeout de 300s cobre com folga essas operações de I/O e a orquestração das chamadas à IA, mantendo o serviço responsivo.
 
 **`services/ia-analyze` — Serverless Function de longa duração**
 A IA é também uma função Node.js, mas com um perfil completamente diferente: ela recebe os feedbacks, manda para o LLM (Gemini), aguarda a resposta — o que pode levar dezenas de segundos — e ainda processa o resultado antes de devolver. Por isso precisa de 300s de timeout. Rodar isso no mesmo projeto do Gateway seria inviável.
