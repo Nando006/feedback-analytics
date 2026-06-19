@@ -77,21 +77,21 @@ O detalhamento técnico de como cada regra é implementada está em [regras-nego
 
 ---
 
-### Cada escopo tem exatamente 3 perguntas configuráveis
+### Cada escopo tem até 3 perguntas configuráveis
 
-**Decisão:** a empresa configura exatamente 3 perguntas para cada contexto de coleta (empresa geral, produto, serviço ou departamento). Cada pergunta pode ter até 3 subperguntas.
+**Decisão:** a empresa configura **até 3 perguntas** (de 1 a 3 efetivas) para cada contexto de coleta (empresa geral, produto, serviço ou departamento). Cada pergunta pode ter até 3 subperguntas. Se um campo de pergunta for deixado em branco, ele é apenas **desativado** (não é apagado): o histórico de respostas já recebidas é preservado e a pergunta volta a valer se for reativada.
 
-**Por quê:** pedir demais cansa o cliente e reduz a taxa de resposta. Três perguntas é o ponto de equilíbrio entre coletar informação útil e não tornar o formulário cansativo. O limite de 3 subperguntas segue o mesmo raciocínio.
+**Por quê:** pedir demais cansa o cliente e reduz a taxa de resposta. Até três perguntas é o ponto de equilíbrio entre coletar informação útil e não tornar o formulário cansativo — mas a empresa não é obrigada a preencher as três. O limite de 3 subperguntas segue o mesmo raciocínio.
 
 **Tamanho das perguntas:** entre 20 e 150 caracteres. Muito curto não tem contexto; muito longo confunde quem está respondendo pelo celular.
 
 ---
 
-### Se um produto não tem perguntas próprias, usa as perguntas gerais da empresa
+### Se um item não tem perguntas próprias, o formulário coleta só a nota
 
-**Decisão:** quando um item de catálogo (produto, serviço ou departamento) ainda não tem suas 3 perguntas configuradas, o formulário de coleta usa automaticamente as perguntas configuradas para a empresa como um todo.
+**Decisão:** quando um item de catálogo (produto, serviço ou departamento) não tem perguntas ativas configuradas, o formulário daquele item exibe **apenas a nota geral (estrelas) e o campo de mensagem** — **não** há fallback para as perguntas gerais da empresa.
 
-**Por quê:** o sistema não deve bloquear a coleta só porque um item específico ainda não foi configurado. A empresa pode começar a coletar feedback geral enquanto configura perguntas mais específicas para cada item.
+**Por quê:** cada escopo deve refletir exatamente o que foi configurado para ele. Aproveitar as perguntas gerais da empresa em um item específico distorceria as métricas por escopo, atribuindo respostas a perguntas que não pertencem àquele item. Coletar só a nota mantém o dado limpo e ainda assim não bloqueia a coleta enquanto o gestor não configura perguntas próprias.
 
 ---
 

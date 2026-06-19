@@ -126,14 +126,22 @@ erDiagram
 
 ### `enterprise_public` (objeto público)
 
-> Relação pública (provável **VIEW**) que expõe apenas `id` e `name` da empresa para o fluxo de coleta **sem login**. É o caminho crítico que resolve o **nome** da empresa exibido no formulário público — consultada via `supabase.from('enterprise_public').select('id, name')` em `enterprise.controller.ts` e `qrcode.controller.ts`.
+> **VIEW** versionada (`database/sql/views/public.enterprise_public.sql`) que expõe apenas `id` e `name` da empresa para o fluxo de coleta **sem login**. É o caminho crítico que resolve o **nome** da empresa exibido no formulário público — consultada via `supabase.from('enterprise_public').select('id, name')` em `enterprise.controller.ts` e `qrcode.controller.ts`.
 
 | Coluna | Tipo | Descrição | Impacto no Projeto |
 |---|---|---|---|
 | `id` | uuid | Identificador da empresa (= `enterprise.id`) | **Crítico** — usado pelo formulário público para validar a empresa e carregar perguntas |
 | `name` | text | Nome público da empresa | **Crítico** — exibido no formulário de coleta; **derivado de `auth.users.raw_user_meta_data.full_name`** (a tabela `enterprise` não possui coluna `name`) |
 
-> **Lacuna de versionamento:** **não há DDL versionado** para `enterprise_public` em `database/sql/` (existem apenas as funções `enterprise_public_documents_fn()` e `enterprise_public_ids_fn()`). A definição desse objeto deveria ser adicionada ao schema versionado.
+> **DDL versionado:** a definição vive em `database/sql/views/public.enterprise_public.sql`:
+> ```sql
+> CREATE OR REPLACE VIEW "public"."enterprise_public" AS
+> SELECT e.id, (u.raw_user_meta_data ->> 'full_name') AS name
+> FROM "public"."enterprise" e
+> JOIN "auth"."users" u ON u.id = e.auth_user_id;
+> GRANT SELECT ON "public"."enterprise_public" TO anon, authenticated;
+> ```
+> A view roda com `security_invoker = off` (privilégios do **OWNER** — padrão do Postgres). Isso é **intencional e necessário** para o fluxo anônimo de coleta: o papel `anon` não tem policy de `SELECT` em `public.enterprise` nem acesso a `auth.users`. **Não** habilitar `security_invoker = on` aqui — quebraria o formulário público de feedback. Leitura liberada via `GRANT SELECT TO anon, authenticated`.
 
 ---
 
@@ -347,9 +355,12 @@ erDiagram
 |---|---|---|---|---|
 | `id` | uuid PK | Sim | — | **Baixo** — identificação interna do registro |
 | `feedback_id` | uuid FK | Sim | → `feedback.id` ON DELETE CASCADE | **Crítico** — relação 1:1 com o feedback analisado; cascade garante limpeza automática |
-| `sentiment` | text | Não | `Positivo` \| `Neutro` \| `Negativo` | **Crítico** — exibido nos cards de sentimento do dashboard; base do filtro por sentimento na listagem de feedbacks |
+| `sentiment` | text | Não | `positive` \| `neutral` \| `negative` (minúsculo, em inglês — valores gravados pela IA; a tradução/capitalização para Positivo/Neutro/Negativo ocorre só na UI) | **Crítico** — exibido nos cards de sentimento do dashboard; base do filtro por sentimento na listagem de feedbacks |
 | `categories` | text[] | Não | Categorias semânticas extraídas pela IA | **Alto** — exibido no painel de insights; usado para agrupar e filtrar feedbacks por tema no dashboard |
 | `keywords` | text[] | Não | Palavras-chave extraídas (com filtro anti-poluição) | **Alto** — exibido no painel de insights como nuvem de palavras; filtro anti-poluição já aplicado pelo serviço `ia-analyze` |
+| `aspects` | jsonb | Não | Array de `{ aspect, sentiment, sentiment_score }` — sentimento por aspecto (ABSA, Tier 2) | **Alto** — base da lente de **Aspectos** ("Assuntos que mais impactam") na tela de estatísticas; preenchido pelo serviço de IA via `extractAspects` |
+| `sentiment_score` | numeric | Não | Intensidade graduada do sentimento geral em `[-1, 1]` | **Médio** — refina o `sentiment` categórico com a magnitude do sentimento; preenchido pelo serviço de IA |
+| `confidence` | numeric | Não | Confiança da classificação em `[0, 1]` | **Médio** — sinaliza o grau de certeza da análise; preenchido pelo serviço de IA |
 
 ---
 
@@ -478,8 +489,11 @@ Ao criar ou atualizar usuários, os triggers removem automaticamente do `raw_use
 | `feedback_subquestion_answers` | `feedback_subquestion_answers_answer_value_check` | Mesmo enum de valores |
 | `feedback_subquestion_answers` | `feedback_subquestion_answers_answer_score_check` | `answer_score` entre 1 e 5 |
 | `feedback_insights_report` | `feedback_insights_report_scope_type_check` | `scope_type` ∈ `{COMPANY, PRODUCT, SERVICE, DEPARTMENT}` |
+| `feedback_insights_report` | `uq_feedback_insights_context` | Único `(enterprise_id, scope_type, catalog_item_id)` `NULLS NOT DISTINCT` — 1 relatório por contexto/escopo |
 | `enterprise` | `enterprise_subscription_status_check` | `subscription_status` ∈ `{TRIAL, ACTIVE, EXPIRED, CANCELED}` |
 | `enterprise` | `enterprise_account_type_check` | `account_type` IS NULL OR `account_type` ∈ `{CPF, CNPJ}` |
+
+> **Unicidade do relatório de insights — constraint legada removida:** a unique antiga `feedback_insights_report_enterprise_id_key` (`UNIQUE (enterprise_id)`, **1 linha por empresa**) foi dropada (`DROP CONSTRAINT IF EXISTS`). Ela era incompatível com os relatórios segmentados por escopo — ao salvar um segundo relatório (ex.: de um item) quando já existia o da empresa, o INSERT batia nessa unique. A unicidade correta passou a ser o índice composto `uq_feedback_insights_context (enterprise_id, scope_type, catalog_item_id)` `NULLS NOT DISTINCT`.
 
 ### Regras de cascata por deleção
 

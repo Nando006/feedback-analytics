@@ -296,9 +296,102 @@ Retorna estatísticas agregadas dos feedbacks da empresa.
     "positive": 80,
     "neutral": 25,
     "negative": 15
+  },
+  "totalAnalyzed": 87,
+  "pendingCount": 33,
+  "latestAnalysisAt": "2026-06-18T09:30:00Z",
+  "starMean": 4.2,
+  "starMeanCI": { "lower": 4.05, "upper": 4.35 },
+  "netSatisfaction": 53.3,
+  "csat": { "pct": 66.7, "ci": { "lower": 57.8, "upper": 74.5 } },
+  "confidenceTier": "good",
+  "aiSentiment": {
+    "positive": 60,
+    "neutral": 20,
+    "negative": 7,
+    "netSentimentScore": 60.9,
+    "confidenceTier": "moderate"
   }
 }
 ```
+
+O endpoint expõe **duas lentes** complementares, ambas segmentadas pelo escopo (`scope_type` / `catalog_item_id`):
+
+- **Lente SATISFAÇÃO (estrelas):** `starMean` (média de notas 1–5) com `starMeanCI` (IC t, em unidade de nota), `netSatisfaction` (%(4–5) − %(1–2), em [-100,100]), `csat` (Top-2-Box: % de notas 4–5 + IC de Wilson em %) e `confidenceTier` pela quantidade de feedbacks no escopo.
+- **Lente SENTIMENTO (IA/texto):** `aiSentiment` agrega o sentimento classificado pela IA sobre o **subconjunto já analisado**, com `netSentimentScore` (NSS = (pos−neg)/analisados × 100) e `confidenceTier` por quantidade analisada. **Só está presente quando `totalAnalyzed > 0`** (omitido caso contrário).
+
+`totalAnalyzed`/`pendingCount` indicam quantos feedbacks do escopo já têm análise da IA e quantos faltam (`totalFeedbacks − totalAnalyzed`); `latestAnalysisAt` é o timestamp ISO da análise mais recente (ou `null`).
+
+> `sentimentBreakdown` é derivado **por estrela** (positive = notas 4–5, neutral = 3, negative = 1–2) e mantido por **compatibilidade**. O sentimento real do texto vem da IA em `aiSentiment` — as duas leituras podem divergir.
+>
+> `confidenceTier` ∈ `insufficient` (<10) · `low` (10–29) · `moderate` (30–99) · `good` (100+).
+
+---
+
+### `GET /api/protected/user/feedbacks/questions`
+
+Retorna métricas agregadas **por pergunta e subpergunta** no escopo selecionado, na escala 1–5. São métricas **determinísticas** — calculadas só sobre as respostas estruturadas (nota por rótulo), **não dependem da IA**. Usado pela aba "Perguntas".
+
+**Query Params**
+
+| Parâmetro | Tipo | Descrição |
+|---|---|---|
+| `scope_type` | `COMPANY \| PRODUCT \| SERVICE \| DEPARTMENT` | Segmenta por escopo |
+| `catalog_item_id` | `string` | Segmenta por item de catálogo específico |
+
+**Response 200** — `questions` ordenado **pior → melhor** (menor nota média no topo).
+```json
+{
+  "questions": [
+    {
+      "question_id": "uuid",
+      "text": "Como você avalia o atendimento?",
+      "count": 42,
+      "mean": 3.4,
+      "ci": { "lower": 3.1, "upper": 3.7 },
+      "satisfiedPct": 55.0,
+      "distribution": {
+        "PESSIMO": 4,
+        "RUIM": 6,
+        "MEDIANA": 9,
+        "BOA": 12,
+        "OTIMA": 11
+      },
+      "confidenceTier": "moderate",
+      "status": "current",
+      "subquestions": [
+        {
+          "subquestion_id": "uuid",
+          "text": "O tempo de espera foi adequado?",
+          "count": 30,
+          "mean": 3.1,
+          "ci": { "lower": 2.8, "upper": 3.4 },
+          "satisfiedPct": 50.0,
+          "distribution": {
+            "PESSIMO": 3,
+            "RUIM": 5,
+            "MEDIANA": 7,
+            "BOA": 9,
+            "OTIMA": 6
+          },
+          "confidenceTier": "moderate",
+          "status": "current"
+        }
+      ]
+    }
+  ]
+}
+```
+
+Por pergunta (e por subpergunta): `mean` (nota média 1–5), `ci` (faixa provável da média, IC t em unidade de nota), `satisfiedPct` (% de respostas BOA+ÓTIMA), `distribution` (contagem por rótulo `PESSIMO`/`RUIM`/`MEDIANA`/`BOA`/`OTIMA`), `confidenceTier` (pela quantidade de respostas) e `status`:
+
+- `current` — pergunta ativa e com o texto atual da configuração;
+- `deactivated` — a configuração ainda tem esta redação, mas está desativada (toggle off);
+- `past` — redação antiga (texto editado) ou pergunta removida da configuração.
+
+> Cada redação distinta de uma mesma pergunta vira uma entrada própria (o `question_id` é estável; o snapshot de texto pode mudar), o que separa "atuais" de "antigas".
+>
+> Escopo sem feedbacks (ou item inexistente) → `{ "questions": [] }`.
 
 ---
 
@@ -351,17 +444,54 @@ Retorna os feedbacks já analisados pela IA com sentimento, categorias e keyword
       "created_at": "2026-05-12T12:00:00Z",
       "sentiment": "positive",
       "categories": ["atendimento", "rapidez"],
-      "keywords": ["excelente", "equipe"]
+      "keywords": ["excelente", "equipe"],
+      "discrepancy": null,
+      "aspects": [
+        { "aspect": "atendimento", "sentiment": "positive", "sentiment_score": 0.8 }
+      ],
+      "sentiment_score": 0.75,
+      "confidence": 0.92
     }
   ],
   "summary": {
     "totalAnalyzed": 87,
     "sentiments": { "positive": 60, "neutral": 20, "negative": 7 },
-    "topCategories": [{ "name": "atendimento", "count": 34 }],
-    "topKeywords": [{ "name": "excelente", "count": 28 }]
+    "topCategories": [
+      { "name": "atendimento", "count": 34, "proportion": 0.39, "ci": { "lower": 0.29, "upper": 0.5 } }
+    ],
+    "topKeywords": [
+      { "name": "excelente", "count": 28, "proportion": 0.32, "ci": { "lower": 0.23, "upper": 0.43 } }
+    ],
+    "netSentimentScore": 60.9,
+    "sentimentCIs": {
+      "positive": { "lower": 0.59, "upper": 0.78 },
+      "neutral": { "lower": 0.15, "upper": 0.33 },
+      "negative": { "lower": 0.04, "upper": 0.16 }
+    },
+    "confidenceTier": "moderate",
+    "aspectSentiments": [
+      {
+        "aspect": "tempo de espera",
+        "positive": 4,
+        "neutral": 3,
+        "negative": 12,
+        "count": 19,
+        "netSentimentScore": -42.1,
+        "ci": { "lower": 0.09, "upper": 0.45 }
+      }
+    ]
   }
 }
 ```
+
+Por item, além de `sentiment`/`categories`/`keywords`:
+
+- `aspects[]` — sentimento por aspecto (ABSA) extraído do texto (`{ aspect, sentiment, sentiment_score }`);
+- `sentiment_score` — intensidade graduada do sentimento geral em [-1, 1];
+- `confidence` — confiança da classificação em [0, 1];
+- `discrepancy` — divergência entre a nota (estrela) e o sentimento do texto: `silent_detractor` (nota alta + texto negativo), `rating_misuse` (nota baixa + texto positivo) ou `null`.
+
+No `summary`: `netSentimentScore` (NSS sobre os analisados), `sentimentCIs` (IC de Wilson por classe, em fração 0..1), `confidenceTier` e `aspectSentiments[]` (ABSA agregado, com gate de menção mínima 3 e ordenado por impacto volume × |NSS|, top 12). `topCategories`/`topKeywords` passam a trazer `{ name, count, proportion, ci }`, ranqueados pelo **limite inferior de Wilson** da proporção (top 10 cada).
 
 ---
 
@@ -423,7 +553,7 @@ Lista os itens de catálogo de um tipo, com o status do QR Code e o snapshot de 
 
 ### `POST /api/protected/user/collection-points/qr/catalog/questions/upsert`
 
-Cria/atualiza as perguntas dinâmicas de um item de catálogo. O array deve ter **3 slots**, mas o gestor pode preencher **1 a 3 perguntas efetivas** (20–150 caracteres cada; slots vazios são ignorados, e todos vazios limpam as perguntas do item) e até 3 subperguntas por pergunta.
+Cria/atualiza as perguntas dinâmicas de um item de catálogo. O gestor preenche **1 a 3 perguntas efetivas** (20–150 caracteres cada; slots vazios são ignorados — **não** é exigido "exatamente 3") e até 3 subperguntas por pergunta. Esvaziar um slot faz **soft-delete** (`is_active = false`), preservando o histórico de respostas; o editor lê apenas registros `is_active = true`.
 
 **Body**
 ```json
@@ -507,11 +637,18 @@ Analisa feedbacks **ainda não analisados** e persiste os resultados.
       "feedback_id": "uuid-feedback",
       "sentiment": "positive",
       "categories": ["atendimento", "rapidez"],
-      "keywords": ["excelente", "equipe"]
+      "keywords": ["excelente", "equipe"],
+      "aspects": [
+        { "aspect": "atendimento", "sentiment": "positive", "sentiment_score": 0.8 }
+      ],
+      "sentiment_score": 0.75,
+      "confidence": 0.92
     }
   ]
 }
 ```
+
+> Os itens persistidos carregam também `aspects[]` (ABSA por aspecto), `sentiment_score` (intensidade do sentimento geral em [-1, 1]) e `confidence` (confiança da classificação em [0, 1]). O mínimo de **10 feedbacks é por escopo** (`422` se insuficiente).
 
 **Erros Possíveis**
 
@@ -519,7 +656,10 @@ Analisa feedbacks **ainda não analisados** e persiste os resultados.
 |---|---|---|
 | `401` | `unauthorized` | JWT ausente ou inválido |
 | `422` | `collecting_data_required_for_analysis` | Dados de contexto da empresa não preenchidos |
-| `422` | `insufficient_feedbacks_for_analysis` | Menos de 10 feedbacks disponíveis |
+| `422` | `insufficient_feedbacks_for_analysis` | Menos de 10 feedbacks disponíveis no escopo |
+| `500` | `missing_ia_analyze_remote_url` | Em runtime serverless (`VERCEL=1`) sem `IA_ANALYZE_REMOTE_URL` configurada |
+| `500` | `failed_to_fetch_feedbacks_for_ia` | Falha ao buscar/resolver o escopo dos feedbacks a analisar |
+| `500` | `failed_to_fetch_analyzed_feedbacks` | Falha ao buscar/resolver o escopo dos feedbacks já analisados |
 | `502` | `failed_remote_ia_analyze_request` | Falha na comunicação com o serviço `ia-analyze` |
 | `502` | `remote_ia_analyze_error` | Serviço `ia-analyze` retornou status de erro |
 | `502` | `invalid_remote_ia_analyze_response_shape` | Resposta do serviço `ia-analyze` com formato inválido |
@@ -553,9 +693,12 @@ Regenera os insights globais com base nos feedbacks **já analisados**.
       "analyzedCount": 87,
       "globalInsights": { "summary": "...", "recommendations": ["..."] }
     }
-  ]
+  ],
+  "reportGenerated": true
 }
 ```
+
+> `reportGenerated` é `true` **somente** quando um relatório foi de fato persistido para o escopo pedido (com escopo informado: existe relatório salvo para `scope_type` + item; sem escopo: ao menos um relatório foi salvo). Permite ao cliente detectar o "falso sucesso" — quando nada é gerado por falta de feedbacks com texto analisados suficientes.
 
 **Erros Possíveis** — mesmos códigos de `analyze-raw`.
 

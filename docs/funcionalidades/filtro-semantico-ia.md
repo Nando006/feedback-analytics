@@ -2,7 +2,7 @@
 
 ## O Que É
 
-É o pipeline de inteligência artificial que transforma feedbacks de texto livre em insights estruturados — sentimentos, categorias e palavras-chave. O diferencial está no **Filtro Semântico Anti-Poluição**: antes de extrair as palavras mais relevantes, o sistema remove automaticamente os termos que fazem parte das próprias perguntas do formulário.
+É o pipeline de inteligência artificial que transforma feedbacks de texto livre em insights estruturados — sentimentos (com intensidade e confiança), aspectos por feedback (ABSA), categorias e palavras-chave. O diferencial está no **Filtro Semântico Anti-Poluição**: antes de extrair as palavras mais relevantes, o sistema remove automaticamente os termos que fazem parte das próprias perguntas do formulário.
 
 ---
 
@@ -44,7 +44,12 @@ Para cada batch, o sistema monta o payload:
         ↓
 Payload enviado ao provedor LLM externo configurável
         ↓
-LLM retorna por feedback: sentimento, categorias e keywords (excluindo os termos das perguntas)
+LLM retorna por feedback (excluindo os termos das perguntas):
+  - sentimento (positivo / neutro / negativo)
+  - intensidade graduada do sentimento geral (sentiment_score ∈ [-1,1])
+  - confiança da classificação (confidence ∈ [0,1])
+  - categorias e keywords
+  - aspectos (ABSA): cada aspecto com sentimento e intensidade próprios
         ↓
 Sistema monta insights globais: resumo situacional + recomendações
         ↓
@@ -88,6 +93,23 @@ Isso garante que uma instabilidade do provedor externo não corrompa o painel co
 - Limite padrão: 50 feedbacks por execução (máx. 100), com mínimo de 10 para análise relevante
 - Os resultados são persistidos em `feedback_analysis` (por feedback) e `feedback_insights_report` (por escopo)
 - O serviço usa o Google Gemini (`@google/genai`, modelo `gemini-2.5-flash` fixo no código), configurável via `GEMINI_API_KEY`; trocar de provedor exige alteração de código. A variável `IA_ANALYZE_REMOTE_URL` apenas aponta a URL do próprio serviço `ia-analyze`, não troca de fornecedor
+- Para proteger o teto de tokens do modelo, cada mensagem de feedback é truncada em **2000 caracteres** (`MAX_FEEDBACK_MESSAGE_CHARS`, com marca `… [truncado]`) e as respostas dinâmicas enviadas no payload são limitadas a **20** (`MAX_DYNAMIC_ANSWERS`) — o conteúdo útil de praticamente todo feedback real cabe nesses limites
+
+---
+
+## Taxonomia Fixa de Categorias por Escopo
+
+O saneamento anti-poluição decide **quais** termos sobrevivem; a taxonomia decide **como** rotulá-los de forma comparável. É o complemento natural do filtro: depois que as categorias saneadas são extraídas, elas passam por uma **taxonomia fixa de drivers de CX por escopo** (`COMPANY`, `PRODUCT`, `SERVICE`, `DEPARTMENT`).
+
+Cada categoria saneada é **canonicalizada** para um rótulo de driver quando bate com o canônico ou um de seus sinônimos — por exemplo, no escopo `COMPANY`, `"suporte"` e `"atendente"` viram **`atendimento`**, e `"preço"`, `"valor"` ou `"caro"` viram **`preco`**. Quando não há correspondência, o termo é **preservado como emergente**, sem perda de sinal.
+
+Por que isso importa:
+
+- **Categorias comparáveis e tendenciáveis**: vocabulário livre da IA converge para um conjunto estável de rótulos, permitindo agrupar e acompanhar a evolução ao longo do tempo.
+- **Sem perda de sinal**: termos que não se encaixam na taxonomia continuam aparecendo (emergentes), então temas novos não são silenciados.
+- **Ancorada no escopo**: o conjunto de drivers e sinônimos é específico de cada escopo, e os rótulos canônicos também alimentam um *nudge* no prompt para guiar a IA.
+
+> Implementada em `lib/categoryTaxonomy.ts` (`TAXONOMY_BY_SCOPE`, `canonicalizeCategories`, `getTaxonomyLabels`); a `categorization.service` recebe o `scopeType` e canonicaliza a saída da IA.
 
 ---
 

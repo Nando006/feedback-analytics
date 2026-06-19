@@ -71,7 +71,7 @@ O frontend (`apps/web`) é uma aplicação **React 19** com duas áreas distinta
 | Rota | Descrição |
 |---|---|
 | `/user/dashboard` | Dashboard principal |
-| `/user/profile` | Perfil + QR Code da empresa |
+| `/user/profile` | Perfil — dados pessoais |
 | `/user/feedbacks/all` | Todos os feedbacks |
 | `/user/feedbacks/:id` | Detalhes de um feedback individual |
 | `/user/feedbacks/analytics/all` | Analytics geral dos feedbacks |
@@ -80,17 +80,19 @@ O frontend (`apps/web`) é uma aplicação **React 19** com duas áreas distinta
 | `/user/insights/reports` | Painel de insights IA |
 | `/user/insights/emotional` | Análise emocional |
 | `/user/insights/statistics` | Estatísticas |
+| `/user/insights/questions` | Métricas por pergunta (aba Perguntas) |
 | `/user/edit/types-feedback` | Ativar tipos de feedback (produtos, serviços, departamentos) |
-| `/user/edit/feedback-settings` | Hub de configurações de catálogo |
 | `/user/edit/feedback-products` | Catálogo de produtos |
 | `/user/edit/feedback-services` | Catálogo de serviços |
 | `/user/edit/feedback-departments` | Catálogo de departamentos |
+| `/user/edit/feedback/:kind/:itemId` | Configuração por item do catálogo: dados + perguntas + QR |
+| `/user/edit/feedback-general` | Feedback geral — perguntas gerais + QR geral |
 | `/user/edit/customers` | Gerenciamento de clientes |
 | `/user/edit/collecting-data-enterprise` | Configuração de dados de coleta da empresa |
-| `/user/qrcode/enterprise` | QR Code da empresa |
-| `/user/qrcode/products` | QR Code do catálogo de produtos |
-| `/user/qrcode/services` | QR Code do catálogo de serviços |
-| `/user/qrcode/departments` | QR Code do catálogo de departamentos |
+| `/user/edit/feedback-settings` | _Redirect_ → `/user/edit/types-feedback` |
+| `/user/qrcode/enterprise` | _Redirect_ → `/user/edit/feedback-general` |
+
+> **Wayfinding e menu** — a navegação interna é padronizada por `routeMeta.ts` (mapeia `pathname` → título/descrição/breadcrumb) consumido pelo `PageHeader` (breadcrumb + título no topo de cada página). O menu lateral foi reagrupado e ganhou a seção **"Configuração da coleta"**, que reúne as telas de catálogo, dados da empresa e feedback geral.
 
 ---
 

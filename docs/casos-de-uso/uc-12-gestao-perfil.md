@@ -10,12 +10,14 @@
 
 ## Visão Geral da Tela
 
-A tela de perfil concentra quatro seções:
+A tela de perfil (`/user/profile`) foi enxugada e concentra **apenas as Informações pessoais** — nome, e-mail e telefone (componente `Information`). É a única seção deste UC.
 
-1. **Informações pessoais** — nome, e-mail e telefone (este UC).
-2. **QR Code da Empresa** — atalho direto para a página de geração e compartilhamento de QR Code (UC-05).
-3. **Configuração de Coleta (IA)** — formulário de contexto do negócio em acordeão (UC-08).
-4. **Perguntas Dinâmicas da Empresa** — configuração das 3 perguntas gerais do tipo Empresa, com até 3 subperguntas cada (20–150 caracteres, toggle ativo/inativo por pergunta e subpergunta).
+A tela abre com o `PageHeader` (breadcrumb + título **"Perfil"**). A identidade da empresa e o **logout** não ficam mais no corpo da tela: migraram para o **menu de conta no topo do layout** (`AccountMenu`), onde o gestor encontra "Minha conta" (atalho de volta para `/user/profile`) e "Sair".
+
+As três seções que antes ficavam no perfil **deixaram de existir aqui** e foram realocadas na nova área "Configuração da coleta":
+
+- **QR Code da Empresa** + **Perguntas Dinâmicas da Empresa** (as 3 perguntas gerais do tipo Empresa) foram fundidas na tela **"Feedback geral"** (`/user/edit/feedback-general`) — ver UC-05.
+- **Configuração de Coleta (IA)** (contexto do negócio) virou a tela **"Dados da empresa"** (`/user/edit/collecting-data-enterprise`) — ver UC-08.
 
 ---
 
@@ -68,8 +70,8 @@ A tela de perfil concentra quatro seções:
 
 - **[CT-UC12-01]** ✅ *Coberto E2E* - Carregamento: a página de perfil carrega com os dados da empresa (perfil/empresa/nome/e-mail). (Spec: `[CT-UC12-01] Página de perfil carrega com dados da empresa`.)
 - **[CT-UC12-02]** ✅ *Coberto E2E* - E-mail exibido: o e-mail do usuário autenticado é exibido no perfil. (Spec: `[CT-UC12-02] E-mail do usuário autenticado é exibido no perfil`.)
-- **[CT-UC12-03]** ✅ *Coberto E2E (skip condicional)* - Link para QR Code: o link para o QR Code da empresa está presente no perfil e navega para `/user/qrcode/enterprise`. Contém `test.skip()` quando o link não está visível. (Spec: `[CT-UC12-03] Link para QR Code da empresa está presente no perfil`.)
-- **[CT-UC12-04]** ✅ *Coberto E2E (skip condicional)* - Link para catálogo: o link para a configuração do catálogo está presente no perfil e navega para a rota de edição. Contém `test.skip()` quando o link não está visível. (Spec: `[CT-UC12-04] Link para configuração do catálogo está presente no perfil`.)
+- **[CT-UC12-03]** ✅ *Coberto E2E (skip condicional)* - QR Code não fica mais no perfil: o link de QR Code deixou de existir na tela de perfil, então o cenário cai em `test.skip()` quando o link não está visível. Quando presente, ele navega e o spec ainda asserta o padrão da **rota legada `/user/qrcode/enterprise`** (`toHaveURL(/\/user\/qrcode\/enterprise/)`); no código, essa rota redireciona para `/user/edit/feedback-general` (`user.tsx`), mas o spec não verifica o destino final do redirect. (Spec: `[CT-UC12-03] Link para QR Code da empresa está presente no perfil`.)
+- **[CT-UC12-04]** ✅ *Coberto E2E — atualizado/realocado* - Catálogo acessível fora do perfil: o cenário não valida mais um link de catálogo dentro do perfil. Agora acessa diretamente `/user/edit/types-feedback` (área "Configuração da coleta", fora do perfil) e confirma que a tela responde na rota. (Spec: `[CT-UC12-04] Configuração do catálogo é acessível`.)
 - **[CT-UC12-06]** ✅ *Coberto E2E* - Logout: o logout redireciona para a página de login. (Spec: `[CT-UC12-06] Logout redireciona para página de login`.)
 - **[CT-UC12-07]** ✅ *Coberto E2E* - Rota protegida: usuário não autenticado é redirecionado para o login ao acessar rota protegida. (Spec: `[CT-UC12-07] Usuário não autenticado é redirecionado para login ao acessar rota protegida`.)
 - **[CT-UC12-08]** 📝 *Planejado / não implementado* - Caminho feliz — nome: gestor edita o nome, salva e confirma que o novo nome aparece no perfil.

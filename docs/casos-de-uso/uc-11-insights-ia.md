@@ -18,14 +18,25 @@
    - **"Gerar insights"** — envia os feedbacks analisados para a IA gerar o resumo estratégico e as recomendações.
 5. Após cada operação concluir, o relatório é atualizado automaticamente na tela.
 6. O gestor visualiza o relatório com:
-   - **Mood (clima emocional):** label (Positivo / Neutro / Atenção) e percentuais de sentimento.
+   - **Mood (clima emocional):** o clima é derivado do **Net Sentiment Score (NSS)** — `Clima Positivo` quando o saldo é maior que +5, `Clima de Atenção` quando é menor que -5 e `Clima Neutro` na banda neutra de ±5 (não mais por voto majoritário de sentimento). Quando ainda não há feedbacks analisados suficientes, exibe `Dados insuficientes`. Acompanha os percentuais de sentimento.
    - **Resumo estratégico:** texto gerado pela IA.
    - **Recomendações:** lista de ações sugeridas pela IA.
 7. O gestor pode navegar para as outras abas:
-   - **Análise Emocional:** termômetro de sentimento e clusters de feedbacks (momentos que encantam, pontos de dor, feedbacks ambivalentes).
-   - **Estatísticas:** percentuais de sentimento e temas principais identificados.
+   - **Análise Emocional** (`/user/insights/emotional`)**:** termômetro de sentimento e clusters de feedbacks (momentos que encantam, pontos de dor, feedbacks ambivalentes).
+   - **Estatísticas** (`/user/insights/statistics`)**:** organizada em três seções:
+     - **Sentimento** — distribuição percentual (positivo / neutro / negativo), **Saldo de sentimento (NSS)** e as faixas prováveis por sentimento (intervalos de confiança).
+     - **Temas** — categorias mais mencionadas e palavras-chave mais recorrentes, ranqueadas por relevância/proporção.
+     - **Assuntos que mais impactam** — aspectos (ABSA) ordenados por impacto, cada um com o seu saldo de sentimento por assunto.
+   - **Perguntas** (`/user/insights/questions`)**:** métricas **determinísticas** por pergunta (escala 1–5, independem de "Analisar feedbacks"/"Gerar insights"). Por pergunta exibe: nota média (/5), faixa provável (intervalo de confiança), % de satisfeitos e uma mini-distribuição (Ótima / Boa / Mediana / Ruim / Péssima), com as subperguntas aninhadas. As perguntas são agrupadas por estado: **atuais** (ativas, redação atual), **desativadas** (desligadas na configuração) e **antigas** (redações editadas ou perguntas removidas).
 
 > **Pré-condição para análise:** os três campos de contexto devem estar preenchidos em UC-08 — Objetivo da Empresa, Objetivo Analítico e Resumo do Negócio. Se algum estiver em branco, os botões ficam desabilitados e o sistema exibe mensagem orientando o gestor a completar as configurações.
+
+---
+
+## Confiança dos números e ajuda contextual
+
+- **Selo de confiança:** os resultados acompanham um selo que comunica honestamente o quanto a amostra é confiável, conforme o número de respostas: `Dados insuficientes` (menos de 10), `Confiança baixa` (10–29), `Confiança média` (30–99) e `Confiança alta` (100 ou mais). O selo é clicável e abre um modal explicativo que descreve, em linguagem simples, como a confiança é calculada e o que está sendo contado (feedbacks, respostas da pergunta ou itens analisados pela IA). Em amostras pequenas, o Saldo de sentimento (NSS) é omitido por ser instável.
+- **Ajuda contextual:** ícones de ajuda (`?`) espalhados pelas telas explicam cada métrica em linguagem acessível ao passar/clicar, evitando que o gestor precise sair da página para entender um número.
 
 ---
 
@@ -39,6 +50,7 @@
 | Erro ao carregar o relatório existente | Exibe popup de erro dismissível no canto da tela — o resto da página permanece acessível |
 | Erro ao executar análise ou gerar insights | A ação retorna a mensagem de erro — o relatório anterior (se existir) permanece visível |
 | Análise Emocional ou Estatísticas sem dados | Exibe empty state em cada aba indicando que não há feedbacks analisados ainda |
+| Aba Perguntas sem respostas no escopo selecionado | Exibe empty state indicando que ainda não há respostas para o escopo (independe das etapas de Analisar/Gerar, pois as métricas são determinísticas) |
 
 ---
 

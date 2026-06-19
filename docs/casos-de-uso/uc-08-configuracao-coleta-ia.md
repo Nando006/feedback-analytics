@@ -10,16 +10,16 @@
 
 ## Fluxo Principal (Caminho Feliz)
 
-1. O gestor acessa a tela de dados de coleta da empresa.
-2. O sistema exibe os campos de contexto já preenchidos (ou em branco, se for o primeiro acesso).
-3. O gestor preenche ou atualiza os três campos de contexto:
-   - **Objetivo da Empresa** — foco atual do negócio para a IA filtrar feedbacks
-   - **Objetivo Analítico** — o que a IA deve investigar nos feedbacks
-   - **Resumo do Negócio** — descrição do que a empresa faz e para quem
-4. O gestor clica em "Salvar Alterações".
+1. O gestor acessa a tela pelo menu, na seção **"Configuração da coleta" → "Dados da empresa"** (rota `/user/edit/collecting-data-enterprise`). A tela exibe um cabeçalho de navegação (PageHeader) com o título "Dados da empresa" e a trilha de breadcrumb.
+2. O sistema exibe um editor de **3 passos** (seletor horizontal de abas no topo, com indicação de passo atual e de quais já estão preenchidos), carregando os textos já salvos (ou em branco, se for o primeiro acesso):
+   - **Passo 1 — Resumo do Negócio** — descrição do que a empresa faz e para quem (contexto base que a IA usa em tudo)
+   - **Passo 2 — Objetivo da Empresa** — foco atual do negócio para a IA priorizar/filtrar feedbacks
+   - **Passo 3 — Objetivo Analítico** — o que a IA deve investigar nos feedbacks
+3. O gestor navega entre os passos pelo seletor ou pelos botões "Anterior"/"Próximo" e preenche ou atualiza cada texto. Cada passo mostra uma dica de orientação e um contador de caracteres.
+4. No último passo, o gestor clica em **"Salvar Alterações"**. O botão fica **travado** (desabilitado) enquanto não houver alteração nos textos de contexto — o controle é por _dirty-tracking_ (`useDirtyTracker`); ao salvar com sucesso, o estado volta a "limpo" e o botão trava novamente.
 5. O sistema confirma com toast de sucesso.
 
-> **Nota:** os campos não são obrigatórios — podem ser salvos em branco. A IA usará o que estiver preenchido no momento da análise.
+> **Nota:** os campos não são obrigatórios — podem ser salvos em branco. A IA usará o que estiver preenchido no momento da análise. Os três textos são enviados juntos no envio, independentemente do passo em que o gestor estiver.
 
 ---
 
@@ -34,8 +34,8 @@
 
 ## Informações Complementares
 
-- Os campos exibem um contador de caracteres informativo (sem limite máximo imposto pelo formulário).
-- O campo **"Principais produtos ou serviços"**, visível no contexto de IA, é preenchido automaticamente ao salvar o catálogo de produtos no UC-07 — não é editado diretamente nesta tela.
+- Cada passo exibe um contador de caracteres informativo (sem limite máximo imposto pelo formulário).
+- O campo **"Principais produtos ou serviços"** (`main_products_or_services`) **não** faz parte dos 3 passos editáveis: continua sendo preenchido **automaticamente** ao salvar o catálogo de produtos no UC-07 — não é editado diretamente nesta tela.
 
 ---
 

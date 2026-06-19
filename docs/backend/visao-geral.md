@@ -41,7 +41,8 @@ backends/api-gateway/
 | `GET` | `/api/protected/user/collecting_data` | Configurações de coleta |
 | `PATCH` / `PUT` | `/api/protected/user/collecting_data` | Atualiza / upsert coleta |
 | `GET` | `/api/protected/user/feedbacks` | Lista feedbacks |
-| `GET` | `/api/protected/user/feedbacks/stats` | Estatísticas |
+| `GET` | `/api/protected/user/feedbacks/stats` | Estatísticas (inclui contagem de pendentes por escopo `pendingCount` e métricas de satisfação/sentimento) |
+| `GET` | `/api/protected/user/feedbacks/questions` | Métricas determinísticas por pergunta/subpergunta no escopo |
 | `GET` | `/api/protected/user/feedbacks/insights/report` | Relatório de insights |
 | `GET` | `/api/protected/user/feedbacks/analysis` | Análises da IA |
 | `GET` | `/api/protected/user/collection-points/qr/status` | Status do QR Code da empresa |

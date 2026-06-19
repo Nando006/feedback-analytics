@@ -4,9 +4,9 @@
 
 | Domínio | Pasta | Arquivos de teste | Status |
 |---|---|---|---|
-| **Frontend** | `apps/web` | 22 | Coberto (unitários + componentes + actions) |
-| **IA Analyze** | `services/ia-analyze` | 4 | Coberto (unitários + integração de rotas) |
-| **Backend (API Gateway)** | `backends/api-gateway` | 5 | Coberto (unitários + integração com banco mockado) |
+| **Frontend** | `apps/web` | 23 | Coberto (unitários + componentes + actions) |
+| **IA Analyze** | `services/ia-analyze` | 6 | Coberto (unitários + integração de rotas) |
+| **Backend (API Gateway)** | `backends/api-gateway` | 8 | Coberto (unitários puros + integração com banco mockado) |
 | **Testes E2E (Playwright)** | `apps/web/e2e` | 11 | Coberto (fluxos completos do sistema) |
 
 
@@ -21,15 +21,15 @@ O projeto adota uma estratégia de testes distribuída em múltiplas camadas que
            ║     E2E (27)        ║  ← Playwright: Jornada real integrada (front + back + Supabase real)
            ╚═════════════════════╝
         ╔═══════════════════════════╗
-        ║     Integração (65)       ║  ← Express (37 api-gateway + 10 ia-analyze) e Actions/Loaders (18 frontend)
+        ║     Integração (71)       ║  ← Express (43 api-gateway + 10 ia-analyze) e Actions/Loaders (18 frontend)
         ╚═══════════════════════════╝
      ╔═════════════════════════════════╗
-     ║        Unidade (129)            ║  ← Regras puras (106 frontend + 23 ia-analyze) e componentes isolados
+     ║        Unidade (180)            ║  ← Regras puras (110 frontend + 36 ia-analyze + 34 api-gateway) e componentes isolados
      ╚═════════════════════════════════╝
 ```
 
-* **Testes de Unidade (129 testes):** Validam a menor unidade lógica de forma isolada e rápida. Incluem 106 testes unitários e de componentes no [Frontend](file:///C:/Users/Fernando/Repositorios/feedback-analytics/docs/testes/web.md) e 23 testes utilitários de termos e sentimentos no [Serviço de IA](file:///C:/Users/Fernando/Repositorios/feedback-analytics/docs/testes/ia-analyze.md).
-* **Testes de Integração (65 testes):** Validam o contrato e o fluxo de dados cruzando fronteiras de múltiplos módulos. Incluem 18 testes de Actions e Loaders do React Router no [Frontend](file:///C:/Users/Fernando/Repositorios/feedback-analytics/docs/testes/web.md), 37 testes de controllers e rotas no [API Gateway](file:///C:/Users/Fernando/Repositorios/feedback-analytics/docs/testes/api-gateway.md) e 10 testes de rotas no [Serviço de IA](file:///C:/Users/Fernando/Repositorios/feedback-analytics/docs/testes/ia-analyze.md).
+* **Testes de Unidade (180 testes):** Validam a menor unidade lógica de forma isolada e rápida. Incluem 110 testes unitários e de componentes no [Frontend](file:///C:/Users/Fernando/Repositorios/feedback-analytics/docs/testes/web.md), 36 testes utilitários no [Serviço de IA](file:///C:/Users/Fernando/Repositorios/feedback-analytics/docs/testes/ia-analyze.md) (termos 14 + sentimentos 9 + taxonomia de categorias 7 + extração de aspectos 6) e 34 testes de regras puras no [API Gateway](file:///C:/Users/Fernando/Repositorios/feedback-analytics/docs/testes/api-gateway.md) (estatísticas 22 + avaliação do classificador 12). O API Gateway agora também contém suítes **unitárias puras** (`statistics`, `classifierEval`), além das de integração.
+* **Testes de Integração (71 testes):** Validam o contrato e o fluxo de dados cruzando fronteiras de múltiplos módulos. Incluem 18 testes de Actions e Loaders do React Router no [Frontend](file:///C:/Users/Fernando/Repositorios/feedback-analytics/docs/testes/web.md), 43 testes de controllers e rotas no [API Gateway](file:///C:/Users/Fernando/Repositorios/feedback-analytics/docs/testes/api-gateway.md) (auth 15 + feedbacks 7 + health 1 + ia-analyze 6 + qrcode 8 + ia-analyze-scope 6) e 10 testes de rotas no [Serviço de IA](file:///C:/Users/Fernando/Repositorios/feedback-analytics/docs/testes/ia-analyze.md) (analyze 8 + health 2).
 * **Testes E2E (27 testes):** Validam cenários de negócio ponta a ponta em navegador Chrome real (via Playwright) cobrindo as jornadas de 11 Casos de Uso integrados (UC-01, UC-02 e UC-04 a UC-12; o UC-03 não possui spec E2E).
 
 ---

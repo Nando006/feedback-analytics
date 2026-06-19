@@ -19,12 +19,12 @@ Separar a IA do API Gateway traz três vantagens práticas:
 1. O API Gateway envia `POST /internal/ia-analyze/analyze` com `{ enterprise_context, batches[] }`
 2. O serviço valida o **token interno** (`x-ia-analyze-token`) — rejeita qualquer requisição não autorizada
 3. Para cada batch, chama o provedor LLM com um prompt estruturado por escopo
-4. Processa e **sanitiza** a resposta: valida sentimentos, extrai keywords e categorias, descarta alucinações
+4. Processa e **sanitiza** a resposta: valida sentimentos, extrai keywords e categorias, descarta alucinações. Além disso, extrai **aspectos (ABSA)** com sentimento por aspecto, calcula uma **intensidade graduada** do sentimento geral (`sentiment_score` em `[-1,1]`) e uma **confiança** da classificação (`confidence` em `[0,1]`) por feedback, e mapeia cada categoria saneada para uma **taxonomia fixa por escopo** (canonicalização — categorias sem correspondência ficam como "emergentes")
 5. Retorna `{ analyses[], contexts[] }` ao Gateway
 
 ## Serviços Internos
 
-O processamento é dividido em cinco serviços de domínio:
+O processamento é dividido em seis serviços de domínio:
 
 | Serviço | Responsabilidade |
 |---|---|
@@ -32,6 +32,7 @@ O processamento é dividido em cinco serviços de domínio:
 | `sentimentAnalysis.service.ts` | Valida se o sentimento retornado é aceito |
 | `keywordExtraction.service.ts` | Extrai e sanitiza palavras-chave |
 | `categorization.service.ts` | Extrai e sanitiza categorias |
+| `aspectExtraction.service.ts` | Extrai aspectos ABSA do texto, com sentimento e intensidade por aspecto |
 | `globalInsights.service.ts` | Monta o contexto de insights por batch |
 
 ## Autenticação Interna
@@ -52,6 +53,8 @@ O valor deve ser idêntico ao configurado no API Gateway via variável de ambien
 - **Runtime:** Node.js 20+ com TypeScript (ESM)
 - **Framework:** Express
 - **Modelo de IA:** Google Gemini (`@google/genai`, modelo `gemini-2.5-flash` fixo no código), configurável via `GEMINI_API_KEY`. Trocar de provedor exige alteração de código (`gemini.provider.ts`) — não é fornecedor-agnóstico.
+- **Concorrência:** `IA_GEMINI_CONCURRENCY` (default `3`) limita quantas chamadas ao Gemini ficam em voo ao mesmo tempo por requisição, evitando estourar o rate limit do provedor (→ `429`).
+- **Resiliência:** `gemini.provider.ts` aplica retry com backoff exponencial e jitter (até 4 tentativas), repetindo apenas em status transitórios (`429`, `500`, `502`, `503`, `504`).
 - **Testes:** Vitest
 - **Deploy:** Vercel (serverless)
 
