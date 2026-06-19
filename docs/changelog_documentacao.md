@@ -29,12 +29,11 @@ Registra todas as alterações significativas feitas nas páginas de documentaç
     - Patch (v1.2.1)
         - Correções de bugs rápidos e ajustes de segurança
 
-Versão Atual → v3.0.0
-
 **Histórico de Versionamento**
 
 | Versão | Data | Descrição |
 | --- | --- | --- |
+| v5.0.0 | 18/06/2026 | Novo design das rotas protegidas, robustez nas análises |
 | v4.0.0 | 16/05/2026 | Versão estável da nova arquitetura macro e micro |
 | v3.0.0 | 16/05/2026 | Versão anterior do sistema (Legado). |
 | v2.0.0 | 10/04/2026 | Nova estrutura do negócio suportando perguntas dinâmicas e sub perguntas dinâmicas no formulário de feedback |
