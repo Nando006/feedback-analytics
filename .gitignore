@@ -38,3 +38,7 @@ e2e_conflitos.md
 apps/web/e2e/.auth/
 apps/web/playwright-report/
 apps/web/test-results/
+
+# MkDocs (site da documentação)
+site/
+.docs-venv/

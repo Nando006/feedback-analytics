@@ -42,7 +42,7 @@
 
 ## Base para Teste E2E
 
-> Os testes E2E já estão implementados no Playwright ([uc-04-envio-feedback-qrcode.spec.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/e2e/uc-04-envio-feedback-qrcode.spec.ts)).
+> Os testes E2E já estão implementados no Playwright ([uc-04-envio-feedback-qrcode.spec.ts](https://github.com/TCC-Feedback-Analytics/feedback-analytics/blob/main/apps/web/e2e/uc-04-envio-feedback-qrcode.spec.ts)).
 > Cada cenário abaixo possui a sua respectiva classificação e estratégia de execução mapeada no [Plano de Teste Estratégico](../../implementacao/testes/plano-estrategico.md).
 
 **Cenários a cobrir:**

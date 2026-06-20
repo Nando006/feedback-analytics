@@ -1,0 +1,4 @@
+# Dependências para gerar o site da documentação (MkDocs Material).
+# Instale com: pip install -r requirements-docs.txt
+# Preview local: mkdocs serve   (abre em http://127.0.0.1:8000)
+mkdocs-material>=9.5,<10
