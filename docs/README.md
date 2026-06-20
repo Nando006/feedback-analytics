@@ -1,13 +1,14 @@
 # Documentação — Feedback Analytics
 
-A documentação está dividida em **duas trilhas**, conforme o momento em que cada artefato é produzido:
+A documentação está organizada em **três trilhas**, seguindo as fases de engenharia de software
+e o momento em que cada artefato é produzido:
 
-- **[Concepção e Projeto](#concepção-e-projeto)** — feita **antes do código**: análise, requisitos,
-  design e decisões tomadas antes de implementar (personas, stakeholders, modelo de negócio, casos
-  de uso, protótipos, decisões de arquitetura).
-- **[Documentação Técnica](#documentação-técnica)** — feita **concorrente ao código**: referência
-  viva produzida e mantida durante a codificação (arquitetura, padrões, backend/frontend/banco/
-  serviços, funcionalidades, testes, CI/CD e instalação).
+- **[Concepção](#concepção)** — *antes do código*, lado produto/negócio: quem usa, por quê, e quais
+  regras e fluxos o sistema precisa atender (personas, stakeholders, modelo de negócio, casos de uso, design).
+- **[Projeto Técnico](#projeto-técnico)** — *antes do código*, decisões técnicas: a arquitetura macro,
+  a infraestrutura escolhida, os requisitos/funcionalidades planejados e a modelagem de dados.
+- **[Implementação](#implementação)** — *concorrente ao código*: a referência viva de como o sistema
+  foi construído (backend, frontend, banco, serviços, mecanismos, testes, CI/CD e instalação).
 
 Documentos **transversais** (acompanham todo o ciclo) ficam na raiz.
 
@@ -20,50 +21,60 @@ Documentos **transversais** (acompanham todo o ciclo) ficam na raiz.
 
 ---
 
-## Concepção e Projeto
+## Concepção
 
-> Pasta [`concepcao-projeto/`](./concepcao-projeto/)
+> Pasta [`concepcao/`](./concepcao/) — análise e concepção do produto, antes do código.
 
-- [Personas](./concepcao-projeto/personas.md) — perfis de usuário (Ana, Lucas, Carlos).
-- [Stakeholders](./concepcao-projeto/stakeholder.md) — partes interessadas e seus interesses.
-- [Modelo de Negócio](./concepcao-projeto/modelo-negocio.md) — proposta de valor, receita e métricas.
-- [Decisão das Regras de Negócio](./concepcao-projeto/decisao_regras_negocio.md) — o **porquê** de cada
-  regra, em linguagem acessível (o **como** técnico está em [Regras de Negócio](./tecnica/regras-negocio.md)).
-- [Casos de Uso](./concepcao-projeto/casos-de-uso/visao-geral.md) — índice dos 12 UCs (UC-01 a UC-12).
-- [Figma — Design](./concepcao-projeto/figma/) — product, assets e protótipos (baixa, média e alta fidelidade).
-- [Dúvidas / Decisões de Arquitetura](./concepcao-projeto/duvidas/) — ex.: monorepo serverless vs. monolito.
-
-> **Requisitos (RF/RNF):** o artefato de requisitos funcionais e não-funcionais vive em
-> [Funcionalidades — Visão Geral](./tecnica/funcionalidades/visao-geral.md) (mantido junto dos
-> detalhes técnicos das funcionalidades, por coesão de pasta).
+- [Personas](./concepcao/personas.md) — perfis de usuário (Ana, Lucas, Carlos).
+- [Stakeholders](./concepcao/stakeholder.md) — partes interessadas e seus interesses.
+- [Modelo de Negócio](./concepcao/modelo-negocio.md) — proposta de valor, receita e métricas.
+- [Decisão das Regras de Negócio](./concepcao/decisao_regras_negocio.md) — o **porquê** de cada regra,
+  em linguagem acessível (o **como** técnico está em [Regras de Negócio](./implementacao/regras-negocio.md)).
+- [Casos de Uso](./concepcao/casos-de-uso/visao-geral.md) — índice dos 12 UCs (UC-01 a UC-12).
+- [Figma — Design](./concepcao/figma/) — product, assets e protótipos (baixa, média e alta fidelidade).
 
 ---
 
-## Documentação Técnica
+## Projeto Técnico
 
-> Pasta [`tecnica/`](./tecnica/)
+> Pasta [`projeto-tecnico/`](./projeto-tecnico/) — decisões técnicas tomadas antes de codar.
 
-**Visão macro e convenções**
-- [Arquitetura](./tecnica/arquitetura.md) — infraestrutura Serverless, monorepo e topologia.
-- [Padrões de Projeto](./tecnica/padroes-projeto.md) — convenções de código e camadas.
-- [Workflows (CI/CD)](./tecnica/workflows.md) — pipelines, deploys e estratégia de branches.
-- [Guia de Instalação](./tecnica/guia-instalacao.md) — setup do ambiente local.
-- [Regras de Negócio](./tecnica/regras-negocio.md) — detalhamento técnico de como as regras são implementadas.
+- [Arquitetura](./projeto-tecnico/arquitetura.md) — arquitetura macro (Serverless, monorepo, topologia)
+  e infraestrutura escolhida (Vercel, Supabase, Gemini).
+- [Requisitos e Funcionalidades](./projeto-tecnico/requisitos-e-funcionalidades.md) — RF, RNF e matriz de
+  rastreabilidade do MVP (os mecanismos já implementados de cada funcionalidade estão em
+  [Implementação → Funcionalidades](./implementacao/funcionalidades/)).
+- [Modelagem de Dados (DER)](./projeto-tecnico/modelagem-de-dados.md) — entidades, relacionamentos e
+  cardinalidades (o schema implementado vive em [Banco de Dados — Visão Geral](./implementacao/banco-de-dados/visao-geral.md)).
+- [Decisão: Monorepo vs. Monolito](./projeto-tecnico/decisao-monorepo-vs-monolito.md) — análise da
+  decisão de arquitetura (perfis de carga I/O-bound vs. CPU-bound, isolamento de falhas).
 
-**Backend — API Gateway** ([`tecnica/backend/`](./tecnica/backend/))
-- [Visão Geral](./tecnica/backend/visao-geral.md) · [Arquitetura e Estrutura](./tecnica/backend/arquitetura-estrutura.md) · [Endpoints](./tecnica/backend/endpoints.md)
+---
 
-**Frontend — React** ([`tecnica/frontend/`](./tecnica/frontend/))
-- [Visão Geral](./tecnica/frontend/visao-geral.md) · [Arquitetura e Estrutura](./tecnica/frontend/arquitetura-estrutura.md) · [Fluxo de Autenticação](./tecnica/frontend/fluxo-autenticacao.md) · [System Design](./tecnica/frontend/system-design.md) · [Interface e Performance](./tecnica/frontend/interface-performance.md)
+## Implementação
 
-**Banco de Dados** ([`tecnica/banco-de-dados/`](./tecnica/banco-de-dados/))
-- [Visão Geral](./tecnica/banco-de-dados/visao-geral.md) · [Diagrama de Entidade-Relacionamento](./tecnica/banco-de-dados/diagrama-entidade-relacionamento.md)
+> Pasta [`implementacao/`](./implementacao/) — referência viva do código, mantida durante a codificação.
 
-**Serviços** ([`tecnica/servicos/`](./tecnica/servicos/))
-- IA Analyze: [Visão Geral](./tecnica/servicos/ia-analyze/visao-geral.md) · [Arquitetura e Estrutura](./tecnica/servicos/ia-analyze/arquitetura-estrutura.md) · [Endpoints](./tecnica/servicos/ia-analyze/endpoints.md)
+**Convenções e operação**
+- [Padrões de Projeto](./implementacao/padroes-projeto.md) — convenções de código e camadas.
+- [Workflows (CI/CD)](./implementacao/workflows.md) — pipelines, deploys e estratégia de branches.
+- [Guia de Instalação](./implementacao/guia-instalacao.md) — setup do ambiente local.
+- [Regras de Negócio](./implementacao/regras-negocio.md) — detalhamento técnico de como as regras são implementadas.
 
-**Funcionalidades** ([`tecnica/funcionalidades/`](./tecnica/funcionalidades/))
-- [Visão Geral (Requisitos e Funcionalidades)](./tecnica/funcionalidades/visao-geral.md) e os mecanismos: painel de insights, filtro semântico de IA, anti-spam por fingerprint, bloqueio de dispositivo, coleta por QR Code, QR Code por escopo, onboarding de catálogo e higienização JWT/LGPD.
+**Backend — API Gateway** ([`implementacao/backend/`](./implementacao/backend/))
+- [Visão Geral](./implementacao/backend/visao-geral.md) · [Arquitetura e Estrutura](./implementacao/backend/arquitetura-estrutura.md) · [Endpoints](./implementacao/backend/endpoints.md)
 
-**Testes** ([`tecnica/testes/`](./tecnica/testes/))
-- [Visão Geral](./tecnica/testes/visao-geral.md) · [Plano de Teste Estratégico](./tecnica/testes/plano-estrategico.md) · [Frontend](./tecnica/testes/web.md) · [IA Analyze](./tecnica/testes/ia-analyze.md) · [API Gateway](./tecnica/testes/api-gateway.md) · [Lacunas E2E](./tecnica/testes/lucanas_e2e.md)
+**Frontend — React** ([`implementacao/frontend/`](./implementacao/frontend/))
+- [Visão Geral](./implementacao/frontend/visao-geral.md) · [Arquitetura e Estrutura](./implementacao/frontend/arquitetura-estrutura.md) · [Fluxo de Autenticação](./implementacao/frontend/fluxo-autenticacao.md) · [System Design](./implementacao/frontend/system-design.md) · [Interface e Performance](./implementacao/frontend/interface-performance.md)
+
+**Banco de Dados** ([`implementacao/banco-de-dados/`](./implementacao/banco-de-dados/))
+- [Visão Geral](./implementacao/banco-de-dados/visao-geral.md) — schema, RLS, triggers, funções e índices (o DER conceitual está em [Projeto Técnico → Modelagem de Dados](./projeto-tecnico/modelagem-de-dados.md)).
+
+**Serviços** ([`implementacao/servicos/`](./implementacao/servicos/))
+- IA Analyze: [Visão Geral](./implementacao/servicos/ia-analyze/visao-geral.md) · [Arquitetura e Estrutura](./implementacao/servicos/ia-analyze/arquitetura-estrutura.md) · [Endpoints](./implementacao/servicos/ia-analyze/endpoints.md)
+
+**Funcionalidades — mecanismos implementados** ([`implementacao/funcionalidades/`](./implementacao/funcionalidades/))
+- Painel de insights, filtro semântico de IA, anti-spam por fingerprint, bloqueio de dispositivo, coleta por QR Code, QR Code por escopo, onboarding de catálogo e higienização JWT/LGPD.
+
+**Testes** ([`implementacao/testes/`](./implementacao/testes/))
+- [Visão Geral](./implementacao/testes/visao-geral.md) · [Plano de Teste Estratégico](./implementacao/testes/plano-estrategico.md) · [Frontend](./implementacao/testes/web.md) · [IA Analyze](./implementacao/testes/ia-analyze.md) · [API Gateway](./implementacao/testes/api-gateway.md) · [Lacunas E2E](./implementacao/testes/lucanas_e2e.md)
