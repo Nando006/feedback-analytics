@@ -1,0 +1,46 @@
+/* Identidade visual do Feedback Analytics aplicada ao tema Material.
+   Estilo "limpo e flat": cores de marca (cyan/teal), Montserrat nos títulos,
+   sem gradientes/glow. Modo claro/escuro segue o sistema. */
+
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&display=swap");
+
+/* ---- Modo claro ---- */
+[data-md-color-scheme="default"] {
+  --md-primary-fg-color: #0f7c8f;        /* teal escuro (header) */
+  --md-primary-fg-color--light: #1294a8;
+  --md-primary-fg-color--dark: #0c6374;
+  --md-accent-fg-color: #1294a8;         /* realce em hover/foco */
+  --md-typeset-a-color: #0f7c8f;         /* links */
+  --md-default-bg-color: #f2f7fb;        /* fundo azul-claro da marca */
+}
+
+/* ---- Modo escuro ---- */
+[data-md-color-scheme="slate"] {
+  --md-primary-fg-color: #0d3641;        /* teal profundo (header) */
+  --md-primary-fg-color--light: #1294a8;
+  --md-primary-fg-color--dark: #0b181c;
+  --md-accent-fg-color: #3ed9e3;         /* cyan brilhante */
+  --md-typeset-a-color: #3ed9e3;         /* links */
+  --md-default-bg-color: #18181b;        /* fundo escuro da marca */
+  --md-code-bg-color: #27272a;           /* superfície de código */
+}
+
+/* ---- Tipografia: Montserrat nos títulos ---- */
+.md-typeset h1,
+.md-typeset h2,
+.md-typeset h3,
+.md-typeset h4 {
+  font-family: "Montserrat", var(--md-text-font, "Inter"), sans-serif;
+  font-weight: 600;
+}
+
+/* ---- Toques flat de polimento ---- */
+.md-typeset pre > code,
+.md-typeset .highlight {
+  border-radius: 8px;
+}
+
+.md-typeset .admonition,
+.md-typeset details {
+  border-radius: 8px;
+}
