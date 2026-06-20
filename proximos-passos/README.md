@@ -131,5 +131,5 @@ Isto é **ambicioso** para 6 meses. Cabe com **2+ pessoas** se mantivermos o ORM
 
 - Cada frente de trabalho tem **um arquivo** (`NN-titulo.md`). Atualize o **Status** no topo conforme avança (🔵 → 🟢 → ✅).
 - Quando uma etapa for entregue, marque ✅ aqui na tabela e registre as decisões tomadas no próprio arquivo.
-- Esta pasta **consolida e substitui** as anotações iniciais em [`proxPassos/`](../proxPassos/) (mantidas como histórico). Os itens 03 e 04 daquela pasta (reorganização das telas e preview do formulário) **já foram implementados**.
+- Esta pasta **consolida e substitui** as anotações iniciais da antiga pasta `proxPassos/` (já removida; o histórico permanece no Git). As frentes de reorganização das telas de configuração e de preview do formulário daquelas anotações **já foram implementadas** — ver `docs/changelog_documentacao.md` (v4.2).
 - A documentação técnica do **estado atual** do sistema vive em [`docs/`](../docs/).

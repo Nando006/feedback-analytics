@@ -207,6 +207,6 @@ CLIENTE DESCOBRE          →   Trial 4 meses    →   Converte (R$80/mês)
 
 ## Veja Também
 
-- [Visão Geral do Sistema](./visao-geral.md)
-- [Funcionalidades do MVP](./funcionalidades/visao-geral.md)
-- [Arquitetura](./arquitetura.md)
+- [Visão Geral do Sistema](../visao-geral.md)
+- [Funcionalidades do MVP](../tecnica/funcionalidades/visao-geral.md)
+- [Arquitetura](../tecnica/arquitetura.md)

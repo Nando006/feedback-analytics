@@ -33,7 +33,7 @@
 
 ## Base para Teste E2E
 
-> **O E2E atual deste UC é apenas um smoke test de carregamento de página** ([uc-06-ativacao-tipos-feedback.spec.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/e2e/uc-06-ativacao-tipos-feedback.spec.ts)): verifica que a página `/user/edit/types-feedback` carrega e lista as opções (Produtos/Serviços/Departamentos). O fluxo de **ação** (ativar, salvar e ver o badge) **não está coberto por E2E**. Cada cenário abaixo possui a sua respectiva classificação e estratégia de execução mapeada no [Plano de Teste Estratégico](../testes/plano-estrategico.md).
+> **O E2E atual deste UC é apenas um smoke test de carregamento de página** ([uc-06-ativacao-tipos-feedback.spec.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/e2e/uc-06-ativacao-tipos-feedback.spec.ts)): verifica que a página `/user/edit/types-feedback` carrega e lista as opções (Produtos/Serviços/Departamentos). O fluxo de **ação** (ativar, salvar e ver o badge) **não está coberto por E2E**. Cada cenário abaixo possui a sua respectiva classificação e estratégia de execução mapeada no [Plano de Teste Estratégico](../../tecnica/testes/plano-estrategico.md).
 
 **Cenários a cobrir:**
 

@@ -64,7 +64,7 @@ As três seções que antes ficavam no perfil **deixaram de existir aqui** e for
 ## Base para Teste E2E
 
 > Os testes E2E já estão implementados no Playwright ([uc-12-gestao-perfil.spec.ts](file:///C:/Users/Fernando/Repositorios/feedback-analytics/apps/web/e2e/uc-12-gestao-perfil.spec.ts)).
-> Cada cenário abaixo possui a sua respectiva classificação e estratégia de execução mapeada no [Plano de Teste Estratégico](../testes/plano-estrategico.md).
+> Cada cenário abaixo possui a sua respectiva classificação e estratégia de execução mapeada no [Plano de Teste Estratégico](../../tecnica/testes/plano-estrategico.md).
 
 **Cenários a cobrir:**
 
