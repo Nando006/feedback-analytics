@@ -53,7 +53,7 @@ Esta etapa produz **três entregáveis de documentação** mais um reforço de c
 
 **1. Documento de modelagde de ameaças (threat model — STRIDE simplificado).**
 Para cada superfície relevante (formulário público anônimo, API gateway, banco Supabase, serviço de IA, storage de áudio da etapa 05), classificar ameaças nas seis categorias STRIDE — Spoofing, Tampering, Repudiation, Information disclosure, Denial of service, Elevation of privilege — e registrar a mitigação existente ou planejada. Âncoras reais no código que já mitigam:
-- **Information disclosure / minimização:** o trigger `clean_user_metadata_before_change` (`database/sql/functions/public/clean_user_metadata_before_change__0aa1f366fd.sql`) remove do `raw_user_meta_data` as chaves `phone`, `document`, `company_name`, `account_type`, `terms_version`, `terms_accepted_at`, `email` — logo, esses dados **não entram no JWT**. O JWT só carrega claims seguros via `jwt_custom_claims` (`role` + `enterprise_id`). Documentado em [`docs/funcionalidades/higienizacao-jwt-lgpd.md`](../../docs/funcionalidades/higienizacao-jwt-lgpd.md).
+- **Information disclosure / minimização:** o trigger `clean_user_metadata_before_change` (`database/sql/functions/public/clean_user_metadata_before_change__0aa1f366fd.sql`) remove do `raw_user_meta_data` as chaves `phone`, `document`, `company_name`, `account_type`, `terms_version`, `terms_accepted_at`, `email` — logo, esses dados **não entram no JWT**. O JWT só carrega claims seguros via `jwt_custom_claims` (`role` + `enterprise_id`). Documentado em [`docs/tecnica/funcionalidades/higienizacao-jwt-lgpd.md`](../docs/tecnica/funcionalidades/higienizacao-jwt-lgpd.md).
 - **Elevation of privilege / isolamento multi-tenant:** RLS habilitada nas 13 tabelas, com policies do tipo `enterprise_id IN (SELECT id FROM enterprise WHERE auth_user_id = auth.uid())` (ver `database/sql/policies/all_policies.sql`). Mesmo com um token comprometido, o titular só alcança a própria empresa.
 - **Spoofing:** login delegado ao Supabase Auth (provedor especializado), não a código próprio.
 
@@ -107,4 +107,4 @@ Tabela formal: **nós = controlador** (decidimos o que coletar e por quê), **Su
 - [05 — Feedback por áudio](./05-feedback-por-audio.md) — introduz dado de voz (biométrico/sensível) e storage, elevando o risco que esta etapa endereça
 - [08 — Infraestrutura e custo](./08-infraestrutura-e-custo.md) — único cenário em que a autenticação própria voltaria à mesa (self-host total)
 - [04 — Provedor de LLM configurável](./04-provedor-de-llm-configuravel.md) — relação com o dado que sai para o operador de IA
-- [Higienização de dados sensíveis no JWT (LGPD)](../../docs/funcionalidades/higienizacao-jwt-lgpd.md) — mecanismo de minimização já implementado
+- [Higienização de dados sensíveis no JWT (LGPD)](../docs/tecnica/funcionalidades/higienizacao-jwt-lgpd.md) — mecanismo de minimização já implementado

@@ -173,7 +173,7 @@ Os testes E2E do Playwright são executados por padrão apontando para o ambient
 
 ### Grupo 1: Onboarding e Autenticação
 
-#### [UC-01] Cadastro de Conta Empresarial → [uc-01-cadastro-conta.md](../casos-de-uso/uc-01-cadastro-conta.md)
+#### [UC-01] Cadastro de Conta Empresarial → [uc-01-cadastro-conta.md](../../concepcao-projeto/casos-de-uso/uc-01-cadastro-conta.md)
 
 | ID | Título | Pré-condições | Passos de Execução | Dados de Teste | Resultado Esperado |
 |---|---|---|---|---|---|
@@ -185,7 +185,7 @@ Os testes E2E do Playwright são executados por padrão apontando para o ambient
 | `CT-UC01-06`<br>🔵 *Unidade já atende* | Termos não aceitos (Exceção) | Nenhuma | 1. Acessar tela de cadastro. 2. Preencher todos os campos válidos sem marcar os termos. 3. Clicar "Criar conta". | Checkbox de termos: desmarcado | Envio bloqueado; formulário não submetido |
 | `CT-UC01-07`<br>❌ *Cenário não coberto* | Reenvio de e-mail (Exceção) | Conta criada, e-mail não confirmado | 1. Na tela de sucesso ou login, solicitar reenvio do e-mail de confirmação. | — | Confirmação de envio exibida; nenhum erro |
 
-#### [UC-02] Login da Empresa → [uc-02-login.md](../casos-de-uso/uc-02-login.md)
+#### [UC-02] Login da Empresa → [uc-02-login.md](../../concepcao-projeto/casos-de-uso/uc-02-login.md)
 
 | ID | Título | Pré-condições | Passos de Execução | Dados de Teste | Resultado Esperado |
 |---|---|---|---|---|---|
@@ -194,7 +194,7 @@ Os testes E2E do Playwright são executados por padrão apontando para o ambient
 | `CT-UC02-03`<br>🚫 *Não é possível testar com Playwright* | Rate limit (Exceção) | Conta ativa | 1. Acessar tela de login. 2. Tentar login com credenciais erradas 5 ou mais vezes consecutivas. | e-mail válido; senha errada (repetir) | Mensagem de bloqueio temporário exibida |
 | `CT-UC02-04`<br>🔵 *Unidade já atende* | Campos vazios (Exceção) | Nenhuma | 1. Acessar tela de login. 2. Clicar "Entrar" sem preencher nenhum campo. | e-mail: `""`; senha: `""` | Campos destacados como obrigatórios; envio bloqueado antes de chamar a API |
 
-#### [UC-03] Recuperação de Senha → [uc-03-recuperacao-senha.md](../casos-de-uso/uc-03-recuperacao-senha.md)
+#### [UC-03] Recuperação de Senha → [uc-03-recuperacao-senha.md](../../concepcao-projeto/casos-de-uso/uc-03-recuperacao-senha.md)
 
 | ID | Título | Pré-condições | Passos de Execução | Dados de Teste | Resultado Esperado |
 |---|---|---|---|---|---|
@@ -207,7 +207,7 @@ Os testes E2E do Playwright são executados por padrão apontando para o ambient
 
 ### Grupo 2: Coleta de Feedback
 
-#### [UC-04] Envio de Feedback via QR Code → [uc-04-envio-feedback-qrcode.md](../casos-de-uso/uc-04-envio-feedback-qrcode.md)
+#### [UC-04] Envio de Feedback via QR Code → [uc-04-envio-feedback-qrcode.md](../../concepcao-projeto/casos-de-uso/uc-04-envio-feedback-qrcode.md)
 
 | ID | Título | Pré-condições | Passos de Execução | Dados de Teste | Resultado Esperado |
 |---|---|---|---|---|---|
@@ -218,7 +218,7 @@ Os testes E2E do Playwright são executados por padrão apontando para o ambient
 | `CT-UC04-05`<br>🔵 *Unidade já atende* | Comentário vazio (Exceção) | Empresa e QR Code ativos | 1. Acessar URL válida. 2. Selecionar nota. 3. Responder perguntas. 4. Clicar "Enviar" sem preencher comentário. | Comentário: `""` | Envio bloqueado; mensagem "Por favor, escreva seu feedback" exibida |
 | `CT-UC04-06`<br>🔵 *Unidade já atende* | Perguntas não respondidas (Exceção) | Empresa com perguntas dinâmicas; QR Code ativo | 1. Acessar URL válida. 2. Selecionar nota. 3. Preencher comentário. 4. Deixar ao menos uma pergunta sem resposta. 5. Clicar "Enviar". | 1 pergunta sem resposta | Envio bloqueado; mensagem solicitando que todas as perguntas sejam respondidas |
 
-#### [UC-05] Geração e Compartilhamento de QR Code → [uc-05-geracao-qrcode.md](../casos-de-uso/uc-05-geracao-qrcode.md)
+#### [UC-05] Geração e Compartilhamento de QR Code → [uc-05-geracao-qrcode.md](../../concepcao-projeto/casos-de-uso/uc-05-geracao-qrcode.md)
 
 | ID | Título | Pré-condições | Passos de Execução | Dados de Teste | Resultado Esperado |
 |---|---|---|---|---|---|
@@ -234,7 +234,7 @@ Os testes E2E do Playwright são executados por padrão apontando para o ambient
 
 ### Grupo 3: Configuração e Perfil
 
-#### [UC-06] Ativação de Tipos de Feedback → [uc-06-ativacao-tipos-feedback.md](../casos-de-uso/uc-06-ativacao-tipos-feedback.md)
+#### [UC-06] Ativação de Tipos de Feedback → [uc-06-ativacao-tipos-feedback.md](../../concepcao-projeto/casos-de-uso/uc-06-ativacao-tipos-feedback.md)
 
 | ID | Título | Pré-condições | Passos de Execução | Dados de Teste | Resultado Esperado |
 |---|---|---|---|---|---|
@@ -244,7 +244,7 @@ Os testes E2E do Playwright são executados por padrão apontando para o ambient
 | `CT-UC06-04`<br>❌ *Cenário não coberto* | Toggle sem salvar (Comportamento) | Gestor autenticado | 1. Ativar toggle de um tipo. 2. NÃO clicar em "Salvar". | — | Aviso em âmbar exibido; badge "Ativo" e link de catálogo NÃO aparecem |
 | `CT-UC06-05`<br>❌ *Cenário não coberto* | Erro ao salvar (Exceção) | Gestor autenticado; rede instável | 1. Ativar toggle de um tipo. 2. Clicar "Salvar Alterações" com falha de rede simulada. | — | Toast de erro exibido; estado salvo dos tipos não alterado |
 
-#### [UC-07] Configuração do Catálogo → [uc-07-configuracao-catalogo.md](../casos-de-uso/uc-07-configuracao-catalogo.md)
+#### [UC-07] Configuração do Catálogo → [uc-07-configuracao-catalogo.md](../../concepcao-projeto/casos-de-uso/uc-07-configuracao-catalogo.md)
 
 | ID | Título | Pré-condições | Passos de Execução | Dados de Teste | Resultado Esperado |
 |---|---|---|---|---|---|
@@ -258,7 +258,7 @@ Os testes E2E do Playwright são executados por padrão apontando para o ambient
 | `CT-UC07-08`<br>❌ *Cenário não coberto* | Item inativo — formulário bloqueado (Exceção) | Item existente no catálogo | 1. Desativar um item (status inativo). 2. Acessar a URL do formulário público daquele item. | — | Tela de erro fatal no formulário público; envio bloqueado |
 | `CT-UC07-09`<br>❌ *Cenário não coberto* | QR Code de item desativado (Exceção) | Item ativo com toggle de QR Code inativo | 1. Desativar o toggle de QR Code de um item. 2. Acessar a URL do formulário público daquele item. | — | Tela de erro no formulário público; envio bloqueado |
 
-#### [UC-08] Configuração de Dados de Coleta (Contexto IA) → [uc-08-configuracao-coleta-ia.md](../casos-de-uso/uc-08-configuracao-coleta-ia.md)
+#### [UC-08] Configuração de Dados de Coleta (Contexto IA) → [uc-08-configuracao-coleta-ia.md](../../concepcao-projeto/casos-de-uso/uc-08-configuracao-coleta-ia.md)
 
 | ID | Título | Pré-condições | Passos de Execução | Dados de Teste | Resultado Esperado |
 |---|---|---|---|---|---|
@@ -269,7 +269,7 @@ Os testes E2E do Playwright são executados por padrão apontando para o ambient
 | `CT-UC08-05`<br>🟠 *Integração já atende* | Atualização parcial (Caminho Feliz) | Gestor com dados já preenchidos | 1. Acessar tela. 2. Editar apenas o campo "Resumo do Negócio". 3. Clicar "Salvar Alterações". | Resumo atualizado; demais campos mantidos | Toast de sucesso; apenas o resumo alterado — os demais campos permanecem inalterados |
 | `CT-UC08-06`<br>❌ *Cenário não coberto* | Erro ao salvar (Exceção) | Gestor autenticado; rede instável | 1. Preencher os campos. 2. Clicar "Salvar Alterações" com falha de rede simulada. | — | Toast de erro; dados do formulário permanecem para nova tentativa |
 
-#### [UC-12] Gestão de Perfil → [uc-12-gestao-perfil.md](../casos-de-uso/uc-12-gestao-perfil.md)
+#### [UC-12] Gestão de Perfil → [uc-12-gestao-perfil.md](../../concepcao-projeto/casos-de-uso/uc-12-gestao-perfil.md)
 
 | ID | Título | Pré-condições | Passos de Execução | Dados de Teste | Resultado Esperado |
 |---|---|---|---|---|---|
@@ -291,7 +291,7 @@ Os testes E2E do Playwright são executados por padrão apontando para o ambient
 
 ### Grupo 4: Análise e Insights
 
-#### [UC-09] Visualização do Dashboard → [uc-09-dashboard.md](../casos-de-uso/uc-09-dashboard.md)
+#### [UC-09] Visualização do Dashboard → [uc-09-dashboard.md](../../concepcao-projeto/casos-de-uso/uc-09-dashboard.md)
 
 | ID | Título | Pré-condições | Passos de Execução | Dados de Teste | Resultado Esperado |
 |---|---|---|---|---|---|
@@ -304,7 +304,7 @@ Os testes E2E do Playwright são executados por padrão apontando para o ambient
 | `CT-UC09-07`<br>❌ *Cenário não coberto* | Erro de carregamento (Exceção) | API de estatísticas indisponível | 1. Acessar o dashboard com API de estatísticas simulando falha. | — | Mensagem de erro inline no topo; página permanece acessível sem redirecionamento |
 | `CT-UC09-08`<br>📝 *Planejado / não implementado* | Sessão expirada (Exceção) | Sessão do gestor inválida | 1. Tentar acessar o dashboard com sessão inválida. | — | Redirecionamento automático para `/login`. *Coberto de forma análoga em UC-12 via rota protegida.* |
 
-#### [UC-10] Listagem e Filtragem de Feedbacks → [uc-10-listagem-feedbacks.md](../casos-de-uso/uc-10-listagem-feedbacks.md)
+#### [UC-10] Listagem e Filtragem de Feedbacks → [uc-10-listagem-feedbacks.md](../../concepcao-projeto/casos-de-uso/uc-10-listagem-feedbacks.md)
 
 | ID | Título | Pré-condições | Passos de Execução | Dados de Teste | Resultado Esperado |
 |---|---|---|---|---|---|
@@ -318,7 +318,7 @@ Os testes E2E do Playwright são executados por padrão apontando para o ambient
 | `CT-UC10-08`<br>📝 *Planejado / não implementado* | Filtro sem resultado (Exceção) | Empresa com feedbacks | 1. Aplicar filtro que não corresponde a nenhum feedback. | nota: 1 (sem feedbacks com essa nota) | Empty state com mensagem de "ajuste os filtros" exibido |
 | `CT-UC10-09`<br>📝 *Planejado / não implementado* | Sem feedbacks (Exceção) | Empresa sem nenhum feedback coletado | 1. Acessar listagem. | — | Empty state com mensagem de "nenhum feedback recebido" exibido (o smoke CT-UC10-01 já aceita este estado como válido) |
 
-#### [UC-11] Disparo e Visualização de Insights IA → [uc-11-insights-ia.md](../casos-de-uso/uc-11-insights-ia.md)
+#### [UC-11] Disparo e Visualização de Insights IA → [uc-11-insights-ia.md](../../concepcao-projeto/casos-de-uso/uc-11-insights-ia.md)
 
 | ID | Título | Pré-condições | Passos de Execução | Dados de Teste | Resultado Esperado |
 |---|---|---|---|---|---|
