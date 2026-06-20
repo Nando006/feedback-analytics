@@ -9,6 +9,16 @@ edit_uri: edit/main/docs/
 
 docs_dir: docs
 
+# Validação de links: com --strict no CI, link/âncora quebrada falha o build (e o deploy).
+validation:
+  nav:
+    omitted_files: warn
+    not_found: warn
+  links:
+    not_found: warn
+    anchors: warn
+    unrecognized_links: warn
+
 theme:
   name: material
   language: pt-BR

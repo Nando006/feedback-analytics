@@ -41,8 +41,8 @@ jobs:
       - name: Instalar dependências (MkDocs Material)
         run: pip install -r requirements-docs.txt
 
-      - name: Build do site
-        run: mkdocs build
+      - name: Build do site (estrito — falha em link/âncora quebrada)
+        run: mkdocs build --strict
 
       - name: Upload do artefato do Pages
         uses: actions/upload-pages-artifact@v3
