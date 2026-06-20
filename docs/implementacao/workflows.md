@@ -51,7 +51,7 @@ A resposta adotada foi separar completamente CI de CD:
 
 ### Por que o deploy é manual
 
-Num projeto em estágio de MVP com equipe pequena, **controle supera velocidade**. Deploy automático em `main` significa que qualquer merge — mesmo um ajuste de texto — dispara um ciclo de deploy completo nos três serviços. Além do custo desnecessário, isso retira do time a decisão de *quando* uma mudança chega ao usuário.
+Num projeto com equipe pequena, **controle supera velocidade**. Deploy automático em `main` significa que qualquer merge — mesmo um ajuste de texto — dispara um ciclo de deploy completo nos três serviços. Além do custo desnecessário, isso retira do time a decisão de *quando* uma mudança chega ao usuário.
 
 O `workflow_dispatch` com confirmação `ok` resolve isso: o merge acontece, o CI valida, mas a exposição para produção é uma decisão deliberada. Em projetos maiores ou com mais maturidade de processo, o caminho natural seria migrar os deploys de produção para automático após o CI passar — mas essa transição faz sentido quando o volume de deploys justifica.
 
@@ -68,7 +68,7 @@ O GitHub permite configurar branch protection rules que exigem status checks par
 | Característica do projeto | Como o fluxo responde |
 |---|---|
 | Monorepo com 3 serviços independentes | Deploys separados por serviço — nenhum redeploy desnecessário |
-| MVP em evolução constante | CI estrito evita que código quebrado chegue a `homolog` ou `main` |
+| Produto em evolução constante | CI estrito evita que código quebrado chegue a `homolog` ou `main` |
 | Equipe pequena / solo | Deploy manual tem overhead baixo e dá controle total sobre o momento de cada release |
 | Supabase como backend de dados | Banco e Auth não precisam de deploy — só os 3 serviços Node/React |
 | Vercel como plataforma | `--local-config` por serviço permite cada pacote ter sua própria configuração de build e rotas |

@@ -42,11 +42,11 @@ Documentos **transversais** (acompanham todo o ciclo) ficam na raiz.
 - [Arquitetura](./projeto-tecnico/arquitetura.md) — arquitetura macro (Serverless, monorepo, topologia)
   e infraestrutura escolhida (Vercel, Supabase, Gemini).
 - [Requisitos e Funcionalidades](./projeto-tecnico/requisitos-e-funcionalidades.md) — RF, RNF e matriz de
-  rastreabilidade do MVP (os mecanismos já implementados de cada funcionalidade estão em
+  rastreabilidade (os mecanismos já implementados de cada funcionalidade estão em
   [Implementação → Funcionalidades](./implementacao/funcionalidades/)).
 - [Modelagem de Dados (DER)](./projeto-tecnico/modelagem-de-dados.md) — entidades, relacionamentos e
   cardinalidades (o schema implementado vive em [Banco de Dados — Visão Geral](./implementacao/banco-de-dados/visao-geral.md)).
-- [Decisão: Monorepo vs. Monolito](./projeto-tecnico/decisao-monorepo-vs-monolito.md) — análise da
+- [Decisão: Monorepo vs. Monolito](./projeto-tecnico/historico-de-decisoes/decisao-monorepo-vs-monolito.md) — análise da
   decisão de arquitetura (perfis de carga I/O-bound vs. CPU-bound, isolamento de falhas).
 
 ---

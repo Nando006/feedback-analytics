@@ -1,12 +1,12 @@
 # Requisitos e Funcionalidades
 
-> Documento que descreve funcionalidades do MVP, regras de negócio, requisitos funcionais (RF), requisitos não funcionais (RNF), critérios de aceitação, rastreabilidade e detalhamento de prioridades/status.
+> Documento que descreve as funcionalidades do produto, regras de negócio, requisitos funcionais (RF), requisitos não funcionais (RNF), critérios de aceitação, rastreabilidade e detalhamento de prioridades/status.
 
 ---
 
 ## Sumário
 
-1. [Funcionalidades do MVP](#funcionalidades-do-mvp)
+1. [Funcionalidades do Produto](#funcionalidades-do-produto)
 2. [Regras de Negócio (RNE)](#regras-de-negócio-rne)
 3. [Requisitos Funcionais (RF)](#requisitos-funcionais-rf)
 4. [Requisitos Não Funcionais (RNF)](#requisitos-não-funcionais-rnf)
@@ -17,7 +17,7 @@
 
 ---
 
-## Funcionalidades do MVP
+## Funcionalidades do Produto
 
 ### Autenticação e Gestão de Acesso
 
@@ -147,7 +147,7 @@
 
 ## Tabela de Rastreabilidade
 
-| Funcionalidade do MVP | Requisitos Funcionais | Requisitos Não Funcionais | Regras de Negócio |
+| Funcionalidade | Requisitos Funcionais | Requisitos Não Funcionais | Regras de Negócio |
 |---|---|---|---|
 | Autenticação Completa (Login, Logout, Callback) | RF01 | RNF01 | RNE-014 |
 | Trial e Status de Assinatura | RF21 | RNF08 | RNE-013 |

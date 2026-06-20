@@ -87,5 +87,5 @@ Este documento mapeia quem são os stakeholders do Feedback Analytics, o que cad
 
 - [Visão Geral do Sistema](../visao-geral.md)
 - [Modelo de Negócio](./modelo-negocio.md)
-- [Funcionalidades do MVP](../projeto-tecnico/requisitos-e-funcionalidades.md)
+- [Requisitos e Funcionalidades](../projeto-tecnico/requisitos-e-funcionalidades.md)
 - [Casos de Uso](./casos-de-uso/visao-geral.md)

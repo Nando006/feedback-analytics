@@ -36,7 +36,7 @@ O cliente do Feedback Analytics é a **empresa** (o gestor), não o consumidor f
 | **Gestores de qualidade** | Métricas de satisfação por produto, serviço ou departamento, sem montar planilhas |
 | **Times sem equipe técnica** | Solução pronta, que funciona sem nenhum desenvolvimento interno |
 
-**Foco no MVP:** pequenas e médias empresas (PMEs) que não têm orçamento para ferramentas de pesquisa complexas ou consultorias de dados, mas precisam de informação estruturada para tomar decisões melhores.
+**Foco principal:** pequenas e médias empresas (PMEs) que não têm orçamento para ferramentas de pesquisa complexas ou consultorias de dados, mas precisam de informação estruturada para tomar decisões melhores.
 
 **Por que isso importa para o projeto:** conhecer o segmento guia decisões de UX. O formulário público precisa ser extremamente simples porque o cliente final não foi treinado para usá-lo. O dashboard precisa ser claro porque o gestor não é analista de dados.
 
@@ -208,5 +208,5 @@ CLIENTE DESCOBRE          →   Trial 4 meses    →   Converte (R$80/mês)
 ## Veja Também
 
 - [Visão Geral do Sistema](../visao-geral.md)
-- [Funcionalidades do MVP](../projeto-tecnico/requisitos-e-funcionalidades.md)
+- [Requisitos e Funcionalidades](../projeto-tecnico/requisitos-e-funcionalidades.md)
 - [Arquitetura](../projeto-tecnico/arquitetura.md)
