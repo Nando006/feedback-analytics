@@ -1,0 +1,138 @@
+site_name: Feedback Analytics — Documentação
+site_description: Documentação do Feedback Analytics (Concepção, Projeto Técnico e Implementação).
+site_url: https://tcc-feedback-analytics.github.io/feedback-analytics/
+site_author: TCC Feedback Analytics
+
+repo_name: TCC-Feedback-Analytics/feedback-analytics
+repo_url: https://github.com/TCC-Feedback-Analytics/feedback-analytics
+edit_uri: edit/main/docs/
+
+docs_dir: docs
+
+theme:
+  name: material
+  language: pt-BR
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - toc.follow
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.action.edit
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/weather-night
+        name: Mudar para o modo escuro
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/weather-sunny
+        name: Mudar para o modo claro
+  icon:
+    repo: fontawesome/brands/github
+
+plugins:
+  - search:
+      lang: pt
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+      slugify: !!python/object/apply:pymdownx.slugs.slugify
+        kwds:
+          case: lower
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+
+nav:
+  - Início: README.md
+  - Visão Geral: visao-geral.md
+  - Concepção:
+      - Personas: concepcao/personas.md
+      - Stakeholders: concepcao/stakeholder.md
+      - Modelo de Negócio: concepcao/modelo-negocio.md
+      - Decisão das Regras de Negócio: concepcao/decisao_regras_negocio.md
+      - Casos de Uso:
+          - Visão Geral: concepcao/casos-de-uso/visao-geral.md
+          - UC-01 — Cadastro de Conta: concepcao/casos-de-uso/uc-01-cadastro-conta.md
+          - UC-02 — Login: concepcao/casos-de-uso/uc-02-login.md
+          - UC-03 — Recuperação de Senha: concepcao/casos-de-uso/uc-03-recuperacao-senha.md
+          - UC-04 — Envio de Feedback (QR Code): concepcao/casos-de-uso/uc-04-envio-feedback-qrcode.md
+          - UC-05 — Geração de QR Code: concepcao/casos-de-uso/uc-05-geracao-qrcode.md
+          - UC-06 — Ativação de Tipos de Feedback: concepcao/casos-de-uso/uc-06-ativacao-tipos-feedback.md
+          - UC-07 — Configuração do Catálogo: concepcao/casos-de-uso/uc-07-configuracao-catalogo.md
+          - UC-08 — Configuração de Coleta (Contexto IA): concepcao/casos-de-uso/uc-08-configuracao-coleta-ia.md
+          - UC-09 — Dashboard: concepcao/casos-de-uso/uc-09-dashboard.md
+          - UC-10 — Listagem de Feedbacks: concepcao/casos-de-uso/uc-10-listagem-feedbacks.md
+          - UC-11 — Insights com IA: concepcao/casos-de-uso/uc-11-insights-ia.md
+          - UC-12 — Gestão de Perfil: concepcao/casos-de-uso/uc-12-gestao-perfil.md
+      - Figma (Design):
+          - Product: concepcao/figma/product.md
+          - Assets: concepcao/figma/assets.md
+          - Protótipo de Baixa Fidelidade: concepcao/figma/prototipo-de-baixa-fidelidade.md
+          - Protótipo de Média Fidelidade: concepcao/figma/prototipo-de-media-fidelidade.md
+          - Protótipo de Alta Fidelidade: concepcao/figma/prototipo-de-alta-fidelidade.md
+  - Projeto Técnico:
+      - Arquitetura: projeto-tecnico/arquitetura.md
+      - Requisitos e Funcionalidades: projeto-tecnico/requisitos-e-funcionalidades.md
+      - Modelagem de Dados (DER): projeto-tecnico/modelagem-de-dados.md
+      - Histórico de Decisões:
+          - Monorepo vs. Monolito: projeto-tecnico/historico-de-decisoes/decisao-monorepo-vs-monolito.md
+  - Implementação:
+      - Padrões de Projeto: implementacao/padroes-projeto.md
+      - Workflows (CI/CD): implementacao/workflows.md
+      - Guia de Instalação: implementacao/guia-instalacao.md
+      - Regras de Negócio: implementacao/regras-negocio.md
+      - Backend (API Gateway):
+          - Visão Geral: implementacao/backend/visao-geral.md
+          - Arquitetura e Estrutura: implementacao/backend/arquitetura-estrutura.md
+          - Endpoints: implementacao/backend/endpoints.md
+      - Frontend:
+          - Visão Geral: implementacao/frontend/visao-geral.md
+          - Arquitetura e Estrutura: implementacao/frontend/arquitetura-estrutura.md
+          - Fluxo de Autenticação: implementacao/frontend/fluxo-autenticacao.md
+          - System Design: implementacao/frontend/system-design.md
+          - Interface e Performance: implementacao/frontend/interface-performance.md
+      - Banco de Dados:
+          - Visão Geral (Schema): implementacao/banco-de-dados/visao-geral.md
+      - Serviços:
+          - IA Analyze — Visão Geral: implementacao/servicos/ia-analyze/visao-geral.md
+          - IA Analyze — Arquitetura e Estrutura: implementacao/servicos/ia-analyze/arquitetura-estrutura.md
+          - IA Analyze — Endpoints: implementacao/servicos/ia-analyze/endpoints.md
+      - Funcionalidades:
+          - Painel de Insights com IA: implementacao/funcionalidades/painel-insights-ia.md
+          - Filtro Semântico de IA: implementacao/funcionalidades/filtro-semantico-ia.md
+          - Anti-Spam por Fingerprint: implementacao/funcionalidades/anti-spam-fingerprint.md
+          - Bloqueio de Dispositivo: implementacao/funcionalidades/bloqueio-dispositivo.md
+          - Coleta por QR Code: implementacao/funcionalidades/coleta-qrcode.md
+          - QR Code por Escopo: implementacao/funcionalidades/qrcode-escopo-dinamico.md
+          - Onboarding de Catálogo: implementacao/funcionalidades/onboarding-catalogo.md
+          - Higienização JWT / LGPD: implementacao/funcionalidades/higienizacao-jwt-lgpd.md
+      - Testes:
+          - Visão Geral: implementacao/testes/visao-geral.md
+          - Plano de Teste Estratégico: implementacao/testes/plano-estrategico.md
+          - Frontend (web): implementacao/testes/web.md
+          - API Gateway: implementacao/testes/api-gateway.md
+          - IA Analyze: implementacao/testes/ia-analyze.md
+          - Vitest & Playwright: implementacao/testes/vitest_playwright.md
+          - Lacunas E2E: implementacao/testes/lucanas_e2e.md
+  - Changelog: changelog_documentacao.md
