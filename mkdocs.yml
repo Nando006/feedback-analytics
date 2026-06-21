@@ -22,6 +22,8 @@ validation:
 theme:
   name: material
   language: pt-BR
+  logo: assets/logo.svg
+  favicon: assets/favicon.svg
   font:
     text: Inter
     code: Roboto Mono

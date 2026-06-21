@@ -1,16 +1,49 @@
+---
+hide:
+  - navigation
+  - toc
+---
+
+<div class="hero" markdown>
+
 # Feedback Analytics
+
+A voz dos seus clientes virando decisão — automaticamente. Colete por QR Code, deixe a IA analisar e receba insights prontos no painel, sem precisar de equipe de dados.
+
+[Começar :material-arrow-right-thin:](visao-geral.md){ .md-button .md-button--primary }
+[Ver no GitHub :material-github:](https://github.com/TCC-Feedback-Analytics/feedback-analytics){ .md-button }
+
+</div>
 
 O **Feedback Analytics** transforma a opinião dos seus clientes em decisões estratégicas — de forma automatizada e sem exigir equipe de dados. Muitas empresas, especialmente as de pequeno e médio porte, não têm um canal estruturado para ouvir o cliente: os feedbacks ficam espalhados entre Google, Instagram e iFood, e o gestor acaba decidindo por intuição, não por evidência. Nós resolvemos isso reunindo coleta, análise e decisão em um único fluxo: o cliente avalia escaneando um QR Code, uma inteligência artificial lê tudo automaticamente e o gestor recebe um painel com recomendações prontas. Você para de adivinhar o que está dando errado e passa a saber exatamente onde agir.
 
 ## Como funciona
 
-1. **Colete** — A empresa gera QR Codes exclusivos por produto, serviço ou departamento; o cliente escaneia, avalia em menos de um minuto e vai embora, sem criar conta nem instalar app.
-2. **Analise** — Um pipeline de IA interpreta cada feedback automaticamente, classificando sentimento e extraindo temas, palavras-chave e aspectos.
-3. **Decida** — O dashboard apresenta um painel de insights por escopo, com saldo de sentimento, temas recorrentes e recomendações acionáveis para você transformar a voz do cliente em ação.
+<div class="grid cards" markdown>
+
+- :material-qrcode-scan: __1. Colete__
+
+    ---
+
+    A empresa gera um QR Code geral ou QR Codes exclusivos por produto, serviço ou departamento; o cliente escaneia, avalia em menos de um minuto e vai embora, sem criar conta nem instalar app.
+
+- :material-brain: __2. Analise__
+
+    ---
+
+    Um pipeline de IA interpreta cada feedback automaticamente, classificando sentimento e extraindo temas, palavras-chave e aspectos.
+
+- :material-chart-box: __3. Decida__
+
+    ---
+
+    O dashboard apresenta um painel de insights por escopo, com saldo de sentimento, temas recorrentes e recomendações acionáveis para transformar a voz do cliente em ação.
+
+</div>
 
 ## Para quem é
 
-O Feedback Analytics é feito para **pequenas e médias empresas** — restaurantes, lojas físicas e times de qualidade — que precisam de informação estruturada para decidir melhor, mas não têm orçamento para ferramentas complexas nem uma equipe de dados. É a solução para o gestor sobrecarregado que não tem tempo de ler 200 feedbacks um a um e quer respostas claras, sem precisar interpretar dados brutos.
+O Feedback Analytics é feito para o **profissional autônomo**, **pequenas e médias empresas** — restaurantes, lojas físicas e times de qualidade — que precisam de informação estruturada para decidir melhor, mas não têm orçamento para ferramentas complexas nem uma equipe de dados. É a solução para o gestor sobrecarregado que não tem tempo de ler 200 feedbacks um a um e quer respostas claras, sem precisar interpretar dados brutos.
 
 ## Explore a documentação
 

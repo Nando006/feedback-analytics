@@ -1,7 +1,11 @@
 # Visão Geral — Feedback Analytics
-O projeto Feedback Analytics surgiu da identificação de um problema recorrente enfrentado por muitas empresas:
+O projeto Feedback Analytics surgiu da identificação de três problemas recorrentes enfrentado por muitas empresas:
 
-"A ausência de um canal eficiente e estruturado para a gestão de feedbacks dos clientes."
+- "A ausência de um canal eficiente, sem fricção e estruturado para a captura de opiniões de clientes."
+
+- "O gargalo na hora de análisar os dados coletados"
+
+- "As barreiras que faz o cliente desistir ou não dar um feedback verdadeiro"
 
 Essa lacuna compromete a capacidade de evoluir a empresa de forma contínua e estratégica.
 
@@ -26,7 +30,7 @@ O resultado: gestores decidem com base em intuição, não em evidência.
 O **Feedback Analytics** transforma coleta e análise de feedbacks em um processo estruturado e inteligente em três etapas:
 
 1. **Colete** — O sistema oferece canal estruturado para coletar feedbacks:
-    - **Canal QRCode**: A empresa gera QR Codes exclusivos por produto, serviço ou departamento, o cliente escaneia e avalia sem precisar criar conta.
+    - **Canal QRCode**: A empresa gera um QR Code geral ou QR Codes exclusivos por produto, serviço ou departamento, o cliente escaneia e avalia sem precisar criar conta.
 2. **Analise** — Um pipeline de IA com provedor LLM externo configurável interpreta cada feedback automaticamente, classifica sentimento, extrai temas e palavras-chave e gera insights acionáveis para melhorar produtos, serviços e experiência do cliente.
 3. **Decida** — O dashboard apresenta um painel de insights por escopo, mostrando sentimento dos clientes, temas recorrentes, recomendações e comparação entre empresa, produtos, serviços ou departamentos. Assim, o gestor transforma feedbacks em ações concretas.
 
