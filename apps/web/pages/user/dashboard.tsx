@@ -157,6 +157,7 @@ export default function Dashboard() {
             averageRating={averageRating}
             positive={positive}
             negative={negative}
+            starMeanCI={stats?.starMeanCI ?? null}
           />
 
           <div className="grid gap-6 lg:grid-cols-2">

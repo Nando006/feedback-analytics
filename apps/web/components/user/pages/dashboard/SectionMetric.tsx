@@ -1,5 +1,7 @@
 import MetricCard from "components/user/shared/cards/MetricCard";
+import MetricHelp from "components/user/shared/MetricHelp";
 import FormatToCurrencyReal from "src/lib/utils/FormatToReal";
+import { formatInterval } from "src/lib/utils/statistics";
 import {
   FaComments,
   FaFrown,
@@ -8,7 +10,9 @@ import {
 } from 'react-icons/fa';
 import type { SectionMetricProps } from './ui.types';
 
-export default function SectionMetric({ totalFeedbacks, averageRating, positive, negative }: SectionMetricProps) {
+export default function SectionMetric({ totalFeedbacks, averageRating, positive, negative, starMeanCI }: SectionMetricProps) {
+  // Faixa provável (IC t da média de estrelas): só faz sentido com feedbacks no escopo.
+  const showRatingRange = starMeanCI != null && totalFeedbacks > 0;
 
   return (
     <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -18,7 +22,17 @@ export default function SectionMetric({ totalFeedbacks, averageRating, positive,
           minimumFractionDigits: 1,
           maximumFractionDigits: 1,
         })}
-        helper="Avaliação média em estrelas"
+        helper={
+          <>
+            Avaliação média em estrelas
+            {showRatingRange && (
+              <span className="mt-1 flex items-center gap-1">
+                faixa provável {formatInterval(starMeanCI, 1)}
+                <MetricHelp term="confidenceInterval" />
+              </span>
+            )}
+          </>
+        }
         icon={FaStar}
       />
       <MetricCard
