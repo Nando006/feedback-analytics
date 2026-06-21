@@ -40,9 +40,29 @@ export async function loadPublicQrCodeEnterpriseData(
       catalogItemId,
     });
 
+    // O envio exige um collection_point QR ativo (resolvido pelo servidor). Sem
+    // ele, o submit retornaria 404. Não renderiza um formulário que nunca poderia
+    // ser enviado — mostra erro amigável (igual ao QR inválido), em vez de deixar
+    // o usuário preencher tudo para falhar no envio.
+    const resolvedCollectionPointId = enterprise.collection_point_id ?? null;
+
+    if (!resolvedCollectionPointId) {
+      return {
+        enterpriseId: null,
+        collectionPointId: null,
+        catalogItemId: null,
+        enterpriseName: '',
+        itemName: null,
+        itemKind: null,
+        questions: [],
+        error:
+          'QR Code indisponível: não há ponto de coleta ativo para este código. Verifique o QR Code ou contate a empresa.',
+      };
+    }
+
     return {
       enterpriseId,
-      collectionPointId: enterprise.collection_point_id ?? collectionPointId,
+      collectionPointId: resolvedCollectionPointId,
       catalogItemId: enterprise.catalog_item_id ?? catalogItemId,
       enterpriseName: enterprise.name || 'Empresa',
       itemName: enterprise.item_name ?? null,

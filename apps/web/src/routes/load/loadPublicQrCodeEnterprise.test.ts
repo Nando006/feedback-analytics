@@ -71,6 +71,34 @@ describe('[Integração] loadPublicQrCodeEnterpriseData', () => {
     });
   });
 
+  it('retorna erro amigável quando não há ponto de coleta ativo para o QR', async () => {
+    mockServiceGetEnterprisePublic.mockResolvedValue({
+      id: 'enterprise-1',
+      name: 'Empresa X',
+      collection_point_id: null,
+      catalog_item_id: null,
+      item_name: null,
+      item_kind: null,
+      questions: [],
+    });
+
+    const result = await loadPublicQrCodeEnterpriseData(
+      'http://localhost/feedback/qrcode?enterprise=enterprise-1',
+    );
+
+    expect(result).toEqual({
+      enterpriseId: null,
+      collectionPointId: null,
+      catalogItemId: null,
+      enterpriseName: '',
+      itemName: null,
+      itemKind: null,
+      questions: [],
+      error:
+        'QR Code indisponível: não há ponto de coleta ativo para este código. Verifique o QR Code ou contate a empresa.',
+    });
+  });
+
   it('retorna fallback amigável quando validação pública falha', async () => {
     mockServiceGetEnterprisePublic.mockRejectedValue(new Error('not found'));
 
