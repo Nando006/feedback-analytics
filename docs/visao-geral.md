@@ -39,7 +39,7 @@ O **Feedback Analytics** transforma coleta e análise de feedbacks em um process
 | Perfil | Dor que resolve |
 |---|---|
 | Restaurantes e lojas físicas | Coleta presencial sem atrito para o cliente |
-| Gestores de qualidade | Métricas de satisfação por produto ou setor |
+| Profissionais autônomos e pequeno comércio | Satisfação por produto/serviço, sem montar planilhas |
 | Times sem equipe técnica | Solução pronta, sem necessidade de desenvolvimento próprio |
 
 ## Estrutura do Sistema

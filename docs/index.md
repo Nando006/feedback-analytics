@@ -43,7 +43,7 @@ O **Feedback Analytics** transforma a opinião dos seus clientes em decisões es
 
 ## Para quem é
 
-O Feedback Analytics é feito para o **profissional autônomo**, **pequenas e médias empresas** — restaurantes, lojas físicas e times de qualidade — que precisam de informação estruturada para decidir melhor, mas não têm orçamento para ferramentas complexas nem uma equipe de dados. É a solução para o gestor sobrecarregado que não tem tempo de ler 200 feedbacks um a um e quer respostas claras, sem precisar interpretar dados brutos.
+O Feedback Analytics é feito para quem atende o cliente **presencialmente** e quer ouvi-lo ali, no ponto de atendimento: **pequenas e médias empresas**, **profissionais autônomos** e o **pequeno comerciante** — restaurantes, salões, lojas de bairro e prestadores de serviço. A coleta acontece por QR Code no balcão, na mesa ou na recepção, logo após o atendimento, enquanto a experiência ainda está fresca. É para quem precisa de informação estruturada para decidir melhor, mas não tem orçamento para ferramentas complexas, nem equipe de dados, nem tempo de ler feedback por feedback.
 
 ## Explore a documentação
 
