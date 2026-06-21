@@ -12,6 +12,7 @@
 4. [Workflows](#workflows)
    - [Branch Policy](#branch-policy-enforcement-branch-policyyml)
    - [CI Pipeline](#ci-pipeline-ciyml)
+   - [E2E Gate (PR → main)](#e2e-gate-pr-main-e2e-mainyml)
    - [Deploy Web](#deploy-web-deploy-webyml)
    - [Deploy API Gateway](#deploy-api-gateway-deploy-apiyml)
    - [Deploy IA Analyze](#deploy-ia-analyze-deploy-ia-analyzeyml)
@@ -24,12 +25,13 @@
 
 O projeto utiliza GitHub Actions com **deploy totalmente manual e confirmado** na Vercel. Não há deploy automático em nenhuma branch — todos os workflows de deploy exigem disparo manual via `workflow_dispatch` e confirmação explícita digitando `ok`.
 
-O CI automático (lint, testes, build) roda em push e Pull Requests nas branches protegidas, bloqueando merges quando falha.
+O CI automático (lint, typecheck, testes de unidade/integração e build) roda em push e Pull Requests nas branches protegidas, bloqueando merges quando falha. O e2e roda como **gate da promoção para produção** (PR → `main`) contra o ambiente de homologação já deployado.
 
 | Workflow | Arquivo | Trigger | Propósito |
 |---|---|---|---|
 | Branch Policy Enforcement | `branch-policy.yml` | PR → `main` | Bloqueia merges fora do fluxo `homolog → main` |
-| CI Pipeline | `ci.yml` | Push / PR em `homolog` e `main` | Portão de qualidade: lint + testes + build |
+| CI Pipeline | `ci.yml` | Push / PR em `homolog` e `main` | Portão de qualidade: lint + typecheck + testes (unidade/integração) + build |
+| E2E Gate | `e2e-main.yml` | PR → `main` | Gate de promoção: e2e (Playwright) contra o homolog deployado |
 | Deploy Web | `deploy-web.yml` | `workflow_dispatch` manual | Deploy do frontend (`apps/web`) na Vercel |
 | Deploy API Gateway | `deploy-api.yml` | `workflow_dispatch` manual | Deploy do backend (`backends/api-gateway`) na Vercel |
 | Deploy IA Analyze | `deploy-ia-analyze.yml` | `workflow_dispatch` manual | Deploy do serviço de IA (`services/ia-analyze`) na Vercel |
@@ -63,6 +65,14 @@ Evitar cliques acidentais no botão "Run workflow" da interface do GitHub. Sem a
 
 O GitHub permite configurar branch protection rules que exigem status checks para merge. O `branch-policy.yml` é exatamente isso: ele cria um status check que falha se a branch de origem não for `homolog`. Isso automatiza uma regra que, se deixada para o processo manual, seria quebrada eventualmente. Nenhum desenvolvedor consegue abrir um PR de `feature/x` direto para `main` sem que o GitHub bloqueie.
 
+### Pirâmide de testes e por que o e2e gateia a PR → `main`
+
+O CI executa a base e o meio da pirâmide — **testes de unidade e integração (Vitest)** dos três pacotes — em **toda** PR (`homolog` e `main`), em jobs paralelos. São testes herméticos (100% mockados, sem rede nem secrets), então são rápidos e determinísticos: o lugar certo para bloquear cedo.
+
+O topo da pirâmide — **e2e (Playwright)** — precisa de um ambiente real no ar e exercita o login por **cookie cross-domain**. Por isso ele não roda como teste hermético no CI; roda como **gate da PR → `main`** contra o ambiente de **homologação já deployado** (`feedback-analytics-web-homolog.vercel.app`). Faz sentido porque toda PR para `main` vem obrigatoriamente de `homolog` (garantido pela Branch Policy), e o homolog é um alias estável onde a derivação web→api e o cookie `SameSite=None; Secure` já funcionam.
+
+Por que **não** bloquear o deploy de `homolog` com e2e? Porque o frontend tem uma proteção anti-cross-branch (`apps/web/src/lib/utils/http.ts`) que faz uma URL de preview efêmera derivar uma API de hash inexistente e ignorar uma URL de API explícita de outra branch. Resultado: um preview efêmero não consegue autenticar contra a API homolog fixa. Testar contra o homolog já deployado contorna isso sem mexer no código do app. O e2e pós-deploy de `homolog` (no `deploy-web.yml`) continua existindo como verificação do próprio ambiente.
+
 ### Como esse fluxo se encaixa no projeto
 
 | Característica do projeto | Como o fluxo responde |
@@ -77,8 +87,9 @@ O GitHub permite configurar branch protection rules que exigem status checks par
 
 ### Vantagens
 
-- **CI nunca pode ser bypassado** — lint, testes e build são obrigatórios em qualquer PR para `homolog` ou `main`.
-- **Deploy consciente** — nada vai para produção sem uma ação intencional. Elimina surpresas em horários indesejados.
+- **CI nunca pode ser bypassado** — lint, typecheck, testes de unidade/integração e build são obrigatórios em qualquer PR para `homolog` ou `main`; o e2e é obrigatório na promoção para `main`.
+- **Pirâmide de testes real** — unidade/integração rodam em paralelo (matriz por pacote) em toda PR; o e2e gateia a promoção para produção contra o homolog.
+- **Deploy consciente** — nada vai para produção sem uma ação intencional. Reduz o risco de deploys em horários indesejados.
 - **Serviços independentes** — é possível deployar só o frontend sem tocar a API ou o serviço de IA, e vice-versa. Janela de risco menor a cada deploy.
 - **Concorrência controlada** — `cancel-in-progress: true` garante que dois deploys simultâneos do mesmo serviço na mesma branch não coexistam, evitando condição de corrida.
 - **Promoção de código forçada** — a Branch Policy torna tecnicamente impossível (não apenas proibido por convenção) que código vá direto de uma feature para produção.
@@ -87,8 +98,10 @@ O GitHub permite configurar branch protection rules que exigem status checks par
 ### Desvantagens
 
 - **Produção não é atualizada automaticamente após merge** — se o desenvolvedor esquece de disparar o deploy, a `main` fica com código mais novo que o ambiente de produção silenciosamente. Não há alerta para isso.
-- **CI sem paralelismo** — lint, testes e build rodam em sequência num único job. Num monorepo maior, isso aumentaria o tempo de feedback significativamente. O caminho seria separar em jobs paralelos por pacote.
-- **Todos os pacotes são instalados e buildados em todo CI** — mesmo que só o frontend tenha mudado, o CI instala e executa tudo. Não há filtro de paths no pipeline, o que é um desperdício de minutos de Actions em mudanças isoladas.
+- **Sem filtro de paths** — o job de qualidade instala e valida os quatro pacotes mesmo quando só um mudou. Não há filtro de paths no pipeline, o que gasta minutos de Actions em mudanças isoladas. (Os testes de unidade já rodam em matriz paralela por pacote.)
+- **Typecheck cobre só produção** — o passo de typecheck usa `tsconfig.ci.json` por pacote, que exclui os arquivos de teste (que têm erros de tipo pré-existentes). Regressões de tipo dentro dos testes não são pegas pelo gate.
+- **E2E depende do homolog estar atualizado** — o gate da PR → `main` testa o ambiente de homologação deployado; se o homolog não foi redeployado com o código a ser promovido, o e2e valida uma versão defasada. O processo do time (deploy manual de homolog para validar antes de abrir a PR) mitiga isso.
+- **E2E muta dados reais** — os specs usam `service_role` no Supabase compartilhado (seed/cleanup), então rodar o gate concorrentemente pode gerar flakiness.
 - **Deploy manual exige acesso ao GitHub Actions** — em times maiores, isso pode ser um gargalo se só parte do time tiver permissão para disparar workflows.
 - **Sem rollback automatizado** — não há workflow de rollback documentado. Em caso de deploy com problema, o processo é manual (re-deploy da versão anterior via interface da Vercel).
 
@@ -131,31 +144,58 @@ Se o PR vier de qualquer outra branch, o job falha e o merge é bloqueado pelo G
 
 ### CI Pipeline (`ci.yml`)
 
-**Trigger:** Push e Pull Requests nas branches `main` e `homolog`
+**Trigger:** Push e Pull Requests nas branches `main` e `homolog` — cobre, portanto, **as duas PRs** do fluxo (`feature → homolog` e `homolog → main`).
 
 **Runner:** `ubuntu-latest` | **Node.js:** `20.x`
 
-**Propósito:** Portão de qualidade obrigatório — nenhum merge é permitido se este pipeline falhar.
+**Propósito:** Portão de qualidade obrigatório — nenhum merge é permitido se este pipeline falhar. São **dois jobs independentes** que rodam em paralelo.
+
+#### Job `lint-typecheck-build`
 
 | # | Step | Comando |
 |---|---|---|
 | 1 | Checkout | `actions/checkout@v4` |
 | 2 | Setup Node.js 20 com cache npm | `actions/setup-node@v4` |
-| 3 | Instalar dependências do `shared` | `npm ci --prefix shared` |
-| 4 | Instalar dependências do `api-gateway` | `npm ci --prefix backends/api-gateway` |
-| 5 | Instalar dependências do `web` | `npm ci --prefix apps/web` |
-| 6 | Instalar dependências do `ia-analyze` | `npm ci --prefix services/ia-analyze` |
-| 7 | Linter | `npm run lint` |
-| 8 | Build completo | `npm run build` |
+| 3 | Instalar dependências dos 4 pacotes | `npm ci --prefix {shared, backends/api-gateway, apps/web, services/ia-analyze}` |
+| 4 | Linter (3 pacotes) | `npm run lint` |
+| 5 | Typecheck (3 pacotes, sem testes) | `tsc -p {apps/web, backends/api-gateway, services/ia-analyze}/tsconfig.ci.json --noEmit` |
+| 6 | Build web | `npm run build` |
 
-**Cache npm:** configurado com `cache-dependency-path` apontando para os `package-lock.json` dos 4 pacotes do monorepo, acelerando execuções subsequentes.
+O typecheck usa um `tsconfig.ci.json` por pacote que **exclui os arquivos de teste** — o código de produção dos três pacotes compila limpo via `tsc --noEmit`. Variáveis injetadas no build do web: `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY`.
 
-**Variáveis de ambiente injetadas no build (via Secrets):**
+#### Job `unit-tests` (matriz)
 
-| Secret | Variável injetada |
-|---|---|
-| `VITE_SUPABASE_URL` | `VITE_SUPABASE_URL` |
-| `VITE_SUPABASE_ANON_KEY` | `VITE_SUPABASE_ANON_KEY` |
+Roda os testes de unidade/integração (Vitest) dos três pacotes em paralelo, via `strategy.matrix` (`fail-fast: false`). São testes 100% mockados — **nenhum secret nem rede é necessário**.
+
+| Pacote | Check (status) | Comando |
+|---|---|---|
+| `web` | `unit-tests (web)` | `npm run test --prefix apps/web -- run` |
+| `api-gateway` | `unit-tests (api-gateway)` | `npm run test --prefix backends/api-gateway` |
+| `ia-analyze` | `unit-tests (ia-analyze)` | `npm run test --prefix services/ia-analyze` |
+
+> **Cuidado documentado:** o script `test` do `apps/web` é `vitest` **sem** `run` (modo *watch*, que travaria o CI). Por isso a matriz usa `-- run` para o web, forçando a execução única. `api-gateway` e `ia-analyze` já usam `vitest run`.
+
+**Cache npm:** `cache-dependency-path` aponta para os `package-lock.json` dos pacotes, acelerando execuções subsequentes.
+
+---
+
+### E2E Gate (PR → main) (`e2e-main.yml`)
+
+**Trigger:** `pull_request` com destino `main`.
+
+**Propósito:** Gate de promoção para produção — a PR `homolog → main` só passa se a suíte e2e (Playwright) rodar verde contra o ambiente de **homologação já deployado**.
+
+**Como funciona:**
+- Instala dependências (`shared` + `apps/web`) e o Chromium do Playwright.
+- Roda `npm run test:e2e` com `PLAYWRIGHT_BASE_URL=https://feedback-analytics-web-homolog.vercel.app`.
+- Publica o `playwright-report` como artefato (`playwright-report-main-gate`).
+- `concurrency` por número da PR com `cancel-in-progress: true`.
+
+Como a PR para `main` sempre vem de `homolog` (Branch Policy) e o homolog é um alias estável, o e2e exercita o login por cookie cross-domain exatamente como em produção, sem preview efêmero. Ver a subseção **Pirâmide de testes e por que o e2e gateia a PR → `main`** (em [Por que foi construído assim](#por-que-foi-construído-assim)).
+
+**Secrets utilizados:** `E2E_TEST_EMAIL`, `E2E_TEST_PASSWORD`, `E2E_TEST_ENTERPRISE_ID`, `VITE_SUPABASE_URL` (mapeado para `SUPABASE_URL`), `SUPABASE_SERVICE_ROLE_KEY`.
+
+> **Pré-requisito de branch protection:** para o gate realmente bloquear, marque `e2e-main` como *required status check* na ruleset de `main` — junto de `lint-typecheck-build` e dos três `unit-tests (...)`. Os checks de CI devem ser *required* também na ruleset de `homolog`.
 
 ---
 
@@ -182,9 +222,9 @@ Se o PR vier de qualquer outra branch, o job falha e o merge é bloqueado pelo G
 | `homolog` | `vercel deploy --yes --token ...` | Deploy de preview com alias fixo `feedback-analytics-web-homolog.vercel.app` |
 | `main` | `vercel deploy --yes --prod --token ...` | Deploy em produção |
 
-Em `homolog`, após fixar o alias estável o workflow instala o Playwright (`chromium`), roda os testes E2E (`npm run test:e2e`) contra esse alias e publica o `playwright-report` como artefato.
+Em `homolog`, após fixar o alias estável o workflow instala o Playwright (`chromium`), roda os testes E2E (`npm run test:e2e`) contra esse alias e publica o `playwright-report` como artefato. Essa é a verificação **pós-deploy do próprio ambiente de homologação** — distinta do gate de e2e da PR → `main` (`e2e-main.yml`), que roda **antes** de promover para produção.
 
-**Secrets utilizados:** `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID_WEB`
+**Secrets utilizados:** `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID_WEB` (deploy) · `E2E_TEST_*`, `VITE_SUPABASE_URL`→`SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` (e2e pós-deploy homolog)
 
 ---
 
@@ -242,8 +282,12 @@ Todos os secrets são configurados no repositório GitHub em **Settings → Secr
 
 | Secret | Usado em | Descrição |
 |---|---|---|
-| `VITE_SUPABASE_URL` | CI Pipeline | URL do projeto Supabase para os testes |
-| `VITE_SUPABASE_ANON_KEY` | CI Pipeline | Chave anon do Supabase para os testes |
+| `VITE_SUPABASE_URL` | CI Pipeline · E2E (como `SUPABASE_URL`) | URL do projeto Supabase (build do web e helpers e2e) |
+| `VITE_SUPABASE_ANON_KEY` | CI Pipeline | Chave anon do Supabase para o build do web |
+| `SUPABASE_SERVICE_ROLE_KEY` | E2E (homolog pós-deploy e `e2e-main`) | Chave `service_role` para seed/cleanup dos testes e2e |
+| `E2E_TEST_EMAIL` | E2E | E-mail da conta de teste usada no login dos specs |
+| `E2E_TEST_PASSWORD` | E2E | Senha da conta de teste |
+| `E2E_TEST_ENTERPRISE_ID` | E2E | ID da empresa de teste usada nos specs |
 | `VERCEL_TOKEN` | Todos os deploys | Token de autenticação da Vercel CLI |
 | `VERCEL_ORG_ID` | Todos os deploys | ID da organização na Vercel |
 | `VERCEL_PROJECT_ID_WEB` | Deploy Web | ID do projeto `apps/web` na Vercel |
@@ -257,10 +301,10 @@ Todos os secrets são configurados no repositório GitHub em **Settings → Secr
 | Etapa | Branch | O que acontece |
 |---|---|---|
 | 1 | `feature/*` | Desenvolvimento local |
-| 2 | PR → `homolog` | CI roda automaticamente. Merge bloqueado se falhar. |
+| 2 | PR → `homolog` | CI roda automaticamente: lint + typecheck + testes (unidade/integração) + build. Merge bloqueado se falhar. |
 | 3 | `homolog` (pós-merge) | CI roda novamente no push |
-| 4 | `homolog` (validação) | Deploy manual via `workflow_dispatch` com confirmação `ok` → gera URLs de preview na Vercel para cada serviço |
-| 5 | PR → `main` | Branch Policy bloqueia se não vier de `homolog`. CI roda novamente. |
+| 4 | `homolog` (validação) | Deploy manual via `workflow_dispatch` com confirmação `ok` → gera URLs de preview na Vercel; e2e pós-deploy valida o ambiente |
+| 5 | PR → `main` | Branch Policy bloqueia se não vier de `homolog`. CI roda novamente **e** o `e2e-main` roda a suíte e2e contra o homolog — merge bloqueado se falhar. |
 | 6 | `main` (pós-merge) | CI roda no push |
 | 7 | `main` (produção) | Deploy manual via `workflow_dispatch` com confirmação `ok` → deploy `--prod` na Vercel para cada serviço alterado |
 

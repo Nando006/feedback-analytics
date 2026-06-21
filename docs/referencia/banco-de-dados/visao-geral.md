@@ -26,7 +26,7 @@ O banco de dados é a camada de persistência central da plataforma. A lógica d
 
 **Princípios arquiteturais:**
 
-- **Multi-tenancy por RLS:** cada linha de dados está vinculada a um `enterprise_id`; o PostgreSQL aplica Row Level Security automaticamente em todas as queries, tornando impossível o vazamento entre empresas.
+- **Multi-tenancy por RLS:** cada linha de dados está vinculada a um `enterprise_id`; o PostgreSQL aplica Row Level Security automaticamente em todas as queries, prevenindo o vazamento entre empresas mesmo em caso de falha na camada de aplicação.
 - **Fonte única de verdade para segurança:** as políticas RLS são a última barreira de defesa — mesmo se o API Gateway for comprometido, o banco recusa acessos indevidos.
 - **Integridade por cascata:** deleções propagam-se via `ON DELETE CASCADE` para manter consistência sem operações manuais.
 - **Imutabilidade de mídias:** arquivos de Storage são protegidos contra exclusão por trigger, garantindo rastreabilidade histórica.

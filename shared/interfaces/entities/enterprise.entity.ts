@@ -144,6 +144,8 @@ export type UpdateCollectingDataPayload = Partial<
  * Usado em: components/user/pages/profile/info.tsx e pages/user/profile.tsx.
  */
 export interface EnterpriseAndCollectingData {
-  enterprise?: Enterprise;
+  // enterprise vem enriquecido com full_name/email/phone (EnterpriseContext),
+  // mesclados em runtime por loadUserContext — não são colunas da tabela enterprise.
+  enterprise?: EnterpriseContext;
   collecting?: CollectingDataEnterprise | null;
 }

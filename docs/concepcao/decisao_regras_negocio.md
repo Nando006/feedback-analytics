@@ -185,7 +185,7 @@ O detalhamento técnico de como cada regra é implementada está em [regras-nego
 
 **Decisão:** uma palavra-chave sugerida pela IA só é aceita se ela ou parte dela estiver de fato presente no texto que o cliente escreveu.
 
-**Por quê:** a IA pode "inventar" termos que parecem relevantes mas que o cliente nunca usou. Exigir que a keyword esteja ancorada na mensagem original elimina essas alucinações e garante que o resultado representa fielmente o que foi dito.
+**Por quê:** a IA pode "inventar" termos que parecem relevantes mas que o cliente nunca usou. Exigir que a keyword esteja ancorada na mensagem original reduz essas alucinações e ajuda a manter o resultado fiel ao que foi dito.
 
 ---
 

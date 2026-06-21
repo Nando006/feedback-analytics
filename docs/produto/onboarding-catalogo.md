@@ -64,7 +64,7 @@ Tudo isso acontece **de forma invisível**, sem nenhuma intervenção manual do 
 | **Experiência de primeiro uso** | Dashboard nunca inicia vazio — o gestor encontra algo funcional imediatamente |
 | **Redução de atrito no onboarding** | Não é necessário ler documentação ou passar por um wizard de configuração |
 | **Coleta imediata** | A empresa pode compartilhar o QR Code e coletar feedbacks no mesmo dia do cadastro |
-| **Perguntas universais** | Atendimento, Qualidade e Custo-Benefício são relevantes para praticamente qualquer negócio |
+| **Perguntas abrangentes** | Atendimento, Qualidade e Custo-Benefício costumam ser relevantes para a maioria dos negócios |
 | **Customização posterior** | O gestor pode editar, substituir ou complementar as perguntas a qualquer momento |
 
 ---

@@ -136,7 +136,7 @@
 | **RNF05** | Performance de IA | O processamento assíncrono do motor de IA deve salvar resultados em até 10s após disparo pelo gestor. |
 | **RNF06** | Usabilidade (UX) | Interface *mobile-first* responsiva, focando em simplicidade extrema no formulário de coleta (público). |
 | **RNF07** | Escalabilidade | Arquitetura Cloud/Serverless (BFF Node.js + Supabase) com provisionamento automático sob demanda. |
-| **RNF08** | Confiabilidade | Garantia de integridade referencial no banco de dados (chaves estrangeiras) refletindo precisão absoluta no dashboard. |
+| **RNF08** | Confiabilidade | Garantia de integridade referencial no banco de dados (chaves estrangeiras), refletindo no dashboard o estado consistente dos dados. |
 | **RNF09** | Manutenibilidade | Monorepo (npm Workspaces), separação estrita de serviços com deploys independentes, e tipagem global forte com TypeScript. |
 | **RNF10** | Acurácia de IA | A Inteligência Artificial deve atingir >= 80% de precisão semântica nos testes de sentimento e "sanitização" contra alucinações. |
 | **RNF11** | Monitoramento da API | O sistema deve expor um *Endpoint* de *Health Check* ultraleve para monitoramento de disponibilidade da infraestrutura. |

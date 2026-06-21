@@ -41,4 +41,4 @@ Ao invés de processar tudo no mesmo lugar e sobrecarregar o API Gateway, nossa 
 - **Isolamento de falhas:** Se um serviço ou integração externa falhar, o sistema principal continua operando normalmente.
 - **Responsividade:** Permite que o Gateway continue rápido e responsivo para as requisições do Frontend, mesmo lidando com tarefas demoradas.
 
-Um exemplo prático dessa aplicação no nosso sistema é o serviço Serverless `ia-analyze`, que lida com a inteligência artificial. Ele isola as chamadas à API do provedor LLM externo, garantindo que o Gateway não sofra gargalos durante análises massivas de texto.
+Um exemplo prático dessa aplicação no nosso sistema é o serviço Serverless `ia-analyze`, que lida com a inteligência artificial. Ele isola as chamadas à API do provedor LLM externo, reduzindo o risco de gargalos no Gateway durante análises massivas de texto.

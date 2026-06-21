@@ -10,7 +10,7 @@
 - **Top categorias e keywords** — os temas e termos mais relevantes extraídos dos textos
 - **Assuntos que mais impactam** — aspectos (ABSA) ordenados pelo peso na percepção do cliente
 
-Em torno do relatório, o painel ainda oferece a aba de **Estatísticas** (métricas comprovadas de mercado) e a aba de **Perguntas** (avaliação determinística pergunta a pergunta), detalhadas abaixo.
+Em torno do relatório, o painel ainda oferece a aba de **Estatísticas** (métricas estatísticas consagradas) e a aba de **Perguntas** (avaliação determinística pergunta a pergunta), detalhadas abaixo.
 
 ---
 
@@ -86,7 +86,7 @@ Cada escopo tem seu próprio relatório independente.
 | **Escala** | Processa dezenas ou centenas de feedbacks em segundos |
 | **Contexto de negócio** | O relatório é personalizado com os dados da empresa (objetivo, segmento, produtos) |
 | **Segmentação** | Relatórios separados por escopo permitem comparar áreas da empresa |
-| **Decisão gerencial** | Recomendações geradas diretamente aplicáveis sem interpretação adicional |
+| **Decisão gerencial** | Recomendações que servem de ponto de partida para a ação do gestor |
 | **Assincronismo** | O processamento não bloqueia a experiência do cliente durante a coleta |
 
 ---
@@ -154,7 +154,7 @@ Além do resumo situacional e das recomendações geradas pela IA, o relatório 
 
 ---
 
-## Aba de Estatísticas — métricas comprovadas de mercado
+## Aba de Estatísticas — métricas estatísticas consagradas
 
 A aba **Estatísticas** deixou de ser uma contagem simples: ela é alimentada pelo módulo `backends/api-gateway/src/libs/statistics/index.ts` — um conjunto de **funções puras** com métodos de referência de mercado. A regra de ouro: **a matemática vive no backend; o frontend apenas apresenta**. As estatísticas combinam duas lentes complementares.
 

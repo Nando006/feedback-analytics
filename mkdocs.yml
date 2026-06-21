@@ -126,6 +126,7 @@ nav:
           - Protótipo de alta fidelidade: concepcao/figma/prototipo-de-alta-fidelidade.md
   - Arquitetura:
       - Visão de arquitetura: arquitetura/visao-geral.md
+      - Modelo conceitual (MER): arquitetura/modelo-conceitual-mer.md
       - Modelagem de dados (DER): arquitetura/modelagem-de-dados.md
       - Histórico de decisões:
           - Monorepo vs. Monolito: arquitetura/historico-de-decisoes/decisao-monorepo-vs-monolito.md
