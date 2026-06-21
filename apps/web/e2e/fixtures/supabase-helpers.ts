@@ -56,3 +56,36 @@ export async function getEnterpriseIdByAuthUser(email: string): Promise<string |
   if (error || !data) return null;
   return data.id as string;
 }
+
+/**
+ * Resolve um ponto de coleta QR ATIVO da empresa para que o e2e use uma URL
+ * realista (`?enterprise=...&collection_point=...`). Prioriza o escopo empresa
+ * (`catalog_item_id IS NULL`) — o mesmo ponto que o submit exige. Retorna null
+ * quando a empresa não tem nenhum ponto QR ativo (config inconsistente no banco).
+ */
+export async function getActiveQrCollectionPoint(
+  enterpriseId: string,
+): Promise<{ id: string; catalogItemId: string | null } | null> {
+  const supabase = getAdminClient();
+  const { data, error } = await supabase
+    .from('collection_points')
+    .select('id, catalog_item_id')
+    .eq('enterprise_id', enterpriseId)
+    .eq('type', 'QR_CODE')
+    .eq('status', 'ACTIVE')
+    .order('catalog_item_id', { ascending: true, nullsFirst: true })
+    .limit(1)
+    .maybeSingle();
+
+  if (error) {
+    console.warn('[supabase-helpers] getActiveQrCollectionPoint error:', error.message);
+    return null;
+  }
+
+  if (!data) return null;
+
+  return {
+    id: data.id as string,
+    catalogItemId: (data.catalog_item_id as string | null) ?? null,
+  };
+}
