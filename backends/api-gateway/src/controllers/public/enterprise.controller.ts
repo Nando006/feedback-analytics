@@ -66,6 +66,23 @@ export async function getPublicEnterpriseController(req: Request, res: Response)
             ? contextItem.kind
             : null;
       }
+    } else {
+      // Escopo empresa (sem collection_point/item na URL): resolve o ponto de
+      // coleta QR "geral" (catalog_item_id IS NULL), que é EXATAMENTE o que o
+      // submit exige. Sem isso o endpoint devolvia collection_point_id: null e o
+      // formulário era renderizado sem destino válido — e o envio falhava 404.
+      const { data: companyCp } = await supabase
+        .from('collection_points')
+        .select('id')
+        .eq('enterprise_id', enterprise.id)
+        .eq('type', 'QR_CODE')
+        .eq('status', 'ACTIVE')
+        .is('catalog_item_id', null)
+        .maybeSingle();
+
+      if (companyCp) {
+        contextCollectionPointId = companyCp.id ?? null;
+      }
     }
 
     const currentScope: 'COMPANY' | 'PRODUCT' | 'SERVICE' | 'DEPARTMENT' =
