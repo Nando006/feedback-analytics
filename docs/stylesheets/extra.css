@@ -44,3 +44,41 @@
 .md-typeset details {
   border-radius: 8px;
 }
+
+/* ---- Home: hero ---- */
+.md-typeset .hero {
+  text-align: center;
+  padding: 2.5rem 0 1rem;
+}
+
+.md-typeset .hero h1 {
+  font-size: 2.6rem;
+  line-height: 1.15;
+  margin: 0 0 0.6rem;
+}
+
+.md-typeset .hero > p {
+  font-size: 1.15rem;
+  line-height: 1.6;
+  color: var(--md-default-fg-color--light);
+  max-width: 42rem;
+  margin: 0 auto 1.4rem;
+}
+
+.md-typeset .hero .md-button {
+  margin: 0.3rem 0.35rem;
+}
+
+/* Home (página com hero): esconde as barras laterais para um visual de landing,
+   e centraliza o conteúdo no desktop. Garante o resultado mesmo se o `hide` do
+   front matter não for aplicado. */
+body:has(.hero) .md-sidebar {
+  display: none;
+}
+
+@media screen and (min-width: 76.25em) {
+  body:has(.hero) .md-content {
+    max-width: 56rem;
+    margin-inline: auto;
+  }
+}

@@ -33,7 +33,7 @@ O cliente do Feedback Analytics é a **empresa** (o gestor), não o consumidor f
 | Perfil | Dor que o produto resolve |
 |---|---|
 | **Restaurantes e lojas físicas** | Coleta presencial sem atrito — o cliente avalia na hora, sem baixar app ou criar conta |
-| **Gestores de qualidade** | Métricas de satisfação por produto, serviço ou departamento, sem montar planilhas |
+| **Profissionais autônomos e pequeno comércio** | Satisfação por produto/serviço, sem montar planilhas |
 | **Times sem equipe técnica** | Solução pronta, que funciona sem nenhum desenvolvimento interno |
 
 **Foco principal:** pequenas e médias empresas (PMEs) que não têm orçamento para ferramentas de pesquisa complexas ou consultorias de dados, mas precisam de informação estruturada para tomar decisões melhores.
@@ -112,7 +112,7 @@ Artigos otimizados para termos que o cliente-alvo busca antes de comprar: "como 
 
 ### LinkedIn
 
-Publicações e anúncios direcionados a donos de negócio, gestores de qualidade e diretores de operações — o perfil exato de quem toma a decisão de compra.
+Publicações e anúncios direcionados a donos de pequenos negócios e profissionais autônomos — o perfil exato de quem toma a decisão de compra.
 
 ### Comunidades de Empreendedores
 
@@ -208,5 +208,5 @@ CLIENTE DESCOBRE          →   Trial 4 meses    →   Converte (R$80/mês)
 ## Veja Também
 
 - [Visão Geral do Sistema](../visao-geral.md)
-- [Requisitos e Funcionalidades](../projeto-tecnico/requisitos-e-funcionalidades.md)
-- [Arquitetura](../projeto-tecnico/arquitetura.md)
+- [Requisitos e Funcionalidades](./requisitos-e-funcionalidades.md)
+- [Arquitetura](../arquitetura/visao-geral.md)

@@ -69,4 +69,4 @@ Feedback persistido no banco → tela de confirmação exibida
 
 - [QR Codes por Escopo → qrcode-escopo-dinamico.md](./qrcode-escopo-dinamico.md)
 - [Anti-Spam por Fingerprint → anti-spam-fingerprint.md](./anti-spam-fingerprint.md)
-- [Endpoints Públicos](../backend/endpoints.md)
+- [Endpoints Públicos](../referencia/backend/endpoints.md)

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Feedback Analytics">
+  <path d="M8 4H24a5 5 0 0 1 5 5v8a5 5 0 0 1-5 5H15l-6 6v-6H8a5 5 0 0 1-5-5V9a5 5 0 0 1 5-5Z" fill="#ffffff"/>
+  <rect x="9.2" y="14" width="3.2" height="4.6" rx="1.2" fill="#0f7c8f"/>
+  <rect x="14.4" y="11" width="3.2" height="7.6" rx="1.2" fill="#0f7c8f"/>
+  <rect x="19.6" y="8.4" width="3.2" height="10.2" rx="1.2" fill="#0f7c8f"/>
+</svg>

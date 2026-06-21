@@ -62,5 +62,5 @@ O valor deve ser idêntico ao configurado no API Gateway via variável de ambien
 
 - [Endpoints](./endpoints.md)
 - [Arquitetura e Estrutura](./arquitetura-estrutura.md)
-- [Regras de Negócio](../../regras-negocio.md)
-- [Funcionalidade — Painel de Insights](../../funcionalidades/painel-insights-ia.md)
+- [Regras de Negócio](../../produto/regras-negocio.md)
+- [Funcionalidade — Painel de Insights](../../produto/painel-insights-ia.md)

@@ -1,7 +1,11 @@
 # Visão Geral — Feedback Analytics
-O projeto Feedback Analytics surgiu da identificação de um problema recorrente enfrentado por muitas empresas:
+O projeto Feedback Analytics surgiu da identificação de três problemas recorrentes enfrentado por muitas empresas:
 
-"A ausência de um canal eficiente e estruturado para a gestão de feedbacks dos clientes."
+- "A ausência de um canal eficiente, sem fricção e estruturado para a captura de opiniões de clientes."
+
+- "O gargalo na hora de análisar os dados coletados"
+
+- "As barreiras que faz o cliente desistir ou não dar um feedback verdadeiro"
 
 Essa lacuna compromete a capacidade de evoluir a empresa de forma contínua e estratégica.
 
@@ -26,7 +30,7 @@ O resultado: gestores decidem com base em intuição, não em evidência.
 O **Feedback Analytics** transforma coleta e análise de feedbacks em um processo estruturado e inteligente em três etapas:
 
 1. **Colete** — O sistema oferece canal estruturado para coletar feedbacks:
-    - **Canal QRCode**: A empresa gera QR Codes exclusivos por produto, serviço ou departamento, o cliente escaneia e avalia sem precisar criar conta.
+    - **Canal QRCode**: A empresa gera um QR Code geral ou QR Codes exclusivos por produto, serviço ou departamento, o cliente escaneia e avalia sem precisar criar conta.
 2. **Analise** — Um pipeline de IA com provedor LLM externo configurável interpreta cada feedback automaticamente, classifica sentimento, extrai temas e palavras-chave e gera insights acionáveis para melhorar produtos, serviços e experiência do cliente.
 3. **Decida** — O dashboard apresenta um painel de insights por escopo, mostrando sentimento dos clientes, temas recorrentes, recomendações e comparação entre empresa, produtos, serviços ou departamentos. Assim, o gestor transforma feedbacks em ações concretas.
 
@@ -35,7 +39,7 @@ O **Feedback Analytics** transforma coleta e análise de feedbacks em um process
 | Perfil | Dor que resolve |
 |---|---|
 | Restaurantes e lojas físicas | Coleta presencial sem atrito para o cliente |
-| Gestores de qualidade | Métricas de satisfação por produto ou setor |
+| Profissionais autônomos e pequeno comércio | Satisfação por produto/serviço, sem montar planilhas |
 | Times sem equipe técnica | Solução pronta, sem necessidade de desenvolvimento próprio |
 
 ## Estrutura do Sistema
@@ -56,8 +60,8 @@ No domínio `services/` o projeto foi pensado para abrigar diferentes serviços 
 
 ## Próximos Passos
 
-- [Rodar o ambiente local → Guia de Instalação](./implementacao/guia-instalacao.md)
-- [Entender como os serviços se conectam → Arquitetura](./projeto-tecnico/arquitetura.md)
-- [Ver todas as funcionalidades → Funcionalidades](./projeto-tecnico/requisitos-e-funcionalidades.md)
-- [Entender a estratégia de testes → Testes](./implementacao/testes/visao-geral.md)
+- [Rodar o ambiente local → Guia de Instalação](./guias/guia-instalacao.md)
+- [Entender como os serviços se conectam → Arquitetura](./arquitetura/visao-geral.md)
+- [Ver todas as funcionalidades → Funcionalidades](./concepcao/requisitos-e-funcionalidades.md)
+- [Entender a estratégia de testes → Testes](./guias/testes/visao-geral.md)
 - [Ver os casos de uso do sistema → Casos de Uso](./concepcao/casos-de-uso/visao-geral.md)

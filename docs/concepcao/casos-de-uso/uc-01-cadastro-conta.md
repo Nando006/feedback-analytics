@@ -38,7 +38,7 @@
 ## Base para Teste E2E
 
 > Os testes E2E já estão implementados no Playwright ([uc-01-cadastro-conta.spec.ts](https://github.com/TCC-Feedback-Analytics/feedback-analytics/blob/main/apps/web/e2e/uc-01-cadastro-conta.spec.ts)).
-> Cada cenário abaixo possui a sua respectiva classificação e estratégia de execução mapeada no [Plano de Teste Estratégico](../../implementacao/testes/plano-estrategico.md).
+> Cada cenário abaixo possui a sua respectiva classificação e estratégia de execução mapeada no [Plano de Teste Estratégico](../../guias/testes/plano-estrategico.md).
 
 **Cenários a cobrir:**
 

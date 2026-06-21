@@ -80,4 +80,4 @@ backends/api-gateway/
 
 - [Arquitetura e Estrutura](./arquitetura-estrutura.md)
 - [Referência de Endpoints](./endpoints.md)
-- [Regras de Negócio](../regras-negocio.md)
+- [Regras de Negócio](../../produto/regras-negocio.md)

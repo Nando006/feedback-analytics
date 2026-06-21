@@ -117,5 +117,5 @@ O frontend cria o client com `@supabase/supabase-js` (via `createClient`). A ses
 - [System Design](./system-design.md)
 - [Interface e Performance](./interface-performance.md)
 - [Fluxo de Autenticação e Navegação](./fluxo-autenticacao.md)
-- [Funcionalidades](../../projeto-tecnico/requisitos-e-funcionalidades.md)
+- [Funcionalidades](../../concepcao/requisitos-e-funcionalidades.md)
 - [Padrões de Projeto](../padroes-projeto.md)

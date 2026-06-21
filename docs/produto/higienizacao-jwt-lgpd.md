@@ -84,6 +84,6 @@ O JWT gerado não contém nenhum dado sensível — apenas identificadores segur
 
 ## Referência Técnica
 
-- [Requisitos Não Funcionais — RNF02 → visao-geral.md#requisitos-não-funcionais-rnf](../../projeto-tecnico/requisitos-e-funcionalidades.md)
-- [Regras de Negócio — RNE-011 → visao-geral.md#regras-de-negócio-rne](../../projeto-tecnico/requisitos-e-funcionalidades.md)
-- [Endpoints de Autenticação](../backend/endpoints.md)
+- [Requisitos Não Funcionais — RNF02 → visao-geral.md#requisitos-não-funcionais-rnf](../concepcao/requisitos-e-funcionalidades.md)
+- [Regras de Negócio — RNE-011 → visao-geral.md#regras-de-negócio-rne](../concepcao/requisitos-e-funcionalidades.md)
+- [Endpoints de Autenticação](../referencia/backend/endpoints.md)

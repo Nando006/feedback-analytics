@@ -23,7 +23,7 @@ Este documento mapeia quem são os stakeholders do Feedback Analytics, o que cad
 ### Empresas / Clientes
 
 - **Descrição:** São as organizações — principalmente de pequeno e médio porte (PMEs) — que contratam o Feedback Analytics como SaaS para coletar e analisar os feedbacks de seus próprios clientes. São elas que pagam a assinatura mensal e usam o dashboard.
-- **Perfis típicos:** restaurantes e lojas físicas, gestores de qualidade, times sem equipe técnica própria.
+- **Perfis típicos:** restaurantes, salões, lojas de bairro e profissionais autônomos, sem equipe técnica própria.
 - **Principal Interesse / Objetivo:** Transformar a "voz do cliente" em um ativo estratégico. Querem entender rapidamente o que seus clientes pensam por escopo (produto, serviço, departamento), identificar problemas, descobrir oportunidades e aumentar satisfação e fidelização — sem precisar de uma equipe de dados.
 - **Impacto no Projeto:**
   - O requisito de **isolamento de dados (multi-tenancy)** é a principal demanda deste stakeholder: cada empresa só pode ver seus próprios dados.
@@ -87,5 +87,5 @@ Este documento mapeia quem são os stakeholders do Feedback Analytics, o que cad
 
 - [Visão Geral do Sistema](../visao-geral.md)
 - [Modelo de Negócio](./modelo-negocio.md)
-- [Requisitos e Funcionalidades](../projeto-tecnico/requisitos-e-funcionalidades.md)
+- [Requisitos e Funcionalidades](./requisitos-e-funcionalidades.md)
 - [Casos de Uso](./casos-de-uso/visao-geral.md)

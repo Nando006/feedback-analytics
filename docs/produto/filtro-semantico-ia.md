@@ -116,5 +116,5 @@ Por que isso importa:
 ## Referência Técnica
 
 - [Painel de Insights → painel-insights-ia.md](./painel-insights-ia.md)
-- [Serviço IA Analyze](../servicos/ia-analyze/visao-geral.md)
-- [Endpoints de Análise IA](../backend/endpoints.md)
+- [Serviço IA Analyze](../referencia/ia-analyze/visao-geral.md)
+- [Endpoints de Análise IA](../referencia/backend/endpoints.md)
