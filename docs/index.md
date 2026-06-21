@@ -8,14 +8,14 @@ hide:
 
 # Feedback Analytics
 
-A voz dos seus clientes virando decisão — automaticamente. Colete por QR Code, deixe a IA analisar e receba insights prontos no painel, sem precisar de equipe de dados.
+A voz dos seus clientes ajudando a decidir — com apoio de IA. Colete por QR Code, deixe a IA analisar e receba insights no painel, sem precisar de equipe de dados.
 
 [Começar :material-arrow-right-thin:](visao-geral.md){ .md-button .md-button--primary }
 [Ver no GitHub :material-github:](https://github.com/TCC-Feedback-Analytics/feedback-analytics){ .md-button }
 
 </div>
 
-O **Feedback Analytics** transforma a opinião dos seus clientes em decisões estratégicas — de forma automatizada e sem exigir equipe de dados. Muitas empresas, especialmente as de pequeno e médio porte, não têm um canal estruturado para ouvir o cliente: os feedbacks ficam espalhados entre Google, Instagram e iFood, e o gestor acaba decidindo por intuição, não por evidência. Nós resolvemos isso reunindo coleta, análise e decisão em um único fluxo: o cliente avalia escaneando um QR Code, uma inteligência artificial lê tudo automaticamente e o gestor recebe um painel com recomendações prontas. Você para de adivinhar o que está dando errado e passa a saber exatamente onde agir.
+O **Feedback Analytics** transforma a opinião dos seus clientes em decisões estratégicas — de forma automatizada e sem exigir equipe de dados. Muitas empresas, especialmente as de pequeno e médio porte, não têm um canal estruturado para ouvir o cliente: os feedbacks ficam espalhados entre Google, Instagram e iFood, e o gestor acaba decidindo por intuição, não por evidência. Nós resolvemos isso reunindo coleta, análise e decisão em um único fluxo: o cliente avalia escaneando um QR Code, uma inteligência artificial lê tudo automaticamente e o gestor recebe um painel com recomendações prontas. Você deixa de adivinhar o que está dando errado e ganha mais clareza sobre onde agir.
 
 ## Como funciona
 
@@ -77,7 +77,7 @@ O Feedback Analytics é feito para quem atende o cliente **presencialmente** e q
 
     ---
 
-    O canal de coleta sem fricção que alimenta todo o sistema.
+    O canal de coleta de baixo atrito que alimenta todo o sistema.
 
     [:octicons-arrow-right-24: Como funciona](produto/coleta-qrcode.md)
 

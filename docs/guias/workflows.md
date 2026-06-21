@@ -89,7 +89,7 @@ Por que **não** bloquear o deploy de `homolog` com e2e? Porque o frontend tem u
 
 - **CI nunca pode ser bypassado** — lint, typecheck, testes de unidade/integração e build são obrigatórios em qualquer PR para `homolog` ou `main`; o e2e é obrigatório na promoção para `main`.
 - **Pirâmide de testes real** — unidade/integração rodam em paralelo (matriz por pacote) em toda PR; o e2e gateia a promoção para produção contra o homolog.
-- **Deploy consciente** — nada vai para produção sem uma ação intencional. Elimina surpresas em horários indesejados.
+- **Deploy consciente** — nada vai para produção sem uma ação intencional. Reduz o risco de deploys em horários indesejados.
 - **Serviços independentes** — é possível deployar só o frontend sem tocar a API ou o serviço de IA, e vice-versa. Janela de risco menor a cada deploy.
 - **Concorrência controlada** — `cancel-in-progress: true` garante que dois deploys simultâneos do mesmo serviço na mesma branch não coexistam, evitando condição de corrida.
 - **Promoção de código forçada** — a Branch Policy torna tecnicamente impossível (não apenas proibido por convenção) que código vá direto de uma feature para produção.

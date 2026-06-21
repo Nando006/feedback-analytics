@@ -72,7 +72,7 @@ O sistema usa uma **contagem variável de 0 a 3 perguntas ativas** por ponto de 
 |---|---|
 | **Granularidade** | Feedback atribuível a item específico, não só à empresa |
 | **Análise de IA segmentada** | Cada escopo gera seu próprio relatório de insights |
-| **Ação corretiva precisa** | O gestor sabe exatamente onde agir, sem precisar adivinhar |
+| **Ação corretiva mais direcionada** | O gestor consegue identificar com mais clareza onde agir |
 | **Flexibilidade** | Cada item tem perguntas relevantes ao seu contexto |
 | **Hierarquia de ativação** | Desativar um item bloqueia automaticamente o formulário daquele QR |
 

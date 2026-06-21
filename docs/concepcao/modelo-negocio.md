@@ -32,7 +32,7 @@ O cliente do Feedback Analytics é a **empresa** (o gestor), não o consumidor f
 
 | Perfil | Dor que o produto resolve |
 |---|---|
-| **Restaurantes e lojas físicas** | Coleta presencial sem atrito — o cliente avalia na hora, sem baixar app ou criar conta |
+| **Restaurantes e lojas físicas** | Coleta presencial de baixo atrito — o cliente avalia na hora, sem baixar app ou criar conta |
 | **Profissionais autônomos e pequeno comércio** | Satisfação por produto/serviço, sem montar planilhas |
 | **Times sem equipe técnica** | Solução pronta, que funciona sem nenhum desenvolvimento interno |
 

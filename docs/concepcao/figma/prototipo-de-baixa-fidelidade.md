@@ -53,7 +53,7 @@ São telas acessadas pelos usuários da aplicação com autenticação válida, 
 ### 3. Dashboard
 
 **Rota:** `/user/dashboard`  
-**Objetivo:** Visão centralizada dos feedbacks coletados, com cards estruturais e espaço para os dados em tempo real.
+**Objetivo:** Visão centralizada dos feedbacks coletados, com cards estruturais e espaço para os dados atualizados a cada carregamento.
 
 #### Componentes da Tela
 

@@ -1,6 +1,6 @@
 # Guia de Instalação
 
-> Configure o ambiente completo do Feedback Analytics em menos de 15 minutos.
+> Configure o ambiente completo do Feedback Analytics em poucos passos (tipicamente em torno de 15 minutos, dependendo da máquina e da conexão).
 
 ## Antes de Começar
 

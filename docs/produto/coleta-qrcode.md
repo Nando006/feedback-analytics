@@ -1,4 +1,4 @@
-# Coleta via QR Code sem Fricção
+# Coleta via QR Code de Baixo Atrito
 
 ## O Que É
 
@@ -14,7 +14,7 @@ A maior inimiga da coleta de feedback é a **fricção**. Toda etapa extra que o
 
 Formulários em papel são lentos e difíceis de agregar. Apps exigem instalação. Links digitados geram erros de digitação. E-mails ficam para "responder depois" (e nunca são respondidos).
 
-O QR Code resolve tudo isso: está no balcão, na embalagem, no cardápio, na nota fiscal. O cliente já tem a câmera na mão. O atrito é praticamente zero.
+O QR Code resolve tudo isso: está no balcão, na embalagem, no cardápio, na nota fiscal. O cliente já tem a câmera na mão, o que reduz bastante as barreiras de acesso.
 
 > **Sem coleta, não há dado. Sem dado, não há análise. Sem análise, o produto não existe.**
 > Esta é a funcionalidade que alimenta todo o resto do sistema.
@@ -47,7 +47,7 @@ Feedback persistido no banco → tela de confirmação exibida
 
 | Aspecto | Impacto |
 |---|---|
-| **Taxa de resposta** | Maior taxa de coleta por eliminar barreiras de acesso |
+| **Taxa de resposta** | Tende a aumentar a coleta ao reduzir barreiras de acesso |
 | **Presença física** | QR Code pode estar em qualquer lugar: balcões, embalagens, mesas, recibos |
 | **Acessibilidade** | Funciona em qualquer smartphone com câmera, sem instalar nada |
 | **Tempo de resposta** | O cliente avalia no momento exato da experiência, enquanto a memória é fresca |

@@ -74,13 +74,13 @@ mindmap
     - Dar sua opinião de forma rápida e honesta quando a experiência merece — para o bem ou para o mal.
     - Sentir que seu feedback chega diretamente a quem pode mudar algo, sem passar por filtros públicos.
 - **Necessidades Principais:**
-    - Um método de feedback sem atrito: escanear o QR Code e responder em menos de 1 minuto.
-    - Garantia de **anonimato**: ele quer ser sincero sem precisar fornecer dados pessoais ou criar contas.
+    - Um método de feedback de baixo atrito: escanear o QR Code e responder em menos de 1 minuto.
+    - Possibilidade de responder sem se identificar: ele quer ser sincero sem precisar fornecer dados pessoais ou criar contas.
     - Um canal direto: ele prefere falar com a empresa do que reclamar publicamente no Instagram deles.
 - **Frustrações:**
     - Formulários longos, com muitas perguntas obrigatórias ou que pedem login.
     - Ter que procurar o perfil da empresa nas redes sociais para fazer uma reclamação ou elogio no momento em que o fato acontece.
-- **Impacto no Projeto Feedback Analytics:** Lucas é o usuário do **Frontend de Coleta**. A dor do processo complicado justifica a arquitetura **SPA** para carregamento rápido. A necessidade de privacidade justifica o sistema de **tracked_devices** e **coleta anônima**.
+- **Impacto no Projeto Feedback Analytics:** Lucas é o usuário do **Frontend de Coleta**. A dor do processo complicado justifica a arquitetura **SPA** para carregamento rápido. A necessidade de privacidade justifica o sistema de **tracked_devices** e a **coleta sem identificação obrigatória**.
 
 #### Mapa de Empatia
 
@@ -184,7 +184,7 @@ mindmap
 | | Ana — Gestora Sobrecarregada | Lucas — Cliente Consciente | Carlos — Dono Estratégico |
 |---|---|---|---|
 | **Relação com o produto** | Usuária diária do dashboard | Usuário esporádico do formulário público | Usuário periódico do relatório IA |
-| **Principal entrega de valor** | Identificação rápida de problemas operacionais | Feedback anônimo e sem atrito | Insights consolidados para decisão estratégica |
+| **Principal entrega de valor** | Identificação rápida de problemas operacionais | Feedback sem identificação obrigatória e de baixo atrito | Insights consolidados para decisão estratégica |
 | **Maior medo** | Perder um problema que virou crise | Ter sua opinião rastreada | Expandir ou investir na direção errada |
-| **Feature crítica** | Dashboard, cards de métricas, listagem de feedbacks | Formulário público, QR Code, coleta anônima | Relatório IA, `scope_type`, recomendações |
+| **Feature crítica** | Dashboard, cards de métricas, listagem de feedbacks | Formulário público, QR Code, coleta sem identificação obrigatória | Relatório IA, `scope_type`, recomendações |
 | **Nível de maturidade digital** | Intermediário | Avançado | Básico / Intermediário |

@@ -51,7 +51,7 @@ sequenceDiagram
 
 ## `termProcessing.ts` — Núcleo de Sanitização
 
-Este módulo é o coração do processamento linguístico. Garante que o modelo não "alucine" termos que não existem no feedback original.
+Este módulo é o coração do processamento linguístico. Filtra termos que o modelo possa ter "alucinado", descartando os que não aparecem no feedback original.
 
 ### `sanitizeTermList`
 
