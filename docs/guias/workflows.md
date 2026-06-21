@@ -12,7 +12,7 @@
 4. [Workflows](#workflows)
    - [Branch Policy](#branch-policy-enforcement-branch-policyyml)
    - [CI Pipeline](#ci-pipeline-ciyml)
-   - [E2E Gate (PR → main)](#e2e-gate-pr-main-e2e-mainyml)
+   - [E2E Gate (PR → main)](#e2e-gate)
    - [Deploy Web](#deploy-web-deploy-webyml)
    - [Deploy API Gateway](#deploy-api-gateway-deploy-apiyml)
    - [Deploy IA Analyze](#deploy-ia-analyze-deploy-ia-analyzeyml)
@@ -179,7 +179,7 @@ Roda os testes de unidade/integração (Vitest) dos três pacotes em paralelo, v
 
 ---
 
-### E2E Gate (PR → main) (`e2e-main.yml`)
+### E2E Gate (PR → main) (`e2e-main.yml`) { #e2e-gate }
 
 **Trigger:** `pull_request` com destino `main`.
 
