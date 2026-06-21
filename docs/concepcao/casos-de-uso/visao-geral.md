@@ -143,4 +143,4 @@ A maioria dos UCs possui um arquivo de teste E2E do Playwright em `apps/web/e2e/
 
 **Legenda de Status:** ✅ Implementado = há ao menos um fluxo de ação coberto · 🔎 Apenas smoke = o spec só verifica que a página carrega, sem exercitar os fluxos de ação documentados · ❌ Sem cobertura E2E = não há arquivo de spec.
 
-A seção "Base para Teste E2E" de cada UC lista, cenário a cenário, o que está coberto por E2E, o que é apenas smoke, o que está skipped e o que está apenas planejado. As coberturas detalhadas (incluindo testes de unidade, de integração e cenários skipped) estão mapeadas no [Plano de Teste Estratégico](../../implementacao/testes/plano-estrategico.md).
+A seção "Base para Teste E2E" de cada UC lista, cenário a cenário, o que está coberto por E2E, o que é apenas smoke, o que está skipped e o que está apenas planejado. As coberturas detalhadas (incluindo testes de unidade, de integração e cenários skipped) estão mapeadas no [Plano de Teste Estratégico](../../guias/testes/plano-estrategico.md).

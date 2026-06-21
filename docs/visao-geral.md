@@ -56,8 +56,8 @@ No domínio `services/` o projeto foi pensado para abrigar diferentes serviços 
 
 ## Próximos Passos
 
-- [Rodar o ambiente local → Guia de Instalação](./implementacao/guia-instalacao.md)
-- [Entender como os serviços se conectam → Arquitetura](./projeto-tecnico/arquitetura.md)
-- [Ver todas as funcionalidades → Funcionalidades](./projeto-tecnico/requisitos-e-funcionalidades.md)
-- [Entender a estratégia de testes → Testes](./implementacao/testes/visao-geral.md)
+- [Rodar o ambiente local → Guia de Instalação](./guias/guia-instalacao.md)
+- [Entender como os serviços se conectam → Arquitetura](./arquitetura/visao-geral.md)
+- [Ver todas as funcionalidades → Funcionalidades](./concepcao/requisitos-e-funcionalidades.md)
+- [Entender a estratégia de testes → Testes](./guias/testes/visao-geral.md)
 - [Ver os casos de uso do sistema → Casos de Uso](./concepcao/casos-de-uso/visao-geral.md)

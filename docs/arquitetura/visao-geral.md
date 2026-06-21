@@ -117,8 +117,8 @@ Os tipos TypeScript que transitam entre Gateway e IA Analyze **não são duplica
 
 ## Veja Também
 
-- [Backend — Arquitetura Detalhada](../implementacao/backend/arquitetura-estrutura.md)
-- [Frontend — Arquitetura Detalhada](../implementacao/frontend/arquitetura-estrutura.md)
-- [IA Analyze — Arquitetura Detalhada](../implementacao/servicos/ia-analyze/arquitetura-estrutura.md)
-- [Banco de Dados — Visão Geral e Arquitetura](../implementacao/banco-de-dados/visao-geral.md)
-- [CI/CD — Workflows e Deploys](../implementacao/workflows.md)
+- [Backend — Arquitetura Detalhada](../referencia/backend/arquitetura-estrutura.md)
+- [Frontend — Arquitetura Detalhada](../referencia/frontend/arquitetura-estrutura.md)
+- [IA Analyze — Arquitetura Detalhada](../referencia/ia-analyze/arquitetura-estrutura.md)
+- [Banco de Dados — Visão Geral e Arquitetura](../referencia/banco-de-dados/visao-geral.md)
+- [CI/CD — Workflows e Deploys](../guias/workflows.md)

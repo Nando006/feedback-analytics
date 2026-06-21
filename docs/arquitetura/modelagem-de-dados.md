@@ -1,6 +1,6 @@
 # Diagrama de Entidade e Relacionamento (DER)
 
-> Guia conceitual das entidades do banco de dados, seus campos principais e como se relacionam. Para a referência técnica completa (RLS, índices, triggers, funções), consulte [Visão Geral do Banco de Dados](../implementacao/banco-de-dados/visao-geral.md).
+> Guia conceitual das entidades do banco de dados, seus campos principais e como se relacionam. Para a referência técnica completa (RLS, índices, triggers, funções), consulte [Visão Geral do Banco de Dados](../referencia/banco-de-dados/visao-geral.md).
 
 ---
 
@@ -283,4 +283,4 @@ Relatório consolidado gerado pela IA sobre um conjunto de feedbacks. Pode cobri
 
 ## Veja Também
 
-- [Visão Geral do Banco de Dados](../implementacao/banco-de-dados/visao-geral.md) — referência técnica completa (RLS, triggers, funções, índices)
+- [Visão Geral do Banco de Dados](../referencia/banco-de-dados/visao-geral.md) — referência técnica completa (RLS, triggers, funções, índices)

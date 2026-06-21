@@ -90,5 +90,5 @@ Dispositivos marcados com `is_blocked = true` na tabela `tracked_devices` são p
 
 - [Coleta via QR Code → coleta-qrcode.md](./coleta-qrcode.md)
 - [QR Codes por Escopo → qrcode-escopo-dinamico.md](./qrcode-escopo-dinamico.md)
-- [Regras de Negócio → visao-geral.md#regras-de-negócio-rne](../../projeto-tecnico/requisitos-e-funcionalidades.md)
-- [Endpoints Públicos](../backend/endpoints.md)
+- [Regras de Negócio → visao-geral.md#regras-de-negócio-rne](../concepcao/requisitos-e-funcionalidades.md)
+- [Endpoints Públicos](../referencia/backend/endpoints.md)

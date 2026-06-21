@@ -4,7 +4,7 @@ Este documento registra as decisões que definem como o sistema se comporta — 
 
 Cada regra aqui é uma decisão consciente de produto ou de segurança. O código implementa essas decisões; este documento explica o porquê delas existirem.
 
-O detalhamento técnico de como cada regra é implementada está em [regras-negocio.md](../implementacao/regras-negocio.md).
+O detalhamento técnico de como cada regra é implementada está em [regras-negocio.md](../produto/regras-negocio.md).
 
 ---
 

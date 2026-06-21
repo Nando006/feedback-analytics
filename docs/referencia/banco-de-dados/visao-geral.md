@@ -524,11 +524,11 @@ Arquivos só podem ser **substituídos** (novo upload sobrescreve) ou **mantidos
 
 ## Veja Também
 
-- [Arquitetura Geral do Sistema](../../projeto-tecnico/arquitetura.md)
+- [Arquitetura Geral do Sistema](../../arquitetura/visao-geral.md)
 - [Backend — Arquitetura Detalhada](../backend/arquitetura-estrutura.md)
-- [Funcionalidades — Visão Geral](../../projeto-tecnico/requisitos-e-funcionalidades.md)
-- [Anti-spam e Fingerprint](../funcionalidades/anti-spam-fingerprint.md)
-- [Higienização JWT / LGPD](../funcionalidades/higienizacao-jwt-lgpd.md)
+- [Funcionalidades — Visão Geral](../../concepcao/requisitos-e-funcionalidades.md)
+- [Anti-spam e Fingerprint](../../produto/anti-spam-fingerprint.md)
+- [Higienização JWT / LGPD](../../produto/higienizacao-jwt-lgpd.md)
 - [SQL das Tabelas](https://github.com/TCC-Feedback-Analytics/feedback-analytics/tree/main/database/sql/tables/)
 - [SQL das Funções](https://github.com/TCC-Feedback-Analytics/feedback-analytics/tree/main/database/sql/functions/)
 - [SQL dos Triggers](https://github.com/TCC-Feedback-Analytics/feedback-analytics/tree/main/database/sql/triggers/)
