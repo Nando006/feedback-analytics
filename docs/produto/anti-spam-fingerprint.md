@@ -2,7 +2,7 @@
 
 ## O Que É
 
-É o sistema que garante a integridade dos dados coletados via QR Code. Como o formulário é público — sem login, sem autenticação — qualquer pessoa poderia enviar dezenas de feedbacks e distorcer completamente as análises.
+É o sistema que ajuda a proteger a integridade dos dados coletados via QR Code, reduzindo submissões duplicadas e abusivas. Como o formulário é público — sem login, sem autenticação — qualquer pessoa poderia enviar dezenas de feedbacks e distorcer completamente as análises.
 
 O mecanismo resolve isso identificando cada dispositivo de forma única e limitando a **1 feedback por dispositivo por ponto de coleta por dia**.
 
@@ -69,7 +69,7 @@ Dispositivos marcados com `is_blocked = true` na tabela `tracked_devices` são p
 
 | Aspecto | Impacto |
 |---|---|
-| **Integridade dos dados** | Garante que cada feedback representa uma experiência real de um cliente distinto |
+| **Integridade dos dados** | Reduz a probabilidade de feedbacks duplicados do mesmo dispositivo, ajudando a aproximar cada registro de uma experiência distinta |
 | **Confiabilidade da IA** | Análises de sentimento e categorias só fazem sentido com dados limpos |
 | **Sem necessidade de login** | A proteção funciona para usuários anônimos sem sacrificar a acessibilidade |
 | **Flexibilidade** | Não penaliza clientes que interagem com múltiplos pontos de coleta |

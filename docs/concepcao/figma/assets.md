@@ -1,12 +1,12 @@
 # Documentação de Assets e Componentes (Design System)
 
-Esta seção documenta exclusivamente a biblioteca de componentes visuais reutilizáveis (Assets) desenvolvidos no Figma para o projeto **Feedback Analytics**. Esses elementos garantem a consistência visual da aplicação e centralizam os padrões de interação, estados e animações.
+Esta seção documenta exclusivamente a biblioteca de componentes visuais reutilizáveis (Assets) desenvolvidos no Figma para o projeto **Feedback Analytics**. Esses elementos promovem a consistência visual da aplicação e centralizam os padrões de interação, estados e animações.
 
 ---
 
 ## 1. Filtros (Filters)
 
-Os componentes de filtragem garantem que telas densas como a listagem de feedbacks e painéis analíticos mantenham a consistência na triagem de dados.
+Os componentes de filtragem ajudam telas densas como a listagem de feedbacks e painéis analíticos a manter a consistência na triagem de dados.
 
 | Componente | Descrição | Comportamento / Estados |
 | :--- | :--- | :--- |

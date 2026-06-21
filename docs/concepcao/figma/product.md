@@ -1,6 +1,6 @@
 # Documentação de Produto — Branding & Design Tokens
 
-Esta seção detalha as diretrizes da marca **Feedback Analytics** e o sistema de Design Tokens que fundamenta toda a interface visual (UI) da plataforma. O uso consistente de tipografia, paleta de cores e aplicações de marca garante uma experiência sólida, coesa e profissional para os usuários corporativos e finais.
+Esta seção detalha as diretrizes da marca **Feedback Analytics** e o sistema de Design Tokens que fundamenta toda a interface visual (UI) da plataforma. O uso consistente de tipografia, paleta de cores e aplicações de marca busca proporcionar uma experiência mais sólida, coesa e profissional para os usuários corporativos e finais.
 
 ---
 
@@ -37,7 +37,7 @@ Base arquitetônica da interface corporativa. Proporcionam contraste e conforto 
 * **Surface / Background:** Fundo geral da aplicação e dos *cards* de métrica (Branco e off-white).
 * **Bordas e Divisores:** Tons cinzas super claros (Gray 100/200).
 * **Textos Secundários / Legendas:** Tons médios com menor contraste visual (Gray 400/500).
-* **Textos Principais / Títulos:** Tons escuros para máxima legibilidade e conformidade de acessibilidade (Gray 800/900).
+* **Textos Principais / Títulos:** Tons escuros para melhor legibilidade e conformidade de acessibilidade (Gray 800/900).
 
 ---
 

@@ -85,7 +85,7 @@ Telas acessíveis apenas com autenticação. Usuários não autenticados devem s
 ### 4. Dashboard
 
 **Rota:** `/user/dashboard`  
-**Objetivo:** Visão centralizada dos feedbacks coletados, com cards interativos e dados em tempo real.
+**Objetivo:** Visão centralizada dos feedbacks coletados, com cards interativos e dados atualizados a cada carregamento.
 
 #### Componentes da Tela
 

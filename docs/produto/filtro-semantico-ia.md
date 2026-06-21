@@ -65,7 +65,7 @@ Resultados persistidos → painel atualizado
 | **Top keywords** | "atendimento", "qualidade" (termos das perguntas) | "demora", "simpático", "caro" (voz do cliente) |
 | **Categorias identificadas** | Genéricas, repetitivas | Específicas e acionáveis |
 | **Qualidade dos insights** | Alta frequência, baixo valor | Alta relevância, alto valor |
-| **Decisões geradas** | Nenhuma — os dados não dizem nada novo | Diretas — o gestor sabe exatamente o que resolver |
+| **Decisões geradas** | Nenhuma — os dados não dizem nada novo | Direcionadas — o gestor identifica com mais clareza o que resolver |
 
 > O filtro é a diferença entre um painel de IA que impressiona na demo e um que realmente funciona no dia a dia.
 
@@ -78,7 +78,7 @@ Caso o provedor LLM externo esteja indisponível ou retorne uma resposta inváli
 - Filtra palavras comuns do português (artigos, preposições, conjunções)
 - Remove os termos das perguntas (mesmo filtro anti-poluição)
 - Extrai as palavras restantes como keywords brutas
-- O feedback ainda é processado — nunca é descartado por falha da IA
+- O feedback continua sendo processado mesmo quando a IA externa falha — o fallback local evita que ele seja descartado nesses casos
 
 Isso garante que uma instabilidade do provedor externo não corrompa o painel com dados vazios.
 

@@ -13,11 +13,11 @@ O **Vitest** é utilizado para testar a lógica isolada da aplicação (funçõe
 1. **Integração Nativa com o Vite:**
    Como nosso frontend utiliza o **Vite**, o Vitest utiliza a mesma configuração de compilação. Isso elimina a necessidade de configurar ferramentas adicionais (como Babel ou ts-jest) apenas para rodar os testes.
    
-2. **Performance Extrema:**
-   O Vitest é incrivelmente rápido porque aproveita o ecossistema do Vite e o carregamento sob demanda. Ele inicializa quase instantaneamente e atualiza apenas os testes afetados pelas suas alterações em tempo real (Watch Mode).
+2. **Alta performance:**
+   O Vitest é rápido porque aproveita o ecossistema do Vite e o carregamento sob demanda. A inicialização é veloz e ele reexecuta apenas os testes afetados pelas suas alterações (Watch Mode).
 
 3. **Compatibilidade com Jest:**
-   A sintaxe do Vitest (`describe`, `test`, `expect`, `vi`) é praticamente idêntica à do Jest. Isso significa que qualquer desenvolvedor com experiência prévia em Jest pode começar a escrever testes imediatamente, sem curva de aprendizado.
+   A sintaxe do Vitest (`describe`, `test`, `expect`, `vi`) é praticamente idêntica à do Jest. Isso significa que desenvolvedores com experiência prévia em Jest tendem a se adaptar rapidamente, com uma curva de aprendizado reduzida.
 
 4. **Mesma Ferramenta no Frontend e Backend:**
    Utilizamos o Vitest tanto na aplicação web (`apps/web`) quanto nos serviços backend (`backends/api-gateway` e `services/ia-analyze`). Isso mantém o padrão de escrita e a execução de testes unificados em todo o monorepo.
@@ -33,7 +33,7 @@ O **Playwright** é utilizado para realizar testes **End-to-End (E2E)** no front
 1. **Multinavegador Nativo:**
    O Playwright suporta nativamente três grandes motores de renderização: **Chromium** (Chrome, Edge), **Firefox** e **WebKit** (Safari), o que permite ampliar a cobertura entre navegadores quando necessário. Atualmente, porém, o projeto está configurado (`apps/web/playwright.config.ts`) para executar a suíte E2E apenas em **Chromium** (Desktop Chrome).
 
-2. **Fim dos Testes Intermitentes (Flaky Tests):**
+2. **Redução de Testes Intermitentes (Flaky Tests):**
    Um dos maiores problemas em testes E2E é a instabilidade (testes que passam uma hora e falham na outra por lentidão na rede). O Playwright resolve isso com **Auto-Waiting** (espera automática): ele aguarda os elementos estarem visíveis, clicáveis e estáveis antes de interagir com eles.
 
 3. **Ferramentas de Desenvolvimento Incríveis (DX):**

@@ -3,9 +3,7 @@ import { Link } from "react-router-dom";
 
 export default function Header() {
   return (
-    <CardSimple
-      type="header"
-      disableGlass>
+    <CardSimple type="header">
       <div className="font-work-sans flex w-full flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="font-montserrat text-2xl font-semibold tracking-tight text-(--text-primary) md:text-3xl">

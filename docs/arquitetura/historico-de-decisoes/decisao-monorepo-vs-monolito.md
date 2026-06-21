@@ -18,7 +18,7 @@ O projeto tem dois serviços com perfis de carga radicalmente diferentes. A arqu
 
 ### Traduzindo: 
 
-A proposta do API Gateway é ser rápido, respondendo em milissegundos com baixo uso de processamento para entregar dados ao frontend no menor tempo possível. Já o IA Analyze tem a proposta de entregar a melhor análise possível; para isso, a IA precisa "pensar", o que demora e exige muito do processador.
+A proposta do API Gateway é ser rápido, respondendo em milissegundos com baixo uso de processamento para entregar dados ao frontend no menor tempo possível. Já o IA Analyze tem a proposta de entregar a análise mais rica possível; para isso, a IA precisa "pensar", o que demora e exige muito do processador.
 
 É nessa diferença drástica de propostas que os dois serviços entram em conflito. Na Arquitetura Monolítica, a aplicação inteira roda na mesma camada e disputa o mesmo processador. Resultado: um serviço sabota o outro e o sistema trava.
 

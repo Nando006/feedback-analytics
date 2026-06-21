@@ -1,7 +1,7 @@
 # Visão Geral — Feedback Analytics
 O projeto Feedback Analytics surgiu da identificação de três problemas recorrentes enfrentado por muitas empresas:
 
-- "A ausência de um canal eficiente, sem fricção e estruturado para a captura de opiniões de clientes."
+- "A ausência de um canal eficiente, de baixo atrito e estruturado para a captura de opiniões de clientes."
 
 - "O gargalo na hora de análisar os dados coletados"
 
@@ -38,7 +38,7 @@ O **Feedback Analytics** transforma coleta e análise de feedbacks em um process
 
 | Perfil | Dor que resolve |
 |---|---|
-| Restaurantes e lojas físicas | Coleta presencial sem atrito para o cliente |
+| Restaurantes e lojas físicas | Coleta presencial de baixo atrito para o cliente |
 | Profissionais autônomos e pequeno comércio | Satisfação por produto/serviço, sem montar planilhas |
 | Times sem equipe técnica | Solução pronta, sem necessidade de desenvolvimento próprio |
 

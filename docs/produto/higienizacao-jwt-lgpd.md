@@ -4,7 +4,7 @@
 
 Quando uma empresa se cadastra, o provedor de autenticação (Supabase Auth) naturalmente armazena e trafega os dados do cadastro — incluindo CPF/CNPJ e telefone — em seu payload interno, que pode ser codificado dentro do token JWT.
 
-O sistema intercepta esse momento e **remove proativamente esses dados sensíveis** do payload do provedor de Auth, transferindo-os exclusivamente para a tabela `enterprise`, que é protegida por Row Level Security (RLS). Os dados pessoais nunca chegam ao JWT.
+O sistema intercepta esse momento e **remove proativamente esses dados sensíveis** do payload do provedor de Auth, transferindo-os exclusivamente para a tabela `enterprise`, que é protegida por Row Level Security (RLS). O objetivo é que os dados pessoais sensíveis não sejam incluídos no payload do JWT.
 
 ---
 
@@ -23,7 +23,7 @@ Se CPF/CNPJ e telefone ficassem no payload do provedor de Auth e consequentement
 
 ### A solução
 
-O sistema elimina o problema na origem: os dados sensíveis são **apagados do payload do provedor** antes que qualquer token seja gerado, e armazenados apenas em uma tabela relacional com isolamento por empresa (RLS).
+O sistema trata o problema na origem: os dados sensíveis são **apagados do payload do provedor** antes que qualquer token seja gerado, e armazenados apenas em uma tabela relacional com isolamento por empresa (RLS).
 
 ---
 
@@ -64,7 +64,7 @@ O JWT gerado não contém nenhum dado sensível — apenas identificadores segur
 
 | Aspecto | Impacto |
 |---|---|
-| **Conformidade LGPD** | Dados pessoais sensíveis nunca trafegam em tokens que podem ser inspecionados |
+| **Apoio à conformidade LGPD** | Reduz o risco de dados pessoais sensíveis trafegarem em tokens que podem ser inspecionados |
 | **Princípio da minimização** | O JWT carrega apenas o necessário para autenticação — nada além disso |
 | **Segurança por design** | A proteção existe na camada de banco, não dependendo de configuração ou disciplina do desenvolvedor |
 | **Isolamento multi-tenant** | RLS garante que nenhuma empresa acesse dados de outra, mesmo que o token seja comprometido |
@@ -78,7 +78,7 @@ O JWT gerado não contém nenhum dado sensível — apenas identificadores segur
 - Os campos removidos do payload: documento (CPF/CNPJ), telefone, e termos de aceite
 - O JWT customizado carrega apenas claims seguros: `role`, `enterprise_id` (via `jwt_custom_claims`)
 - A tabela `enterprise` tem políticas RLS que usam `auth.uid() = auth_user_id` para isolamento
-- A remoção é feita via `jsonb` operations no PostgreSQL — não há janela de tempo em que os dados ficam expostos
+- A remoção é feita via operações `jsonb` no PostgreSQL, de forma transacional, minimizando a janela em que os dados ficariam acessíveis
 
 ---
 
