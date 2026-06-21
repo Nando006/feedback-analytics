@@ -1,5 +1,5 @@
 import type { LoaderUserDashboard } from 'src/routes/loaders/loaderUserDashboard';
-import type { QuestionMetric } from 'lib/interfaces/domain/feedback.domain';
+import type { Interval, QuestionMetric } from 'lib/interfaces/domain/feedback.domain';
 
 /**
  * Props da seção de métricas principais do dashboard.
@@ -10,6 +10,8 @@ export interface SectionMetricProps {
   averageRating: number;
   positive: number;
   negative: number;
+  /** Faixa provável (IC t) da média de estrelas; ausente sem feedbacks no escopo. */
+  starMeanCI?: Interval | null;
 }
 
 /**

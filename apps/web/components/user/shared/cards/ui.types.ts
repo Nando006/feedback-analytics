@@ -8,7 +8,7 @@ import type { ReactNode } from 'react';
 export type MetricCardProps = {
   title: string;
   value: string;
-  helper?: string;
+  helper?: ReactNode;
   icon: IconType;
 };
 
