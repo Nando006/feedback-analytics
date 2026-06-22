@@ -53,8 +53,42 @@ function getErrorStatus(error: unknown): number | null {
   return null;
 }
 
-/** Decide se vale a pena retentar: rate limit / overload / 5xx são transitórios. */
-function isRetryableError(error: unknown): boolean {
+/**
+ * Distingue cota DIÁRIA esgotada (requests-per-day) de rate limit de curto prazo
+ * (requests-per-minute). Um 429 por cota diária só reseta no dia seguinte:
+ * retentar não adianta e cada tentativa consome MAIS cota, acelerando o
+ * esgotamento. Detecta a janela diária pela mensagem de quota do Gemini
+ * (ex.: "GenerateRequestsPerDayPerProjectPerModel", "per day", "daily").
+ */
+export function isDailyQuotaExceeded(error: unknown): boolean {
+  const status = getErrorStatus(error);
+  const message = String((error as { message?: unknown })?.message ?? '').toLowerCase();
+
+  const isQuotaError =
+    status === 429 || message.includes('resource_exhausted') || message.includes('429');
+  if (!isQuotaError) {
+    return false;
+  }
+
+  return (
+    message.includes('perday') ||
+    message.includes('per day') ||
+    message.includes('per-day') ||
+    message.includes('daily') ||
+    message.includes('requests per day')
+  );
+}
+
+/**
+ * Decide se vale a pena retentar: rate limit de curto prazo (RPM) / overload /
+ * 5xx são transitórios. Cota DIÁRIA esgotada NÃO é retentável (ver acima):
+ * falhar rápido evita queimar o resto da cota em tentativas inúteis.
+ */
+export function isRetryableError(error: unknown): boolean {
+  if (isDailyQuotaExceeded(error)) {
+    return false;
+  }
+
   const status = getErrorStatus(error);
   if (status !== null) {
     return RETRYABLE_STATUS.has(status);
@@ -153,11 +187,17 @@ export function createIaApiClient(apiKey: string): IaApiClient {
           }
 
           // Loga o motivo REAL (status + mensagem) antes de embrulhar no código
-          // tipado, para distinguir quota (429) de overload (503) de erro de
-          // requisição/credencial (400/401/403/404).
-          console.error(
-            `[ia-analyze] Gemini esgotou ${attempt} tentativa(s) — motivo: ${describeError(error)}`,
-          );
+          // tipado, para distinguir cota DIÁRIA (429/dia) de rate limit de curto
+          // prazo, de overload (503), de erro de requisição/credencial (4xx).
+          if (isDailyQuotaExceeded(error)) {
+            console.error(
+              `[ia-analyze] Gemini: cota DIÁRIA esgotada — falha rápida sem retry (retentar só queima mais cota). ${describeError(error)}`,
+            );
+          } else {
+            console.error(
+              `[ia-analyze] Gemini esgotou ${attempt} tentativa(s) — motivo: ${describeError(error)}`,
+            );
+          }
           throw new IaApiClientError(
             `Failed to call model API (${describeError(error)})`,
             'failed_ia_request',
