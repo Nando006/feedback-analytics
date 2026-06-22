@@ -185,6 +185,49 @@ describe('[Integração] POST /api/public/auth/register', () => {
     expect(res.status).toBe(409);
     expect(res.body.error).toBe('phone_taken');
   });
+
+  it('[CT-UC01-07] erro no RPC de pré-validação é logado e NÃO interrompe o cadastro', async () => {
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    // 1ª chamada (phone_exists) falha como erro de RPC; 2ª (document_exists) segue normal.
+    mockSupabase.rpc
+      .mockResolvedValueOnce({
+        data: null,
+        error: { message: 'permission denied for function phone_exists', code: '42501' },
+      })
+      .mockResolvedValueOnce({ data: false, error: null });
+
+    const res = await request(app)
+      .post('/api/public/auth/register')
+      .send(VALID_PAYLOAD);
+
+    // Comportamento preservado: o fluxo continua e o cadastro conclui.
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({ ok: true, message: 'confirmation_required' });
+    // Observabilidade: a falha do RPC foi registrada, não mais engolida.
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining('[register:phone_exists_rpc]'),
+    );
+
+    warnSpy.mockRestore();
+  });
+
+  it('[CT-UC01-08] erro do signUp (trigger/DB) é logado identificando a origem', async () => {
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    mockSupabase.auth.signUp.mockResolvedValueOnce({
+      data: { user: null },
+      error: { message: 'Database error saving new user' },
+    });
+
+    const res = await request(app)
+      .post('/api/public/auth/register')
+      .send(VALID_PAYLOAD);
+
+    expect(res.status).toBe(400);
+    expect(res.body.error).toBe('database_error');
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('[register:signup]'));
+
+    warnSpy.mockRestore();
+  });
 });
 
 describe('[Integração] POST /api/public/auth/forgot-password', () => {
