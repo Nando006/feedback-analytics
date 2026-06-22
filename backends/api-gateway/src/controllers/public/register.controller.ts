@@ -113,6 +113,27 @@ function mapSupabaseRegisterError(rawMessage?: string): {
   };
 }
 
+/**
+ * Loga, sem interromper o fluxo, falhas das etapas do cadastro. Com o SMTP
+ * próprio já configurado no Supabase Auth, estes logs servem para confirmar a
+ * ORIGEM de uma eventual falha sob carga — a pré-checagem por RPC, o signUp do
+ * Auth ou o trigger `create_enterprise_on_signup` (que chega como erro do
+ * signUp). Antes, o `catch {}` vazio e o descarte do `error` dos RPCs deixavam
+ * essas falhas invisíveis nos logs do Vercel.
+ */
+function logRegisterDiagnostic(step: string, error: unknown): void {
+  const message =
+    error && typeof error === 'object' && 'message' in error
+      ? String((error as { message?: unknown }).message)
+      : String(error);
+  const code =
+    error && typeof error === 'object' && 'code' in error
+      ? String((error as { code?: unknown }).code)
+      : undefined;
+
+  console.warn(`[register:${step}] ${code ? `code=${code} ` : ''}${message}`.trim());
+}
+
 export async function registerUserController(req: Request, res: Response) {
   try {
     const parsed = registerSchema.safeParse(req.body);
@@ -158,25 +179,34 @@ export async function registerUserController(req: Request, res: Response) {
     const supabase = createSupabaseServerClient(req, res);
 
     try {
-      const { data: phoneExists } = await supabase.rpc('phone_exists', {
+      const { data: phoneExists, error: phoneError } = await supabase.rpc('phone_exists', {
         p_phone: data.phone,
       });
+      if (phoneError) {
+        logRegisterDiagnostic('phone_exists_rpc', phoneError);
+      }
       if (phoneExists === true) {
         return sendTypedError(res, 409, API_ERROR_PHONE_TAKEN, {
           message: 'Telefone já cadastrado.',
         });
       }
 
-      const { data: docExists } = await supabase.rpc('document_exists', {
+      const { data: docExists, error: docError } = await supabase.rpc('document_exists', {
         p_document: data.document,
       });
+      if (docError) {
+        logRegisterDiagnostic('document_exists_rpc', docError);
+      }
       if (docExists === true) {
         return sendTypedError(res, 409, API_ERROR_DOCUMENT_TAKEN, {
           message: 'Documento já cadastrado.',
         });
       }
-    } catch {
-      // Falha nas validações não deve impedir o fluxo.
+    } catch (err) {
+      // A pré-checagem é só uma otimização de mensagem amigável; a barreira real
+      // é a constraint do banco (etapa 00-C). Por isso a falha não interrompe o
+      // fluxo — mas agora é registrada, em vez de silenciosamente engolida.
+      logRegisterDiagnostic('pre_signup_validation', err);
     }
 
     const { error } = await supabase.auth.signUp({
@@ -187,6 +217,10 @@ export async function registerUserController(req: Request, res: Response) {
 
     if (error) {
       const mapped = mapSupabaseRegisterError(error.message);
+      // Registra o motivo REAL (mensagem crua + código mapeado) antes de
+      // responder. É o que permite distinguir, nos logs, um erro do próprio Auth
+      // de um erro propagado pelo trigger create_enterprise_on_signup.
+      logRegisterDiagnostic('signup', { message: error.message, code: mapped.code });
       if (mapped.code === API_ERROR_EMAIL_TAKEN) {
         return res.json({ ok: true, message: 'confirmation_required' });
       }
