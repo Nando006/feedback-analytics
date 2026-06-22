@@ -228,6 +228,24 @@ describe('[Integração] POST /api/public/auth/register', () => {
 
     warnSpy.mockRestore();
   });
+
+  it('[CT-UC01-09] documento duplicado barrado pelo banco (corrida) retorna 409 document_taken', async () => {
+    // Simula a etapa 00-C: numa corrida, dois cadastros passam pela pré-checagem
+    // por RPC (data:false) e quem barra é o UNIQUE(document) no banco — a trigger
+    // create_enterprise_on_signup re-ergue como 'document_already_exists', que
+    // chega ao controller como erro do signUp. Garante o 409 consistente.
+    mockSupabase.auth.signUp.mockResolvedValueOnce({
+      data: { user: null },
+      error: { message: 'document_already_exists' },
+    });
+
+    const res = await request(app)
+      .post('/api/public/auth/register')
+      .send(VALID_PAYLOAD);
+
+    expect(res.status).toBe(409);
+    expect(res.body.error).toBe('document_taken');
+  });
 });
 
 describe('[Integração] POST /api/public/auth/forgot-password', () => {
