@@ -105,6 +105,7 @@ export async function regenerateFeedbackInsightsController(req: Request, res: Re
     typeof body.catalog_item_id === 'string' && body.catalog_item_id.trim().length > 0
       ? body.catalog_item_id.trim()
       : undefined;
+  const force = body.force === true;
 
   const startedAt = Date.now();
 
@@ -112,7 +113,7 @@ export async function regenerateFeedbackInsightsController(req: Request, res: Re
     const result = await regenerateFeedbackInsights({
       supabase,
       userId: user.id,
-      options: { scope_type, catalog_item_id },
+      options: { scope_type, catalog_item_id, force },
     });
 
     return res.json(result satisfies IaAnalyzeRegenerateInsightsResponse);
