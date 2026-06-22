@@ -12,6 +12,7 @@ import type {
 } from '../../../../shared/interfaces/contracts/ia-analyze/scope.contract.js';
 import { IaAnalyzeServiceError } from '../libs/iaAnalyze/errors.js';
 import { normalizeScopeType } from '../libs/iaAnalyze/normalize.js';
+import type { SavedInsightsReport } from '../libs/iaAnalyze/insightsCache.js';
 import { resolveScopeCollectionPointIds } from './scope.repository.js';
 import type { CollectingDataContext, FeedbackAnalysisInsertRow, RawCatalogItemRow, RawFeedbackQuestionAnswerRow, RawFeedbackRow, RawFeedbackSubquestionAnswerRow } from '../types/iaAnalyze.types.js';
 
@@ -738,4 +739,46 @@ export async function fetchAlreadyAnalyzedFeedbacks(params: {
       dynamic_subanswers: subanswersByFeedbackId.get(feedback.id) ?? [],
     } satisfies IaAnalyzeFeedbackInput;
   });
+}
+
+/**
+ * Lê os relatórios de insights já salvos (`feedback_insights_report`) para o
+ * escopo pedido. É a base do cache de leitura da regeneração: havendo relatório
+ * e nenhum feedback analisado mais novo, devolvemos o salvo sem chamar o LLM.
+ *
+ * - Com `scopeType`: filtra por scope_type + catalog_item_id (uma linha por
+ *   escopo, pela unique composta `uq_feedback_insights_context`).
+ * - Sem `scopeType`: devolve todos os relatórios da empresa.
+ */
+export async function fetchFeedbackInsightsReports(params: {
+  supabase: SupabaseClient;
+  enterpriseId: string;
+  scopeType?: IaAnalyzeScopeType;
+  catalogItemId?: string | null;
+}): Promise<SavedInsightsReport[]> {
+  const { supabase, enterpriseId, scopeType, catalogItemId = null } = params;
+
+  let query = supabase
+    .from('feedback_insights_report')
+    .select('scope_type, catalog_item_id, catalog_item_name, summary, recommendations, updated_at')
+    .eq('enterprise_id', enterpriseId);
+
+  if (scopeType) {
+    query = query.eq('scope_type', scopeType);
+    query = catalogItemId
+      ? query.eq('catalog_item_id', catalogItemId)
+      : query.is('catalog_item_id', null);
+  }
+
+  const { data, error } = await query;
+
+  if (error) {
+    throw new IaAnalyzeServiceError(
+      'Failed to fetch feedback insights reports',
+      500,
+      'failed_to_fetch_insights_report',
+    );
+  }
+
+  return (data ?? []) as SavedInsightsReport[];
 }
