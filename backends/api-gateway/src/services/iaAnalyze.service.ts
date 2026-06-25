@@ -4,10 +4,17 @@ import {
   fetchAlreadyAnalyzedFeedbackIds,
   fetchAlreadyAnalyzedFeedbacks,
   fetchEnterpriseContextForAnalysis,
+  fetchFeedbackInsightsReports,
   fetchFeedbacksForAnalysis,
   insertFeedbackAnalysisRows,
   upsertFeedbackInsightsReports,
 } from '../repositories/iaAnalyze.repository.js';
+import {
+  countAnalyzedByScope,
+  hasFeedbackNewerThanReports,
+  reportRowToContext,
+  scopeKey,
+} from '../libs/iaAnalyze/insightsCache.js';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { IaAnalyzeRemoteRunRequest } from '../../../../shared/interfaces/contracts/ia-analyze/remote.contract.js';
 import type {
@@ -189,7 +196,7 @@ export async function regenerateFeedbackInsights(params: {
   const feedbacksForExecution = applyExecutionFilter(analyzedFeedbacks, options);
 
   if (feedbacksForExecution.length === 0) {
-    return { globalInsights: null, contexts: [], reportGenerated: false };
+    return { globalInsights: null, contexts: [], reportGenerated: false, fromCache: false };
   }
 
   if (feedbacksForExecution.length < MIN_FEEDBACKS_FOR_RELEVANT_ANALYSIS) {
@@ -200,11 +207,50 @@ export async function regenerateFeedbackInsights(params: {
     );
   }
 
+  // Cache de leitura: se já existe relatório salvo para o escopo e NENHUM
+  // feedback analisado é mais novo que ele, devolve o relatório salvo em vez de
+  // reprocessar no LLM — resolve o "clicar de novo gasta cota à toa". `force`
+  // ignora o cache (botão "forçar regeneração").
+  if (!options?.force) {
+    const cachedReports = await fetchFeedbackInsightsReports({
+      supabase,
+      enterpriseId,
+      scopeType: options?.scope_type,
+      catalogItemId: options?.catalog_item_id?.trim() || null,
+    });
+
+    if (!hasFeedbackNewerThanReports(feedbacksForExecution, cachedReports)) {
+      const countsByScope = countAnalyzedByScope(feedbacksForExecution);
+      const contexts = cachedReports.map((report) =>
+        reportRowToContext(
+          report,
+          countsByScope.get(scopeKey(report.scope_type, report.catalog_item_id)) ?? 0,
+        ),
+      );
+      const cachedGlobalInsights =
+        contexts.find((ctx) => ctx.scope_type === 'COMPANY' && ctx.catalog_item_id === null)
+          ?.globalInsights ??
+        contexts[0]?.globalInsights ??
+        null;
+
+      console.info(
+        `[ia-analyze:regenerate] cache hit — relatório servido sem chamar o LLM (escopo=${options?.scope_type ?? 'ALL'})`,
+      );
+
+      return {
+        globalInsights: cachedGlobalInsights,
+        contexts,
+        reportGenerated: true,
+        fromCache: true,
+      };
+    }
+  }
+
   const enterpriseContext = buildEnterpriseContext({ enterpriseName, collecting });
   const analysisBatches = buildAnalysisBatches(feedbacksForExecution, options);
 
   if (analysisBatches.length === 0) {
-    return { globalInsights: null, contexts: [], reportGenerated: false };
+    return { globalInsights: null, contexts: [], reportGenerated: false, fromCache: false };
   }
 
   const remotePayload: IaAnalyzeRemoteRunRequest = {
@@ -244,5 +290,5 @@ export async function regenerateFeedbackInsights(params: {
       )
     : persistedContexts.length > 0;
 
-  return { globalInsights, contexts: insightsContexts, reportGenerated };
+  return { globalInsights, contexts: insightsContexts, reportGenerated, fromCache: false };
 }
