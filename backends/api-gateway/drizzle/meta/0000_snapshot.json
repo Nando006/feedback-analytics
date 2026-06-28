@@ -1,0 +1,2274 @@
+{
+  "id": "00000000-0000-0000-0000-000000000000",
+  "prevId": "",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.feedback": {
+      "name": "feedback",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "message": {
+          "name": "message",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "rating": {
+          "name": "rating",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "collection_point_id": {
+          "name": "collection_point_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "enterprise_id": {
+          "name": "enterprise_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tracked_device_id": {
+          "name": "tracked_device_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "feedback_enterprise_id_idx": {
+          "name": "feedback_enterprise_id_idx",
+          "columns": [
+            {
+              "expression": "enterprise_id",
+              "asc": true,
+              "nulls": "last",
+              "opclass": "uuid_ops",
+              "isExpression": false
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "feedback_collection_point_id_fkey": {
+          "name": "feedback_collection_point_id_fkey",
+          "tableFrom": "feedback",
+          "tableTo": "collection_points",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "collection_point_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "feedback_enterprise_id_fkey": {
+          "name": "feedback_enterprise_id_fkey",
+          "tableFrom": "feedback",
+          "tableTo": "enterprise",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "enterprise_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "feedback_tracked_device_id_fkey": {
+          "name": "feedback_tracked_device_id_fkey",
+          "tableFrom": "feedback",
+          "tableTo": "tracked_devices",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "tracked_device_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "feedback_rating_check": {
+          "name": "feedback_rating_check",
+          "value": "(rating >= 1) AND (rating <= 5)"
+        }
+      },
+      "policies": {
+        "Anon pode inserir feedback via QR_CODE com checks": {
+          "name": "Anon pode inserir feedback via QR_CODE com checks",
+          "as": "PERMISSIVE",
+          "for": "INSERT",
+          "to": [
+            "anon"
+          ],
+          "withCheck": "((EXISTS ( SELECT 1\n   FROM collection_points cp\n  WHERE ((cp.id = feedback.collection_point_id) AND (cp.enterprise_id = feedback.enterprise_id) AND (cp.type = 'QR_CODE'::text) AND (cp.status = 'ACTIVE'::text)))) AND (enterprise_id IS NOT NULL) AND (tracked_device_id IS NOT NULL) AND (EXISTS ( SELECT 1\n   FROM tracked_devices td\n  WHERE ((td.id = feedback.tracked_device_id) AND (td.enterprise_id = feedback.enterprise_id) AND (COALESCE(td.is_blocked, false) = false)))))"
+        },
+        "Usuários autenticados podem gerenciar feedbacks": {
+          "name": "Usuários autenticados podem gerenciar feedbacks",
+          "as": "PERMISSIVE",
+          "for": "ALL",
+          "to": [
+            "authenticated"
+          ]
+        }
+      },
+      "isRLSEnabled": true
+    },
+    "public.feedback_analysis": {
+      "name": "feedback_analysis",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "sentiment": {
+          "name": "sentiment",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "categories": {
+          "name": "categories",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "keywords": {
+          "name": "keywords",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "feedback_id": {
+          "name": "feedback_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "aspects": {
+          "name": "aspects",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "sentiment_score": {
+          "name": "sentiment_score",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "confidence": {
+          "name": "confidence",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "feedback_analysis_feedback_id_idx": {
+          "name": "feedback_analysis_feedback_id_idx",
+          "columns": [
+            {
+              "expression": "feedback_id",
+              "asc": true,
+              "nulls": "last",
+              "opclass": "uuid_ops",
+              "isExpression": false
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "feedback_analysis_feedback_id_fkey": {
+          "name": "feedback_analysis_feedback_id_fkey",
+          "tableFrom": "feedback_analysis",
+          "tableTo": "feedback",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "feedback_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "feedback_analysis_feedback_id_key": {
+          "columns": [
+            "feedback_id"
+          ],
+          "nullsNotDistinct": false,
+          "name": "feedback_analysis_feedback_id_key"
+        }
+      },
+      "checkConstraints": {
+        "feedback_analysis_sentiment_check": {
+          "name": "feedback_analysis_sentiment_check",
+          "value": "sentiment = ANY (ARRAY['positive'::text, 'negative'::text, 'neutral'::text])"
+        }
+      },
+      "policies": {
+        "Empresas gerenciam apenas suas próprias análises": {
+          "name": "Empresas gerenciam apenas suas próprias análises",
+          "as": "PERMISSIVE",
+          "for": "ALL",
+          "to": [
+            "public"
+          ],
+          "using": "(feedback_id IN ( SELECT f.id\n   FROM feedback f\n  WHERE (f.enterprise_id IN ( SELECT e.id\n           FROM enterprise e\n          WHERE (e.auth_user_id = auth.uid())))))"
+        }
+      },
+      "isRLSEnabled": true
+    },
+    "public.customer": {
+      "name": "customer",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "gender": {
+          "name": "gender",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "enterprise_id": {
+          "name": "enterprise_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "idx_customer_email_enterprise": {
+          "name": "idx_customer_email_enterprise",
+          "columns": [
+            {
+              "expression": "email",
+              "asc": true,
+              "nulls": "last",
+              "opclass": "text_ops",
+              "isExpression": false
+            },
+            {
+              "expression": "enterprise_id",
+              "asc": true,
+              "nulls": "last",
+              "opclass": "text_ops",
+              "isExpression": false
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_customer_enterprise_id": {
+          "name": "idx_customer_enterprise_id",
+          "columns": [
+            {
+              "expression": "enterprise_id",
+              "asc": true,
+              "nulls": "last",
+              "opclass": "uuid_ops",
+              "isExpression": false
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "customer_enterprise_id_fkey": {
+          "name": "customer_enterprise_id_fkey",
+          "tableFrom": "customer",
+          "tableTo": "enterprise",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "enterprise_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "customer_gender_check": {
+          "name": "customer_gender_check",
+          "value": "gender = ANY (ARRAY['Masculino'::text, 'Feminino'::text, 'Outro'::text, 'Não Informado'::text])"
+        }
+      },
+      "policies": {
+        "Usuários autenticados podem gerenciar clientes": {
+          "name": "Usuários autenticados podem gerenciar clientes",
+          "as": "PERMISSIVE",
+          "for": "ALL",
+          "to": [
+            "authenticated"
+          ],
+          "using": "(enterprise_id IN ( SELECT enterprise.id\n   FROM enterprise\n  WHERE (enterprise.auth_user_id = auth.uid())))"
+        }
+      },
+      "isRLSEnabled": true
+    },
+    "public.tracked_devices": {
+      "name": "tracked_devices",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "enterprise_id": {
+          "name": "enterprise_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "customer_id": {
+          "name": "customer_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "device_fingerprint": {
+          "name": "device_fingerprint",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "user_agent": {
+          "name": "user_agent",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ip_address": {
+          "name": "ip_address",
+          "type": "inet",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "last_feedback_at": {
+          "name": "last_feedback_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "feedback_count": {
+          "name": "feedback_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "is_blocked": {
+          "name": "is_blocked",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "blocked_reason": {
+          "name": "blocked_reason",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "blocked_at": {
+          "name": "blocked_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "blocked_by": {
+          "name": "blocked_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "idx_tracked_devices_blocked": {
+          "name": "idx_tracked_devices_blocked",
+          "columns": [
+            {
+              "expression": "is_blocked",
+              "asc": true,
+              "nulls": "last",
+              "opclass": "bool_ops",
+              "isExpression": false
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "where": "(is_blocked = true)",
+          "with": {}
+        },
+        "idx_tracked_devices_customer_id": {
+          "name": "idx_tracked_devices_customer_id",
+          "columns": [
+            {
+              "expression": "customer_id",
+              "asc": true,
+              "nulls": "last",
+              "opclass": "uuid_ops",
+              "isExpression": false
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_tracked_devices_enterprise_fingerprint": {
+          "name": "idx_tracked_devices_enterprise_fingerprint",
+          "columns": [
+            {
+              "expression": "enterprise_id",
+              "asc": true,
+              "nulls": "last",
+              "opclass": "text_ops",
+              "isExpression": false
+            },
+            {
+              "expression": "device_fingerprint",
+              "asc": true,
+              "nulls": "last",
+              "opclass": "text_ops",
+              "isExpression": false
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_tracked_devices_enterprise_id": {
+          "name": "idx_tracked_devices_enterprise_id",
+          "columns": [
+            {
+              "expression": "enterprise_id",
+              "asc": true,
+              "nulls": "last",
+              "opclass": "uuid_ops",
+              "isExpression": false
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "tracked_devices_blocked_by_fkey": {
+          "name": "tracked_devices_blocked_by_fkey",
+          "tableFrom": "tracked_devices",
+          "tableTo": "users",
+          "schemaTo": "auth",
+          "columnsFrom": [
+            "blocked_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "tracked_devices_customer_id_fkey": {
+          "name": "tracked_devices_customer_id_fkey",
+          "tableFrom": "tracked_devices",
+          "tableTo": "customer",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "customer_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "tracked_devices_enterprise_id_fkey": {
+          "name": "tracked_devices_enterprise_id_fkey",
+          "tableFrom": "tracked_devices",
+          "tableTo": "enterprise",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "enterprise_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {},
+      "policies": {
+        "Anon pode atualizar contagem do proprio device": {
+          "name": "Anon pode atualizar contagem do proprio device",
+          "as": "PERMISSIVE",
+          "for": "UPDATE",
+          "to": [
+            "anon"
+          ],
+          "withCheck": "((enterprise_id IS NOT NULL) AND (device_fingerprint IS NOT NULL) AND (COALESCE(is_blocked, false) = false))",
+          "using": "((enterprise_id IS NOT NULL) AND (device_fingerprint IS NOT NULL) AND (COALESCE(is_blocked, false) = false))"
+        },
+        "Permitir criação anônima de dispositivo": {
+          "name": "Permitir criação anônima de dispositivo",
+          "as": "PERMISSIVE",
+          "for": "INSERT",
+          "to": [
+            "anon"
+          ]
+        },
+        "Permitir verificação anônima de dispositivo": {
+          "name": "Permitir verificação anônima de dispositivo",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "anon"
+          ]
+        },
+        "Usuários autenticados podem gerenciar dispositivos": {
+          "name": "Usuários autenticados podem gerenciar dispositivos",
+          "as": "PERMISSIVE",
+          "for": "ALL",
+          "to": [
+            "authenticated"
+          ]
+        }
+      },
+      "isRLSEnabled": true
+    },
+    "public.questions_of_feedbacks": {
+      "name": "questions_of_feedbacks",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "enterprise_id": {
+          "name": "enterprise_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "scope_type": {
+          "name": "scope_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "catalog_item_id": {
+          "name": "catalog_item_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "question_order": {
+          "name": "question_order",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "question_text": {
+          "name": "question_text",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "idx_questions_context": {
+          "name": "idx_questions_context",
+          "columns": [
+            {
+              "expression": "enterprise_id",
+              "asc": true,
+              "nulls": "last",
+              "opclass": "text_ops",
+              "isExpression": false
+            },
+            {
+              "expression": "scope_type",
+              "asc": true,
+              "nulls": "last",
+              "opclass": "text_ops",
+              "isExpression": false
+            },
+            {
+              "expression": "catalog_item_id",
+              "asc": true,
+              "nulls": "last",
+              "opclass": "uuid_ops",
+              "isExpression": false
+            },
+            {
+              "expression": "is_active",
+              "asc": true,
+              "nulls": "last",
+              "opclass": "bool_ops",
+              "isExpression": false
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "uq_questions_company_order": {
+          "name": "uq_questions_company_order",
+          "columns": [
+            {
+              "expression": "enterprise_id",
+              "asc": true,
+              "nulls": "last",
+              "opclass": "uuid_ops",
+              "isExpression": false
+            },
+            {
+              "expression": "question_order",
+              "asc": true,
+              "nulls": "last",
+              "opclass": "int4_ops",
+              "isExpression": false
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "where": "((scope_type = 'COMPANY'::text) AND (catalog_item_id IS NULL))",
+          "with": {}
+        },
+        "uq_questions_item_order": {
+          "name": "uq_questions_item_order",
+          "columns": [
+            {
+              "expression": "enterprise_id",
+              "asc": true,
+              "nulls": "last",
+              "opclass": "text_ops",
+              "isExpression": false
+            },
+            {
+              "expression": "scope_type",
+              "asc": true,
+              "nulls": "last",
+              "opclass": "int4_ops",
+              "isExpression": false
+            },
+            {
+              "expression": "catalog_item_id",
+              "asc": true,
+              "nulls": "last",
+              "opclass": "uuid_ops",
+              "isExpression": false
+            },
+            {
+              "expression": "question_order",
+              "asc": true,
+              "nulls": "last",
+              "opclass": "uuid_ops",
+              "isExpression": false
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "where": "((scope_type = ANY (ARRAY['PRODUCT'::text, 'SERVICE'::text, 'DEPARTMENT'::text])) AND (catalog_item_id IS NOT NULL))",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "questions_of_feedbacks_catalog_item_id_fkey": {
+          "name": "questions_of_feedbacks_catalog_item_id_fkey",
+          "tableFrom": "questions_of_feedbacks",
+          "tableTo": "catalog_items",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "catalog_item_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "questions_of_feedbacks_enterprise_id_fkey": {
+          "name": "questions_of_feedbacks_enterprise_id_fkey",
+          "tableFrom": "questions_of_feedbacks",
+          "tableTo": "enterprise",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "enterprise_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "questions_of_feedbacks_question_order_check": {
+          "name": "questions_of_feedbacks_question_order_check",
+          "value": "(question_order >= 1) AND (question_order <= 3)"
+        },
+        "questions_of_feedbacks_question_text_length_check": {
+          "name": "questions_of_feedbacks_question_text_length_check",
+          "value": "(char_length(btrim(question_text)) >= 20) AND (char_length(btrim(question_text)) <= 150))) NOT VALID"
+        },
+        "questions_of_feedbacks_scope_type_check": {
+          "name": "questions_of_feedbacks_scope_type_check",
+          "value": "scope_type = ANY (ARRAY['COMPANY'::text, 'PRODUCT'::text, 'SERVICE'::text, 'DEPARTMENT'::text])"
+        }
+      },
+      "policies": {
+        "Anon pode ler perguntas ativas de feedback": {
+          "name": "Anon pode ler perguntas ativas de feedback",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "anon"
+          ],
+          "using": "(is_active = true)"
+        },
+        "Auth gerencia perguntas de feedback": {
+          "name": "Auth gerencia perguntas de feedback",
+          "as": "PERMISSIVE",
+          "for": "ALL",
+          "to": [
+            "authenticated"
+          ]
+        }
+      },
+      "isRLSEnabled": true
+    },
+    "public.enterprise": {
+      "name": "enterprise",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "document": {
+          "name": "document",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "auth_user_id": {
+          "name": "auth_user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "account_type": {
+          "name": "account_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "terms_version": {
+          "name": "terms_version",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "terms_accepted_at": {
+          "name": "terms_accepted_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "trial_ends_at": {
+          "name": "trial_ends_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "subscription_status": {
+          "name": "subscription_status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'TRIAL'"
+        }
+      },
+      "indexes": {
+        "enterprise_auth_user_id_idx": {
+          "name": "enterprise_auth_user_id_idx",
+          "columns": [
+            {
+              "expression": "auth_user_id",
+              "asc": true,
+              "nulls": "last",
+              "opclass": "uuid_ops",
+              "isExpression": false
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_enterprise_auth_user_id": {
+          "name": "idx_enterprise_auth_user_id",
+          "columns": [
+            {
+              "expression": "auth_user_id",
+              "asc": true,
+              "nulls": "last",
+              "opclass": "uuid_ops",
+              "isExpression": false
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_enterprise_document": {
+          "name": "idx_enterprise_document",
+          "columns": [
+            {
+              "expression": "document",
+              "asc": true,
+              "nulls": "last",
+              "opclass": "text_ops",
+              "isExpression": false
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "enterprise_auth_user_id_fkey": {
+          "name": "enterprise_auth_user_id_fkey",
+          "tableFrom": "enterprise",
+          "tableTo": "users",
+          "schemaTo": "auth",
+          "columnsFrom": [
+            "auth_user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "enterprise_document_unique": {
+          "columns": [
+            "document"
+          ],
+          "nullsNotDistinct": false,
+          "name": "enterprise_document_unique"
+        },
+        "enterprise_document_key": {
+          "columns": [
+            "document"
+          ],
+          "nullsNotDistinct": false,
+          "name": "enterprise_document_key"
+        },
+        "enterprise_auth_user_id_unique": {
+          "columns": [
+            "auth_user_id"
+          ],
+          "nullsNotDistinct": false,
+          "name": "enterprise_auth_user_id_unique"
+        },
+        "enterprise_auth_user_id_key": {
+          "columns": [
+            "auth_user_id"
+          ],
+          "nullsNotDistinct": false,
+          "name": "enterprise_auth_user_id_key"
+        }
+      },
+      "checkConstraints": {
+        "enterprise_account_type_check": {
+          "name": "enterprise_account_type_check",
+          "value": "account_type = ANY (ARRAY['CPF'::text, 'CNPJ'::text])"
+        },
+        "enterprise_subscription_status_check": {
+          "name": "enterprise_subscription_status_check",
+          "value": "subscription_status = ANY (ARRAY['TRIAL'::text, 'ACTIVE'::text, 'EXPIRED'::text, 'CANCELED'::text])"
+        }
+      },
+      "policies": {
+        "Usuários autenticados podem criar sua empresa": {
+          "name": "Usuários autenticados podem criar sua empresa",
+          "as": "PERMISSIVE",
+          "for": "INSERT",
+          "to": [
+            "public"
+          ],
+          "withCheck": "(auth.uid() = auth_user_id)"
+        },
+        "Usuários autenticados veem apenas sua empresa": {
+          "name": "Usuários autenticados veem apenas sua empresa",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "authenticated"
+          ]
+        },
+        "Usuários podem atualizar sua própria empresa": {
+          "name": "Usuários podem atualizar sua própria empresa",
+          "as": "PERMISSIVE",
+          "for": "UPDATE",
+          "to": [
+            "public"
+          ]
+        }
+      },
+      "isRLSEnabled": true
+    },
+    "public.feedback_question_answers": {
+      "name": "feedback_question_answers",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "feedback_id": {
+          "name": "feedback_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "question_id": {
+          "name": "question_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "question_text_snapshot": {
+          "name": "question_text_snapshot",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "answer_value": {
+          "name": "answer_value",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "answer_score": {
+          "name": "answer_score",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "idx_feedback_question_answers_feedback_id": {
+          "name": "idx_feedback_question_answers_feedback_id",
+          "columns": [
+            {
+              "expression": "feedback_id",
+              "asc": true,
+              "nulls": "last",
+              "opclass": "uuid_ops",
+              "isExpression": false
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_feedback_question_answers_question_id": {
+          "name": "idx_feedback_question_answers_question_id",
+          "columns": [
+            {
+              "expression": "question_id",
+              "asc": true,
+              "nulls": "last",
+              "opclass": "uuid_ops",
+              "isExpression": false
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "feedback_question_answers_feedback_id_fkey": {
+          "name": "feedback_question_answers_feedback_id_fkey",
+          "tableFrom": "feedback_question_answers",
+          "tableTo": "feedback",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "feedback_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "feedback_question_answers_question_id_fkey": {
+          "name": "feedback_question_answers_question_id_fkey",
+          "tableFrom": "feedback_question_answers",
+          "tableTo": "questions_of_feedbacks",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "question_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "feedback_question_answers_feedback_question_unique": {
+          "columns": [
+            "feedback_id",
+            "question_id"
+          ],
+          "nullsNotDistinct": false,
+          "name": "feedback_question_answers_feedback_question_unique"
+        }
+      },
+      "checkConstraints": {
+        "feedback_question_answers_answer_score_check": {
+          "name": "feedback_question_answers_answer_score_check",
+          "value": "(answer_score >= 1) AND (answer_score <= 5)"
+        },
+        "feedback_question_answers_answer_value_check": {
+          "name": "feedback_question_answers_answer_value_check",
+          "value": "answer_value = ANY (ARRAY['PESSIMO'::text, 'RUIM'::text, 'MEDIANA'::text, 'BOA'::text, 'OTIMA'::text])"
+        }
+      },
+      "policies": {
+        "Anon pode inserir respostas de perguntas": {
+          "name": "Anon pode inserir respostas de perguntas",
+          "as": "PERMISSIVE",
+          "for": "INSERT",
+          "to": [
+            "anon"
+          ],
+          "withCheck": "((feedback_id IS NOT NULL) AND (question_id IS NOT NULL))"
+        },
+        "Auth gerencia respostas de perguntas de feedback": {
+          "name": "Auth gerencia respostas de perguntas de feedback",
+          "as": "PERMISSIVE",
+          "for": "ALL",
+          "to": [
+            "authenticated"
+          ]
+        }
+      },
+      "isRLSEnabled": true
+    },
+    "public.collecting_data_enterprise": {
+      "name": "collecting_data_enterprise",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "enterprise_id": {
+          "name": "enterprise_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "company_objective": {
+          "name": "company_objective",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "analytics_goal": {
+          "name": "analytics_goal",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "business_summary": {
+          "name": "business_summary",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "main_products_or_services": {
+          "name": "main_products_or_services",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "uses_company_products": {
+          "name": "uses_company_products",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "uses_company_services": {
+          "name": "uses_company_services",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "uses_company_departments": {
+          "name": "uses_company_departments",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        }
+      },
+      "indexes": {
+        "collecting_data_enterprise_enterprise_id_idx": {
+          "name": "collecting_data_enterprise_enterprise_id_idx",
+          "columns": [
+            {
+              "expression": "enterprise_id",
+              "asc": true,
+              "nulls": "last",
+              "opclass": "uuid_ops",
+              "isExpression": false
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "collecting_data_enterprise_enterprise_id_fkey": {
+          "name": "collecting_data_enterprise_enterprise_id_fkey",
+          "tableFrom": "collecting_data_enterprise",
+          "tableTo": "enterprise",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "enterprise_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "collecting_data_enterprise_enterprise_unique": {
+          "columns": [
+            "enterprise_id"
+          ],
+          "nullsNotDistinct": false,
+          "name": "collecting_data_enterprise_enterprise_unique"
+        }
+      },
+      "checkConstraints": {},
+      "policies": {
+        "Auth gerencia dados de coleta": {
+          "name": "Auth gerencia dados de coleta",
+          "as": "PERMISSIVE",
+          "for": "ALL",
+          "to": [
+            "authenticated"
+          ],
+          "withCheck": "(enterprise_id IN ( SELECT enterprise.id\n   FROM enterprise\n  WHERE (enterprise.auth_user_id = auth.uid())))",
+          "using": "(enterprise_id IN ( SELECT enterprise.id\n   FROM enterprise\n  WHERE (enterprise.auth_user_id = auth.uid())))"
+        }
+      },
+      "isRLSEnabled": true
+    },
+    "public.collection_points": {
+      "name": "collection_points",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "enterprise_id": {
+          "name": "enterprise_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "identifier": {
+          "name": "identifier",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'ACTIVE'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "catalog_item_id": {
+          "name": "catalog_item_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "collection_points_enterprise_id_idx": {
+          "name": "collection_points_enterprise_id_idx",
+          "columns": [
+            {
+              "expression": "enterprise_id",
+              "asc": true,
+              "nulls": "last",
+              "opclass": "uuid_ops",
+              "isExpression": false
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_collection_points_catalog_item_id": {
+          "name": "idx_collection_points_catalog_item_id",
+          "columns": [
+            {
+              "expression": "catalog_item_id",
+              "asc": true,
+              "nulls": "last",
+              "opclass": "uuid_ops",
+              "isExpression": false
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "collection_points_catalog_item_id_fkey": {
+          "name": "collection_points_catalog_item_id_fkey",
+          "tableFrom": "collection_points",
+          "tableTo": "catalog_items",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "catalog_item_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "collection_points_enterprise_id_fkey": {
+          "name": "collection_points_enterprise_id_fkey",
+          "tableFrom": "collection_points",
+          "tableTo": "enterprise",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "enterprise_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "collection_points_status_check": {
+          "name": "collection_points_status_check",
+          "value": "status = ANY (ARRAY['ACTIVE'::text, 'INACTIVE'::text])"
+        },
+        "collection_points_type_check": {
+          "name": "collection_points_type_check",
+          "value": "type = ANY (ARRAY['QR_CODE'::text, 'EMAIL'::text, 'WHATSAPP'::text, 'LINK_DIRETO'::text])"
+        }
+      },
+      "policies": {
+        "Anon pode ler pontos QR_CODE ativos": {
+          "name": "Anon pode ler pontos QR_CODE ativos",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "anon"
+          ],
+          "using": "((type = 'QR_CODE'::text) AND (status = 'ACTIVE'::text) AND ((catalog_item_id IS NULL) OR (EXISTS ( SELECT 1\n   FROM catalog_items ci\n  WHERE ((ci.id = collection_points.catalog_item_id) AND (ci.status = 'ACTIVE'::text))))))"
+        },
+        "Usuários autenticados podem gerenciar pontos de coleta": {
+          "name": "Usuários autenticados podem gerenciar pontos de coleta",
+          "as": "PERMISSIVE",
+          "for": "ALL",
+          "to": [
+            "authenticated"
+          ]
+        }
+      },
+      "isRLSEnabled": true
+    },
+    "public.feedback_insights_report": {
+      "name": "feedback_insights_report",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "enterprise_id": {
+          "name": "enterprise_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "summary": {
+          "name": "summary",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "recommendations": {
+          "name": "recommendations",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "scope_type": {
+          "name": "scope_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'COMPANY'"
+        },
+        "catalog_item_id": {
+          "name": "catalog_item_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "catalog_item_name": {
+          "name": "catalog_item_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "idx_feedback_insights_report_enterprise_updated": {
+          "name": "idx_feedback_insights_report_enterprise_updated",
+          "columns": [
+            {
+              "expression": "enterprise_id",
+              "asc": true,
+              "nulls": "last",
+              "opclass": "timestamptz_ops",
+              "isExpression": false
+            },
+            {
+              "expression": "updated_at",
+              "asc": false,
+              "nulls": "first",
+              "opclass": "uuid_ops",
+              "isExpression": false
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "uq_feedback_insights_context": {
+          "name": "uq_feedback_insights_context",
+          "columns": [
+            {
+              "expression": "enterprise_id",
+              "asc": true,
+              "nulls": "last",
+              "opclass": "uuid_ops",
+              "isExpression": false
+            },
+            {
+              "expression": "scope_type",
+              "asc": true,
+              "nulls": "last",
+              "opclass": "text_ops",
+              "isExpression": false
+            },
+            {
+              "expression": "catalog_item_id",
+              "asc": true,
+              "nulls": "last",
+              "opclass": "text_ops",
+              "isExpression": false
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "feedback_insights_report_catalog_item_id_fkey": {
+          "name": "feedback_insights_report_catalog_item_id_fkey",
+          "tableFrom": "feedback_insights_report",
+          "tableTo": "catalog_items",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "catalog_item_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "feedback_insights_report_enterprise_id_fkey": {
+          "name": "feedback_insights_report_enterprise_id_fkey",
+          "tableFrom": "feedback_insights_report",
+          "tableTo": "enterprise",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "enterprise_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "feedback_insights_report_scope_type_check": {
+          "name": "feedback_insights_report_scope_type_check",
+          "value": "scope_type = ANY (ARRAY['COMPANY'::text, 'PRODUCT'::text, 'SERVICE'::text, 'DEPARTMENT'::text])"
+        }
+      },
+      "policies": {
+        "feedback_insights_report_insert": {
+          "name": "feedback_insights_report_insert",
+          "as": "PERMISSIVE",
+          "for": "INSERT",
+          "to": [
+            "public"
+          ],
+          "withCheck": "(enterprise_id IN ( SELECT enterprise.id\n   FROM enterprise\n  WHERE (enterprise.auth_user_id = auth.uid())))"
+        },
+        "feedback_insights_report_select": {
+          "name": "feedback_insights_report_select",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "public"
+          ]
+        },
+        "feedback_insights_report_update": {
+          "name": "feedback_insights_report_update",
+          "as": "PERMISSIVE",
+          "for": "UPDATE",
+          "to": [
+            "public"
+          ]
+        }
+      },
+      "isRLSEnabled": true
+    },
+    "public.feedback_question_subquestions": {
+      "name": "feedback_question_subquestions",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "question_id": {
+          "name": "question_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "subquestion_order": {
+          "name": "subquestion_order",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "subquestion_text": {
+          "name": "subquestion_text",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "idx_feedback_question_subquestions_active": {
+          "name": "idx_feedback_question_subquestions_active",
+          "columns": [
+            {
+              "expression": "question_id",
+              "asc": true,
+              "nulls": "last",
+              "opclass": "bool_ops",
+              "isExpression": false
+            },
+            {
+              "expression": "is_active",
+              "asc": true,
+              "nulls": "last",
+              "opclass": "uuid_ops",
+              "isExpression": false
+            },
+            {
+              "expression": "subquestion_order",
+              "asc": true,
+              "nulls": "last",
+              "opclass": "uuid_ops",
+              "isExpression": false
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_feedback_question_subquestions_question_id": {
+          "name": "idx_feedback_question_subquestions_question_id",
+          "columns": [
+            {
+              "expression": "question_id",
+              "asc": true,
+              "nulls": "last",
+              "opclass": "uuid_ops",
+              "isExpression": false
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "feedback_question_subquestions_question_id_fkey": {
+          "name": "feedback_question_subquestions_question_id_fkey",
+          "tableFrom": "feedback_question_subquestions",
+          "tableTo": "questions_of_feedbacks",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "question_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "feedback_question_subquestions_question_order_unique": {
+          "columns": [
+            "question_id",
+            "subquestion_order"
+          ],
+          "nullsNotDistinct": false,
+          "name": "feedback_question_subquestions_question_order_unique"
+        }
+      },
+      "checkConstraints": {
+        "feedback_question_subquestions_order_check": {
+          "name": "feedback_question_subquestions_order_check",
+          "value": "(subquestion_order >= 1) AND (subquestion_order <= 3)"
+        },
+        "feedback_question_subquestions_text_length_check": {
+          "name": "feedback_question_subquestions_text_length_check",
+          "value": "(char_length(btrim(subquestion_text)) >= 20) AND (char_length(btrim(subquestion_text)) <= 150))) NOT VALID"
+        }
+      },
+      "policies": {
+        "Anon pode ler subperguntas ativas": {
+          "name": "Anon pode ler subperguntas ativas",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "anon"
+          ],
+          "using": "(is_active = true)"
+        },
+        "Auth gerencia subperguntas de feedback": {
+          "name": "Auth gerencia subperguntas de feedback",
+          "as": "PERMISSIVE",
+          "for": "ALL",
+          "to": [
+            "authenticated"
+          ]
+        }
+      },
+      "isRLSEnabled": true
+    },
+    "public.catalog_items": {
+      "name": "catalog_items",
+      "schema": "",
+      "columns": {
+        "enterprise_id": {
+          "name": "enterprise_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "kind": {
+          "name": "kind",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'ACTIVE'"
+        },
+        "sort_order": {
+          "name": "sort_order",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "idx_catalog_items_enterprise_kind": {
+          "name": "idx_catalog_items_enterprise_kind",
+          "columns": [
+            {
+              "expression": "enterprise_id",
+              "asc": true,
+              "nulls": "last",
+              "opclass": "text_ops",
+              "isExpression": false
+            },
+            {
+              "expression": "kind",
+              "asc": true,
+              "nulls": "last",
+              "opclass": "text_ops",
+              "isExpression": false
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_catalog_items_status": {
+          "name": "idx_catalog_items_status",
+          "columns": [
+            {
+              "expression": "status",
+              "asc": true,
+              "nulls": "last",
+              "opclass": "text_ops",
+              "isExpression": false
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "catalog_items_enterprise_id_fkey": {
+          "name": "catalog_items_enterprise_id_fkey",
+          "tableFrom": "catalog_items",
+          "tableTo": "enterprise",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "enterprise_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "catalog_items_kind_check": {
+          "name": "catalog_items_kind_check",
+          "value": "kind = ANY (ARRAY['PRODUCT'::text, 'SERVICE'::text, 'DEPARTMENT'::text])"
+        },
+        "catalog_items_status_check": {
+          "name": "catalog_items_status_check",
+          "value": "status = ANY (ARRAY['ACTIVE'::text, 'INACTIVE'::text])"
+        }
+      },
+      "policies": {
+        "Anon pode ler catálogo ativo": {
+          "name": "Anon pode ler catálogo ativo",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "anon"
+          ],
+          "using": "(status = 'ACTIVE'::text)"
+        },
+        "Usuários autenticados podem gerenciar catálogo": {
+          "name": "Usuários autenticados podem gerenciar catálogo",
+          "as": "PERMISSIVE",
+          "for": "ALL",
+          "to": [
+            "authenticated"
+          ]
+        }
+      },
+      "isRLSEnabled": true
+    },
+    "public.feedback_subquestion_answers": {
+      "name": "feedback_subquestion_answers",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "feedback_id": {
+          "name": "feedback_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "subquestion_id": {
+          "name": "subquestion_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "subquestion_text_snapshot": {
+          "name": "subquestion_text_snapshot",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "answer_value": {
+          "name": "answer_value",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "answer_score": {
+          "name": "answer_score",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "idx_feedback_subquestion_answers_feedback_id": {
+          "name": "idx_feedback_subquestion_answers_feedback_id",
+          "columns": [
+            {
+              "expression": "feedback_id",
+              "asc": true,
+              "nulls": "last",
+              "opclass": "uuid_ops",
+              "isExpression": false
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_feedback_subquestion_answers_subquestion_id": {
+          "name": "idx_feedback_subquestion_answers_subquestion_id",
+          "columns": [
+            {
+              "expression": "subquestion_id",
+              "asc": true,
+              "nulls": "last",
+              "opclass": "uuid_ops",
+              "isExpression": false
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "feedback_subquestion_answers_feedback_id_fkey": {
+          "name": "feedback_subquestion_answers_feedback_id_fkey",
+          "tableFrom": "feedback_subquestion_answers",
+          "tableTo": "feedback",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "feedback_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "feedback_subquestion_answers_subquestion_id_fkey": {
+          "name": "feedback_subquestion_answers_subquestion_id_fkey",
+          "tableFrom": "feedback_subquestion_answers",
+          "tableTo": "feedback_question_subquestions",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "subquestion_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "feedback_subquestion_answers_feedback_subquestion_unique": {
+          "columns": [
+            "feedback_id",
+            "subquestion_id"
+          ],
+          "nullsNotDistinct": false,
+          "name": "feedback_subquestion_answers_feedback_subquestion_unique"
+        }
+      },
+      "checkConstraints": {
+        "feedback_subquestion_answers_answer_score_check": {
+          "name": "feedback_subquestion_answers_answer_score_check",
+          "value": "(answer_score >= 1) AND (answer_score <= 5)"
+        },
+        "feedback_subquestion_answers_answer_value_check": {
+          "name": "feedback_subquestion_answers_answer_value_check",
+          "value": "answer_value = ANY (ARRAY['PESSIMO'::text, 'RUIM'::text, 'MEDIANA'::text, 'BOA'::text, 'OTIMA'::text])"
+        }
+      },
+      "policies": {
+        "Anon pode inserir respostas de subperguntas": {
+          "name": "Anon pode inserir respostas de subperguntas",
+          "as": "PERMISSIVE",
+          "for": "INSERT",
+          "to": [
+            "anon"
+          ],
+          "withCheck": "((feedback_id IS NOT NULL) AND (subquestion_id IS NOT NULL))"
+        },
+        "Auth gerencia respostas de subperguntas": {
+          "name": "Auth gerencia respostas de subperguntas",
+          "as": "PERMISSIVE",
+          "for": "ALL",
+          "to": [
+            "authenticated"
+          ]
+        }
+      },
+      "isRLSEnabled": true
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {
+    "public.enterprise_public": {
+      "name": "enterprise_public",
+      "schema": "public",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "isExisting": false,
+      "definition": "SELECT e.id, au.raw_user_meta_data ->> 'full_name'::text AS name FROM enterprise e JOIN auth.users au ON e.auth_user_id = au.id",
+      "materialized": false
+    }
+  },
+  "_meta": {
+    "schemas": {},
+    "tables": {},
+    "columns": {}
+  },
+  "internal": {
+    "tables": {
+      "feedback_analysis": {
+        "columns": {
+          "categories": {
+            "isArray": true,
+            "dimensions": 1,
+            "rawType": "text"
+          },
+          "keywords": {
+            "isArray": true,
+            "dimensions": 1,
+            "rawType": "text"
+          }
+        }
+      },
+      "collecting_data_enterprise": {
+        "columns": {
+          "main_products_or_services": {
+            "isArray": true,
+            "dimensions": 1,
+            "rawType": "text"
+          }
+        }
+      },
+      "feedback_insights_report": {
+        "columns": {
+          "recommendations": {
+            "isArray": true,
+            "dimensions": 1,
+            "rawType": "text"
+          }
+        }
+      }
+    }
+  }
+}
