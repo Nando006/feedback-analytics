@@ -1,6 +1,6 @@
 {
-  "id": "5de12d1f-b8d8-4aa7-a240-3ebd1753d6b0",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "92df0db2-7654-449e-8372-0d7d1784ae94",
+  "prevId": "5de12d1f-b8d8-4aa7-a240-3ebd1753d6b0",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -848,6 +848,27 @@
               "asc": true,
               "nulls": "last",
               "opclass": "uuid_ops"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_feedback_enterprise_created_at": {
+          "name": "idx_feedback_enterprise_created_at",
+          "columns": [
+            {
+              "expression": "enterprise_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": false,
+              "nulls": "last"
             }
           ],
           "isUnique": false,

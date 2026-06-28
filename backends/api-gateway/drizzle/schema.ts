@@ -21,6 +21,9 @@ export const feedback = pgTable("feedback", {
 	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }).defaultNow(),
 }, (table) => [
 	index("feedback_enterprise_id_idx").using("btree", table.enterpriseId.asc().nullsLast().op("uuid_ops")),
+	// Índice composto p/ filtro por período (fundação da Etapa 02). Adicionado
+	// via migration Drizzle (db:generate → db:migrate) — exemplo de ponta a ponta.
+	index("idx_feedback_enterprise_created_at").on(table.enterpriseId, table.createdAt.desc()),
 	foreignKey({
 			columns: [table.collectionPointId],
 			foreignColumns: [collectionPoints.id],
