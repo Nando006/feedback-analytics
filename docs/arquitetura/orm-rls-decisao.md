@@ -9,6 +9,8 @@ Artefatos relacionados:
 - Schema Drizzle **canônico** (introspectado do banco real via `db:pull`): [`backends/api-gateway/drizzle/schema.ts`](../../backends/api-gateway/drizzle/schema.ts) · tipos inferidos estáveis em [`src/db/types.ts`](../../backends/api-gateway/src/db/types.ts)
 - Cliente Drizzle (lazy, pooler): [`backends/api-gateway/src/db/client.ts`](../../backends/api-gateway/src/db/client.ts)
 - Config do drizzle-kit: [`backends/api-gateway/drizzle.config.ts`](../../backends/api-gateway/drizzle.config.ts)
+- Convenção de migrations: [Migrations com Drizzle](migrations-drizzle.md)
+- Caminho migrado (stats via Drizzle, tenant-scoped): [`src/db/tenantScope.ts`](../../backends/api-gateway/src/db/tenantScope.ts) + [`src/repositories/feedbackStats.repository.ts`](../../backends/api-gateway/src/repositories/feedbackStats.repository.ts)
 - Modelagem existente: [Modelo Conceitual (MER)](modelo-conceitual-mer.md) · [Diagrama de Entidade e Relacionamento (DER)](modelagem-de-dados.md) · [Visão Geral do Banco](../referencia/banco-de-dados/visao-geral.md)
 
 ---
