@@ -20,6 +20,10 @@ import {
   wilsonInterval,
   wilsonLowerBound,
 } from '../../libs/statistics/index.js';
+import {
+  fetchScopedRatingAggregates,
+  fetchScopedAnalysisAggregates,
+} from '../../repositories/feedbackStats.repository.js';
 
 type FeedbackQuestionAnswerRow = {
   feedback_id: string;
@@ -45,8 +49,6 @@ type CatalogItemRow = {
   name: string;
   kind: string | null;
 };
-
-type FeedbackStatsRow = { id: string; rating: number };
 
 type FeedbackListRow = {
   id: string;
@@ -369,63 +371,28 @@ export async function getFeedbacksStatsController(req: Request, res: Response) {
 
     const filteredCollectionPointIds = scopeResolution.ids;
 
-    let statsQuery = supabase
-      .from('feedback')
-      .select('id, rating')
-      .eq('enterprise_id', enterprise.id);
+    // Agregações servidas via DRIZZLE, com a contagem feita NO BANCO (GROUP BY),
+    // e SEMPRE com filtro explícito por enterprise_id (isolamento multi-tenant na
+    // aplicação — o Drizzle acessa com role que ignora a RLS). Ver
+    // src/db/tenantScope.ts e src/repositories/feedbackStats.repository.ts.
+    const ratingAgg = await fetchScopedRatingAggregates({
+      enterpriseId: enterprise.id,
+      collectionPointIds: filteredCollectionPointIds,
+    });
+    const analysisAgg = await fetchScopedAnalysisAggregates({
+      enterpriseId: enterprise.id,
+      collectionPointIds: filteredCollectionPointIds,
+    });
 
-    if (filteredCollectionPointIds) {
-      statsQuery = statsQuery.in('collection_point_id', filteredCollectionPointIds);
-    }
+    const totalFeedbacks = ratingAgg.totalFeedbacks;
+    const averageRating = totalFeedbacks > 0 ? ratingAgg.ratingSum / totalFeedbacks : 0;
+    const ratingDistribution = ratingAgg.ratingDistribution;
 
-    const { data: stats, error: statsError } = await statsQuery;
-
-    if (statsError) return sendTypedError(res, 500, API_ERROR_FAILED_TO_FETCH_STATS);
-
-    const statsRows = (stats ?? []) as FeedbackStatsRow[];
-    const totalFeedbacks = statsRows.length;
-    const averageRating =
-      totalFeedbacks > 0 ? statsRows.reduce((sum, f) => sum + f.rating, 0) / totalFeedbacks : 0;
-
-    const ratingDistribution = {
-      1: statsRows.filter((f) => f.rating === 1).length,
-      2: statsRows.filter((f) => f.rating === 2).length,
-      3: statsRows.filter((f) => f.rating === 3).length,
-      4: statsRows.filter((f) => f.rating === 4).length,
-      5: statsRows.filter((f) => f.rating === 5).length,
-    };
-
-    // Quantos desses feedbacks (no mesmo escopo) já têm análise da IA, quando foi
-    // a análise mais recente (trava o "Gerar insights") e a distribuição de
-    // sentimento da IA (lente "texto") sobre o subconjunto analisado.
-    let totalAnalyzed = 0;
-    let latestAnalysisAt: string | null = null;
-    const aiCounts = { positive: 0, neutral: 0, negative: 0 };
-    if (totalFeedbacks > 0) {
-      const feedbackIds = statsRows.map((f) => f.id);
-      const { data: analysisRows, error: analysisError } = await supabase
-        .from('feedback_analysis')
-        .select('feedback_id, created_at, sentiment')
-        .in('feedback_id', feedbackIds);
-
-      if (analysisError) return sendTypedError(res, 500, API_ERROR_FAILED_TO_FETCH_STATS);
-
-      const rows = (analysisRows ?? []) as {
-        feedback_id: string;
-        created_at: string;
-        sentiment: 'positive' | 'neutral' | 'negative';
-      }[];
-      totalAnalyzed = new Set(rows.map((r) => r.feedback_id)).size;
-      for (const r of rows) {
-        if (r.created_at && (latestAnalysisAt === null || r.created_at > latestAnalysisAt)) {
-          latestAnalysisAt = r.created_at;
-        }
-        if (r.sentiment === 'positive' || r.sentiment === 'neutral' || r.sentiment === 'negative') {
-          aiCounts[r.sentiment]++;
-        }
-      }
-    }
-
+    // Subconjunto analisado pela IA: total, análise mais recente (trava o
+    // "Gerar insights") e a distribuição de sentimento (lente "texto").
+    const totalAnalyzed = analysisAgg.totalAnalyzed;
+    const latestAnalysisAt = analysisAgg.latestAnalysisAt;
+    const aiCounts = analysisAgg.aiCounts;
     const pendingCount = totalFeedbacks - totalAnalyzed;
 
     // Lente SATISFAÇÃO (estrelas): média+IC t, Net Satisfaction e CSAT Top-2-Box.

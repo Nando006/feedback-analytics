@@ -3,12 +3,25 @@ import request from 'supertest';
 import app from '../../index.js';
 import { createSupabaseServerClient } from '../config/supabase.js';
 import { makeMockSupabase, TEST_USER, TEST_ENTERPRISE } from './helpers/supabase-mock.js';
+import {
+  fetchScopedRatingAggregates,
+  fetchScopedAnalysisAggregates,
+} from '../repositories/feedbackStats.repository.js';
 
 vi.mock('../config/supabase.js', () => ({
   createSupabaseServerClient: vi.fn(),
 }));
 
+// As agregações de stats migraram para Drizzle; mockamos o repositório para
+// testar o controller sem um banco real.
+vi.mock('../repositories/feedbackStats.repository.js', () => ({
+  fetchScopedRatingAggregates: vi.fn(),
+  fetchScopedAnalysisAggregates: vi.fn(),
+}));
+
 const mockCreateClient = vi.mocked(createSupabaseServerClient);
+const mockRatingAgg = vi.mocked(fetchScopedRatingAggregates);
+const mockAnalysisAgg = vi.mocked(fetchScopedAnalysisAggregates);
 
 function setupAuthenticatedMock() {
   const mockSupabase = makeMockSupabase();
@@ -180,34 +193,33 @@ describe('[Integração] GET /api/protected/user/feedbacks/stats', () => {
     expect(res.status).toBe(401);
   });
 
-  it('[CT-UC09-01] retorna 200 com distribuição de ratings', async () => {
+  it('[CT-UC09-01] retorna 200 com distribuição de ratings (agregação via Drizzle)', async () => {
     const mockSupabase = setupAuthenticatedMock();
 
+    // enterprise encontrada (lookup ainda via Supabase, protegido por RLS)
     mockSupabase.queryBuilder.single.mockResolvedValueOnce({
       data: TEST_ENTERPRISE,
       error: null,
     });
 
-    // stats query
-    mockSupabase.queryBuilder.then.mockImplementationOnce((resolve: (v: unknown) => void) => {
-      resolve({
-        data: [
-          { rating: 5 }, { rating: 5 }, { rating: 4 }, { rating: 3 },
-        ],
-        error: null,
-      });
-      return Promise.resolve({
-        data: [
-          { rating: 5 }, { rating: 5 }, { rating: 4 }, { rating: 3 },
-        ],
-        error: null,
-      });
+    // Agregados servidos via Drizzle (mockados): notas 5,5,4,3 e nada analisado.
+    mockRatingAgg.mockResolvedValueOnce({
+      totalFeedbacks: 4,
+      ratingSum: 17,
+      ratingDistribution: { 1: 0, 2: 0, 3: 1, 4: 1, 5: 2 },
+    });
+    mockAnalysisAgg.mockResolvedValueOnce({
+      totalAnalyzed: 0,
+      latestAnalysisAt: null,
+      aiCounts: { positive: 0, neutral: 0, negative: 0 },
     });
 
     const res = await request(app).get('/api/protected/user/feedbacks/stats');
 
     expect(res.status).toBe(200);
-    expect(res.body).toHaveProperty('averageRating');
-    expect(res.body).toHaveProperty('ratingDistribution');
+    expect(res.body.totalFeedbacks).toBe(4);
+    expect(res.body.averageRating).toBe(4.3); // 17/4 = 4.25 → 4.3
+    expect(res.body.ratingDistribution).toEqual({ 1: 0, 2: 0, 3: 1, 4: 1, 5: 2 });
+    expect(res.body.pendingCount).toBe(4);
   });
 });
