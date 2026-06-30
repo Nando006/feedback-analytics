@@ -3,6 +3,8 @@ import type {
   InsightsCatalogItemOption,
 } from 'components/user/pages/feedbacksInsightsReport/ui.types';
 
+import type { DatePreset } from '../utils/dateRange';
+
 export interface InsightsControlsContextValue {
   scope: InsightScopeOption;
   setScope: (scope: InsightScopeOption) => void;
@@ -18,6 +20,14 @@ export interface InsightsControlsContextValue {
   regenerateInsights: () => void;
   isAnalyzingRaw: boolean;
   isRegeneratingInsights: boolean;
+
+  // Date selection state
+  datePreset: DatePreset;
+  startDate?: string;
+  endDate?: string;
+  customStart?: string;
+  customEnd?: string;
+  setDateRange: (preset: DatePreset, customStart?: string, customEnd?: string) => void;
 }
 
 export interface InsightsControlsInitialData {

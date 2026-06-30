@@ -47,6 +47,14 @@ export function ServiceGetFeedbackStats(params?: FeedbackStatsOptions) {
     searchParams.append('catalog_item_id', params.catalog_item_id);
   }
 
+  if (params?.start_date) {
+    searchParams.append('start_date', params.start_date);
+  }
+
+  if (params?.end_date) {
+    searchParams.append('end_date', params.end_date);
+  }
+
   const queryString = searchParams.toString();
   const url = `/api/protected/user/feedbacks/stats${
     queryString ? `?${queryString}` : ''

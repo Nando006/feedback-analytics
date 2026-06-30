@@ -33,7 +33,7 @@ export default function Dashboard() {
   const dashboardLoaderData = useLoaderData<DashboardLoaderData>();
   const [searchParams, setSearchParams] = useSearchParams();
   const toast = useToast();
-  const { scope, catalogItemId } = useInsightsControls();
+  const { scope, catalogItemId, startDate, endDate } = useInsightsControls();
 
   const toastShownRef = useRef(false);
 
@@ -72,6 +72,8 @@ export default function Dashboard() {
       ServiceGetFeedbackStats({
         scope_type: scope,
         catalog_item_id: catalogParam,
+        start_date: startDate,
+        end_date: endDate,
       }).catch(() => null),
       ServiceGetFeedbackQuestions({
         scope_type: scope,
@@ -83,7 +85,7 @@ export default function Dashboard() {
     setQuestions(questionsData?.questions ?? []);
     firstScopedFetchRef.current = false;
     setScopedLoading(false);
-  }, [scope, catalogItemId]);
+  }, [scope, catalogItemId, startDate, endDate]);
 
   useEffect(() => {
     fetchScopedData();

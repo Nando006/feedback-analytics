@@ -15,7 +15,7 @@ export function useScopedPendingCount(enabled: boolean): {
   latestAnalysisAt: string | null;
   loading: boolean;
 } {
-  const { scope, catalogItemId, isAnalyzingRaw } = useInsightsControls();
+  const { scope, catalogItemId, isAnalyzingRaw, startDate, endDate } = useInsightsControls();
 
   const wasAnalyzingRef = useRef(false);
   const [pendingCount, setPendingCount] = useState(0);
@@ -41,6 +41,8 @@ export function useScopedPendingCount(enabled: boolean): {
       const stats = await ServiceGetFeedbackStats({
         scope_type: scope,
         catalog_item_id: catalogParam,
+        start_date: startDate,
+        end_date: endDate,
       });
       setPendingCount(stats?.pendingCount ?? 0);
       setTotalFeedbacks(stats?.totalFeedbacks ?? 0);
@@ -54,7 +56,7 @@ export function useScopedPendingCount(enabled: boolean): {
     } finally {
       setLoading(false);
     }
-  }, [scope, catalogItemId]);
+  }, [scope, catalogItemId, startDate, endDate]);
 
   useEffect(() => {
     if (enabled) fetchCount();

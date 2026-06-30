@@ -9,6 +9,8 @@ import type {
   InsightsControlsInitialData,
 } from './insightsControls.types';
 
+import { calculatePresetRange, type DatePreset } from '../utils/dateRange';
+
 const InsightsControlsContext = createContext<InsightsControlsContextValue | null>(null);
 
 export function InsightsControlsProvider({
@@ -44,11 +46,34 @@ export function useInsightsControlsState(initial?: InsightsControlsInitialData) 
   );
   const [canAnalyze, setCanAnalyze] = useState(initial?.canAnalyze ?? false);
 
+  // New Date States
+  const [datePreset, setDatePreset] = useState<DatePreset>('all');
+  const [startDate, setStartDate] = useState<string | undefined>(undefined);
+  const [endDate, setEndDate] = useState<string | undefined>(undefined);
+  const [customStart, setCustomStart] = useState<string | undefined>(undefined);
+  const [customEnd, setCustomEnd] = useState<string | undefined>(undefined);
+
+  const setDateRange = (preset: DatePreset, startStr?: string, endStr?: string) => {
+    setDatePreset(preset);
+    if (preset === 'custom') {
+      setCustomStart(startStr);
+      setCustomEnd(endStr);
+      const parsedRange = calculatePresetRange('custom', startStr, endStr);
+      setStartDate(parsedRange.startDate);
+      setEndDate(parsedRange.endDate);
+    } else {
+      const parsedRange = calculatePresetRange(preset);
+      setStartDate(parsedRange.startDate);
+      setEndDate(parsedRange.endDate);
+    }
+  };
+
   return {
     scope, setScope,
     catalogItemId, setCatalogItemId,
     catalogItemOptions, setCatalogItemOptions,
     availableScopes, setAvailableScopes,
     canAnalyze, setCanAnalyze,
+    datePreset, startDate, endDate, customStart, customEnd, setDateRange
   };
 }

@@ -106,6 +106,12 @@ describe('[Unidade] Dashboard Page', () => {
     mocks.useInsightsControls.mockReturnValue({
       scope: 'COMPANY',
       catalogItemId: '',
+      datePreset: 'all',
+      startDate: undefined,
+      endDate: undefined,
+      customStart: undefined,
+      customEnd: undefined,
+      setDateRange: vi.fn(),
     });
     mocks.useScopedInsightsReport.mockReturnValue({
       report: null,
