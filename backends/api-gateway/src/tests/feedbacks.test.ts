@@ -222,4 +222,57 @@ describe('[Integração] GET /api/protected/user/feedbacks/stats', () => {
     expect(res.body.ratingDistribution).toEqual({ 1: 0, 2: 0, 3: 1, 4: 1, 5: 2 });
     expect(res.body.pendingCount).toBe(4);
   });
+
+  it('retorna 200 e repassa start_date e end_date corretos para o repositório', async () => {
+    const mockSupabase = setupAuthenticatedMock();
+
+    mockSupabase.queryBuilder.single.mockResolvedValueOnce({
+      data: TEST_ENTERPRISE,
+      error: null,
+    });
+
+    mockRatingAgg.mockResolvedValueOnce({
+      totalFeedbacks: 0,
+      ratingSum: 0,
+      ratingDistribution: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
+    });
+    mockAnalysisAgg.mockResolvedValueOnce({
+      totalAnalyzed: 0,
+      latestAnalysisAt: null,
+      aiCounts: { positive: 0, neutral: 0, negative: 0 },
+    });
+
+    const res = await request(app)
+      .get('/api/protected/user/feedbacks/stats')
+      .query({
+        start_date: '2026-06-01T00:00:00.000Z',
+        end_date: '2026-06-30T23:59:59.999Z',
+      });
+
+    expect(res.status).toBe(200);
+    expect(mockRatingAgg).toHaveBeenCalledWith(
+      expect.objectContaining({
+        startDate: '2026-06-01T00:00:00.000Z',
+        endDate: '2026-06-30T23:59:59.999Z',
+      }),
+    );
+    expect(mockAnalysisAgg).toHaveBeenCalledWith(
+      expect.objectContaining({
+        startDate: '2026-06-01T00:00:00.000Z',
+        endDate: '2026-06-30T23:59:59.999Z',
+      }),
+    );
+  });
+
+  it('retorna 400 se start_date for inválida', async () => {
+    setupAuthenticatedMock();
+
+    const res = await request(app)
+      .get('/api/protected/user/feedbacks/stats')
+      .query({ start_date: 'data-invalida' });
+
+    expect(res.status).toBe(400);
+    expect(res.body.error).toBe('invalid_payload');
+  });
 });
+

@@ -396,4 +396,6 @@ export type FeedbackInsightsReportOptions = {
 export type FeedbackStatsOptions = {
   scope_type?: FeedbackInsightScopeType;
   catalog_item_id?: string;
+  start_date?: string;
+  end_date?: string;
 };

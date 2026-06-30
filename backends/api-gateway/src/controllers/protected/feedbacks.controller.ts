@@ -7,6 +7,7 @@ import {
   API_ERROR_FAILED_TO_FETCH_FEEDBACK_INSIGHTS_REPORT,
   API_ERROR_FAILED_TO_FETCH_STATS,
   API_ERROR_INTERNAL_SERVER_ERROR,
+  API_ERROR_INVALID_PAYLOAD,
 } from '../../config/errors.js';
 import { normalizeFeedbackAnalysisRows } from '../../libs/iaAnalyze/normalize.js';
 import { resolveScopeCollectionPointIds } from '../../repositories/scope.repository.js';
@@ -346,6 +347,30 @@ export async function getFeedbacksStatsController(req: Request, res: Response) {
   const scopeType = parseInsightScopeType(req.query.scope_type);
   const catalogItemId = String(req.query.catalog_item_id ?? '').trim() || null;
 
+  const startDateRaw = req.query.start_date;
+  const endDateRaw = req.query.end_date;
+
+  let startDate: string | null = null;
+  let endDate: string | null = null;
+
+  if (startDateRaw !== undefined) {
+    if (typeof startDateRaw !== 'string' || isNaN(Date.parse(startDateRaw))) {
+      return sendTypedError(res, 400, API_ERROR_INVALID_PAYLOAD, {
+        message: 'A data de início (start_date) fornecida é inválida. Use o formato ISO 8601.',
+      });
+    }
+    startDate = new Date(startDateRaw).toISOString();
+  }
+
+  if (endDateRaw !== undefined) {
+    if (typeof endDateRaw !== 'string' || isNaN(Date.parse(endDateRaw))) {
+      return sendTypedError(res, 400, API_ERROR_INVALID_PAYLOAD, {
+        message: 'A data de término (end_date) fornecida é inválida. Use o formato ISO 8601.',
+      });
+    }
+    endDate = new Date(endDateRaw).toISOString();
+  }
+
   try {
     const { data: enterprise, error: enterpriseError } = await supabase
       .from('enterprise')
@@ -378,10 +403,14 @@ export async function getFeedbacksStatsController(req: Request, res: Response) {
     const ratingAgg = await fetchScopedRatingAggregates({
       enterpriseId: enterprise.id,
       collectionPointIds: filteredCollectionPointIds,
+      startDate,
+      endDate,
     });
     const analysisAgg = await fetchScopedAnalysisAggregates({
       enterpriseId: enterprise.id,
       collectionPointIds: filteredCollectionPointIds,
+      startDate,
+      endDate,
     });
 
     const totalFeedbacks = ratingAgg.totalFeedbacks;

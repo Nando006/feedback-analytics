@@ -16,6 +16,10 @@ CREATE TABLE IF NOT EXISTS "public"."feedback" (
   PRIMARY KEY ("id")
 );
 
+CREATE INDEX IF NOT EXISTS "idx_feedback_enterprise_created_at"
+  ON "public"."feedback" ("enterprise_id", "created_at" DESC);
+
+
 DO $$
 BEGIN
   IF NOT EXISTS (

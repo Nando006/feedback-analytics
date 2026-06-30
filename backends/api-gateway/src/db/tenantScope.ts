@@ -1,4 +1,4 @@
-import { and, eq, inArray, type SQL } from 'drizzle-orm';
+import { and, eq, gte, lte, inArray, type SQL } from 'drizzle-orm';
 import { feedback } from '../../drizzle/schema.js';
 
 /**
@@ -17,8 +17,8 @@ export function assertEnterpriseId(enterpriseId: string): void {
 /**
  * Condição WHERE para `feedback` SEMPRE filtrada por `enterprise_id`. Opcional:
  * restringe a um conjunto de `collection_point` ids (o escopo selecionado no
- * painel). É o "helper único" por onde passam as leituras de feedback via
- * Drizzle, garantindo o isolamento por empresa.
+ * painel) e a um intervalo de datas (período selecionado). É o "helper único"
+ * por onde passam as leituras de feedback via Drizzle, garantindo o isolamento por empresa.
  *
  * Convenção de `collectionPointIds`:
  * - `null`  => toda a empresa (sem recorte de escopo);
@@ -29,14 +29,25 @@ export function assertEnterpriseId(enterpriseId: string): void {
 export function scopedFeedbackWhere(
   enterpriseId: string,
   collectionPointIds?: string[] | null,
+  startDate?: string | null,
+  endDate?: string | null,
 ): SQL {
   assertEnterpriseId(enterpriseId);
 
-  const byEnterprise = eq(feedback.enterpriseId, enterpriseId);
+  const conditions: SQL[] = [eq(feedback.enterpriseId, enterpriseId)];
 
   if (collectionPointIds && collectionPointIds.length > 0) {
-    return and(byEnterprise, inArray(feedback.collectionPointId, collectionPointIds)) as SQL;
+    conditions.push(inArray(feedback.collectionPointId, collectionPointIds));
   }
 
-  return byEnterprise;
+  if (startDate) {
+    conditions.push(gte(feedback.createdAt, startDate));
+  }
+
+  if (endDate) {
+    conditions.push(lte(feedback.createdAt, endDate));
+  }
+
+  return and(...conditions) as SQL;
 }
+

@@ -7,6 +7,8 @@ export interface ScopedStatsParams {
   enterpriseId: string;
   /** `null` = toda a empresa; `[]` = escopo sem pontos (zero resultados). */
   collectionPointIds: string[] | null;
+  startDate?: string | null;
+  endDate?: string | null;
 }
 
 export interface ScopedRatingAggregates {
@@ -38,7 +40,7 @@ function scopeHasNoPoints(ids: string[] | null): boolean {
 export async function fetchScopedRatingAggregates(
   params: ScopedStatsParams,
 ): Promise<ScopedRatingAggregates> {
-  const { enterpriseId, collectionPointIds } = params;
+  const { enterpriseId, collectionPointIds, startDate, endDate } = params;
 
   if (scopeHasNoPoints(collectionPointIds)) {
     return { totalFeedbacks: 0, ratingSum: 0, ratingDistribution: emptyDistribution() };
@@ -47,7 +49,7 @@ export async function fetchScopedRatingAggregates(
   const rows = await getDb()
     .select({ rating: feedback.rating, c: count() })
     .from(feedback)
-    .where(scopedFeedbackWhere(enterpriseId, collectionPointIds))
+    .where(scopedFeedbackWhere(enterpriseId, collectionPointIds, startDate, endDate))
     .groupBy(feedback.rating);
 
   const ratingDistribution = emptyDistribution();
@@ -79,7 +81,7 @@ export async function fetchScopedRatingAggregates(
 export async function fetchScopedAnalysisAggregates(
   params: ScopedStatsParams,
 ): Promise<ScopedAnalysisAggregates> {
-  const { enterpriseId, collectionPointIds } = params;
+  const { enterpriseId, collectionPointIds, startDate, endDate } = params;
 
   if (scopeHasNoPoints(collectionPointIds)) {
     return { totalAnalyzed: 0, latestAnalysisAt: null, aiCounts: { positive: 0, neutral: 0, negative: 0 } };
@@ -93,7 +95,7 @@ export async function fetchScopedAnalysisAggregates(
     })
     .from(feedbackAnalysis)
     .innerJoin(feedback, eq(feedbackAnalysis.feedbackId, feedback.id))
-    .where(scopedFeedbackWhere(enterpriseId, collectionPointIds))
+    .where(scopedFeedbackWhere(enterpriseId, collectionPointIds, startDate, endDate))
     .groupBy(feedbackAnalysis.sentiment);
 
   let totalAnalyzed = 0;
