@@ -1,5 +1,7 @@
 import type { LoaderUserDashboard } from 'src/routes/loaders/loaderUserDashboard';
-import type { Interval, QuestionMetric } from 'lib/interfaces/domain/feedback.domain';
+import type { Interval, QuestionMetric, FeedbackStatsComparison } from 'lib/interfaces/domain/feedback.domain';
+import type { ReactNode } from 'react';
+import type { IconType } from 'react-icons';
 
 /**
  * Props da seção de métricas principais do dashboard.
@@ -46,3 +48,27 @@ export interface SectionSatisfactionRadarProps {
 export interface SectionLowestQuestionsProps {
   questions: QuestionMetric[];
 }
+
+export interface SectionComparisonMetricsProps {
+  data: FeedbackStatsComparison;
+  datePreset: string;
+  startDate?: string;
+  endDate?: string;
+  referenceStartDate?: string;
+  referenceEndDate?: string;
+  comparisonReferenceType?: 'previous_period' | 'previous_year' | 'custom';
+}
+
+export type ComparisonMetricCardProps = {
+  title: string;
+  value: string;
+  refValue: string;
+  delta: {
+    absolute: number;
+    percentage?: number | null;
+  };
+  invertColor?: boolean;
+  isPercentageDelta?: boolean;
+  icon: IconType;
+  helper?: ReactNode;
+};

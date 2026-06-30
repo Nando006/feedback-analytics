@@ -399,3 +399,27 @@ export type FeedbackStatsOptions = {
   start_date?: string;
   end_date?: string;
 };
+
+export interface FeedbackStatsDeltas {
+  totalFeedbacks: { absolute: number; percentage: number | null };
+  averageRating: { absolute: number };
+  netSatisfaction: { absolute: number };
+  csat: { absolute: number };
+  netSentimentScore?: { absolute: number };
+}
+
+export interface FeedbackStatsComparison {
+  primary: FeedbackStats;
+  reference: FeedbackStats;
+  deltas: FeedbackStatsDeltas;
+}
+
+export type FeedbackStatsComparisonOptions = {
+  scope_type?: FeedbackInsightScopeType;
+  catalog_item_id?: string;
+  primary_start?: string;
+  primary_end?: string;
+  reference_start?: string;
+  reference_end?: string;
+};
+

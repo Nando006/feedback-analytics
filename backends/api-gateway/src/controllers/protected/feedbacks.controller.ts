@@ -340,6 +340,73 @@ export async function getFeedbacksController(req: Request, res: Response) {
   }
 }
 
+export async function computeFeedbackStats({
+  enterpriseId,
+  collectionPointIds,
+  startDate,
+  endDate,
+}: {
+  enterpriseId: string;
+  collectionPointIds: string[] | null;
+  startDate: string | null;
+  endDate: string | null;
+}) {
+  const ratingAgg = await fetchScopedRatingAggregates({
+    enterpriseId,
+    collectionPointIds,
+    startDate,
+    endDate,
+  });
+  const analysisAgg = await fetchScopedAnalysisAggregates({
+    enterpriseId,
+    collectionPointIds,
+    startDate,
+    endDate,
+  });
+
+  const totalFeedbacks = ratingAgg.totalFeedbacks;
+  const averageRating = totalFeedbacks > 0 ? ratingAgg.ratingSum / totalFeedbacks : 0;
+  const ratingDistribution = ratingAgg.ratingDistribution;
+
+  const totalAnalyzed = analysisAgg.totalAnalyzed;
+  const latestAnalysisAt = analysisAgg.latestAnalysisAt;
+  const aiCounts = analysisAgg.aiCounts;
+  const pendingCount = totalFeedbacks - totalAnalyzed;
+
+  const satisfaction = ratingStats(ratingDistribution);
+  const top2 = ratingDistribution[4] + ratingDistribution[5];
+  const bottom2 = ratingDistribution[1] + ratingDistribution[2];
+
+  return {
+    totalFeedbacks,
+    averageRating: Math.round(averageRating * 10) / 10,
+    ratingDistribution,
+    sentimentBreakdown: {
+      positive: ratingDistribution[4] + ratingDistribution[5],
+      neutral: ratingDistribution[3],
+      negative: ratingDistribution[1] + ratingDistribution[2],
+    },
+    totalAnalyzed,
+    pendingCount,
+    latestAnalysisAt,
+    starMean: satisfaction.mean,
+    starMeanCI: satisfaction.ci,
+    netSatisfaction: netSatisfaction(top2, bottom2, totalFeedbacks),
+    csat: csatTopTwoBox(ratingDistribution),
+    confidenceTier: confidenceTier(totalFeedbacks),
+    aiSentiment:
+      totalAnalyzed > 0
+        ? {
+            positive: aiCounts.positive,
+            neutral: aiCounts.neutral,
+            negative: aiCounts.negative,
+            netSentimentScore: netSentimentScore(aiCounts.positive, aiCounts.negative, totalAnalyzed),
+            confidenceTier: confidenceTier(totalAnalyzed),
+          }
+        : undefined,
+  };
+}
+
 export async function getFeedbacksStatsController(req: Request, res: Response) {
   const supabase = req.supabase!;
   const user = req.user!;
@@ -396,72 +463,151 @@ export async function getFeedbacksStatsController(req: Request, res: Response) {
 
     const filteredCollectionPointIds = scopeResolution.ids;
 
-    // Agregações servidas via DRIZZLE, com a contagem feita NO BANCO (GROUP BY),
-    // e SEMPRE com filtro explícito por enterprise_id (isolamento multi-tenant na
-    // aplicação — o Drizzle acessa com role que ignora a RLS). Ver
-    // src/db/tenantScope.ts e src/repositories/feedbackStats.repository.ts.
-    const ratingAgg = await fetchScopedRatingAggregates({
-      enterpriseId: enterprise.id,
-      collectionPointIds: filteredCollectionPointIds,
-      startDate,
-      endDate,
-    });
-    const analysisAgg = await fetchScopedAnalysisAggregates({
+    const stats = await computeFeedbackStats({
       enterpriseId: enterprise.id,
       collectionPointIds: filteredCollectionPointIds,
       startDate,
       endDate,
     });
 
-    const totalFeedbacks = ratingAgg.totalFeedbacks;
-    const averageRating = totalFeedbacks > 0 ? ratingAgg.ratingSum / totalFeedbacks : 0;
-    const ratingDistribution = ratingAgg.ratingDistribution;
-
-    // Subconjunto analisado pela IA: total, análise mais recente (trava o
-    // "Gerar insights") e a distribuição de sentimento (lente "texto").
-    const totalAnalyzed = analysisAgg.totalAnalyzed;
-    const latestAnalysisAt = analysisAgg.latestAnalysisAt;
-    const aiCounts = analysisAgg.aiCounts;
-    const pendingCount = totalFeedbacks - totalAnalyzed;
-
-    // Lente SATISFAÇÃO (estrelas): média+IC t, Net Satisfaction e CSAT Top-2-Box.
-    const satisfaction = ratingStats(ratingDistribution);
-    const top2 = ratingDistribution[4] + ratingDistribution[5];
-    const bottom2 = ratingDistribution[1] + ratingDistribution[2];
-
-    return res.json({
-      totalFeedbacks,
-      averageRating: Math.round(averageRating * 10) / 10,
-      ratingDistribution,
-      // Distribuição por estrela (lente satisfação; mantida por compatibilidade).
-      sentimentBreakdown: {
-        positive: ratingDistribution[4] + ratingDistribution[5],
-        neutral: ratingDistribution[3],
-        negative: ratingDistribution[1] + ratingDistribution[2],
-      },
-      totalAnalyzed,
-      pendingCount,
-      latestAnalysisAt,
-      // Lente SATISFAÇÃO (estrelas)
-      starMean: satisfaction.mean,
-      starMeanCI: satisfaction.ci,
-      netSatisfaction: netSatisfaction(top2, bottom2, totalFeedbacks),
-      csat: csatTopTwoBox(ratingDistribution),
-      confidenceTier: confidenceTier(totalFeedbacks),
-      // Lente SENTIMENTO (IA/texto) sobre o subconjunto analisado
-      aiSentiment:
-        totalAnalyzed > 0
-          ? {
-              positive: aiCounts.positive,
-              neutral: aiCounts.neutral,
-              negative: aiCounts.negative,
-              netSentimentScore: netSentimentScore(aiCounts.positive, aiCounts.negative, totalAnalyzed),
-              confidenceTier: confidenceTier(totalAnalyzed),
-            }
-          : undefined,
-    });
+    return res.json(stats);
   } catch (error) {
     console.error('Erro ao buscar estatísticas:', error);
+    return sendTypedError(res, 500, API_ERROR_INTERNAL_SERVER_ERROR);
+  }
+}
+
+export async function getFeedbacksStatsComparisonController(req: Request, res: Response) {
+  const supabase = req.supabase!;
+  const user = req.user!;
+
+  const scopeType = parseInsightScopeType(req.query.scope_type);
+  const catalogItemId = String(req.query.catalog_item_id ?? '').trim() || null;
+
+  const primaryStartRaw = req.query.primary_start;
+  const primaryEndRaw = req.query.primary_end;
+  const referenceStartRaw = req.query.reference_start;
+  const referenceEndRaw = req.query.reference_end;
+
+  let primaryStart: string | null = null;
+  let primaryEnd: string | null = null;
+  let referenceStart: string | null = null;
+  let referenceEnd: string | null = null;
+
+  if (primaryStartRaw !== undefined) {
+    if (typeof primaryStartRaw !== 'string' || isNaN(Date.parse(primaryStartRaw))) {
+      return sendTypedError(res, 400, API_ERROR_INVALID_PAYLOAD, {
+        message: 'A data primary_start fornecida é inválida. Use o formato ISO 8601.',
+      });
+    }
+    primaryStart = new Date(primaryStartRaw).toISOString();
+  }
+
+  if (primaryEndRaw !== undefined) {
+    if (typeof primaryEndRaw !== 'string' || isNaN(Date.parse(primaryEndRaw))) {
+      return sendTypedError(res, 400, API_ERROR_INVALID_PAYLOAD, {
+        message: 'A data primary_end fornecida é inválida. Use o formato ISO 8601.',
+      });
+    }
+    primaryEnd = new Date(primaryEndRaw).toISOString();
+  }
+
+  if (referenceStartRaw !== undefined) {
+    if (typeof referenceStartRaw !== 'string' || isNaN(Date.parse(referenceStartRaw))) {
+      return sendTypedError(res, 400, API_ERROR_INVALID_PAYLOAD, {
+        message: 'A data reference_start fornecida é inválida. Use o formato ISO 8601.',
+      });
+    }
+    referenceStart = new Date(referenceStartRaw).toISOString();
+  }
+
+  if (referenceEndRaw !== undefined) {
+    if (typeof referenceEndRaw !== 'string' || isNaN(Date.parse(referenceEndRaw))) {
+      return sendTypedError(res, 400, API_ERROR_INVALID_PAYLOAD, {
+        message: 'A data reference_end fornecida é inválida. Use o formato ISO 8601.',
+      });
+    }
+    referenceEnd = new Date(referenceEndRaw).toISOString();
+  }
+
+  try {
+    const { data: enterprise, error: enterpriseError } = await supabase
+      .from('enterprise')
+      .select('id')
+      .eq('auth_user_id', user.id)
+      .single();
+
+    if (enterpriseError || !enterprise) {
+      return sendTypedError(res, 404, API_ERROR_ENTERPRISE_NOT_FOUND);
+    }
+
+    const scopeResolution = await resolveScopeCollectionPointIds({
+      supabase,
+      enterpriseId: enterprise.id,
+      scopeType,
+      catalogItemId,
+    });
+
+    if (scopeResolution.error) {
+      return sendTypedError(res, 500, API_ERROR_FAILED_TO_FETCH_STATS);
+    }
+
+    const filteredCollectionPointIds = scopeResolution.ids;
+
+    const [primary, reference] = await Promise.all([
+      computeFeedbackStats({
+        enterpriseId: enterprise.id,
+        collectionPointIds: filteredCollectionPointIds,
+        startDate: primaryStart,
+        endDate: primaryEnd,
+      }),
+      computeFeedbackStats({
+        enterpriseId: enterprise.id,
+        collectionPointIds: filteredCollectionPointIds,
+        startDate: referenceStart,
+        endDate: referenceEnd,
+      }),
+    ]);
+
+    const totalFeedbacksDiff = primary.totalFeedbacks - reference.totalFeedbacks;
+    const totalFeedbacksPct =
+      reference.totalFeedbacks > 0
+        ? Math.round((totalFeedbacksDiff / reference.totalFeedbacks) * 1000) / 10
+        : null;
+
+    const deltas = {
+      totalFeedbacks: {
+        absolute: totalFeedbacksDiff,
+        percentage: totalFeedbacksPct,
+      },
+      averageRating: {
+        absolute: Math.round((primary.averageRating - reference.averageRating) * 10) / 10,
+        percentage: reference.totalFeedbacks > 0 ? undefined : null,
+      },
+      netSatisfaction: {
+        absolute: Math.round((primary.netSatisfaction - reference.netSatisfaction) * 10) / 10,
+      },
+      csat: {
+        absolute: Math.round(((primary.csat?.pct ?? 0) - (reference.csat?.pct ?? 0)) * 10) / 10,
+      },
+      netSentimentScore:
+        primary.aiSentiment && reference.aiSentiment
+          ? {
+              absolute:
+                Math.round(
+                  (primary.aiSentiment.netSentimentScore - reference.aiSentiment.netSentimentScore) * 10,
+                ) / 10,
+            }
+          : undefined,
+    };
+
+    return res.json({
+      primary,
+      reference,
+      deltas,
+    });
+  } catch (error) {
+    console.error('Erro ao comparar estatísticas:', error);
     return sendTypedError(res, 500, API_ERROR_INTERNAL_SERVER_ERROR);
   }
 }

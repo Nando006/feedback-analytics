@@ -1,13 +1,22 @@
 import { useState } from 'react';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa6';
+import type { CalendarProps } from './ui.types';
 
-interface CalendarProps {
-  selectedDate?: Date;
-  onSelect: (date: Date) => void;
-}
+const stripTime = (d: Date) => {
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+};
 
-export function Calendar({ selectedDate, onSelect }: CalendarProps) {
-  const [currentDate, setCurrentDate] = useState(selectedDate || new Date());
+export function Calendar({
+  selectedDate,
+  onSelect,
+  isRange = false,
+  startDate,
+  endDate,
+  onRangeSelect,
+}: CalendarProps) {
+  const [currentDate, setCurrentDate] = useState(
+    startDate || selectedDate || new Date()
+  );
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
@@ -30,6 +39,25 @@ export function Calendar({ selectedDate, onSelect }: CalendarProps) {
     'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
     'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
   ];
+
+  const startNormalized = startDate ? stripTime(startDate) : undefined;
+  const endNormalized = endDate ? stripTime(endDate) : undefined;
+
+  const handleDateClick = (date: Date) => {
+    if (isRange && onRangeSelect) {
+      if (!startNormalized || (startNormalized && endNormalized)) {
+        onRangeSelect(date, undefined);
+      } else if (startNormalized && !endNormalized) {
+        if (date < startNormalized) {
+          onRangeSelect(date, undefined);
+        } else {
+          onRangeSelect(startNormalized, date);
+        }
+      }
+    } else if (onSelect) {
+      onSelect(date);
+    }
+  };
 
   return (
     <div className="w-[260px] p-3 bg-(--bg-secondary) text-(--text-primary) font-work-sans">
@@ -63,21 +91,29 @@ export function Calendar({ selectedDate, onSelect }: CalendarProps) {
         ))}
         {days.map((day) => {
           const date = new Date(year, month, day);
-          const isSelected = selectedDate &&
+          const isStart = startNormalized && date.getTime() === startNormalized.getTime();
+          const isEnd = endNormalized && date.getTime() === endNormalized.getTime();
+          const isWithin = startNormalized && endNormalized && date > startNormalized && date < endNormalized;
+
+          let dayClass = 'hover:bg-(--seventh-color) text-(--text-secondary) hover:text-(--text-primary) rounded-md';
+
+          if (isStart || isEnd) {
+            dayClass = 'bg-(--primary-color) text-white font-semibold rounded-md';
+          } else if (isWithin) {
+            dayClass = 'bg-(--primary-color)/12 text-(--primary-color) font-medium rounded-none hover:bg-(--primary-color)/20';
+          } else if (!isRange && selectedDate &&
             selectedDate.getDate() === day &&
             selectedDate.getMonth() === month &&
-            selectedDate.getFullYear() === year;
+            selectedDate.getFullYear() === year) {
+            dayClass = 'bg-(--primary-color) text-white font-semibold rounded-md';
+          }
 
           return (
             <button
               key={day}
               type="button"
-              onClick={() => onSelect(date)}
-              className={`h-7 w-7 cursor-pointer text-xs flex items-center justify-center rounded-md transition-colors ${
-                isSelected
-                  ? 'bg-(--primary-color) text-(--bg-primary) font-semibold'
-                  : 'hover:bg-(--seventh-color) text-(--text-secondary) hover:text-(--text-primary)'
-              }`}
+              onClick={() => handleDateClick(date)}
+              className={`h-7 w-7 cursor-pointer text-xs flex items-center justify-center transition-colors ${dayClass}`}
             >
               {day}
             </button>

@@ -28,6 +28,15 @@ export interface InsightsControlsContextValue {
   customStart?: string;
   customEnd?: string;
   setDateRange: (preset: DatePreset, customStart?: string, customEnd?: string) => void;
+
+  // Comparison state
+  comparisonEnabled: boolean;
+  setComparisonEnabled: (enabled: boolean) => void;
+  comparisonReferenceType: 'previous_period' | 'previous_year' | 'custom';
+  setComparisonReferenceType: (type: 'previous_period' | 'previous_year' | 'custom') => void;
+  customReferenceStart?: string;
+  customReferenceEnd?: string;
+  setCustomReferenceRange: (start?: string, end?: string) => void;
 }
 
 export interface InsightsControlsInitialData {

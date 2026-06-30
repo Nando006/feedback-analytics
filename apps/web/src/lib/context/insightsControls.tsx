@@ -52,9 +52,21 @@ export function useInsightsControlsState(initial?: InsightsControlsInitialData) 
   const [endDate, setEndDate] = useState<string | undefined>(undefined);
   const [customStart, setCustomStart] = useState<string | undefined>(undefined);
   const [customEnd, setCustomEnd] = useState<string | undefined>(undefined);
+  const [comparisonEnabled, setComparisonEnabled] = useState(false);
+  const [comparisonReferenceType, setComparisonReferenceType] = useState<'previous_period' | 'previous_year' | 'custom'>('previous_period');
+  const [customReferenceStart, setCustomReferenceStart] = useState<string | undefined>(undefined);
+  const [customReferenceEnd, setCustomReferenceEnd] = useState<string | undefined>(undefined);
+
+  const setCustomReferenceRange = (start?: string, end?: string) => {
+    setCustomReferenceStart(start);
+    setCustomReferenceEnd(end);
+  };
 
   const setDateRange = (preset: DatePreset, startStr?: string, endStr?: string) => {
     setDatePreset(preset);
+    if (preset === 'all') {
+      setComparisonEnabled(false);
+    }
     if (preset === 'custom') {
       setCustomStart(startStr);
       setCustomEnd(endStr);
@@ -74,6 +86,11 @@ export function useInsightsControlsState(initial?: InsightsControlsInitialData) 
     catalogItemOptions, setCatalogItemOptions,
     availableScopes, setAvailableScopes,
     canAnalyze, setCanAnalyze,
-    datePreset, startDate, endDate, customStart, customEnd, setDateRange
+    datePreset, startDate, endDate, customStart, customEnd, setDateRange,
+    comparisonEnabled, setComparisonEnabled,
+    comparisonReferenceType, setComparisonReferenceType,
+    customReferenceStart, setCustomReferenceStart,
+    customReferenceEnd, setCustomReferenceEnd,
+    setCustomReferenceRange
   };
 }

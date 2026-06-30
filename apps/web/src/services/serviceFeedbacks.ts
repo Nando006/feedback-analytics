@@ -9,6 +9,8 @@ import type {
   FeedbackStatsOptions,
   FeedbackQuestionsOptions,
   FeedbackQuestionsResponse,
+  FeedbackStatsComparison,
+  FeedbackStatsComparisonOptions,
 } from 'lib/interfaces/domain/feedback.domain';
 import type {
   IaAnalyzeRawRunRequest,
@@ -61,6 +63,41 @@ export function ServiceGetFeedbackStats(params?: FeedbackStatsOptions) {
   }`;
 
   return getJson<FeedbackStats>(url);
+}
+
+export function ServiceGetFeedbackStatsComparison(params?: FeedbackStatsComparisonOptions) {
+  const searchParams = new URLSearchParams();
+
+  if (params?.scope_type) {
+    searchParams.append('scope_type', params.scope_type);
+  }
+
+  if (params?.catalog_item_id) {
+    searchParams.append('catalog_item_id', params.catalog_item_id);
+  }
+
+  if (params?.primary_start) {
+    searchParams.append('primary_start', params.primary_start);
+  }
+
+  if (params?.primary_end) {
+    searchParams.append('primary_end', params.primary_end);
+  }
+
+  if (params?.reference_start) {
+    searchParams.append('reference_start', params.reference_start);
+  }
+
+  if (params?.reference_end) {
+    searchParams.append('reference_end', params.reference_end);
+  }
+
+  const queryString = searchParams.toString();
+  const url = `/api/protected/user/feedbacks/stats/comparison${
+    queryString ? `?${queryString}` : ''
+  }`;
+
+  return getJson<FeedbackStatsComparison>(url);
 }
 
 export function ServiceGetFeedbackAnalysis(params?: FeedbackAnalysisOptions) {

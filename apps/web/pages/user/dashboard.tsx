@@ -10,6 +10,7 @@ import {
   FaArrowRight,
 } from 'react-icons/fa';
 import SectionMetric from 'components/user/pages/dashboard/SectionMetric';
+import SectionComparisonMetrics from 'components/user/pages/dashboard/SectionComparisonMetrics';
 import ShareQrCard from 'components/user/pages/dashboard/ShareQrCard';
 import SectionEvaluationDistribution from 'components/user/pages/dashboard/SectionEvaluationDistribution';
 import SectionSatisfactionRadar from 'components/user/pages/dashboard/SectionSatisfactionRadar';
@@ -20,11 +21,13 @@ import { useToast } from 'components/public/forms/messages/useToast';
 import { useInsightsControls } from 'src/lib/context/insightsControls';
 import { useScopedInsightsReport } from 'src/lib/hooks/useScopedInsightsReport';
 import { getCatalogKindByKind } from 'src/lib/constants/catalog';
+import { calculateReferenceRange } from 'src/lib/utils/dateRange';
 import {
   ServiceGetFeedbackStats,
+  ServiceGetFeedbackStatsComparison,
   ServiceGetFeedbackQuestions,
 } from 'src/services/serviceFeedbacks';
-import type { FeedbackStats, QuestionMetric } from 'lib/interfaces/domain/feedback.domain';
+import type { FeedbackStats, FeedbackStatsComparison, QuestionMetric } from 'lib/interfaces/domain/feedback.domain';
 import type { DashboardLoaderData, UserLoaderData } from './ui.types';
 
 
@@ -33,7 +36,7 @@ export default function Dashboard() {
   const dashboardLoaderData = useLoaderData<DashboardLoaderData>();
   const [searchParams, setSearchParams] = useSearchParams();
   const toast = useToast();
-  const { scope, catalogItemId, startDate, endDate } = useInsightsControls();
+  const { scope, catalogItemId, startDate, endDate, datePreset, comparisonEnabled, comparisonReferenceType, customReferenceStart, customReferenceEnd } = useInsightsControls();
 
   const toastShownRef = useRef(false);
 
@@ -53,6 +56,7 @@ export default function Dashboard() {
   const [stats, setStats] = useState<FeedbackStats | null>(
     dashboardLoaderData?.stats ?? null,
   );
+  const [comparisonData, setComparisonData] = useState<FeedbackStatsComparison | null>(null);
   const [questions, setQuestions] = useState<QuestionMetric[]>([]);
   const [scopedLoading, setScopedLoading] = useState(false);
   // O 1º fetch reaproveita o seed do loader (escopo Empresa) — só mostramos o
@@ -65,16 +69,44 @@ export default function Dashboard() {
     const showSkeleton = !firstScopedFetchRef.current;
     if (showSkeleton) setScopedLoading(true);
 
+    if (datePreset === 'custom' && (!startDate || !endDate)) {
+      if (showSkeleton) setScopedLoading(false);
+      return;
+    }
+
+    if (comparisonEnabled && comparisonReferenceType === 'custom' && (!customReferenceStart || !customReferenceEnd)) {
+      if (showSkeleton) setScopedLoading(false);
+      return;
+    }
+
     const catalogParam =
       scope !== 'COMPANY' ? catalogItemId || undefined : undefined;
 
-    const [statsData, questionsData] = await Promise.all([
-      ServiceGetFeedbackStats({
+    let statsPromise: Promise<FeedbackStats | null> = Promise.resolve(null);
+    let comparisonPromise: Promise<FeedbackStatsComparison | null> = Promise.resolve(null);
+
+    if (comparisonEnabled) {
+      const refRange = calculateReferenceRange(datePreset, startDate, endDate, comparisonReferenceType, customReferenceStart, customReferenceEnd);
+      comparisonPromise = ServiceGetFeedbackStatsComparison({
+        scope_type: scope,
+        catalog_item_id: catalogParam,
+        primary_start: startDate,
+        primary_end: endDate,
+        reference_start: refRange.startDate,
+        reference_end: refRange.endDate,
+      }).catch(() => null);
+    } else {
+      statsPromise = ServiceGetFeedbackStats({
         scope_type: scope,
         catalog_item_id: catalogParam,
         start_date: startDate,
         end_date: endDate,
-      }).catch(() => null),
+      }).catch(() => null);
+    }
+
+    const [statsData, comparisonDataRes, questionsData] = await Promise.all([
+      statsPromise,
+      comparisonPromise,
       ServiceGetFeedbackQuestions({
         scope_type: scope,
         catalog_item_id: catalogParam,
@@ -82,10 +114,11 @@ export default function Dashboard() {
     ]);
 
     setStats(statsData);
+    setComparisonData(comparisonDataRes);
     setQuestions(questionsData?.questions ?? []);
     firstScopedFetchRef.current = false;
     setScopedLoading(false);
-  }, [scope, catalogItemId, startDate, endDate]);
+  }, [scope, catalogItemId, startDate, endDate, comparisonEnabled, datePreset, comparisonReferenceType, customReferenceStart, customReferenceEnd]);
 
   useEffect(() => {
     fetchScopedData();
@@ -108,11 +141,25 @@ export default function Dashboard() {
   const displayName =
     user?.user_metadata?.full_name || enterprise?.full_name || user?.email || 'Dashboard';
 
-  const totalFeedbacks = stats?.totalFeedbacks ?? 0;
-  const averageRating = stats?.averageRating ?? 0;
-  const positive = stats?.sentimentBreakdown.positive ?? 0;
-  const negative = stats?.sentimentBreakdown.negative ?? 0;
-  const pendingCount = stats?.pendingCount ?? 0;
+  const totalFeedbacks = comparisonEnabled && comparisonData
+    ? comparisonData.primary.totalFeedbacks
+    : (stats?.totalFeedbacks ?? 0);
+
+  const averageRating = comparisonEnabled && comparisonData
+    ? comparisonData.primary.averageRating
+    : (stats?.averageRating ?? 0);
+
+  const positive = comparisonEnabled && comparisonData
+    ? comparisonData.primary.sentimentBreakdown.positive
+    : (stats?.sentimentBreakdown.positive ?? 0);
+
+  const negative = comparisonEnabled && comparisonData
+    ? comparisonData.primary.sentimentBreakdown.negative
+    : (stats?.sentimentBreakdown.negative ?? 0);
+
+  const pendingCount = comparisonEnabled && comparisonData
+    ? comparisonData.primary.pendingCount
+    : (stats?.pendingCount ?? 0);
 
   return (
     <div className="font-work-sans space-y-6">
@@ -154,18 +201,32 @@ export default function Dashboard() {
         <DashboardScopedSkeleton />
       ) : (
         <>
-          <SectionMetric
-            totalFeedbacks={totalFeedbacks}
-            averageRating={averageRating}
-            positive={positive}
-            negative={negative}
-            starMeanCI={stats?.starMeanCI ?? null}
-          />
+          {comparisonEnabled && comparisonData ? (
+            <SectionComparisonMetrics
+              data={comparisonData}
+              datePreset={datePreset}
+              startDate={startDate}
+              endDate={endDate}
+              referenceStartDate={calculateReferenceRange(datePreset, startDate, endDate, comparisonReferenceType, customReferenceStart, customReferenceEnd).startDate}
+              referenceEndDate={calculateReferenceRange(datePreset, startDate, endDate, comparisonReferenceType, customReferenceStart, customReferenceEnd).endDate}
+              comparisonReferenceType={comparisonReferenceType}
+            />
+          ) : (
+            <>
+              <SectionMetric
+                totalFeedbacks={totalFeedbacks}
+                averageRating={averageRating}
+                positive={positive}
+                negative={negative}
+                starMeanCI={stats?.starMeanCI ?? null}
+              />
 
-          <div className="grid gap-6 lg:grid-cols-2">
-            <SectionEvaluationDistribution stats={stats} />
-            <SectionSatisfactionRadar stats={stats} />
-          </div>
+              <div className="grid gap-6 lg:grid-cols-2">
+                <SectionEvaluationDistribution stats={stats} />
+                <SectionSatisfactionRadar stats={stats} />
+              </div>
+            </>
+          )}
 
           <SectionLowestQuestions questions={questions} />
         </>
