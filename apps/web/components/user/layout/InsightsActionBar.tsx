@@ -101,7 +101,7 @@ export default function InsightsActionBar() {
           onClick={analyzeRaw}
           disabled={analyzeDisabled}
           title={analyzeBlockedReason}
-          className="btn-secondary font-poppins inline-flex items-center gap-1.5 px-3 py-2 text-[13px] disabled:cursor-not-allowed disabled:opacity-60"
+          className="btn-secondary font-poppins inline-flex h-9 items-center gap-1.5 px-3 text-[13px] disabled:cursor-not-allowed disabled:opacity-60"
         >
           <FaWandMagicSparkles aria-hidden className="text-[0.7rem]" />
           {isAnalyzingRaw ? "Analisando..." : "Analisar feedbacks"}
@@ -111,7 +111,7 @@ export default function InsightsActionBar() {
           onClick={regenerateInsights}
           disabled={generateDisabled}
           title={generateBlockedReason}
-          className="btn-secondary font-poppins inline-flex items-center gap-1.5 px-3 py-2 text-[13px] disabled:cursor-not-allowed disabled:opacity-60"
+          className="btn-secondary font-poppins inline-flex h-9 items-center gap-1.5 px-3 text-[13px] disabled:cursor-not-allowed disabled:opacity-60"
         >
           <FaChartLine aria-hidden className="text-[0.7rem]" />
           {isRegeneratingInsights ? "Gerando..." : "Gerar insights"}

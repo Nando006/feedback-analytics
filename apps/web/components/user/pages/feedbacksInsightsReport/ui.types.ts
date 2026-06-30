@@ -35,15 +35,7 @@ export interface InsightsHeaderControlsProps {
   onCatalogItemChange: (id: string) => void;
 }
 
-/**
- * Props do seletor radial de escopos.
- * Usado em: components/user/pages/feedbacksInsightsReport/ScopeSelectorRadial.tsx.
- */
-export interface ScopeSelectorRadialProps {
-  options: InsightScopeOption[];
-  selected: InsightScopeOption;
-  onChange: (scope: InsightScopeOption) => void;
-}
+
 
 /**
  * Tons de sentimento usados no bloco de humor.

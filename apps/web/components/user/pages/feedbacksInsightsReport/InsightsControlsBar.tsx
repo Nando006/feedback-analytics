@@ -1,10 +1,11 @@
 import { useInsightsControls } from 'src/lib/context/insightsControls';
 import InsightsHeaderControls from './InsightsHeaderControls';
+import DateRangeSelector from '../dashboard/DateRangeSelector';
 import type { InsightScopeOption } from './ui.types';
 
 /**
  * Versão conectada do seletor de escopo: lê o contexto e renderiza o seletor de
- * escopo (+ item). As ações de IA (Analisar/Gerar) vivem no InsightsActionsPanel.
+ * escopo (+ item) e o seletor de período. As ações de IA (Analisar/Gerar) vivem no InsightsActionsPanel.
  */
 export default function InsightsControlsBar() {
   const {
@@ -27,13 +28,16 @@ export default function InsightsControlsBar() {
   };
 
   return (
-    <InsightsHeaderControls
-      availableScopes={availableScopes}
-      selectedScope={scope}
-      selectedCatalogItemId={catalogItemId}
-      catalogItemOptions={catalogItemOptions}
-      onScopeChange={handleScopeChange}
-      onCatalogItemChange={setCatalogItemId}
-    />
+    <div className="flex flex-wrap items-center gap-3">
+      <InsightsHeaderControls
+        availableScopes={availableScopes}
+        selectedScope={scope}
+        selectedCatalogItemId={catalogItemId}
+        catalogItemOptions={catalogItemOptions}
+        onScopeChange={handleScopeChange}
+        onCatalogItemChange={setCatalogItemId}
+      />
+      <DateRangeSelector />
+    </div>
   );
 }

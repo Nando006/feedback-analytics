@@ -28,8 +28,10 @@ function mapAnswerScore(answerValue: string): number {
 }
 
 export async function submitQrCodeFeedbackController(req: Request, res: Response) {
+  console.log('Corpo da requisição recebido no submitQrCodeFeedback:', req.body);
   const parsed = qrcodeFeedbackSchema.safeParse(req.body);
   if (!parsed.success) {
+    console.error('Erro de validação do QR Code Feedback:', JSON.stringify(parsed.error.issues, null, 2));
     return sendTypedError(res, 400, API_ERROR_INVALID_PAYLOAD);
   }
 
@@ -135,6 +137,12 @@ export async function submitQrCodeFeedbackController(req: Request, res: Response
     new Set(payloadQuestionIds).size !== normalizedQuestions.length ||
     payloadQuestionIds.some((questionId) => !allowedQuestionIds.has(questionId))
   ) {
+    console.error('Erro de validação: Mismatch nas respostas principais', {
+      recebidas: payload.answers.length,
+      esperadas: normalizedQuestions.length,
+      esperadasIds: Array.from(allowedQuestionIds),
+      recebidasIds: payloadQuestionIds
+    });
     return sendTypedError(res, 400, API_ERROR_INVALID_PAYLOAD);
   }
 
@@ -148,6 +156,12 @@ export async function submitQrCodeFeedbackController(req: Request, res: Response
     new Set(payloadSubquestionIds).size !== payloadSubanswers.length ||
     payloadSubquestionIds.some((subquestionId) => !allowedSubquestionIds.has(subquestionId))
   ) {
+    console.error('Erro de validação: Mismatch nas subrespostas', {
+      recebidas: payloadSubanswers.length,
+      esperadas: activeSubquestions.length,
+      esperadasIds: Array.from(allowedSubquestionIds),
+      recebidasIds: payloadSubquestionIds
+    });
     return sendTypedError(res, 400, API_ERROR_INVALID_PAYLOAD);
   }
 
