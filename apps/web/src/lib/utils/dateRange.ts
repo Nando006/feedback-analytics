@@ -190,8 +190,10 @@ export function calculateReferenceRange(
     case 'this_month': {
       // Período anterior equivalente (ex: se hoje é dia 15, compara de 1 a 15 do mês anterior)
       const daysPassed = now.getDate();
+      const lastDayOfPrevMonth = new Date(now.getFullYear(), now.getMonth(), 0).getDate();
+      const targetDay = Math.min(daysPassed, lastDayOfPrevMonth);
       const start = new Date(now.getFullYear(), now.getMonth() - 1, 1, 0, 0, 0, 0);
-      const end = new Date(now.getFullYear(), now.getMonth() - 1, daysPassed, 23, 59, 59, 999);
+      const end = new Date(now.getFullYear(), now.getMonth() - 1, targetDay, 23, 59, 59, 999);
       return { startDate: start.toISOString(), endDate: end.toISOString() };
     }
     case 'last_month': {
